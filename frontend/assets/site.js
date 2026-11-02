@@ -31,7 +31,25 @@
     chips.forEach(c => c.addEventListener('click', () => { pick(c); history.replaceState(null, '', '#' + c.dataset.type); }));
     pick(chips.find(c => c.dataset.type === location.hash.slice(1)) || chips[0]); }
   // waitlist forms stay on the page
-  document.querySelectorAll('.wl').forEach(f => f.addEventListener('submit', ev => { ev.preventDefault(); if (!f.reportValidity()) return; f.querySelector('.wl-ok').hidden = false; f.querySelector('button').textContent = 'You are on the list'; f.querySelector('input').disabled = true; }));
+  // lead forms: insert-only into Supabase (row level security blocks reads with this public key)
+  const SB = 'https://ybgspxfnjkehjskhrpne.supabase.co/rest/v1/leads', KEY = 'sb_publishable_256LqgO7hWqqhz2ZBvDLhQ_VsXwNgq3';
+  const COUNT = { '1 to 10': 10, '11 to 50': 50, '51 to 200': 200, 'More than 200': 201 };
+  const utm = (() => { const q = new URLSearchParams(location.search), o = {}; q.forEach((v, k) => { if (k.startsWith('utm_')) o[k] = v.slice(0, 120); }); return Object.keys(o).length ? o : null; })();
+  document.querySelectorAll('form.lead').forEach(f => f.addEventListener('submit', async ev => {
+    ev.preventDefault(); const err = f.querySelector('.lerr'), btn = f.querySelector('button[type=submit]'); err.hidden = true;
+    const bad = [...f.querySelectorAll('[required]')].find(el => !el.value.trim() || (el.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(el.value.trim())));
+    if (bad) { err.textContent = bad.type === 'email' ? 'Enter a full work email, like name@company.com.' : 'Please fill in ' + bad.closest('label').querySelector('span').textContent.toLowerCase() + '.'; err.hidden = false; bad.focus(); return; }
+    const done = () => { f.querySelector('.lf').hidden = true; f.querySelector('.la').hidden = true; f.querySelector('.ldone').hidden = false; };
+    if (f.website.value) return done();   // decoy field filled: a bot
+    const v = n => (f.elements[n] ? f.elements[n].value.trim() : '') || null;
+    const row = { kind: f.dataset.kind, email: v('email'), company: v('company'), role: v('role'), timeline: v('timeline'), check_size: v('check_size'), message: v('message'), page: location.pathname + '#' + f.dataset.who, utm };
+    if (v('robot_count')) row.robot_count = COUNT[v('robot_count')];
+    const ty = document.getElementById('sz-type');
+    if (ty && f.dataset.who === 'fleets') { row.robot_type = ty.selectedOptions[0].textContent; row.robot_count = +document.getElementById('sz-n').value || null; row.price_per_robot = +document.getElementById('sz-p').value || null; }
+    btn.disabled = true; const label = btn.textContent; btn.textContent = 'Sending';
+    try { const r = await fetch(SB, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row) }); if (!r.ok) throw r.status; done(); }
+    catch (x) { err.textContent = 'That did not go through. Please try again in a moment.'; err.hidden = false; btn.disabled = false; btn.textContent = label; }
+  }));
   // phone menu
   document.querySelectorAll('.nav').forEach(nv => { const b = nv.querySelector('.menu'), d = nv.querySelector('.drawer'); if (!b) return; b.addEventListener('click', () => { const o = d.hidden; d.hidden = !o; b.setAttribute('aria-expanded', o); }); });
 })();
