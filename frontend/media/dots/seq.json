@@ -1,0 +1,32 @@
+{
+ "pallet-loop": {
+  "w": 64,
+  "h": 62,
+  "frames": 92,
+  "fps": 12,
+  "per": 8,
+  "tone": "light",
+  "src": "media/dots/pallet-loop.png",
+  "acc": "media/dots/pallet-loop-acc.png"
+ },
+ "arm-loop": {
+  "w": 64,
+  "h": 62,
+  "frames": 92,
+  "fps": 12,
+  "per": 8,
+  "tone": "ink",
+  "src": "media/dots/arm-loop.png",
+  "acc": "media/dots/arm-loop-acc.png"
+ },
+ "arm2-loop": {
+  "w": 64,
+  "h": 67,
+  "frames": 92,
+  "fps": 12,
+  "per": 8,
+  "tone": "ink",
+  "src": "media/dots/arm2-loop.png",
+  "acc": "media/dots/arm2-loop-acc.png"
+ }
+}

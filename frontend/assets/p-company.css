@@ -1,57 +1,55 @@
-/* Company page (c-). Diagram styles (.l-fig, .l-dg, .l-roles, .l-ph) come from p-lenders.css, which this page also loads. */
-/* letter hero: a dot collaborative arm on the cobalt grid */
-.c-pic .larm{left:14%;right:14%;top:4%;bottom:9%;display:flex;align-items:flex-end;justify-content:center}
-.c-pic .larm canvas{width:100%}
-.lpic.c-pic.in-view .larm{animation:none}
-.c-orbit circle{opacity:0;transition:opacity .4s ease}.c-orbit.go circle{opacity:1}.c-orbit.go circle + circle{opacity:.6}
-.c-hero{overflow:clip}
+/* Company page (c-). Self-contained: no styles from other pages. Three sections: letter (paper), what we are building (white), get in touch (paper). */
 [data-page="company.html"] .c-hero .h1{font-size:clamp(44px,5.4vw,76px)}
-.c-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px;margin:44px 0 0;max-width:620px}
-.c-facts div{border-top:1px solid var(--line);padding:16px 0 18px}
-.c-facts dt{font-size:13px;color:var(--muted);margin-bottom:4px}
-.c-facts dd{margin:0;font:500 19px/1.35 var(--serif);color:var(--ink)}
-@media (max-width:680px){.c-facts{grid-template-columns:minmax(0,1fr)}}
+[data-page="company.html"] .h2 .mute{color:#8b93a4}
 
-/* what we are building: three pieces on the left switch the product window on the right */
-.c-bg{display:grid;grid-template-columns:minmax(0,.68fr) minmax(0,1.32fr);gap:clamp(28px,4vw,56px);align-items:start}
-.c-tabs{list-style:none;margin:0;padding:0}
-.c-tab{border-top:1px solid var(--line)}
-.c-tab:first-child{border-top:0}.c-tab:first-child button{padding-top:0;min-height:44px}
-.c-tab:last-child{border-bottom:1px solid var(--line)}
-.c-tab button{display:flex;align-items:baseline;gap:16px;width:100%;min-height:64px;padding:18px 0 8px;background:none;border:0;cursor:pointer;font:inherit;color:var(--ink);text-align:left}
-.c-tab .num{font:500 18px var(--serif);min-width:26px;color:#8a93a4}
-.c-tab b{font:500 clamp(22px,2vw,26px)/1.2 var(--serif);transition:color .25s ease}
-.c-tab button:hover b{color:var(--c)}
-.c-tab.on b{color:var(--c)}
-.c-tab.on .num{color:var(--c)}
-.c-tx{padding:0 0 22px 42px}
-.c-tx p{margin:0;color:#4a5262;font-size:16px;max-width:44ch}
-.c-tx .tlink{margin:4px 0 0}
-.c-stage{position:relative;background:var(--mist);border-radius:24px;padding:clamp(14px,2.4vw,32px);min-width:0;display:flex;flex-direction:column;justify-content:center}
-.c-win{display:none}
-.c-win.on{display:block;animation:cwin .5s cubic-bezier(.2,.7,.2,1)}
-@keyframes cwin{from{opacity:0;transform:translateY(10px)}}
-.c-win .app{box-shadow:0 0 0 1px #d6e3f2,0 30px 60px -30px rgba(10,20,60,.4)}
+/* two-tone heading (S2.1, repeated so the page reads right on its own): one block of running text, never the old .two grid */
+[data-page="company.html"] .h2.two{display:block;font-size:clamp(32px,3.4vw,46px);line-height:1.08}
+@media (min-width:721px){[data-page="company.html"] .h2.two{max-width:26ch}}
+
+/* robots on a hairline baseline (S3.1 markup); the canvas width is set from the robot's own shape by p-company.js */
+[data-page="company.html"] .rstage{margin:0;position:relative}
+[data-page="company.html"] .rstage .rs-bot{height:var(--h);display:flex;align-items:flex-end;justify-content:center}
+[data-page="company.html"] .rstage .rs-bot canvas{display:block;max-width:100%}
+[data-page="company.html"] .rstage .rs-base{display:block;height:1px;background:var(--line)}
+
+/* letter: the collaborative arm in dots, standing whole on one hairline under the title */
+.c-pic{margin-top:clamp(36px,4vw,56px);max-width:440px}
+.c-pic .rstage .rs-base{background:#cfd6e3}
+
+/* what we are building: three short blocks beside the price report window */
+.c-two{margin-bottom:clamp(36px,4vw,56px)}
+.c-bg{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);gap:clamp(32px,5vw,72px);align-items:start}
+.c-list{list-style:none;margin:0;padding:0}
+.c-list li{border-top:1px solid var(--line);padding:22px 0 24px}
+.c-list li:last-child{border-bottom:1px solid var(--line)}
+.c-list .h3{font-size:clamp(22px,1.9vw,25px);margin:0 0 6px}
+.c-list p{margin:0;color:#4a5262;font-size:16px;line-height:1.55;max-width:42ch}
+.c-list .tlink{margin:6px 0 -10px}
+.c-stage{min-width:0}
+.c-stage .app{font-size:14px}
 
 /* get in touch */
 .c-cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
 .c-contact .h2{margin-bottom:20px}
-.c-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
-.c-card{display:flex;flex-direction:column;gap:18px;padding:16px 16px 22px;border-radius:20px;background:var(--paper);box-shadow:0 0 0 1px var(--line);text-decoration:none;color:inherit;transition:box-shadow .25s ease,transform .25s ease}
-.c-card:hover{box-shadow:0 0 0 1px #c9d3e3,0 18px 36px -24px rgba(10,20,60,.35);transform:translateY(-2px)}
-.c-card > div:last-child{display:flex;flex-direction:column;flex:1;padding:0 6px}
-.c-card .h3{margin-bottom:6px}
-.c-card p{margin:0 0 6px;color:#4a5262;font-size:15.5px}
-.c-card .tlink{margin-top:auto}
-.c-ci{background:var(--mist);border-radius:14px;height:200px;display:flex;align-items:center;justify-content:center;padding:18px}
-.c-bot canvas{width:190px;max-width:100%}
-.c-ltv{flex-direction:column;align-items:stretch;justify-content:center;gap:10px;padding:22px}
-.c-ltv > span{font-size:13px;color:var(--muted)}
-.c-ltv div{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
-.c-ltv i{aspect-ratio:1;border-radius:50%;background:var(--c)}
-.c-ltv i.cu{background:#b4defc}
-.c-ltv p{display:flex;justify-content:space-between;margin:0;font-size:13px}.c-ltv b{font-weight:500;color:#4a5262}.c-ltv b:first-child{color:var(--c)}
-@media (max-width:1060px){.c-bg,.c-cg{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:680px){.c-cards{grid-template-columns:minmax(0,1fr)}.c-ci{height:170px}}
-@media (prefers-reduced-motion:reduce){.c-win.on{animation:none}}
 .c-contact .lf{grid-template-columns:minmax(0,1fr)}
+.c-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:stretch;padding-top:8px}
+.c-card{display:grid;grid-template-columns:96px minmax(0,1fr);gap:24px;align-items:start;padding:28px 28px 28px 24px;border-radius:20px;background:#fff;box-shadow:0 0 0 1px var(--line);text-decoration:none;color:inherit;transition:box-shadow .25s ease}
+.c-card:hover{box-shadow:0 0 0 1px #c9d3e3,var(--sh-doc)}
+.c-card > div{display:flex;flex-direction:column}
+.c-card .h3{margin-bottom:6px}
+.c-card p{margin:0 0 18px;color:#4a5262;font-size:15.5px}
+/* a small dot robot, 56px tall, standing on a hairline at the card's top left */
+.c-card .c-ci .rs-bot{padding-bottom:2px}
+/* small dots read faint at 56px: firm up their alpha (an inline filter in the section) and deepen the blue */
+.c-card .c-ci canvas.dotbot{filter:url(#c-firm) saturate(1.2) brightness(.82)}
+.c-fx{position:absolute;width:0;height:0;overflow:hidden}
+.c-go{margin-top:auto;font-weight:500;font-size:15.5px;color:var(--c);min-height:24px}
+.c-card:hover .c-go{text-decoration:underline;text-underline-offset:3px}
+
+@media (max-width:1060px){.c-bg,.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:380px}}
+@media (max-width:680px){
+ .c-two{max-width:none}
+ .c-card{grid-template-columns:minmax(0,1fr);gap:18px;padding:22px}
+ .c-card .c-ci{width:96px}
+ .c-pic .c-bot .rs-bot{height:calc(var(--h) * .72)}
+}

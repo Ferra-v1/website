@@ -1,25 +1,18 @@
-// Lenders page. Also loaded by the company page for the shared diagrams.
+// Lenders page.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // dots travel along the diagram connectors a few times once the figure is in view
+  // dots travel along the pricing flow once it is in view: the page's signature motion.
+  // One dot per source runs continuously, 0.4s apart, and the animation pauses while the figure is off screen.
   const start = fig => fig.querySelectorAll('svg').forEach(svg => {
-    if (!svg.getClientRects().length) return;
-    const movers = [...svg.querySelectorAll('.mv')];
-    movers.forEach((m, i) => setTimeout(() => m.querySelectorAll('animateMotion,animate').forEach(a => { try { a.beginElement(); } catch (x) {} }), 900 + i * 420));
+    svg.querySelectorAll('.mv').forEach(m => { const d = +m.dataset.delay || 0;
+      setTimeout(() => m.querySelectorAll('animateMotion,animate').forEach(a => { try { a.beginElement(); } catch (x) {} }), 700 + d * 1000); });
   });
-  if (!window.__ferraFlow) {
-    window.__ferraFlow = 1;
-    const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.unobserve(en.target); en.target.classList.add('in-view'); if (!reduce) start(en.target); } }), { threshold: .35 });
-    document.querySelectorAll('.l-anim').forEach(f => io.observe(f));
-  }
-  // term sheet: the notes on the left highlight the matching row; one pass on arrival, then follow the pointer or focus
-  const ann = [...document.querySelectorAll('.l-ann li')], sheet = document.querySelector('.l-big .sheet');
-  if (ann.length && sheet) {
-    let touched = false;
-    const set = r => { ann.forEach(a => a.classList.toggle('on', a.dataset.row === r)); sheet.querySelectorAll('.dr').forEach(d => d.classList.toggle('hl', d.dataset.row === r)); };
-    ann.forEach(a => { const go = () => { touched = true; set(a.dataset.row); }; a.addEventListener('mouseenter', go); a.addEventListener('focus', go); a.addEventListener('click', go); });
-    const io2 = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; io2.disconnect();
-      if (reduce) return set('3'); let k = 0; const step = () => { if (touched) return; set(String(k)); if (k < 3) { k++; setTimeout(step, 1300); } }; setTimeout(step, 600); }, { threshold: .45 });
-    io2.observe(sheet);
-  }
+  const io = new IntersectionObserver(es => es.forEach(en => {
+    const f = en.target;
+    if (en.isIntersecting) {
+      if (!f.dataset.go) { if (en.intersectionRatio >= .35) { f.dataset.go = 1; f.classList.add('in-view'); if (!reduce) start(f); } }
+      else f.querySelectorAll('svg').forEach(s => s.unpauseAnimations());
+    } else if (f.dataset.go) f.querySelectorAll('svg').forEach(s => s.pauseAnimations());
+  }), { threshold: [0, .35] });
+  document.querySelectorAll('.l-anim').forEach(f => io.observe(f));
 })();

@@ -401,21 +401,305 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 .pp-ac b{color:var(--ink);font-weight:600}
 .pp-covs .arm{fill:none;stroke:var(--cyl);stroke-width:2.5;stroke-dasharray:2 6;stroke-linecap:round}
 .pp-covs .al{fill:var(--cyl)}
-.pp-mini{display:none}
-@media (max-width:600px){
-  .pp-mini{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);gap:8px;padding:12px;border-radius:12px;background:#fff;box-shadow:0 0 0 1px var(--line)}
-  .pp-mini div{display:flex;flex-direction:column;gap:3px;min-width:0}
-  .pp-mini span{font-size:11.5px;line-height:1.25;color:var(--muted)}
-  .pp-mini b{font:500 19px/1.1 var(--serif);white-space:nowrap}
-  .pp-mini b i{font-style:normal;font-size:.7em;color:#9aa3b3}
-  .pp-mini b em{font-style:normal;color:var(--cyl)}
-  .pp-mini div:first-child b{color:var(--c)}
-  .pp-sk{display:inline-block;width:60px;height:16px;border-radius:6px;background:#eef1f6}
-  .pp-copy{height:44px}
-  .pp-t{font-size:13.5px}
-  .pp-t a{display:inline-flex;align-items:center;min-height:44px;padding:0 4px}
-  .pp-mk::after{inset:-12px -8px}
-}
-.lg-arms{display:none!important}.isnew .lg-arms{display:inline-flex!important}
-.lg-arm{width:18px!important;height:0!important;border-radius:0!important;border-top:3px dotted var(--cyl)}
+
 .pp-dl a{padding:12px 0;margin:-12px 0}
+
+@media (max-width:600px){.pp-copy{height:44px}.pp-t a{display:inline-flex;align-items:center;min-height:44px;padding:0 4px}.pp-mk::after{inset:-12px -8px}}
+
+/* ============ design loop round 1 (ROUND-1-PLAN section 10) ============ */
+.page[data-page="price.html"]{--capc:#6b7383}
+.page[data-page="price.html"] .big-num{font-family:var(--serif);font-weight:500;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
+.page[data-page="price.html"] .cap{font-size:13px;line-height:1.45;color:var(--capc)}
+.page[data-page="price.html"] .lead-1{font-size:19px;line-height:1.5;color:#3e4656;max-width:52ch;margin:16px 0 0}
+
+/* T1 hero: the line stacked under the heading */
+.pp-hero{padding-top:clamp(32px,3.6vw,52px)}
+.pp-head{display:block;margin-bottom:28px}
+.pp-head .h1{font-size:clamp(44px,4.6vw,66px);line-height:1;margin:0}
+.pp-head .lede{max-width:64ch;margin:16px 0 0;font-size:clamp(16.5px,1.25vw,18px);line-height:1.5;color:#3e4656}
+
+/* window chrome: examples sit in the title bar */
+.pp-top{height:auto;min-height:52px;padding:8px 10px 8px 18px;gap:14px}
+.pp-top .pp-pres{display:flex;align-items:center;gap:6px;border:0;padding:0;margin-left:auto;min-width:0}
+.pp-top .pp-pres > span{font-size:12.5px;color:var(--muted);margin-right:2px}
+.pp-top .pp-copy{margin-left:6px}
+.pp-pre{height:34px}
+
+/* T3 T4: inputs 5 of 12, context 7 of 12, answers full width underneath */
+.pp-body{grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:"in ctx" "ans ans"}
+.pp-in{grid-area:in;border-radius:0;padding:20px 22px;gap:14px}
+.pp-row3{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1.1fr);gap:10px}
+.pp-row3 .pp-money{padding:0 10px}
+.pp-in .pp-hint{margin-top:-6px}
+.pp-ctx{grid-area:ctx;padding:20px 24px 18px;min-width:0;display:flex;flex-direction:column}
+.pp-ctx .pp-strip{margin-top:0;padding-top:0;border-top:0}
+.pp-ctx .pp-ins{margin-top:18px}
+.pp-ans{grid-area:ans;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);background:#fff;border-radius:0 0 16px 16px;padding:22px 0 22px}
+.pp-a{padding:0 26px;border-left:1px solid var(--line)}
+.pp-a:first-child{border-left:0}
+.pp-av.big-num{font-size:48px;margin:10px 0 10px;white-space:nowrap;min-height:1em}
+.pp-a[data-k="l"] .pp-av.big-num{font-size:48px}
+.pp-av i{font-size:.5em;top:-.14em;margin:0 .22em}
+.pp-ac.cap{font-size:13px}
+@media (min-width:1081px){.pp-ans{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* T5: section heads stacked, one short intro under the heading */
+.pp-sh{display:block;margin-bottom:36px}
+.pp-sh .h2{max-width:22ch}
+.pp-risk .pp-sh .h2{max-width:20ch}
+.pp-why{margin-top:14px}
+.pp-why summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:600 14px var(--sans);color:var(--c)}
+.pp-why summary::-webkit-details-marker{display:none}
+.pp-why summary::before{content:"+";display:inline-block;font:500 17px/1 var(--sans);transition:transform .2s ease}
+.pp-why[open] summary::before{transform:rotate(45deg)}
+.pp-whyb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 48px;max-width:1000px;padding:6px 0 4px}
+.pp-whyb p{margin:0 0 12px;font-size:14px;line-height:1.6;color:#4a5262}
+.pp-whyb b{color:var(--ink);font-weight:600}
+.pp-why.dk summary{color:var(--cy)}
+.pp-why.dk .pp-whyb p{color:rgba(255,255,255,.7)}
+.pp-why.dk .pp-whyb b{color:#fff}
+
+/* T6: direct labels on the charts */
+.pp-leg{display:none}
+.pp-scs .lab{font:500 12px var(--sans);fill:#5b6474;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.pp-scs .lab.ttl{font-size:12.5px;fill:#7a8396;stroke:none}
+.pp-scs .lab.au{fill:var(--deep);font-weight:600}
+.pp-scs .lab.mc{fill:var(--cyl);font-weight:600}
+.pp-covs .bl.rs{fill:var(--c)}
+.pp-covs .bl.cu{fill:#0378b8;font-weight:500}
+.pp-covs .gl2{fill:#8a93a4}
+.pp-covn{font-size:14px}
+.pp-lad .pp-rung p{margin-top:6px}
+
+/* T7: the risk band, one big figure and the switch */
+.pp-rk{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:end;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.12)}
+.pp-rbig{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.pp-rl{display:flex;align-items:center;font-size:15px;color:rgba(255,255,255,.78)}
+.pp-rv{display:block;font:500 clamp(84px,10vw,148px)/.92 var(--serif);letter-spacing:-.035em;color:#fff;margin:14px 0 22px;font-variant-numeric:lining-nums tabular-nums;transition:color .6s ease;white-space:nowrap}
+.pp-rk.bk .pp-rv{color:var(--cy)}
+.pp-rsw{display:inline-grid;grid-template-columns:auto auto;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.08);max-width:100%}
+.pp-rb{flex-direction:row;align-items:center;gap:10px;min-height:44px;padding:0 18px;border-radius:999px;border:0;background:transparent}
+.pp-rb:hover{border:0;background:rgba(255,255,255,.06)}
+.pp-rb[aria-checked="true"]{background:#fff;border:0}
+.pp-rb span{font-size:14px;font-weight:500;color:rgba(255,255,255,.8);white-space:nowrap}
+.pp-rb b{font:600 14px var(--sans);letter-spacing:0;margin:0;color:rgba(255,255,255,.55)}
+.pp-rb[data-v="1"] b{color:var(--cy)}
+.pp-rb[aria-checked="true"] span{color:var(--ink)}
+.pp-rb[aria-checked="true"] b{color:var(--c)}
+.pp-rcap{margin:16px 0 0;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.62);max-width:46ch;min-height:3em}
+.pp-histw{margin:0;min-width:0}
+.pp-hs circle{transition:fill .24s ease}
+.pp-hs .ov{font:500 12px var(--sans);fill:var(--cy)}
+.pp-histw .pp-dkn{margin-top:10px}
+.pp-drw{margin:0;padding-top:36px}
+.pp-drw .pp-dkh{margin-bottom:16px}
+.pp-drd{display:grid;grid-template-columns:repeat(100,minmax(0,1fr));gap:4px;max-width:none}
+.pp-drd i{aspect-ratio:1;border-radius:50%}
+.pp-dls{position:relative;height:58px;margin-top:12px}
+.pp-dlb{position:absolute;top:0;display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:rgba(255,255,255,.72);white-space:nowrap}
+.pp-dlb.ar{align-items:flex-end;text-align:right}
+.pp-dlb.r2{top:0}
+.pp-dlb b{font:500 22px/1.1 var(--serif);color:#fff}
+.pp-dlb.op b{color:var(--cy)}.pp-dlb.re b{color:#9fb0ff}
+.pp-dls.off .pp-dlb.op{color:rgba(255,255,255,.45)}
+.pp-dls.off .pp-dlb.op b{color:rgba(150,232,255,.45);text-decoration:line-through;text-decoration-thickness:1px}
+.pp-rf{margin-top:22px}
+
+/* offer: the call to action is one line */
+.pp-cta{padding:22px 28px}
+.pp-cta .h3{margin:0}
+.pp-share .h3{margin:0}
+
+/* tables scroll inside themselves on every width */
+.pp-ts{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+@media (max-width:1080px){
+  .pp-ans{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:22px}
+  .pp-a:nth-child(3){border-left:0}
+  .pp-top .pp-pres > span{display:none}
+}
+@media (max-width:980px){
+  .pp-top{flex-wrap:wrap;padding:8px 12px}
+  .pp-top .pp-pres{order:3;flex:1 0 100%;margin:0;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+  .pp-top .pp-pres::-webkit-scrollbar{display:none}
+  .pp-top .pp-copy{margin-left:auto}
+  .pp-pre{flex:none}
+  .pp-rk{grid-template-columns:minmax(0,1fr);gap:36px}
+}
+@media (max-width:860px){
+  .pp-body{grid-template-columns:minmax(0,1fr);grid-template-areas:"in" "ans" "ctx"}
+  .pp-in{border-right:0;border-bottom:0}
+  .pp-ans{border-radius:0;border-bottom:1px solid var(--line);background:#fbfcfe}
+  .pp-whyb{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:600px){
+  .pp-head .h1{font-size:44px}
+  .pp-head .lede{font-size:16.5px}
+  .pp-top .pp-pres > span{display:none}
+  .pp-pre{height:44px}
+  .pp-in{padding:16px 14px}
+  .pp-row3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .pp-row3 .pp-f:first-child{grid-column:1 / -1}
+  .pp-ans{padding:18px 0}
+  .pp-a{padding:0 14px}
+  .pp-a:nth-child(odd){border-left:0}
+  .pp-av.big-num,.pp-a[data-k="l"] .pp-av.big-num{font-size:32px;margin:8px 0}
+  .pp-ac.cap{font-size:12.5px}
+  .pp-ctx{padding:18px 14px 14px}
+  .page[data-page="price.html"] .lead-1{font-size:17px}
+  .pp-rv{font-size:84px}
+  .pp-rsw{display:grid;grid-template-columns:minmax(0,1fr);border-radius:18px;width:100%}
+  .pp-rb{border-radius:14px;justify-content:space-between;padding:0 14px}
+  .pp-drd{grid-template-columns:repeat(25,minmax(0,1fr));gap:5px;max-width:none}
+  .pp-dls{height:auto;display:flex;flex-direction:column;gap:10px}
+  .pp-dlb{position:static;flex-direction:row;align-items:baseline;gap:10px}
+  .pp-dlb.ar{align-items:baseline;text-align:left}
+  .pp-t{min-width:540px}
+  .pp-t td{white-space:nowrap}
+  .pp-t .wr{white-space:normal;min-width:200px}
+  .pp-t .lc{display:table-cell}
+  .pp-cta{padding:20px 16px}
+}
+@media (prefers-reduced-motion:reduce){.pp-hs circle,.pp-rv{transition:none}}
+
+/* round 1, pass 2: above the fold at 1440x900, dark intro, driver labels */
+.pp-hero{padding-top:clamp(24px,2.4vw,36px)}
+.pp-head{margin-bottom:22px}
+.pp-head .h1{font-size:clamp(44px,4.2vw,60px)}
+.pp-head .lede{margin-top:12px}
+.pp-in{padding:16px 22px 12px;gap:12px}
+.pp-seg button{min-height:34px}
+.pp-more{border-top:0;padding-top:0;margin-top:-2px}
+.pp-more summary{min-height:36px}
+.pp-ans{padding:18px 0 20px}
+.pp-av.big-num{margin:8px 0}
+.pp-risk .lead-1{color:rgba(255,255,255,.74)}
+.pp-dlb{position:absolute;top:0}
+.pp-dlg{position:absolute;right:0;top:0;display:flex;gap:28px}
+.pp-dlg .pp-dlb{position:static;align-items:flex-end;text-align:right}
+.pp-dls.two{height:112px}
+.pp-dlg.r2{top:56px}
+.pp-dlb.cu b{color:#fff}
+.pp-rf{flex-wrap:wrap;row-gap:6px}
+@media (max-width:980px){.pp-top .pp-pres{flex-wrap:wrap;overflow:visible}}
+@media (max-width:600px){
+  .pp-dls,.pp-dls.two{height:auto}
+  .pp-dlg,.pp-dlg.r2{position:static;flex-direction:column;gap:10px}
+  .pp-dlg .pp-dlb{flex-direction:row;align-items:baseline;text-align:left}
+  .pp-more summary{min-height:44px}
+}
+.pp-ts{position:relative}
+
+.pp-a:first-child{padding-left:26px}
+.page[data-page="price.html"] .pp-risk .lead-1{color:rgba(255,255,255,.74)}
+.pp-rk{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
+@media (max-width:600px){.pp-a:first-child,.pp-a:nth-child(odd){padding-left:14px}}
+@media (max-width:600px){.pp-seg button{min-height:44px}}
+.pp-head .lede{max-width:64ch}
+@media (min-width:1081px){.pp-ans{grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1.35fr) minmax(0,1fr)}}
+.pp-lt{font-size:.62em;position:relative;top:-.12em;margin-right:.04em}
+@media (max-width:600px){
+  .pp-a{padding:0 12px}
+  .pp-a:first-child,.pp-a:nth-child(odd){padding-left:12px}
+  .pp-a[data-k="l"] .pp-av{letter-spacing:-.035em}
+  .pp-a[data-k="l"] .pp-av i{margin:0 .05em}
+}
+@media (max-width:600px){.pp-a[data-k="l"] .pp-av.big-num{font-size:clamp(24px,7.4vw,32px)}}
+@media (max-width:980px){.pp-rk{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){
+  .pp-dls > .pp-dlb,.pp-dlg .pp-dlb{position:static}
+  .pp-rf{display:block;line-height:1.6}
+}
+.pp-whyb{display:block;columns:2;column-gap:56px}
+.pp-whyb p{break-inside:avoid}
+@media (max-width:860px){.pp-whyb{columns:1}}
+
+/* round 1 fixer: offer sheets share one height */
+.pp-og{align-items:stretch}
+.pp-og .pp-sheet{display:flex;flex-direction:column}
+.pp-og .pp-sheet > :last-child{margin-top:auto}
+
+/* round 1 fixer: phone answer strip keeps 32px figures; the wider left column carries the paired loss figure,
+   and each figure shrinks only when a long value would not fit its own cell */
+@media (max-width:600px){
+  .pp-ans{grid-template-columns:minmax(0,1.14fr) minmax(0,.86fr)}
+  .pp-a{container-type:inline-size}
+  .pp-a .pp-av.big-num{font-size:min(32px,25cqi)}
+  .pp-a[data-k="l"] .pp-av.big-num{font-size:min(32px,18.5cqi)}
+}
+/* phone 2x2: the second row's labels share one height, so the two figures sit on one line */
+@media (max-width:600px){.pp-a:nth-child(n+3) .pp-al{min-height:42px;align-content:flex-start}}
+
+/* ============ design loop round 2 (ROUND-2-PLAN section 11) ============ */
+/* T4 hero spacing */
+.pp-hero{padding-top:80px}
+@media (max-width:600px){.pp-hero{padding-top:48px}}
+/* T1.3 the used-year note under the price fields */
+.pp-uc{display:block;margin-top:-4px}
+.pp-uc[hidden]{display:none}
+/* T5 tables: robot column sticky, price second, marketplace names whole, a fade on the scrolling edge */
+.pp-t .pp-trb{position:sticky;left:0;z-index:1;background:#fff}
+.pp-t .pp-tmp{white-space:nowrap}
+.pp-t .pp-tln{width:1%}
+.pp-om{display:block;margin-top:3px;font-size:12px;line-height:1.3;color:var(--muted);font-weight:400}
+.pp-ts.fade{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}
+.pp-ts.moved .pp-t .pp-trb{box-shadow:1px 0 0 var(--line)}
+@media (max-width:600px){
+  .pp-t .pp-trb{white-space:normal;width:132px;min-width:118px;max-width:140px;padding-right:10px}
+  .pp-t .wr{min-width:0}
+  .pp-t{min-width:0}
+  .pp-t .lc{display:none}
+}
+.pp-t .nw{white-space:nowrap}
+.pp-t td.pp-tln a{padding:0}
+.pp-t th:last-child,.pp-t td:last-child{padding-right:0}
+.pp-msec{padding-top:56px;padding-bottom:64px}
+@media (max-width:600px){.pp-t td.pp-tln a{padding:0 4px}}
+
+/* round 2 fixer: chart labels clear the dot columns, phone table rows sit level, driver figures line up, sheet footer breathes */
+.pp-covs .bl{stroke-width:6px;stroke-linejoin:round}
+.pp-sheet .sh-f{margin-top:14px}
+.pp-money.pp-flash{animation:ppflash 1.4s ease-out}
+@keyframes ppflash{0%{box-shadow:0 0 0 3px rgba(3,148,224,.35)}100%{box-shadow:0 0 0 3px rgba(3,148,224,0)}}
+@media (max-width:600px){
+  #pp-near td{vertical-align:middle}
+  #pp-auc td.pp-tln a{align-items:flex-start;padding-top:0;min-height:44px}
+  .pp-dls .pp-dlb b{min-width:52px}
+}
+.pp-nwr{white-space:nowrap}
+
+/* round 2 tool fixer: phone tables fit the card, so no column ends at the scroll edge. Marketplace and venue names
+   wrap only between words, auction dates may break before the year, and the robot column gives up its spare width */
+@media (max-width:600px){
+  .pp-t td,.pp-t th{padding-left:4px;padding-right:4px}
+  .pp-t .pp-trb{width:auto;min-width:92px;max-width:116px;padding-right:8px}
+  .pp-t td.pp-tmp{white-space:normal;overflow-wrap:normal;word-break:keep-all;hyphens:none}
+  .pp-t td.dt{white-space:normal;min-width:44px}
+  .pp-t td.pp-tln a{padding:0 0 0 4px}
+}
+/* the direct labels sit between two dot columns at 1440; at 11.5px with a 4px halo they clear both columns */
+.pp-covs .bl{font-size:11.5px;stroke-width:4px}
+.pp-covs .bl.cu{font-size:11px}
+
+/* ============ design loop round 3 (ROUND-3-PLAN section 11) ============ */
+/* T3 fold: 56px above the heading, the vision lede on one line at 1440, tighter input rows */
+.pp-hero{padding-top:56px}
+@media (max-width:600px){.pp-hero{padding-top:40px}}
+.pp-head .lede{max-width:none}
+@media (min-width:1081px){.pp-head .lede{white-space:nowrap}}
+.pp-in{gap:4px}
+.pp-head{margin-bottom:18px}
+.pp-in .pp-hint,.pp-in .pp-uc{margin-top:0}
+/* T1.4 the arm alone is a reference line: 1px dashed gray, never the cyan accent */
+.pp-covs .arm{stroke:#9aa3b2;stroke-width:1;stroke-dasharray:4 4;stroke-linecap:butt}
+.pp-covs .bl.al{fill:#7a8396;font-weight:500}
+/* T2 the line under an older robot's backup figure */
+.pp-elo{display:block;margin-top:4px;font-size:12px;line-height:1.35;color:var(--muted)}
+
+/* round 3 fix: the arm alone is a gray reference everywhere (D-8); the chart names it in its key */
+.pp-covh{flex-wrap:wrap;row-gap:6px}
+.pp-covk{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font:500 12.5px var(--sans);color:#7a8396}
+.pp-covk[hidden]{display:none}
+.pp-covk i{display:block;width:24px;border-top:1px dashed #9aa3b2}
+@media (max-width:600px){.pp-covk{margin-left:0;flex-basis:100%}}
+#pp-strip.armref,#pp-sc.armref{--cyl:#7a8396}
