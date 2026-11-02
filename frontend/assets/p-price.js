@@ -39,14 +39,23 @@ const fmod = {}; D.families.forEach(f => (f.models || []).forEach(m => { fmod[m.
   const f = famOf[m.family]; if (!f) return;
   const mm = m.kind === 'family' ? null : fmod[m.id] || fmod[m.parent] || null;
   ENT.push({ id: m.id, label: m.label.replace(/ \(any model\)$/, ''), sub: m.kind === 'family' ? 'any model' : '', kind: m.kind, fam: f, model: mm,
-    n: m.n, nfit: m.kind === 'family' ? f.n_fit : (mm && mm.fe != null ? mm.n_fit : f.n_fit), use: (f.use || ['PALLET'])[0] });
+    n: m.n, used: m.n_fit || 0, nfit: m.kind === 'family' ? f.n_fit : (mm && mm.fe != null ? mm.n_fit : f.n_fit), use: (f.use || ['PALLET'])[0] });
 });
-ENT.push({ id: 'any-arm', label: 'Industrial arm, make not listed', sub: '', kind: 'all', fam: D.all, model: null, n: D.all.n, nfit: D.all.n_fit, use: 'PALLET', pooledAll: true });
+ENT.push({ id: 'any-arm', label: 'Industrial arm, make not listed', sub: '', kind: 'all', fam: D.all, model: null, n: D.all.n, used: D.all.n_fit, nfit: D.all.n_fit, use: 'PALLET', pooledAll: true });
 const GEN = [{ id: 'warehouse-mobile-robot', label: 'Warehouse mobile robot', gen: 'AMR', use: 'AMR', n: 0 }, { id: 'cleaning-robot', label: 'Cleaning robot', gen: 'CLEAN', use: 'CLEAN', n: 0 }];
 ENT.push(...GEN);
 const byId = Object.fromEntries(ENT.map(x => [x.id, x]));
 const DEF = byId['kuka-kr-210'] || ENT.find(x => x.fam) || ENT[0];
-const countTxt = x => x.gen ? 'model curve only' : x.n + (x.n === 1 ? ' listing' : ' listings');
+// every count names its subset (round 3 critique item 2): all listings found for this robot, and those used for the estimate
+const plural = (n, one, many) => `${n} ${n === 1 ? one : (many || one + 's')}`;
+const usedTxt = n => n ? `${n} in the estimate` : 'none in the estimate';
+const countTxt = x => x.gen ? 'No listings, model curve only' : `${plural(x.n, 'listing')} found, ${usedTxt(x.used)}`;
+const countHtml = x => x.gen ? '<span>No listings</span><span>model curve only</span>' : `<span>${plural(x.n, 'listing')} found</span><span>${usedTxt(x.used)}</span>`;
+// ages read "new", "1 year old", "2 years old"
+const ageTxt = a => a === 0 ? 'new' : plural(a, 'year') + ' old';
+// the subset a family's chart shows, and the subset its estimate uses
+const famTxt = f => f === D.all ? 'arm, collaborative arm and palletizer' : esc(f.label);
+const FIT = 'used for this estimate', PY_ = 'with a price and a build year', RULES = 'that pass the sample rules';
 
 // ------------------------------------------------------------------ state
 // opens on the 'New palletizing cell' example. Price paid and rent change only when typed or when a preset is picked
@@ -109,7 +118,7 @@ const fmtIn = (el, v) => { el.value = Math.round(v).toLocaleString('en-US'); };
 const setSeg = (name, v) => document.querySelectorAll(`.pp-seg[data-name="${name}"] [role=radio]`).forEach(b => { const on = b.dataset.v === String(v); b.setAttribute('aria-checked', on); b.tabIndex = on ? 0 : -1; });
 function syncInputs() {
   const x = ent();
-  q.value = x.label; $('pp-cbn').textContent = countTxt(x);
+  q.value = x.label; $('pp-cbn').innerHTML = countHtml(x);
   ySel.value = String(clamp(S.y, 1995, 2026)); fmtIn(pIn, S.p); fmtIn(mIn, S.m); fmtIn(fIn, S.f);
   setSeg('u', S.u); setSeg('t', S.t); setSeg('n', S.n); setSeg('view', S.view);
   $('pp-log').checked = S.log;
@@ -242,8 +251,12 @@ const tw = new WeakMap();
 // figures that read "<0.1%" set the less-than sign smaller, so it sits as a qualifier beside the number
 const LT = '<0.1%', ltHtml = '<span class="pp-lt">&lt;</span>0.1%';
 const put = (el, t) => { if (t === LT) el.innerHTML = ltHtml; else el.textContent = t; };
+const ANS = document.querySelector('.pp-ans'), INS = document.querySelector('.pp-ins');
+const setBusy = on => [ANS, INS].forEach(n => { if (!n) return; n.setAttribute('aria-busy', on ? 'true' : 'false'); n.classList.toggle('wait', on); });
 function tween(el, to, fmt, dur = 650) {
   const from = tw.has(el) ? tw.get(el) : null; tw.set(el, to);
+  // the answer strip never counts: an in-between figure reads as the previous result (round 3 critique item 10)
+  if (el.closest('.pp-ans, .pp-ins')) { put(el, fmt(to)); return; }
   // the answer strip counts only when a figure moves by more than 1%; smaller moves land in place (round 2 plan T6)
   const small = from != null && el.closest('.pp-ans') && Math.abs(to - from) <= Math.abs(from) * .01;
   if (reduce || small || from == null || !isFinite(from) || from === to) { put(el, fmt(to)); return; }
@@ -259,13 +272,17 @@ function drawData() {
   // one figure for every age: price paid run down the risk engine's curve, then the listings' rate of loss (T1.2).
   // A cell is valued as a cell (D-8): the arm-alone listing value never stands in for it here.
   tween($('a-v'), es.value, m100);
-  if (es.gen) $('ac-v').textContent = 'No listings yet, model curve only';
-  else $('ac-v').textContent = es.isNew ? `${S.u === 'PALLET' ? 'Cell' : 'Robot'} value from the price paid, on the risk engine's curve` : "From the price paid, then the listings' rate of loss";
-  if (es.gen) { tween($('a-d'), es.annual * 100, v => v.toFixed(1) + '%'); $('ac-d').textContent = 'From the model curve; no listings yet'; }
-  else { tween($('a-d'), es.annual * 100, v => v.toFixed(1) + '%'); $('ac-d').textContent = `95% range ${pct(es.alo)} to ${pct(es.ahi)}, all arms`; }
-  const f = x.fam, srcs = f ? new Set(f.points.map(p => p.src)).size : 0;
-  $('pp-dl').innerHTML = x.fam === D.all ? `Priced against <b>${f.n_fit} arm, collaborative arm and palletizer listings</b>. <a href="#resale">See every listing</a>` : x.gen ? `<b>No listings yet for this robot type.</b> Resale follows the risk engine's model curve only, so treat it as a rough guide. <a class="pp-mk" href="#method">Model</a>`
-    : `Priced against <b>${f.n_fit} ${esc(f.label)} listings</b> from ${srcs} marketplace${srcs === 1 ? '' : 's'}${es.thin ? `. <b class="pp-flag">Thin data</b> the estimate rests on ${es.n} listing${es.n === 1 ? '' : 's'} in the fit, so the range is wider` : ''}. <a href="#resale">See every listing</a>`;
+  const inst = `Installed ${S.u === 'PALLET' ? 'cell' : 'robot'}, risk engine's curve`;
+  if (es.gen) $('ac-v').innerHTML = `<b>Risk engine's curve.</b> No listings yet`;
+  else $('ac-v').innerHTML = es.isNew ? `<b>${inst}.</b> From the price paid` : `<b>${inst}</b> for 2 years, then the listings' rate`;
+  tween($('a-d'), es.annual * 100, v => v.toFixed(1) + '%');
+  if (es.gen) $('ac-d').innerHTML = `<b>Risk engine's curve.</b> No listings yet`;
+  else $('ac-d').innerHTML = `<b>From listings, arm alone.</b> 95% range ${pct(es.alo)} to ${pct(es.ahi)}`;
+  const f = x.fam, srcs = f ? new Set(f.points.filter(p => p.fit !== 0).map(p => p.src)).size : 0;
+  // thin data names whose listings it rests on: the exact model's own adjustment, or the family's level (already counted above)
+  const thinTxt = () => x.model && es.ownFe ? `the adjustment for this exact model rests on ${plural(es.n, esc(x.model.label) + ' listing')} ${RULES}, so the range is wider` : 'with so few listings, the range is wider';
+  $('pp-dl').innerHTML = x.gen ? `<b>No listings yet for this robot type.</b> Resale follows the risk engine's model curve only, so treat it as a rough guide. <a class="pp-mk" href="#method">Model</a>`
+    : `Priced from <b>${f.n_fit} of the ${f.n.toLocaleString('en-US')} ${famTxt(f)} listings found</b>, the ones ${PY_} that pass the sample rules, from ${plural(srcs, 'marketplace')}${es.thin ? `. <b class="pp-flag">Thin data</b> ${thinTxt()}` : ''}. <a href="#resale">See every listing</a>`;
   drawStrip(); drawResale(); drawCompare();
 }
 // where your robot sits among real listings of a similar age, on a ratio scale
@@ -275,7 +292,7 @@ function drawStrip() {
   let span = 3, pts = [];
   for (; span <= 9; span += 3) { pts = x.fam.points.filter(p => p.fit !== 0 && Math.abs(p.age - es.age) <= span); if (pts.length >= 8) break; }
   span = Math.min(span, 9);
-  let src = x.fam.label; if (pts.length < 5) { pts = D.all.points.filter(p => p.fit !== 0 && Math.abs(p.age - es.age) <= 3); src = 'arm'; span = 3; }
+  let srcF = x.fam; if (pts.length < 5) { pts = D.all.points.filter(p => p.fit !== 0 && Math.abs(p.age - es.age) <= 3); srcF = D.all; span = 3; }
   // the marker is the arm alone while the robot is 2 years old or newer (the strip compares arms), its value today after that
   const you = es.isNew ? es.sale : es.value;
   const W = Math.max(260, host.clientWidth), H = 82, pad = 10, cy = 39, vals = pts.map(p => p.usd).concat([es.floor, es.lo, es.hi, you]);
@@ -293,7 +310,7 @@ function drawStrip() {
   });
   o.push(`<circle class="you" cx="${X(you).toFixed(1)}" cy="${cy}" r="7"/></svg>`);
   host.classList.toggle('armref', !!es.isNew);
-  host.innerHTML = `<div class="pp-sth"><b>${es.isNew ? 'Where the arm alone sits among real used listings' : 'Where it sits among real listings'}</b><span>${pts.length} ${esc(src)} listings built within ${span} years of ${S.y}, by asking price</span></div>` + o.join('');
+  host.innerHTML = `<div class="pp-sth"><b>${es.isNew ? 'Where the arm alone sits among real used listings' : 'Where it sits among real listings'}</b><span>${pts.length} of the ${srcF.n_fit} ${famTxt(srcF)} listings ${srcF === x.fam ? FIT : 'in the all-arms estimate'}, built within ${span} years of ${S.y}, by asking price</span></div>` + o.join('');
   // the two lower labels keep at least 8px between them (T6): measured, pushed apart, and stacked when they cannot fit
   const sv = host.querySelector('svg'), fl = sv.querySelector('text.ml.fl'), as = sv.querySelector('text.ml.as');
   if (fl && as && fl.getBBox) {
@@ -410,14 +427,14 @@ function drawResale() {
   if (!pts.length) host.insertAdjacentHTML('beforeend', `<p class="pp-empty"><b>No listings yet for this robot type.</b> <button type="button" class="pp-lk" id="pp-goall">Compare with all arms</button></p>`);
   const ga = $('pp-goall'); if (ga) ga.addEventListener('click', () => { S.view = 'all'; setSeg('view', 'all'); drawResale(); });
   $('pp-cut').textContent = nCut ? `${nCut} listing${nCut === 1 ? '' : 's'} above ${kfmt(yMax)} ${nCut === 1 ? 'sits' : 'sit'} on the top line; switch on log scale to see ${nCut === 1 ? 'it' : 'them'}.` : '';
-  $('pp-scsum').textContent = es.gen ? 'No listings for this robot type.' : `${pts.length} listings shown. Your robot, ${es.age} years old, is valued at ${m100(es.value)} today; the arm alone would sell for about ${m100(es.sale)}.`;
+  $('pp-scsum').textContent = es.gen ? 'No listings for this robot type.' : `${pts.length} ${allV ? famTxt(D.all) : famTxt(x.fam)} listings ${PY_} shown. ${es.age === 0 ? 'Your new robot' : `Your robot, ${ageTxt(es.age)},`} is valued at ${m100(es.value)} today; the arm alone would sell for about ${m100(es.sale)}.`;
   // ladder, tables, notes
   drawLadder(); drawTables(pts, aucs, allV);
   const srcs = new Set(pts.map(p => p.src)).size;
   $('pp-rnote').innerHTML = x.gen ? 'No listings for this robot type yet, so the value follows the model curve only. Switch to all arms to compare.'
-    : `${pts.length} asking prices for ${allV ? 'arms, collaborative arms and palletizers' : esc(x.fam.label) + ' robots'} from ${srcs} marketplace${srcs === 1 ? '' : 's'}, with auction results marking the floor.`;
+    : `${pts.length} ${famTxt(allV ? D.all : x.fam)} listings ${PY_}, from ${plural(srcs, 'marketplace')}, with auction results marking the floor. ${pts.filter(p => p.fit !== 0).length} of them pass the sample rules and are ${FIT}.`;
   const acc = D.accuracy, AR = D.auction_ratio.by_age;
-  $('pp-why-r').innerHTML = `<p><b>The dots.</b> Each dot is a public listing's asking price at the robot's age. Hollow dots are listings the sample rules left out of the fit; point at one to see why. ${pts.filter(p => p.fit !== 0).length} of the ${pts.length} shown are in the fit.</p>
+  $('pp-why-r').innerHTML = `<p><b>The dots.</b> Each dot is a public listing's asking price at the robot's age. Hollow dots are listings the sample rules left out of the fit; point at one to see why. ${pts.filter(p => p.fit !== 0).length} of the ${pts.length} shown are ${FIT}.</p>
 <p><b>The squares.</b> Auction results, the only real sale prices in the data, per robot. Hollow squares are lots whose age was estimated from the lot description.</p>
 <p><b>The band.</b> The model's asking price for this ${allV ? 'pool' : 'family'} by age; the shaded band holds the 10th to 90th percentile of asking prices.</p>
 <p><b>Expected sale.</b> Halfway between typical asking and the auction floor, measured on a ratio scale. Robots under 10 years old sold at auction for ${pct(AR.under_10.median, 0)} of the predicted asking price (${AR.under_10.n} lots), older ones for ${pct(AR['10_plus'].median, 0)} (${AR['10_plus'].n} lots). Auctions ran 2018 to 2026, so older lots read low.</p>
@@ -426,7 +443,7 @@ function drawResale() {
 // tooltip: hover on desktop, tap on phones, with a link to the listing
 const tip = $('pp-tip');
 function tipHtml(t) {
-  if (t.kind === 'a') { const a = t.p; return `<b>${esc(a.lot)}</b><span>Sold at auction for <strong>${usd(a.unit_usd)}</strong> a robot</span><span>${esc(a.venue)}, ${dateH(a)}${a.age != null ? ` · ${a.age} years old${a.age_imputed ? ', age estimated' : ''}` : ''}</span>${a.basis ? `<em>${esc(a.basis)}</em>` : ''}${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">Open the auction lot &rarr;</a>` : ''}`; }
+  if (t.kind === 'a') { const a = t.p; return `<b>${esc(a.lot)}</b><span>Sold at auction for <strong>${usd(a.unit_usd)}</strong> a robot</span><span>${esc(a.venue)}, ${dateH(a)}${a.age != null ? ` · ${ageTxt(a.age)}${a.age_imputed ? ', age estimated' : ''}` : ''}</span>${a.basis ? `<em>${esc(a.basis)}</em>` : ''}${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">Open the auction lot &rarr;</a>` : ''}`; }
   const p = t.p, yr = p.year || NOW - p.age;
   return `<b>${esc(p.title || p.model)}</b><span>Listed for <strong>${usd(p.usd)}</strong>, asking</span><span>Built ${yr} · ${srcName(p.src)}${p.loc ? ' · ' + esc(p.loc) : ''}${p.refurb ? ' · refurbished' : ''}</span>${p.why ? `<em>Not in the fit: ${esc(p.why)}</em>` : ''}${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">Open the listing &rarr;</a>` : ''}`;
 }
@@ -465,8 +482,8 @@ function drawLadder() {
 <div class="pp-rung"><span>Typical asking</span><b class="num">${m100(es.ask)}</b>${dotRow(es.ask, mx, 24, 'l')}<p>Most listings ask between ${m100(es.lo)} and ${m100(es.hi)}.</p></div>
 <div class="pp-rung hi"><span>Expected sale</span><b class="num">${m100(es.sale)}</b>${dotRow(es.sale, mx, 24, 'c')}<p>Ferra's estimate of a negotiated sale.</p></div>
 <div class="pp-rung"><span>Auction floor</span><b class="num">${m100(es.floor)}</b>${dotRow(es.floor, mx, 24, 'a')}<p>Robots ${es.young ? 'under 10 years old' : '10 or older'} sold at auction for ${pct(es.ar.median, 0)} of predicted asking, across ${es.ar.n} lots.</p></div>
-${x.model && !es.ownFe ? `<p class="pp-thin"><b>Priced at the family level.</b> ${x.model.n_fit || 0} listing${(x.model.n_fit || 0) === 1 ? '' : 's'} of this exact model ${(x.model.n_fit || 0) === 1 ? 'is' : 'are'} in the fit, too few for an adjustment of its own, so it takes the ${esc(x.fam.label)} level and a wider range.</p>`
-  : es.thin ? `<p class="pp-thin"><b>Thin data.</b> This estimate rests on ${es.n} listing${es.n === 1 ? '' : 's'} in the fit, so the range is wider.</p>` : ''}
+${x.model && !es.ownFe ? `<p class="pp-thin"><b>Priced at the family level.</b> ${plural(x.model.n_fit || 0, esc(x.model.label) + ' listing')} ${(x.model.n_fit || 0) === 1 ? 'is' : 'are'} ${FIT}, too few for an adjustment of its own, so it takes the ${esc(x.fam.label)} level and a wider range.</p>`
+  : es.thin ? `<p class="pp-thin"><b>Thin data.</b> ${x.model && es.ownFe ? `The adjustment for this exact model rests on ${plural(es.n, esc(x.model.label) + ' listing')}` : `This estimate rests on ${plural(es.n, famTxt(x.fam) + ' listing')}`} ${RULES}, so the range is wider.</p>` : ''}
 
 ${x.pooledAll ? `<p class="pp-thin"><b>Priced across all arms.</b> ${S.unknown ? `The robot in the link (${esc(S.unknown)}) is not in the data, so it` : 'With no make or model, it'} is priced at the level of every arm, collaborative arm and palletizer listing, with the widest range.</p>` : ''}
 ${es.capped ? `<p class="pp-thin"><b>Over 30 years old.</b> Values for robots over 30 years old are capped at 30.</p>` : ''}
@@ -480,7 +497,7 @@ function drawTables(pts, aucs, allV) {
   const row = p => `<tr><td class="pp-trb">${nw(p.model)}</td><td class="r num">${usd(p.usd)}</td><td class="r num">${p.year || NOW - p.age}</td><td class="pp-tmp">${srcName(p.src)}</td><td class="lc">${esc(p.loc || '')}</td><td class="pp-tln">${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">View</a>` : ''}</td></tr>`;
   const head = '<thead><tr><th class="pp-trb">Robot</th><th class="r">Listed for</th><th class="r">Built</th><th class="pp-tmp">Marketplace</th><th class="lc">Location</th><th class="pp-tln"><span class="sr">Link</span></th></tr></thead>';
   $('pp-near').innerHTML = near.length ? head + '<tbody>' + near.map(row).join('') + '</tbody>' : '<tbody><tr><td class="pp-tnone">No listings of this robot type yet.</td></tr></tbody>';
-  $('pp-nn').textContent = near.length ? `The ${near.length} listings closest to your robot by model and age. Asking prices.` : 'No listings yet, model curve only.';
+  $('pp-nn').innerHTML = near.length ? `The ${near.length} ${famTxt(pool === pts ? (allV ? D.all : x.fam) : D.all)} listings ${PY_} closest to your robot by model and age. Asking prices.` : 'No listings yet, model curve only.';
   // auction results: this family first, then the closest by age from other makers, marked as such (T2)
   const famId = x.gen ? null : x.fam.id, maker = x.fam && x.fam.maker;
   const fk = a => famId && a.family === famId ? 0 : maker && a.family && famOf[a.family] && famOf[a.family].maker === maker ? 1 : 2;
@@ -502,7 +519,7 @@ function drawTables(pts, aucs, allV) {
   const all = pts.slice().sort((a, b) => a.age - b.age || a.usd - b.usd);
   requestAnimationFrame(fades);
   $('pp-allt').innerHTML = all.length ? head + '<tbody>' + all.map(row).join('') + '</tbody>' : '<tbody><tr><td class="pp-tnone">No listings of this robot type yet.</td></tr></tbody>';
-  document.querySelector('.pp-all summary').textContent = all.length ? `All ${all.length} listings behind the chart, as a table` : 'No listings behind the chart yet';
+  document.querySelector('.pp-all summary').textContent = all.length ? `All ${all.length} ${famTxt(allV ? D.all : x.fam)} listings ${PY_}, as a table` : 'No listings behind the chart yet';
 }
 
 // a 24px fade on a table's right edge while more columns sit off to the right; a hairline on the sticky column once scrolled
@@ -521,12 +538,12 @@ function drawCompare() {
   mine.concat(own.filter(f => !mine.includes(f))).slice(0, 3).forEach(f => rows.push({ lab: f.label + ', own fit', n: f.dep.own.n, v: f.dep.own.annual, lo: f.dep.own.lo, hi: f.dep.own.hi, mine: f === x.fam }));
   const lo = Math.min(-.02, ...rows.map(r => r.lo)), hi = Math.max(.12, ...rows.map(r => r.hi)), mn = Math.max(lo, -.05), mx = Math.min(hi, .16);
   const P = v => ((clamp(v, mn, mx) - mn) / (mx - mn) * 100).toFixed(1) + '%';
-  $('pp-cmp').innerHTML = rows.map(r => `<div class="pp-cr${r.me ? ' me' : ''}${r.mine ? ' mine' : ''}"><span class="pp-cl">${esc(r.lab)}<small>${r.n} listings${r.lo < mn || r.hi > mx ? ', range runs off the scale' : ''}</small></span>
+  $('pp-cmp').innerHTML = rows.map(r => `<div class="pp-cr${r.me ? ' me' : ''}${r.mine ? ' mine' : ''}"><span class="pp-cl">${esc(r.lab)}<small>${r.n} listings behind this rate${r.lo < mn || r.hi > mx ? ', range runs off the scale' : ''}</small></span>
 <span class="pp-cb2"><i class="pp-ci" style="left:${P(r.lo)};width:calc(${P(r.hi)} - ${P(r.lo)})"></i><i class="pp-cd" style="left:${P(r.v)}"></i></span><b class="num">${pct(r.v)}</b></div>`).join('') +
     `<div class="pp-cax"><span></span><span class="pp-caxs">${[0, .05, .1, .15].filter(v => v >= mn && v <= mx).map(v => `<em style="left:${P(v)}">${Math.round(v * 100)}%</em>`).join('')}</span><span></span></div>`;
   $('pp-vnote').textContent = x.gen ? `With no listings for this robot type, its value follows the risk engine's model curve: about ${pct(es.annual)} a year at this age.`
-    : `Arms in ${A.n} listings lose about ${pct(A.annual)} of their asking price a year, and the risk engine runs your robot's value forward from there.`;
-  VWHY = x.gen ? '' : `<p><b>One rate for all arms.</b> Across ${A.n} listings, arms lose about ${pct(A.annual)} of their asking price a year${young ? `, and about ${pct(young.annual)} while they are 15 years old or younger` : ''}. Family rates could not be told apart and predicted worse, so one rate is used. The panel on the right shows each rate with its 95% range.</p>`;
+    : `Across the ${A.n} ${famTxt(D.all)} listings ${RULES}, arms lose about ${pct(A.annual)} of their asking price a year, and the risk engine runs your robot's value forward from there.`;
+  VWHY = x.gen ? '' : `<p><b>One rate for all arms.</b> Across the ${A.n} listings ${RULES}, arms lose about ${pct(A.annual)} of their asking price a year${young ? `, and about ${pct(young.annual)} while they are 15 years old or younger` : ''}. Family rates could not be told apart and predicted worse, so one rate is used. The panel on the right shows each rate with its 95% range.</p>`;
 }
 
 // ------------------------------------------------------------------ engine results
@@ -536,6 +553,7 @@ const ADV = .70;            // reference advance: 70% of today's resale value
 function startEngine() {
   const my = ++gen, es = EST, t0 = performance.now();
   if (!E || !E.run) return engineFailed();
+  setBusy(true);
   engKeys.forEach(k => document.querySelector(`.pp-a[data-k="${k}"]`).classList.add('busy'));
   document.querySelectorAll('.pp-eng').forEach(n => n.classList.add('busy'));
   // the loan is sized on the robot's value today: price paid, run down the risk engine's curve for 2 years and the listings'
@@ -569,6 +587,7 @@ function startEngine() {
   }).catch(err => { if (my !== gen) return; console.error(err); engineFailed(); });
 }
 function engineFailed() {
+  setBusy(false);
   engKeys.forEach(k => document.querySelector(`.pp-a[data-k="${k}"]`).classList.remove('busy'));
   $('a-l').textContent = 'Unavailable'; $('ac-l').textContent = 'The risk engine did not run. Reload to try again.';
   $('a-o').textContent = 'Unavailable'; $('ac-o').textContent = '';
@@ -579,6 +598,7 @@ const elw = v => v < .0005 ? 'under 0.1%' : (v * 100).toFixed(1) + '%';
 const elTween = (el, v) => { if (v < .0005) { tw.set(el, null); el.innerHTML = ltHtml; } else tween(el, v * 100, x => x.toFixed(1) + '%'); };
 function showEngine(a, b, s0, s1) {
   R0 = a; R1 = b; const es = EST;
+  setBusy(false);
   engKeys.forEach(k => document.querySelector(`.pp-a[data-k="${k}"]`).classList.remove('busy'));
   document.querySelectorAll('.pp-eng').forEach(n => n.classList.remove('busy'));
   // offer without a backup partner: 70%, or less if coverage caps it (run c). With one: 70% from run a's backup scenario.
@@ -831,6 +851,7 @@ let timer = null;
 function update(onlyTotals) {
   history.replaceState(null, '', toHash());
   if (onlyTotals) { if (OFF) drawSheets(); return; }
+  setBusy(true);
   drawData(); drawMethod();
   clearTimeout(timer);
   engKeys.forEach(k => document.querySelector(`.pp-a[data-k="${k}"]`).classList.add('busy'));
@@ -842,7 +863,7 @@ document.addEventListener('click', ev => { const a = ev.target.closest('a[href="
 if (!fromHash()) document.querySelectorAll('.pp-pre').forEach(o => o.setAttribute('aria-pressed', o.dataset.p === 'pallet'));
 else release();
 syncInputs();
-drawData(); drawMethod(); startEngine();
+setBusy(true); drawData(); drawMethod(); startEngine();
 document.querySelectorAll('.pp-a').forEach(a => a.classList.add('ready'));
 };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

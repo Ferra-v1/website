@@ -54,6 +54,8 @@
   const form = document.getElementById('quote');
   document.addEventListener('submit', ev => {
     if (ev.target !== form) return;
+    // the range message belongs to the typing: clear it the moment the form is sent, so it never sits above the thank-you card
+    if (msg) { clearTimeout(mt); msg.classList.remove('on'); msg.textContent = ''; [n, p].forEach(x => x.removeAttribute('aria-invalid')); }
     [n, p].forEach(el => { el.value = String(val(el)); });
     setTimeout(() => [n, p].forEach(comma), 0);
   }, true);
@@ -62,6 +64,7 @@
   const done = form && form.querySelector('.ldone');
   if (done && pv) new MutationObserver(() => {
     if (done.hidden) return;
+    if (msg) msg.hidden = true;   // the fields are gone, so their message line goes too
     const li = pv.querySelectorAll('.fp-path li');
     if (li[0]) li[0].classList.add('on');
     if (li[1] && !li[1].querySelector('.f-next')) { li[1].classList.add('on'); li[1].insertAdjacentHTML('beforeend', '<small class="f-next">Next</small>'); }

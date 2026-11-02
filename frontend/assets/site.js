@@ -58,19 +58,21 @@
   const navs = [...document.querySelectorAll('.nav:not(.on-dark)')];
   if (navs.length) { let on = null; const chk = () => { const v = scrollY > 8; if (v !== on) { on = v; navs.forEach(nv => nv.classList.toggle('scrolled', v)); } }; addEventListener('scroll', chk, { passive: true }); chk(); }
   // ------------------------------------------------------------------ product: the cover chart, the priced fleet, the live preview
-  // keep(m): share of the new price a palletizing cell keeps at m months, the risk engine's curve (engine.js TYPES.PALLET tau 42, beta 1.2); mirrors core.keep
-  const keep = m => Math.exp(-Math.pow(Math.max(0, m) / 42, 1.2)), ADV = .7, TERM = 36;
+  // keep(m, rid): share of the new price a robot keeps at m months, the risk engine's curve exp(-(m/tau)^beta) for the nearest engine type
+  // (engine.js TYPES: arm and cobot PALLET 42/1.2, amr and pallet AMR 38/1.3, delivery SIDEWALK 34/1.3, cleaning CLEAN 40/1.2); mirrors core.KT and core.keep
+  const KT = { arm: [42, 1.2], cobot: [42, 1.2], amr: [38, 1.3], pallet: [38, 1.3], delivery: [34, 1.3], cleaning: [40, 1.2] };
+  const keep = (m, rid) => { const [tau, beta] = KT[rid] || KT.arm; return Math.exp(-Math.pow(Math.max(0, m) / tau, beta)); }, ADV = .7, TERM = 36;
   const money = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
   const feeFmt = v => Math.abs(v - 65625) < .5 ? '$65,625' : money(v);
   const nice = v => { const k = Math.pow(10, Math.floor(Math.log10(Math.max(v, 1)))); for (const m of [1, 1.2, 1.4, 1.6, 1.8, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10]) if (m * k >= v) return m * k; return 10 * k; };
   const NS = 'http://www.w3.org/2000/svg', mctx = document.createElement('canvas').getContext('2d');
   const tw = (t, px, serif, wt) => { mctx.font = serif ? `500 ${px}px Newsreader, Georgia, serif` : `${wt || 400} ${px}px Geist, system-ui, sans-serif`; return mctx.measureText(t).width; };
   // geometry of the cover chart: the same rules as core.cover_geo, with the browser's measured text widths
-  const geo = (V, W, H, size, top, L) => {
+  const geo = (V, W, H, size, top, L, rid) => {
     const full = size === 'full', pl = 6, pr = 8, pt = full ? 54 : 12, base = H - 28, r = full && W >= 480 ? 2.4 : 2.0, ymax = top || 1.08 * V;
     const X = m => pl + m * (W - pl - pr) / 72, Y = v => base - v / ymax * (base - pt);
     const val = [], loan = [];
-    for (let m = 0; m <= 72; m++) val.push([X(m), Y(V * keep(m))]);
+    for (let m = 0; m <= 72; m++) val.push([X(m), Y(V * keep(m, rid))]);
     for (let m = 0; m <= TERM; m++) loan.push([X(m), Y(ADV * V * (1 - m / TERM))]);
     const dots = val.concat(loan).map(([x, y]) => [x, y, r]), labs = [], out = [], pad = full ? 8 : 5;
     const clear = ([x0, y0, x1, y1], pd = pad, lim = [0, W]) => { if (x0 < lim[0] || x1 > lim[1] || x0 < 0 || x1 > W || y0 < 0 || y1 > base - 4) return false;
@@ -94,7 +96,7 @@
     let cb = null;
     for (const cs of [12, 11]) { const w = tw('Cushion', cs, 0, 600) + 2, h = Math.ceil(cs * 1.34);
       for (let x0 = X(1); x0 + w <= X(35); x0 += 1) { const mc = (x0 + w / 2 - pl) / per, m0 = Math.max(0, Math.floor((x0 - 14 - pl) / per)), m1 = Math.min(72, Math.ceil((x0 + w + 14 - pl) / per));
-        for (let y0 = Math.ceil(Y(V * keep(mc))); y0 + h <= Y(ADV * V * (1 - mc / TERM)); y0 += 1) { const bx = [x0, y0, x0 + w, y0 + h]; let c = 1e9;
+        for (let y0 = Math.ceil(Y(V * keep(mc, rid))); y0 + h <= Y(ADV * V * (1 - mc / TERM)); y0 += 1) { const bx = [x0, y0, x0 + w, y0 + h]; let c = 1e9;
           for (let m = m0; m <= m1 && c >= 8; m++) { c = Math.min(c, gapTo(bx, [val[m][0], val[m][1], r])); if (m <= TERM) c = Math.min(c, gapTo(bx, ends[m])); }
           if (c < 8 || !labs.every(b => bx[2] + 8 <= b[0] || b[2] + 8 <= bx[0] || bx[3] + 6 <= b[1] || b[3] + 6 <= bx[1])) continue;
           const sc = Math.min(c, 14) - .05 * Math.abs(mc - 18); if (!cb || sc > cb[0]) cb = [sc, bx, cs]; } }
@@ -105,12 +107,12 @@
   const el = (tag, at, par) => { const n = document.createElementNS(NS, tag); for (const k in at) n.setAttribute(k, at[k]); if (par) par.appendChild(n); return n; };
   // FerraApp.cover(svg, V, o): draw the cover chart into svg at its real pixel size. o.tween: move the dots to the new figure over 300ms in place
   const cover = (svg, V, o = {}) => {
-    const cfg = JSON.parse(svg.dataset.cv || '{}'), size = cfg.size || 'full', L = cfg.labels || {}, top = o.top !== undefined ? o.top : cfg.top;
+    const cfg = JSON.parse(svg.dataset.cv || '{}'), size = cfg.size || 'full', L = cfg.labels || {}, top = o.top !== undefined ? o.top : cfg.top, rid = o.rid || cfg.rid || 'arm';
     const W = Math.round(svg.parentElement.clientWidth || svg.clientWidth || 640); if (!W) return;
     const H = size === 'full' ? (W < 420 ? 280 : Math.round(Math.min(320, Math.max(240, W * .47)))) : (innerWidth < 720 ? 150 : (+svg.dataset.h || 180));
-    const g = geo(V, W, H, size, top, L), f = v => v.toFixed(1);
+    const g = geo(V, W, H, size, top, L, rid), f = v => v.toFixed(1);
     const cush = 'M' + g.val.slice(0, TERM + 1).map(([x, y]) => f(x) + ',' + f(y)).join(' L') + ' L' + g.loan.slice().reverse().map(([x, y]) => f(x) + ',' + f(y)).join(' L') + ' Z';
-    cfg.V = V; cfg.top = top; svg.dataset.cv = JSON.stringify(cfg);
+    cfg.V = V; cfg.top = top; cfg.rid = rid; svg.dataset.cv = JSON.stringify(cfg);
     svg.setAttribute('aria-label', `Fleet value falls from ${money(V)} as the robots age; the loan is repaid from ${money(V * ADV)} to zero by month 36 and stays below the fleet value every month.`);
     const old = svg._g;
     if (o.tween && old && old.W === W && !reduce) {
@@ -253,10 +255,10 @@
     const cfg = JSON.parse(fp.dataset.fp), full = fp.classList.contains('fp-full'), svg = fp.querySelector('.fp-cover svg'), cv = fp.querySelector('.fp-units');
     const cell = () => innerWidth < 720 ? (full ? 31 : 26) : (full ? 30 : 26);
     svg.dataset.h = full ? 180 : 160;
-    const V = cfg.n * cfg.price; cover(svg, V, { top: nice(1.08 * V) });
+    const V = cfg.n * cfg.price; cover(svg, V, { top: nice(1.08 * V), rid: cfg.rid });
     const st = units(cv, { rid: cfg.rid, n: cfg.n, max: 50, cell: cell(), rows: 5, priced: 50 });
     fp._p = { cfg, st }; drawIn(svg); fitFigs(fp);
-    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitFigs(fp); cover(svg, cfg.n * cfg.price, { top: nice(1.08 * cfg.n * cfg.price) }); const s2 = units(cv, { rid: st.rid, n: cfg.n, max: 50, cell: cell(), rows: 5, priced: 50 }); Object.assign(st, s2, { tok: st.tok }); }, 150); });
+    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitFigs(fp); cover(svg, cfg.n * cfg.price, { top: nice(1.08 * cfg.n * cfg.price), rid: cfg.rid }); const s2 = units(cv, { rid: st.rid, n: cfg.n, max: 50, cell: cell(), rows: 5, priced: 50 }); Object.assign(st, s2, { tok: st.tok }); }, 150); });
   };
   // FerraApp.preview(el, {rid, n, price, when}): the preview answers every keystroke; numbers count over 300ms, the chart tweens, robots arrive or leave 12ms apart
   const preview = (root, f) => {
@@ -268,7 +270,7 @@
     const keys = Object.keys(figs).filter(k => fp.querySelector(`.fp-${k} dd`));
     fitFigs(fp, keys.map(k => figs[k])); clearTimeout(fp._fit); fp._fit = setTimeout(() => fitFigs(fp), 340);   // fits the old and new figures while counting, then the new ones
     keys.forEach(k => countTo(fp.querySelector(`.fp-${k} dd`), figs[k], 300));
-    if (n * price !== cfg.n * cfg.price) cover(fp.querySelector('.fp-cover svg'), V, { tween: true, top: nice(1.08 * V) });
+    if (n * price !== cfg.n * cfg.price || rid !== cfg.rid) cover(fp.querySelector('.fp-cover svg'), V, { tween: true, top: nice(1.08 * V), rid });   // the value curve follows the robot type
     const sm = fp.querySelector('.fp-path small'); if (sm && when) sm.textContent = WHEN[when] || when;
     const more = fp.querySelector('.fp-more'); more.hidden = n <= 50; more.textContent = '+' + Math.max(0, n - 50).toLocaleString('en-US');
     fp.querySelector('.fp-units').setAttribute('aria-label', n.toLocaleString('en-US') + ' robots');
@@ -292,7 +294,7 @@
   // the robots come from the page's dot file (loaded before this script); fonts change label widths, so the charts redraw once they arrive
   startProduct();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelectorAll('[data-fp]').forEach(fp => fitFigs(fp)));
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelectorAll('svg.cv').forEach(svg => { if (svg.dataset.cvs !== 'go') { const c = JSON.parse(svg.dataset.cv); svg._g = null; cover(svg, c.V, { top: c.top }); } }));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelectorAll('svg.cv').forEach(svg => { if (svg.dataset.cvs !== 'go') { const c = JSON.parse(svg.dataset.cv); svg._g = null; cover(svg, c.V, { top: c.top, rid: c.rid }); } }));
   // product windows arrive once: a single fade and 12px rise
   document.querySelectorAll('[data-app-live]').forEach(w => { if (reduce) return; w.dataset.al = 'wait'; const o = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { o.disconnect(); requestAnimationFrame(() => { w.dataset.al = 'go'; }); } }), { threshold: .15 }); o.observe(w); });
   window.FerraApp = Object.assign(window.FerraApp || {}, { setFleet, preview, cover, units, money, keep, fitFigs });

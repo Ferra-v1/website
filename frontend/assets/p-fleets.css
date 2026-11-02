@@ -66,6 +66,9 @@
 .f-wc.in-view .f-adv i{transform:none}
 .f-al{display:flex;justify-content:space-between;gap:10px}
 .f-al small{font-size:12.5px;line-height:1.2;color:var(--muted)}
+/* both cards end on a dot row at the same height: the loan split under 70%, the ownership kept under 0 */
+.f-whyg .f-adv{margin-top:auto;padding-top:28px}
+.f-own i{background:var(--ink)}
 /* F4 the page's one gradient band: one statement, one button back to the form */
 .f-end{padding-block:112px}
 .f-endi{display:flex;flex-direction:column;align-items:center;text-align:center}

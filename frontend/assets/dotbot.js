@@ -1,6 +1,7 @@
 // Ferra dot robots: every robot on the site is drawn in code as a halftone field of dots.
 // Markup: <canvas class="dotbot" data-bot="arm" data-tone="light|ink" data-anim="assemble|static" data-scan="1"></canvas>
-// light = white dots with cyan trim, for blue backgrounds; ink = cobalt dots with cyan trim, for light backgrounds.
+// light = white dots with cyan trim, for blue backgrounds; ink = cobalt dots only, for light backgrounds (no cyan on white: its trim
+// dots stay cobalt and the pointer and scan highlight is the brighter cobalt #2847ce). Cyan stays for dark backgrounds.
 // Names: arm, arm2, cobot, amr, pallet, delivery, cleaning, cell, cartons; "-s" coarse (46 columns), plain (72), "-l" fine (112, assets/dots-l.js).
 // A name ending in "-loop" is a moving robot (media/dots/seq.js, played at 12 frames a second); a missing name falls back to the nearest still.
 // Inside .rstage (core.robot_stage) the canvas is sized from its box height and the empty rows under the robot are cut, so the lowest dots touch the hairline;
@@ -10,7 +11,7 @@
 (() => {
   const D = window.FERRA_DOTS || {}, Q = window.FERRA_SEQ || {}, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const TONES = { light: { base: [255, 255, 255], acc: [150, 232, 255], floor: .28 }, ink: { base: [30, 51, 155], acc: [3, 148, 224], floor: .46 } };
+  const TONES = { light: { base: [255, 255, 255], acc: [150, 232, 255], hi: [150, 232, 255], floor: .28 }, ink: { base: [30, 51, 155], acc: [30, 51, 155], hi: [40, 71, 206], floor: .46 } };
   const FALL = { cell: 'arm2', cartons: 'pallet', 'cell-loop': 'cell', 'cobot-loop': 'cobot-l', 'arm2-loop': 'arm2', 'pallet-loop': 'pallet', 'arm-loop': 'arm' };
   const pick = n => { const seen = new Set(); while (n && !seen.has(n)) { seen.add(n); if (D[n]) return D[n]; if (n.endsWith('-l')) n = n.slice(0, -2); else n = FALL[n] || (n.endsWith('-s') && FALL[n.slice(0, -2)] ? FALL[n.slice(0, -2)] + '-s' : null); } return null; };
   const parse = b => b.pts || (b.pts = b.d.split(';').map(s => { const [x, y, L, A, acc, ed] = s.split(',').map(Number); return { x, y, L: L / 100, A: A / 100, acc, ed: ed / 100, r: Math.random() }; }));
@@ -94,7 +95,7 @@
           h = heat[i] = hit ? Math.min(1, heat[i] + dt / 120) : Math.max(0, heat[i] - dt / 400); if (h > 0) warm = true; }
         const rad = pitch * .44 * sz * (1 + near * .45) * (1 + h * .35) * (.35 + .65 * k);
         const ox = (1 - k) * (p.r - .5) * pitch * 26, oy = (1 - k) * (p.r * 1.7 - 1.1) * pitch * 18;
-        const b = p.acc ? tone.acc : tone.base, mix = Math.max(h, ey === null || p.acc ? 0 : Math.min(1, near * 1.3) * .85), cc = mix ? b.map((v, j) => v + (tone.acc[j] - v) * mix) : b;
+        const b = p.acc ? tone.acc : tone.base, mix = Math.max(h, ey === null || p.acc ? 0 : Math.min(1, near * 1.3) * .85), cc = mix ? b.map((v, j) => v + (tone.hi[j] - v) * mix) : b;
         const al = (light ? .55 + .45 * sz : .45 + .55 * sz) * k;
         c.fillStyle = `rgba(${cc[0] | 0},${cc[1] | 0},${cc[2] | 0},${Math.min(1, al + near * .4 + h * .3)})`;
         c.beginPath(); c.arc((p.x + .5) * pitch + ox, (p.y + .5) * pitch + oy, Math.max(.35, rad), 0, 6.283); c.fill();

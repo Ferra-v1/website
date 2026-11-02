@@ -120,3 +120,5 @@
  .l-doc .sheet{padding:18px 18px 12px}
 }
 @media (prefers-reduced-motion:reduce){.l-bar .on{transition:none}.l-dg .cn{stroke-dashoffset:0}.l-dg .mv{display:none}}
+/* pricing: the plain note under the three sources, on what the listings price and what the curve covers */
+.l-arm{margin:18px 0 0;color:#4a5262;font-size:15px;line-height:1.55;max-width:46ch}

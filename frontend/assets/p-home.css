@@ -75,7 +75,7 @@
 /* H4 every dot is a real listing */
 .h-lst-h .lead-1{margin-top:20px}
 .h-tp{display:none}
-@media (hover:none){.h-hv{display:none}.h-tp{display:inline}}
+@media (hover:none),(max-width:720px){.h-hv{display:none}.h-tp{display:inline}}
 .h-lst-h .btn{margin-top:24px}
 .h-lcard{position:relative;margin:40px 0 0;background:#fff;border-radius:20px;border:1px solid var(--line);padding:28px}
 .h-plot{position:relative}
