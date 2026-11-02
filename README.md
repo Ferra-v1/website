@@ -1,6 +1,8 @@
 # Website
 
-Ferra's website. Nothing has been built yet.
+Ferra's website, live at https://www.ferra.world.
 
-- `frontend/`: what visitors see
-- `backend/`: APIs and data
+- `frontend/`: the static site visitors see (five pages, no build step). Vercel serves this folder.
+- `backend/`: APIs and data (nothing yet).
+
+Deploys go out from the `site` branch.
