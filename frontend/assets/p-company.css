@@ -1,55 +1,35 @@
-/* Company page (c-). Self-contained: no styles from other pages. Three sections: letter (paper), what we are building (white), get in touch (paper). */
-[data-page="company.html"] .c-hero .h1{font-size:clamp(44px,5.4vw,76px)}
-[data-page="company.html"] .h2 .mute{color:#8b93a4}
+/* Company page (c-). Three sections: letter (paper), what we are building (white), get in touch (paper). */
+[data-page="company.html"] .c-hero .h1{font-size:clamp(40px,5.4vw,76px);line-height:1.03;max-width:22ch}
 
-/* two-tone heading (S2.1, repeated so the page reads right on its own): one block of running text, never the old .two grid */
-[data-page="company.html"] .h2.two{display:block;font-size:clamp(32px,3.4vw,46px);line-height:1.08}
-@media (min-width:721px){[data-page="company.html"] .h2.two{max-width:26ch}}
-
-/* robots on a hairline baseline (S3.1 markup); the canvas width is set from the robot's own shape by p-company.js */
-[data-page="company.html"] .rstage{margin:0;position:relative}
-[data-page="company.html"] .rstage .rs-bot{height:var(--h);display:flex;align-items:flex-end;justify-content:center}
+/* robots on a hairline; the canvas width is set from the robot's own shape by p-company.js */
 [data-page="company.html"] .rstage .rs-bot canvas{display:block;max-width:100%}
-[data-page="company.html"] .rstage .rs-base{display:block;height:1px;background:var(--line)}
 
-/* letter: the collaborative arm in dots, standing whole on one hairline under the title */
-.c-pic{margin-top:clamp(36px,4vw,56px);max-width:440px}
+/* letter: the destination across the top, then the collaborative arm in dots beside the letter */
+.c-letter{margin-top:clamp(40px,5vw,72px)}
+.c-pic{max-width:440px}
 .c-pic .rstage .rs-base{background:#cfd6e3}
 
-/* what we are building: three short blocks beside the price report window */
-.c-two{margin-bottom:clamp(36px,4vw,56px)}
-.c-bg{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);gap:clamp(32px,5vw,72px);align-items:start}
-.c-list{list-style:none;margin:0;padding:0}
-.c-list li{border-top:1px solid var(--line);padding:22px 0 24px}
-.c-list li:last-child{border-bottom:1px solid var(--line)}
-.c-list .h3{font-size:clamp(22px,1.9vw,25px);margin:0 0 6px}
-.c-list p{margin:0;color:#4a5262;font-size:16px;line-height:1.55;max-width:42ch}
-.c-list .tlink{margin:6px 0 -10px}
-.c-stage{min-width:0}
-.c-stage .app{font-size:14px}
+/* what we are building: three lines in large type, each with its link */
+.c-build .h2{margin-bottom:clamp(28px,3.4vw,44px)}
+.c-lines{list-style:none;margin:0;padding:0}
+.c-lines li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px clamp(24px,5vw,72px);align-items:baseline;padding:clamp(22px,2.6vw,34px) 0;border-top:1px solid var(--line)}
+.c-lines li:last-child{border-bottom:1px solid var(--line)}
+.c-lines p{margin:0;font:700 clamp(27px,3.4vw,46px)/1.1 var(--serif);letter-spacing:-.025em;color:var(--ink);max-width:24ch;text-wrap:balance}
+.c-lines .tlink{margin:0;white-space:nowrap}
 
 /* get in touch */
 .c-cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
 .c-contact .h2{margin-bottom:20px}
+.c-contact .lead-1{margin-bottom:28px}
 .c-contact .lf{grid-template-columns:minmax(0,1fr)}
-.c-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:stretch;padding-top:8px}
-.c-card{display:grid;grid-template-columns:96px minmax(0,1fr);gap:24px;align-items:start;padding:28px 28px 28px 24px;border-radius:20px;background:#fff;box-shadow:0 0 0 1px var(--line);text-decoration:none;color:inherit;transition:box-shadow .25s ease}
-.c-card:hover{box-shadow:0 0 0 1px #c9d3e3,var(--sh-doc)}
-.c-card > div{display:flex;flex-direction:column}
-.c-card .h3{margin-bottom:6px}
-.c-card p{margin:0 0 18px;color:#4a5262;font-size:15.5px}
-/* a small dot robot, 56px tall, standing on a hairline at the card's top left */
-.c-card .c-ci .rs-bot{padding-bottom:2px}
-/* small dots read faint at 56px: firm up their alpha (an inline filter in the section) and deepen the blue */
-.c-card .c-ci canvas.dotbot{filter:url(#c-firm) saturate(1.2) brightness(.82)}
-.c-fx{position:absolute;width:0;height:0;overflow:hidden}
-.c-go{margin-top:auto;font-weight:500;font-size:15.5px;color:var(--c);min-height:24px}
-.c-card:hover .c-go{text-decoration:underline;text-underline-offset:3px}
+[data-page="company.html"] .fl{font-size:14px}
+.c-aud{padding:22px 0 16px;border-top:1px solid var(--line)}
+.c-aud:last-child{border-bottom:1px solid var(--line)}
+.c-aud .h3{margin-bottom:6px}
+.c-aud p{margin:0;color:#3e4656;font-size:16px;line-height:1.5;max-width:44ch}
 
-@media (max-width:1060px){.c-bg,.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:380px}}
+@media (max-width:1060px){.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:380px}.c-letter{gap:36px}}
 @media (max-width:680px){
- .c-two{max-width:none}
- .c-card{grid-template-columns:minmax(0,1fr);gap:18px;padding:22px}
- .c-card .c-ci{width:96px}
+ .c-lines li{grid-template-columns:minmax(0,1fr)}
  .c-pic .c-bot .rs-bot{height:calc(var(--h) * .72)}
 }

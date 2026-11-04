@@ -1,6 +1,6 @@
 // Home page behaviour: the hero robots (one painter for still and moving dot robots, so the scan line and the pointer reach the
-// moving frames too), the vision row, the real-listing chart tooltips, the step-synced term sheet, the two type-only tabs with the
-// two fields that drive the small live preview, the price board scan and hairlines, and dot robots standing on hairlines. Runs after dotbot.js and site.js, before DOMContentLoaded.
+// moving frames too), the vision row, the real-listing chart tooltips, the step-synced term sheet, the loan sentence with its two
+// live numbers, the price board scan and hairlines, and dot robots standing on hairlines. Runs after dotbot.js and site.js, before DOMContentLoaded.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hover = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -76,11 +76,11 @@
         let hv = heat[hi] += (near - heat[hi]) * k8; if (hv > .01) warm = true; else hv = heat[hi] = 0;
         let I = 0;
         if (sy !== null) { const d = p.y + .5 - sy; I = Math.max(0, 1 - Math.abs(d) / 3, d < 0 ? Math.max(0, 1 + d / 18) * .28 : 0); }
-        const s = size(p), rad = pitch * .44 * s * (1 + I * .7) * (1 + hv * .35) * (.35 + .65 * k);
+        const s = Math.min(1, size(p) * (o.mover ? 1.3 : 1)), rad = pitch * .44 * s * (1 + I * .7) * (1 + hv * .35) * (.35 + .65 * k);
         const ox = (1 - k) * (p.r - .5) * pitch * 26, oy = (1 - k) * (p.r * 1.7 - 1.1) * pitch * 18;
         const base = p.acc ? C : W, m = Math.min(1, Math.max(I * 1.3, hv)) * (p.acc ? 0 : .85);
         const c0 = base[0] + (C[0] - base[0]) * m, c1 = base[1] + (C[1] - base[1]) * m, c2 = base[2] + (C[2] - base[2]) * m;
-        ctx.fillStyle = `rgba(${c0 | 0},${c1 | 0},${c2 | 0},${Math.min(1, (.55 + .45 * s) * k + I * .45 + hv * .3)})`;
+        ctx.fillStyle = `rgba(${c0 | 0},${c1 | 0},${c2 | 0},${Math.min(1, (o.mover ? .78 : .55 + .45 * s) * k + I * .45 + hv * .3)})`;
         ctx.beginPath(); ctx.arc(cx + ox, cy + oy, Math.max(.35, rad), 0, 6.283); ctx.fill();
       }
       return assembling || warm || (!!o.seq && !reduce);
@@ -166,67 +166,48 @@
     steps.forEach(s => s.addEventListener('click', () => s.parentElement.classList.add('h-man')));
   }
 
-  // ---------------------------------------------------------------- H6 both sides: type-only tabs
-  // Without this script both panels show one after the other. With it, the two names become tabs (click, arrow keys, Home, End);
-  // the inactive panel is inert so its link cannot take focus while hidden.
-  const tabs = document.querySelector('.h-tabs');
-  if (tabs) {
-    const tbs = [...tabs.querySelectorAll('[role="tab"]')], pans = [...tabs.querySelectorAll('[role="tabpanel"]')];
-    const sel = (k, focus) => {
-      tbs.forEach((t, j) => { const on = j === k; t.classList.toggle('on', on); t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1; });
-      pans.forEach((p, j) => { const on = j === k; p.classList.toggle('on', on); p.inert = !on; });
-      if (focus) tbs[k].focus();
-    };
-    tbs.forEach((t, k) => {
-      t.addEventListener('click', () => sel(k));
-      t.addEventListener('keydown', ev => {
-        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[ev.key];
-        if (step) { ev.preventDefault(); sel((k + step + tbs.length) % tbs.length, true); }
-        else if (ev.key === 'Home') { ev.preventDefault(); sel(0, true); }
-        else if (ev.key === 'End') { ev.preventDefault(); sel(tbs.length - 1, true); }
-      });
-    });
-    tabs.classList.add('h-js'); sel(0);
-  }
-
-  // ---------------------------------------------------------------- H7 robot companies: two fields drive the small live preview
+  // ---------------------------------------------------------------- H6 the loan sentence
   // Clamps as on the fleets page: robots 1 to 1,000, price $1,000 to $1,000,000. Above the top the value clamps at once and is written
-  // back; below the floor it settles when the field is left; a field with no digits keeps its last good value. Each valid change
-  // calls FerraApp.preview (shared); until the shared group lands it, the local stand-in panel's three figures are rewritten here.
-  const n = document.getElementById('h-n'), p = document.getElementById('h-p'), fp = document.getElementById('fp-home'), msg = document.getElementById('h-msg');
-  if (n && p && fp) {
-    const digits = el => el.value.replace(/[^0-9]/g, '');
+  // back; below the floor it settles when the field is left; a field with no digits keeps its last good value.
+  const n = document.getElementById('h-n'), p = document.getElementById('h-p'), out = document.getElementById('h-l'), fc = document.getElementById('h-fleet'), msg = document.getElementById('h-msg'), more = document.querySelector('.h-more');
+  if (n && p && out && fc && window.FerraApp) {
+    const A = window.FerraApp, digits = el => el.value.replace(/[^0-9]/g, '');
     const lim = el => [+el.dataset.min, +el.dataset.max];
     const clamp = (el, v) => { const [lo, hi] = lim(el); return Math.min(hi, Math.max(lo, v)); };
     const last = new Map([[n, 50], [p, 125000]]), val = el => last.get(el);
-    const comma = el => { el.value = val(el).toLocaleString('en-US'); };
+    const wide = el => { const t = el.value || '0', c = (t.match(/,/g) || []).length; el.style.width = `calc(${(t.length - c * .62 + .06).toFixed(2)}ch - ${(t.length * .03).toFixed(2)}em)`; };
+    const comma = el => { el.value = val(el).toLocaleString('en-US'); wide(el); };
     let mt;
     const say = el => { if (!msg) return; msg.textContent = el === n ? 'Up to 1,000 robots' : 'Between $1,000 and $1,000,000'; msg.classList.add('on'); el.setAttribute('aria-invalid', 'true');
       clearTimeout(mt); mt = setTimeout(() => { msg.classList.remove('on'); [n, p].forEach(x => x.removeAttribute('aria-invalid')); }, 4000); };
-    const money = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
-    let sent = '50|125000';
-    const upd = () => {
-      const N = val(n), P = val(p), key = N + '|' + P; if (key === sent) return; sent = key;
-      const A = window.FerraApp;
-      if (A && A.preview && !fp.classList.contains('h-fpl')) { A.preview(fp, { rid: 'arm', n: N, price: P }); return; }
-      const V = N * P; fp.querySelectorAll('.fp-k dd').forEach((d, i) => { d.textContent = money([V, V * .7, V * .3][i]); });
-    };
-    [n, p].forEach(el => {
+    const rowOf = N => A.fleetRow(fc, { rid: 'arm', n: N, cols: 25, max: 50, phoneMax: 12, cellMax: 44, min: 40 });
+    let st = rowOf(50), shownOnce = reduce;
+    const label = N => { more.hidden = N <= st.max; more.textContent = '+' + Math.max(0, N - st.max).toLocaleString('en-US') + ' more'; fc.setAttribute('aria-label', N.toLocaleString('en-US') + ' robots'); };
+    label(50);
+    if (!reduce) { st.shown = 0; st.priced = 0; st.paint(); new IntersectionObserver((es, o) => es.forEach(en => { if (en.isIntersecting) { o.disconnect(); shownOnce = true; A.growTo(st, Math.min(val(n), st.max)); } }), { threshold: .3 }).observe(fc); }
+    let sent = 62500 * 100, tok = 0;
+    const count = z => { const a = +out.textContent.replace(/[^0-9]/g, '') || 0, t0 = performance.now(), me = ++tok, end = '$' + (Math.floor(z / 100 + .5) * 100).toLocaleString('en-US');
+      if (reduce) { out.textContent = end; return; }
+      const tick = t => { if (me !== tok) return; const q = Math.min(1, (t - t0) / 300), k = 1 - Math.pow(1 - q, 3); out.textContent = q < 1 ? '$' + Math.round(a + (z - a) * k).toLocaleString('en-US') : end; if (q < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); };
+    const upd = () => { const N = val(n), V = N * val(p); label(N); if (shownOnce) A.growTo(st, Math.min(N, st.max)); if (V !== sent) { sent = V; count(V * .7); } };
+    [n, p].forEach(el => { wide(el);
       el.addEventListener('input', () => {
-        const d = digits(el); if (d !== el.value) el.value = d;
+        const d = digits(el); if (d !== el.value) el.value = d; wide(el);
         if (!d) return;   // no digits: keep the last good value until the field is left
         const v = +d, [lo, hi] = lim(el);
-        if (v > hi) { el.value = String(hi); last.set(el, hi); say(el); }
+        if (v > hi) { el.value = String(hi); wide(el); last.set(el, hi); say(el); }
         else last.set(el, Math.max(lo, v));
         upd();
       });
-      el.addEventListener('focus', () => { el.value = digits(el); el.select(); });
+      el.addEventListener('focus', () => { el.value = digits(el); wide(el); el.select(); });
       el.addEventListener('blur', () => {
         const d = digits(el);
         if (d) { const v = +d, c = clamp(el, v); if (c !== v) say(el); last.set(el, c); }
         comma(el); upd();
       });
     });
+    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (st.tok) st.tok = -1; st = rowOf(val(n)); label(val(n)); }, 160); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => [n, p].forEach(wide));
   }
 
   // ---------------------------------------------------------------- H3 vision: twelve robots assemble in turn, each price rises after its robot

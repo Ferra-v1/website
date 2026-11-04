@@ -66,7 +66,7 @@
   const feeFmt = v => Math.abs(v - 65625) < .5 ? '$65,625' : money(v);
   const nice = v => { const k = Math.pow(10, Math.floor(Math.log10(Math.max(v, 1)))); for (const m of [1, 1.2, 1.4, 1.6, 1.8, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10]) if (m * k >= v) return m * k; return 10 * k; };
   const NS = 'http://www.w3.org/2000/svg', mctx = document.createElement('canvas').getContext('2d');
-  const tw = (t, px, serif, wt) => { mctx.font = serif ? `500 ${px}px Newsreader, Georgia, serif` : `${wt || 400} ${px}px Geist, system-ui, sans-serif`; return mctx.measureText(t).width; };
+  const tw = (t, px, serif, wt) => { mctx.font = `${serif ? 600 : wt || 400} ${px}px Inter, system-ui, sans-serif`; return mctx.measureText(t).width; };
   // geometry of the cover chart: the same rules as core.cover_geo, with the browser's measured text widths
   const geo = (V, W, H, size, top, L, rid) => {
     const full = size === 'full', pl = 6, pr = 8, pt = full ? 54 : 12, base = H - 28, r = full && W >= 480 ? 2.4 : 2.0, ymax = top || 1.08 * V;
@@ -114,24 +114,22 @@
     const cush = 'M' + g.val.slice(0, TERM + 1).map(([x, y]) => f(x) + ',' + f(y)).join(' L') + ' L' + g.loan.slice().reverse().map(([x, y]) => f(x) + ',' + f(y)).join(' L') + ' Z';
     cfg.V = V; cfg.top = top; cfg.rid = rid; svg.dataset.cv = JSON.stringify(cfg);
     svg.setAttribute('aria-label', `Fleet value falls from ${money(V)} as the robots age; the loan is repaid from ${money(V * ADV)} to zero by month 36 and stays below the fleet value every month.`);
-    const old = svg._g;
+    const old = svg._g, pth = pts => 'M' + pts.map(([x, y]) => f(x) + ',' + f(y)).join(' L');
     if (o.tween && old && old.W === W && !reduce) {
-      // same size: tween every dot and the cushion from where they stand to the new figure
-      const vc = svg.querySelectorAll('.cv-v circle'), lc = svg.querySelectorAll('.cv-l circle:not(.cv-end)'), cp = svg.querySelector('.cv-cush'), t0 = performance.now(), tok = svg._tok = (svg._tok || 0) + 1;
+      // same size: tween both lines and the cushion from where they stand to the new figure
+      const vl = svg.querySelector('.cv-vl'), ll = svg.querySelector('.cv-ll'), cp = svg.querySelector('.cv-cush'), end = svg.querySelector('.cv-end'), t0 = performance.now(), tok = svg._tok = (svg._tok || 0) + 1;
       const from = { val: old.val.map(p => p.slice()), loan: old.loan.map(p => p.slice()) };
       const tick = t => { if (svg._tok !== tok) return; const p = Math.min(1, (t - t0) / 300), k = 1 - Math.pow(1 - p, 3), mix = (a, b) => a + (b - a) * k;
         const cv = g.val.map(([x, y], i) => [x, mix(from.val[i][1], y)]), cl = g.loan.map(([x, y], i) => [x, mix(from.loan[i][1], y)]);
-        vc.forEach((c, i) => c.setAttribute('cy', f(cv[i][1]))); lc.forEach((c, i) => c.setAttribute('cy', f(cl[i][1])));
-        cp.setAttribute('d', 'M' + cv.slice(0, TERM + 1).map(([x, y]) => f(x) + ',' + f(y)).join(' L') + ' L' + cl.slice().reverse().map(([x, y]) => f(x) + ',' + f(y)).join(' L') + ' Z');
+        vl.setAttribute('d', pth(cv)); ll.setAttribute('d', pth(cl)); end.setAttribute('cy', f(cl[TERM][1]));
+        cp.setAttribute('d', pth(cv.slice(0, TERM + 1)) + ' L' + cl.slice().reverse().map(([x, y]) => f(x) + ',' + f(y)).join(' L') + ' Z');
         if (p < 1) requestAnimationFrame(tick); else { svg._g = g; paintLabels(svg, g); } };
       requestAnimationFrame(tick); return;
     }
     svg._g = g; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.style.height = H + 'px'; svg.textContent = '';
     el('path', { class: 'cv-cush', d: cush }, svg); el('line', { class: 'cv-base', x1: 0, x2: W, y1: g.base + .5, y2: g.base + .5 }, svg);
-    const gv = el('g', { class: 'cv-v' }, svg), gl = el('g', { class: 'cv-l' }, svg);
-    g.val.forEach(([x, y], m) => el('circle', { cx: f(x), cy: f(y), r: g.r, style: '--i:' + m }, gv));
-    g.loan.slice(0, TERM).forEach(([x, y], m) => el('circle', { cx: f(x), cy: f(y), r: g.r, style: '--i:' + m }, gl));
-    el('circle', { class: 'cv-end', cx: f(g.loan[TERM][0]), cy: f(g.loan[TERM][1]), r: 3.5, style: '--i:' + TERM }, gl);
+    el('path', { class: 'cv-vl', pathLength: 1, d: pth(g.val) }, svg); el('path', { class: 'cv-ll', pathLength: 1, d: pth(g.loan) }, svg);
+    el('circle', { class: 'cv-end', cx: f(g.loan[TERM][0]), cy: f(g.loan[TERM][1]), r: 3.5 }, svg);
     el('g', { class: 'cv-lab' }, svg); paintLabels(svg, g);
     const gx = el('g', { class: 'cv-x' }, svg);
     g.ticks.forEach(([x, t], i) => { const n = el('text', { x: f(x), y: H - 8, 'text-anchor': i === 0 ? 'start' : i === g.ticks.length - 1 ? 'end' : 'middle' }, gx); n.textContent = t; });
@@ -144,160 +142,118 @@
       else { const a = el('text', { class: 'cv-k' + (key === 'c' ? ' cv-c' : ''), x: f(key === 'c' ? (x0 + x1) / 2 : x0), y: f(key === 'c' ? y0 + cs : y0 + cs * .9 + 1) }, gl); if (key === 'c') a.setAttribute('text-anchor', 'middle'); a.textContent = cap; if (cs !== 12) a.style.fontSize = cs + 'px'; }
     }
   };
-  // the draw-in: dots left to right at 14ms a month, the cushion from 900ms, labels from 1100ms; once, when 35% of the chart is in view
+  // the draw-in: both lines left to right, then the cushion and its label; once, when 35% of the chart is in view
   const drawIn = (svg, then) => {
     if (reduce) { svg.dataset.cvs = 'done'; then && then(); return; }
     svg.dataset.cvs = 'wait';
     const o = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; o.disconnect(); requestAnimationFrame(() => { svg.dataset.cvs = 'go'; then && then(); setTimeout(() => { svg.dataset.cvs = 'done'; }, 1800); }); }), { threshold: .35 });
     o.observe(svg);
   };
-  // one unit of the grid: a plain rounded tile per robot (robot drawings at this size read as numerals), painted once per colour and size
-  const glyphs = {};
+  // one robot of a fleet row, painted once per colour and size from its coarse dot grid so a row of 50 stays cheap; stands on the cell's bottom edge
+  const glyphs = {}, DOTS = () => window.FERRA_DOTS || {};
   const glyph = (rid, cell, col, dpr) => {
-    const key = [cell, col, dpr].join('|'); if (glyphs[key] !== undefined) return glyphs[key];
+    const key = [rid, cell, col, dpr].join('|'); if (glyphs[key] !== undefined) return glyphs[key];
     const c = document.createElement('canvas'); c.width = c.height = Math.round(cell * dpr);
     const x = c.getContext('2d'); x.scale(dpr, dpr); x.fillStyle = col;
-    const s = Math.round(cell * .5), o = (cell - s) / 2; x.beginPath(); (x.roundRect ? x.roundRect(o, o, s, s, Math.round(s * .26)) : x.rect(o, o, s, s)); x.fill();
+    const b = DOTS()[rid + '-s'];
+    if (b && b.d) { const p = b.d.split(';').map(s => s.split(',').map(Number)); let x0 = 1e9, x1 = 0, y0 = 1e9, y1 = 0; for (const q of p) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
+      const pit = cell / Math.max(x1 - x0 + 1, y1 - y0 + 1), ox = (cell - (x1 - x0 + 1) * pit) / 2, oy = cell - (y1 - y0 + 1) * pit;
+      for (const q of p) { const s = Math.min(1, (q[3] / 100) * 1.15 * Math.min(1, .5 + .5 * q[2] / 100 + (q[5] || 0) / 300)); x.beginPath(); x.arc(ox + (q[0] - x0 + .5) * pit, oy + (q[1] - y0 + .5) * pit, Math.max(.42, pit * .62 * s), 0, 6.283); x.fill(); } }
+    else { const s = Math.round(cell * .5), o = (cell - s) / 2; x.beginPath(); x.rect(o, o, s, s); x.fill(); }
     return (glyphs[key] = c);
   };
-  const MUTE = '#cfd6e3', COB = '#2847ce', INK40 = 'rgba(14,22,38,.4)';
-  // FerraApp.units(canvas, {rid, n, max, cell, gap}): one canvas of up to max robots, 10 across; returns a painter with set(k) (robots priced) and state
+  const MUTE = '#cfd6e3', COB = '#2847ce', INK40 = 'rgba(14,22,38,.35)';
+  // FerraApp.units(canvas, {rid, n, max, cell, gap, cols}): a fleet as dot robots standing on hairlines, cols across; a robot arrives faint, then turns cobalt
   const units = (cv, o) => {
-    const dpr = Math.min(2, devicePixelRatio || 1), cell = o.cell, gap = o.gap === undefined ? 3 : o.gap, cols = 10, rows = Math.ceil((o.rows || Math.ceil(Math.min(o.n, o.max) / cols)));
-    const W = cols * cell + (cols - 1) * gap, H = rows * cell + (rows - 1) * gap;
+    const dpr = Math.min(2, devicePixelRatio || 1), cell = o.cell, gap = o.gap === undefined ? 4 : o.gap, cols = o.cols || 10, rowgap = 14, rows = o.rows || Math.ceil(Math.min(o.n, o.max) / cols);
+    const W = cols * cell + (cols - 1) * gap, H = rows * (cell + rowgap);
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
-    const x = cv.getContext('2d'), st = { rid: o.rid, n: o.n, shown: Math.min(o.n, o.max), cell, gap, cols, priced: o.priced === undefined ? 0 : o.priced, focus: -1, col: o.col || [MUTE, COB], fresh: {} };
-    const pos = i => [(i % cols) * (cell + gap), Math.floor(i / cols) * (cell + gap)];
+    const x = cv.getContext('2d'), st = { rid: o.rid, n: o.n, max: o.max, shown: Math.min(o.n, o.max), cell, gap, cols, rows, priced: o.priced === undefined ? 0 : o.priced, col: o.col || [MUTE, COB], fresh: {} };
+    const pos = i => [(i % cols) * (cell + gap), Math.floor(i / cols) * (cell + rowgap)];
     const paint = () => { x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.setTransform(dpr, 0, 0, dpr, 0, 0);
-      for (let i = 0; i < st.shown; i++) { const [px, py] = pos(i), c = st.fresh[i] ? INK40 : i < st.priced ? st.col[1] : st.col[0]; x.drawImage(glyph(st.rid, cell, c, dpr), px, py, cell, cell); }
-      if (st.focus >= 0 && st.focus < st.shown) { const [px, py] = pos(st.focus); x.strokeStyle = '#0e1626'; x.lineWidth = 2; x.beginPath(); (x.roundRect ? x.roundRect(px - 1, py - 1, cell + 2, cell + 2, 6) : x.rect(px - 1, py - 1, cell + 2, cell + 2)); x.stroke(); } };
+      const used = Math.max(1, Math.ceil(st.shown / cols));
+      x.fillStyle = '#e2e6ee'; for (let r = 0; r < used; r++) x.fillRect(0, r * (cell + rowgap) + cell + .5, W, 1);
+      for (let i = 0; i < st.shown; i++) { const [px, py] = pos(i), c = st.fresh[i] ? INK40 : i < st.priced ? st.col[1] : st.col[0]; x.drawImage(glyph(st.rid, cell, c, dpr), px, py, cell, cell); } };
     cv._u = st; st.paint = paint; st.pos = pos; paint(); return st;
   };
-  // the sweep: robots turn from muted to cobalt left to right, row by row, 28ms apart, with the count in step
-  const sweep = (st, countEl, n, then) => {
-    const total = st.shown, t0 = performance.now(), tok = st.tok = (st.tok || 0) + 1;
-    const tick = t => { if (st.tok !== tok) return; const k = Math.min(total, Math.floor((t - t0) / 28) + 1); st.priced = k; st.paint();
-      if (countEl) countEl.textContent = (n > 50 ? Math.round(n * k / total) : k).toLocaleString('en-US');
-      if (k < total) requestAnimationFrame(tick); else then && then(); };
-    requestAnimationFrame(tick);
-  };
-  const countHTML = n => n > 50 ? `<b class="num">${n.toLocaleString('en-US')}</b> robots, each priced` : `<b class="num">${n}</b> of ${n} priced`;
-  const eachLine = (app, cfg) => { let el = app.querySelector('.ap-each'); const cnt = app.querySelector('.ap-count'); if (!cnt) return;
-    if (!el) { el = document.createElement('p'); el.className = 'ap-each'; cnt.after(el); }
-    const p = cfg.price; el.textContent = `Each: ${money(p)} new, ${money(p * keep(24))} at year 2, ${money(p * ADV)} of the loan`; };
-  // the fleet window: chart, units, strip, hover tips; FerraApp.setFleet rewrites it in place
-  const initFleet = app => {
-    const cfg = JSON.parse(app.dataset.appFleet), svg = app.querySelector('.ap-cover svg'), cv = app.querySelector('.ap-units'), cnt = app.querySelector('.ap-count'), tip = app.querySelector('.ap-tip');
-    if (!svg || !cv) return;
-    const geom = () => innerWidth < 720 ? 31 : 34;
-    const V = () => cfg.n * cfg.price;
-    cover(svg, V());
-    const st = units(cv, { rid: cfg.rid, n: cfg.n, max: 50, cell: geom(), rows: 5, priced: reduce ? 50 : 0 });
-    app._fleet = { cfg, st };
-    eachLine(app, cfg);
-    if (!reduce) { const b = cnt.querySelector('b'); if (b) b.textContent = '0'; }
-    drawIn(svg, () => { if (!reduce) setTimeout(() => sweep(st, cnt.querySelector('b'), cfg.n), 400); });
-    // unit tips: pointer, tap or arrow keys
-    // every unit in the example is the same robot, so the tip names the unit only; the shared figures sit once in the line under the grid
-    const show = i => { if (i < 0 || i >= st.shown) { tip.hidden = true; return; }
-      tip.innerHTML = `<b>Unit ${String(i + 1).padStart(2, '0')} of ${cfg.n.toLocaleString('en-US')}</b><span>Priced and pledged to the loan</span>`;
-      tip.hidden = false; const [px, py] = st.pos(i), box = cv.parentElement, bw = box.clientWidth, tw_ = tip.offsetWidth, th = tip.offsetHeight;
-      let left = cv.offsetLeft + px + st.cell / 2 - tw_ / 2; left = Math.max(0, Math.min(bw - tw_, left));
-      let topv = cv.offsetTop + py - th - 8; const appTop = app.getBoundingClientRect().top, boxTop = box.getBoundingClientRect().top;
-      if (boxTop + topv < appTop + 50) topv = cv.offsetTop + py + st.cell + 8;
-      tip.style.left = left + 'px'; tip.style.top = topv + 'px'; };
-    const hit = ev => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, c = Math.floor(x / (st.cell + st.gap)), rr = Math.floor(y / (st.cell + st.gap));
-      if (c < 0 || c >= 10 || rr < 0 || x - c * (st.cell + st.gap) > st.cell || y - rr * (st.cell + st.gap) > st.cell) return -1; return rr * 10 + c; };
-    cv.addEventListener('pointermove', ev => { const i = hit(ev); if (i !== st.focus) { st.focus = i; st.paint(); } show(i); });
-    cv.addEventListener('pointerdown', ev => { const i = hit(ev); st.focus = i; st.paint(); show(i); });
-    cv.addEventListener('pointerleave', () => { st.focus = -1; st.paint(); tip.hidden = true; });
-    cv.addEventListener('blur', () => { st.focus = -1; st.paint(); tip.hidden = true; });
-    cv.addEventListener('keydown', ev => { const mv = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 10, ArrowUp: -10 }[ev.key];
-      if (ev.key === 'Escape') { tip.hidden = true; st.focus = -1; st.paint(); return; }
-      if (mv === undefined) return; ev.preventDefault(); let i = st.focus < 0 ? 0 : st.focus + mv; i = Math.max(0, Math.min(st.shown - 1, i)); st.focus = i; st.paint(); show(i); });
-    cv.addEventListener('focus', () => { if (st.focus < 0) { st.focus = 0; st.paint(); show(0); } });
-    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { cover(svg, V()); const pr = st.priced; const s2 = units(cv, { rid: cfg.rid, n: cfg.n, max: 50, cell: geom(), rows: 5, priced: pr }); Object.assign(st, s2); app._fleet.st = st; cv._u = st; }, 150); });
-  };
-  // FerraApp.setFleet(el, {rid, n, price}): rewrite a fleet window in place, without replaying its reveal
-  const setFleet = (root, f) => {
-    const app = root && (root.matches && root.matches('[data-app-fleet]') ? root : root.querySelector && root.querySelector('[data-app-fleet]')); if (!app || !app._fleet) return;
-    const { cfg, st } = app._fleet, U = cfg.units || {};
-    const rid = U[f.rid] ? f.rid : cfg.rid, n = Math.max(0, Math.round(+f.n || 0)), price = Math.max(0, +f.price || 0), u = U[rid] || ['Robot', 'robots'];
-    if (rid === cfg.rid && n === cfg.n && price === cfg.price) return;
-    Object.assign(cfg, { rid, n, price }); app.dataset.appFleet = JSON.stringify(cfg);
-    const t = app.querySelector('.ap-title'); if (t) t.textContent = 'Your fleet: ' + n.toLocaleString('en-US') + ' ' + (n === 1 ? u[0].toLowerCase() : u[1]);
-    const V = n * price; cover(app.querySelector('.ap-cover svg'), V, { tween: true });
-    st.rid = rid; st.shown = Math.min(n, 50); st.n = n; st.priced = st.shown; st.paint();
-    app.querySelector('.ap-count').innerHTML = countHTML(n);
-    eachLine(app, cfg);
-    const more = app.querySelector('.ap-more'); more.hidden = n <= 50; more.textContent = '+' + Math.max(0, n - 50).toLocaleString('en-US');
-    const cv = app.querySelector('.ap-units'); cv.setAttribute('aria-label', n.toLocaleString('en-US') + ' robots, each priced');
-    const dd = app.querySelectorAll('.ap-strip dd'), to = [money(V), '70%', money(V * ADV), money(V * (1 - ADV)), 'about ' + feeFmt(V * ADV * .015)];
-    dd.forEach((d, i) => countTo(d, to[i], 400));
-  };
+  // walk a fleet row to a new count: robots arrive or leave one at a time from the end, 12ms apart
+  const growTo = (st, target) => { const tok = st.tok = (st.tok || 0) + 1;
+    if (reduce) { st.shown = target; st.priced = target; st.fresh = {}; st.paint(); return; }
+    const step = () => { if (st.tok !== tok || st.shown === target) return;
+      if (st.shown < target) { const i = st.shown++; st.priced = st.shown; st.fresh[i] = 1; setTimeout(() => { delete st.fresh[i]; st.paint(); }, 160); }
+      else { st.shown--; st.priced = st.shown; }
+      st.paint(); setTimeout(step, 12); };
+    step(); };
+  // FerraApp.fleetRow(canvas, {rid, n, phoneMax}): the fleet row that fits its parent: as many across as keep each robot readable
+  const fleetRow = (cv, f) => { const par = cv.parentElement, w = par.clientWidth || 600, phone = innerWidth < 720;
+    const cols = phone ? 6 : Math.min(f.cols || 25, Math.max(6, Math.floor(w / (f.min || 44)))), gap = phone ? 6 : 4, cell = Math.max(24, Math.min(f.cellMax || 64, Math.floor((w - (cols - 1) * gap - (f.reserve || 0)) / cols))), max = phone ? (f.phoneMax || 12) : (f.max || cols * 2);
+    return units(cv, { rid: f.rid, n: f.n, max, cell, gap, cols, rows: Math.ceil(max / cols), priced: Math.min(f.n, max) }); };
   // count a figure from what it shows to a new value (text like "$4,375,000" or "about $65,625")
   const countTo = (d, end, D) => { const tok = d._tok = (d._tok || 0) + 1, num = s => parseFloat(String(s).replace(/[^\d.]/g, '')) || 0, a = num(d.textContent), z = num(end), pre = end.match(/^[^\d$]*\$?/)[0];
     if (reduce || a === z || !/\$/.test(end)) { d.textContent = end; return; } const t0 = performance.now();
     const tick = t => { if (d._tok !== tok) return; const p = Math.min(1, (t - t0) / D), k = 1 - Math.pow(1 - p, 3); d.textContent = p < 1 ? pre + Math.round(a + (z - a) * k).toLocaleString('en-US') : end; if (p < 1) requestAnimationFrame(tick); };
     requestAnimationFrame(tick); };
-  // the preview's figures share one size: as large as the stylesheet allows, shrunk together until the widest figure fits its column
+  // the preview's figures: the giant loan fits its own line; the three smaller ones share one size, shrunk together until the widest fits its column
   const fitFigs = (fp, want) => {
-    const dds = [...fp.querySelectorAll('.fp-k dd')]; if (!dds.length || !fp.clientWidth) return;
-    dds.forEach(d => { d.style.fontSize = ''; }); const base = parseFloat(getComputedStyle(dds[0]).fontSize); let k = 1;
-    dds.forEach((d, i) => { const col = d.parentElement.clientWidth; for (const t of [d.textContent, want && want[i]]) { if (!t) continue;
-      const s = d.cloneNode(false); s.textContent = t; s.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'; d.parentElement.appendChild(s);
-      const w = s.getBoundingClientRect().width + 2; s.remove(); if (w > col) k = Math.min(k, col / w); } });
-    if (k < 1) dds.forEach(d => { d.style.fontSize = Math.floor(base * k * 2) / 2 + 'px'; });
+    const fit = (dds, wants) => { if (!dds.length) return; dds.forEach(d => { d.style.fontSize = ''; }); const base = parseFloat(getComputedStyle(dds[0]).fontSize); let k = 1;
+      dds.forEach((d, i) => { const col = d.parentElement.clientWidth; for (const t of [d.textContent, wants && wants[i]]) { if (!t) continue;
+        const s = d.cloneNode(false); s.textContent = t; s.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'; d.parentElement.appendChild(s);
+        const w = s.getBoundingClientRect().width + 2; s.remove(); if (w > col) k = Math.min(k, col / w); } });
+      if (k < 1) dds.forEach(d => { d.style.fontSize = Math.floor(base * k * 2) / 2 + 'px'; }); };
+    if (!fp.clientWidth) return;
+    fit([...fp.querySelectorAll('.fp-l dd')], want && [want.l]); fit([...fp.querySelectorAll('.fp-k2 dd')], want && [want.v, want.c, want.f]);
   };
-  // the live preview (core.fleet_preview): figures, a small cover chart, the fleet growing to the typed count, the path to funded
+  // the live preview (core.fleet_preview): the giant loan, the fleet growing to the typed count, the finance terms, a small value chart
   const WHEN = { 'Just exploring': 'When you are ready' };
+  const rowCfg = cfg => ({ rid: cfg.rid, n: cfg.n, cols: 10, max: 20, phoneMax: 12, cellMax: 54, reserve: 0 });
+  const moreLabel = (el, n, st) => { el.hidden = n <= st.max; el.textContent = '+' + Math.max(0, n - st.max).toLocaleString('en-US') + ' more'; };
   const initPreview = fp => {
-    const cfg = JSON.parse(fp.dataset.fp), full = fp.classList.contains('fp-full'), svg = fp.querySelector('.fp-cover svg'), cv = fp.querySelector('.fp-units');
-    const cell = () => innerWidth < 720 ? (full ? 31 : 26) : (full ? 30 : 26);
-    svg.dataset.h = full ? 180 : 160;
+    const cfg = JSON.parse(fp.dataset.fp), svg = fp.querySelector('.fp-cover svg'), cv = fp.querySelector('.fp-units'), more = fp.querySelector('.fp-more');
+    svg.dataset.h = 170;
     const V = cfg.n * cfg.price; cover(svg, V, { top: nice(1.08 * V), rid: cfg.rid });
-    const st = units(cv, { rid: cfg.rid, n: cfg.n, max: 50, cell: cell(), rows: 5, priced: 50 });
+    const st = fleetRow(cv, rowCfg(cfg)); moreLabel(more, cfg.n, st);
     fp._p = { cfg, st }; drawIn(svg); fitFigs(fp);
-    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitFigs(fp); cover(svg, cfg.n * cfg.price, { top: nice(1.08 * cfg.n * cfg.price), rid: cfg.rid }); const s2 = units(cv, { rid: st.rid, n: cfg.n, max: 50, cell: cell(), rows: 5, priced: 50 }); Object.assign(st, s2, { tok: st.tok }); }, 150); });
+    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitFigs(fp); cover(svg, cfg.n * cfg.price, { top: nice(1.08 * cfg.n * cfg.price), rid: cfg.rid }); const s2 = fleetRow(cv, rowCfg(cfg)); Object.assign(st, s2); moreLabel(more, cfg.n, st); }, 150); });
   };
-  // FerraApp.preview(el, {rid, n, price, when}): the preview answers every keystroke; numbers count over 300ms, the chart tweens, robots arrive or leave 12ms apart
+  // FerraApp.preview(el, {rid, n, price, when}): answers every keystroke; numbers count over 300ms, the chart tweens, robots arrive or leave 12ms apart
   const preview = (root, f) => {
     const fp = root && (root.matches && root.matches('[data-fp]') ? root : root.querySelector && root.querySelector('[data-fp]')); if (!fp) return;
     if (!fp._p) initPreview(fp);
     const { cfg, st } = fp._p, rid = f.rid && cfg.names[f.rid] ? f.rid : cfg.rid, n = f.n === undefined ? cfg.n : Math.max(0, Math.round(+f.n || 0)), price = f.price === undefined ? cfg.price : Math.max(0, +f.price || 0);
     const when = f.when === undefined ? cfg.when : f.when;
     const V = n * price, figs = { v: money(V), l: money(V * ADV), c: money(V * (1 - ADV)), f: feeFmt(V * ADV * .015) };
-    const keys = Object.keys(figs).filter(k => fp.querySelector(`.fp-${k} dd`));
-    fitFigs(fp, keys.map(k => figs[k])); clearTimeout(fp._fit); fp._fit = setTimeout(() => fitFigs(fp), 340);   // fits the old and new figures while counting, then the new ones
-    keys.forEach(k => countTo(fp.querySelector(`.fp-${k} dd`), figs[k], 300));
+    fitFigs(fp, figs); clearTimeout(fp._fit); fp._fit = setTimeout(() => fitFigs(fp), 340);   // fits the old and new figures while counting, then the new ones
+    Object.keys(figs).forEach(k => countTo(fp.querySelector(`.fp-${k} dd`), figs[k], 300));
     if (n * price !== cfg.n * cfg.price || rid !== cfg.rid) cover(fp.querySelector('.fp-cover svg'), V, { tween: true, top: nice(1.08 * V), rid });   // the value curve follows the robot type
-    const sm = fp.querySelector('.fp-path small'); if (sm && when) sm.textContent = WHEN[when] || when;
-    const more = fp.querySelector('.fp-more'); more.hidden = n <= 50; more.textContent = '+' + Math.max(0, n - 50).toLocaleString('en-US');
+    moreLabel(fp.querySelector('.fp-more'), n, st);
     fp.querySelector('.fp-units').setAttribute('aria-label', n.toLocaleString('en-US') + ' robots');
-    const target = Math.min(n, 50), tok = st.tok = (st.tok || 0) + 1;
     if (rid !== st.rid) { st.rid = rid; st.paint(); }
     Object.assign(cfg, { rid, n, price, when }); fp.dataset.fp = JSON.stringify(cfg);
-    if (reduce) { st.shown = target; st.priced = target; st.fresh = {}; st.paint(); return; }
-    // robots arrive (ink at 40%, then cobalt) or leave, one at a time from the end, 12ms apart
-    const step = () => { if (st.tok !== tok || st.shown === target) return;
-      if (st.shown < target) { const i = st.shown++; st.priced = st.shown; st.fresh[i] = 1; setTimeout(() => { delete st.fresh[i]; st.paint(); }, 160); }
-      else { st.shown--; st.priced = st.shown; }
-      st.paint(); setTimeout(step, 12); };
-    step();
+    growTo(st, Math.min(n, st.max));
   };
-  // the lender and report windows: the cover chart draws in, the report's dot bars fill once
-  document.querySelectorAll('.app[data-view="lender"] .ap-cover svg').forEach(svg => { cover(svg, JSON.parse(svg.dataset.cv).V); drawIn(svg);
-    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => cover(svg, JSON.parse(svg.dataset.cv).V), 150); }); });
-  const dotsFill = w => { if (reduce) return; w.dataset.df = 'wait'; const o = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { o.disconnect(); requestAnimationFrame(() => { w.dataset.df = 'go'; }); } }), { threshold: .35 }); o.observe(w); };
-  document.querySelectorAll('.app[data-view="report"] .ap-rows, .app[data-view="lender"] .ap-loss').forEach(dotsFill);
-  const startProduct = () => { document.querySelectorAll('[data-app-fleet]').forEach(initFleet); document.querySelectorAll('[data-fp]').forEach(fp => { if (!fp._p) initPreview(fp); }); };
-  // the robots come from the page's dot file (loaded before this script); fonts change label widths, so the charts redraw once they arrive
-  startProduct();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelectorAll('[data-fp]').forEach(fp => fitFigs(fp)));
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelectorAll('svg.cv').forEach(svg => { if (svg.dataset.cvs !== 'go') { const c = JSON.parse(svg.dataset.cv); svg._g = null; cover(svg, c.V, { top: c.top, rid: c.rid }); } }));
-  // product windows arrive once: a single fade and 12px rise
-  document.querySelectorAll('[data-app-live]').forEach(w => { if (reduce) return; w.dataset.al = 'wait'; const o = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { o.disconnect(); requestAnimationFrame(() => { w.dataset.al = 'go'; }); } }), { threshold: .15 }); o.observe(w); });
-  window.FerraApp = Object.assign(window.FerraApp || {}, { setFleet, preview, cover, units, money, keep, fitFigs });
+  // the value chart (core.value_chart): both lines draw once, then moving across the chart rewrites the figures for that month
+  document.querySelectorAll('.vc').forEach(fig => {
+    const cfg = JSON.parse(fig.dataset.vc), plot = fig.querySelector('.vc-plot'), dv = fig.querySelector('.vc-f-v dd'), da = fig.querySelector('.vc-f-a dd'), dc = fig.querySelector('.vc-f-c dd'), when = fig.querySelector('.vc-when');
+    const visible = () => [...plot.querySelectorAll('svg')].find(s => s.getBoundingClientRect().width > 0);
+    const set = m => { const V = cfg.V, v = V * keep(m, cfg.rid), a = m >= TERM ? 0 : ADV * V * (1 - m / TERM);
+      dv.textContent = money(v); da.textContent = a ? money(a) : 'Repaid'; dc.textContent = money(v - a); when.textContent = m === 0 ? 'today' : m % 12 === 0 ? 'at year ' + m / 12 : 'at month ' + m; };
+    const mark = m => { const s = visible(); if (!s) return; const [W, pl, pr, pt, base, top] = s.dataset.g.split(',').map(Number), X = pl + m * (W - pl - pr) / 72, Y = v => base - v / top * (base - pt), g = s.querySelector('.vc-cursor'), a = m >= TERM ? 0 : ADV * cfg.V * (1 - m / TERM);
+      g.removeAttribute('hidden'); const l = g.querySelector('.vc-cl'); l.setAttribute('x1', X); l.setAttribute('x2', X); const cv = g.querySelector('.vc-cv'), ca = g.querySelector('.vc-ca'); cv.setAttribute('cx', X); cv.setAttribute('cy', Y(cfg.V * keep(m, cfg.rid))); ca.setAttribute('cx', X); ca.setAttribute('cy', Y(a)); };
+    let cur = 0;
+    const go = m => { cur = Math.max(0, Math.min(72, m)); set(cur); mark(cur); };
+    const off = () => { cur = 0; set(0); plot.querySelectorAll('.vc-cursor').forEach(g => g.setAttribute('hidden', '')); };
+    const fromEv = ev => { const s = visible(); if (!s) return null; const [W, pl, pr] = s.dataset.g.split(',').map(Number), r = s.getBoundingClientRect(); return Math.round(((ev.clientX - r.left) / r.width * W - pl) / (W - pl - pr) * 72); };
+    plot.addEventListener('pointermove', ev => { const m = fromEv(ev); if (m !== null) go(m); });
+    plot.addEventListener('pointerdown', ev => { const m = fromEv(ev); if (m !== null) go(m); });
+    plot.addEventListener('pointerleave', ev => { if (ev.pointerType === 'mouse') off(); });
+    plot.addEventListener('keydown', ev => { const d = { ArrowRight: 1, ArrowLeft: -1, Home: -72, End: 72 }[ev.key]; if (d) { ev.preventDefault(); go(cur + d); } else if (ev.key === 'Escape') off(); });
+    plot.addEventListener('blur', off);
+    if (reduce) fig.classList.add('vc-on'); else new IntersectionObserver((es, o) => es.forEach(en => { if (en.isIntersecting) { o.disconnect(); fig.classList.add('vc-go'); requestAnimationFrame(() => fig.classList.add('vc-on')); } }), { threshold: .25 }).observe(fig);
+  });
+  document.querySelectorAll('[data-fp]').forEach(fp => { if (!fp._p) initPreview(fp); });
+  // fonts change label widths, so the charts redraw once they arrive
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { document.querySelectorAll('[data-fp]').forEach(fp => fitFigs(fp)); document.querySelectorAll('svg.cv').forEach(svg => { if (svg.dataset.cvs !== 'go') { const c = JSON.parse(svg.dataset.cv); svg._g = null; cover(svg, c.V, { top: c.top, rid: c.rid }); } }); });
+  window.FerraApp = Object.assign(window.FerraApp || {}, { preview, cover, units, fleetRow, growTo, money, keep, fitFigs });
   // phone menu
   document.querySelectorAll('.nav').forEach(nv => { const b = nv.querySelector('.menu'), d = nv.querySelector('.drawer'); if (!b) return; b.addEventListener('click', () => { const o = d.hidden; d.hidden = !o; b.setAttribute('aria-expanded', o); }); });
 })();

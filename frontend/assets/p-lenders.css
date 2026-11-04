@@ -1,124 +1,126 @@
-/* Lenders page (l-). Five sections: hero (paper), study (white), pricing (mist), what a lender receives (white), contact (ink). */
-[data-page="lenders.html"] .h1{font-size:clamp(40px,4.2vw,60px);line-height:1.03}
-[data-page="lenders.html"] .lede{margin:22px 0 28px}
-.l-hero{overflow:hidden}
-.l-hero.phero{padding-top:clamp(40px,4vw,60px)}
+/* Lenders page (l-). Five sections: hero (paper), study (white), pricing (paper), what a lender receives (mist), contact (ink). */
+[data-page="lenders.html"] .h1{font-size:clamp(42px,5.4vw,76px);line-height:1.02;max-width:20ch}
+[data-page="lenders.html"] .lede{margin:24px 0 26px;max-width:56ch}
+[data-page="lenders.html"] .fl{font-size:14px}
+.l-hero.phero{padding-top:clamp(40px,5vw,72px)}
 .l-hero .hlinks{align-items:center}
 
-/* two-tone heading (S2.1, repeated so the page reads right on its own): one block of running text, never the old .two grid */
-[data-page="lenders.html"] .h2.two{display:block;font-size:clamp(32px,3.4vw,46px);line-height:1.08}
-@media (min-width:721px){[data-page="lenders.html"] .h2.two{max-width:26ch}}
+/* hero: the collateral chart stands on the page at full content width */
+.l-chart{margin-top:clamp(48px,6vw,80px)}
+.l-exn{margin:16px 0 0;font-size:14px}
 
-/* two-tone stacked heading: one sentence in ink, its continuation in grey (S2.1; repeated here so the page reads right on its own) */
-[data-page="lenders.html"] .h2 .mute{color:#8b93a4}
-.l-two{margin-bottom:clamp(36px,4vw,56px)}
-
-/* hero: headline and lede on the left (5fr), the lender's deal review on the right (7fr), both starting on one top line. No robot here. */
-.l-hg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,4vw,64px);align-items:start}
-.l-hc{padding-top:0}
-.l-stage{min-width:0}
-.l-stage .app{width:100%}
-
-/* study */
-.l-sg{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,5vw,80px);align-items:center}
-.l-sc .lead-1{margin-bottom:0}
-.l-scap{margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line);max-width:52ch}
-.l-loss{margin:0;background:var(--paper);border-radius:22px;padding:clamp(22px,3vw,36px);box-shadow:0 0 0 1px var(--line)}
-.l-lhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px 20px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:8px}
-.l-lhead b{font-weight:600;font-size:15px}.l-lhead > span{font-size:13px;color:var(--muted)}
-.l-lrow{padding:22px 0 6px}
-.l-lh{display:flex;align-items:baseline;gap:16px;margin-bottom:14px}
-.l-lv{font:500 clamp(40px,4vw,56px)/1 var(--serif);letter-spacing:-.02em}
-.l-lv.c{color:var(--c)}.l-lv.g{color:#5b6474}
-.l-lk{font-size:15px;color:#4a5262}
+/* study: the two numbers are the section; each stands over its dot bar, both bars on one scale */
+.l-study .lead-1{margin:0}
+.l-loss{margin:clamp(36px,4vw,56px) 0 0}
+.l-lrow + .l-lrow{margin-top:clamp(36px,4vw,56px)}
+.l-lh{display:flex;align-items:baseline;gap:clamp(16px,2.4vw,32px);margin-bottom:clamp(14px,1.6vw,22px)}
+.l-lv{font:700 clamp(92px,14vw,196px)/.86 var(--serif);letter-spacing:-.05em;margin-left:-.03em}
+.l-lv.c{color:var(--c)}.l-lv.g{color:var(--ink)}
+.l-lk{font-size:clamp(16px,1.4vw,19px);line-height:1.35;color:#3e4656;max-width:24ch}
 .l-bar{display:block;width:100%;height:auto}
-.l-bar .off,.l-bar .on{fill:#e1e6ef}
+.l-bar .off,.l-bar .on{fill:#e7ebf2}
 .l-bar .on{transition:fill .3s ease calc(var(--i) * 20ms + .25s)}
 .l-loss.in-view .on.c{fill:var(--c)}
-.l-loss.in-view .on.g{fill:#5b6474}
-.l-ax{position:relative;height:18px;margin:14px 0 0;font-size:12px;color:#8a93a4}
+.l-loss.in-view .on.g{fill:var(--ink)}
+.l-ax{position:relative;height:18px;margin:12px 0 0;font-size:12px;color:#6b7383}
 .l-ax span{position:absolute;top:0;transform:translateX(-50%)}
 .l-ax span:first-child{transform:none}.l-ax span:last-child{transform:translateX(-100%)}
+.l-lnote{margin:14px 0 0;font-size:14px;color:var(--muted)}
 
-/* pricing: three sources on the left, the flow on the right */
-.l-pg{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:clamp(28px,4vw,64px);align-items:center}
-.l-src{list-style:none;margin:0;padding:0}
-.l-src li{padding:22px 0;border-top:1px solid #cfdcec}
-.l-src li:last-child{border-bottom:1px solid #cfdcec}
-.l-src .h3{font-size:clamp(21px,1.8vw,24px);margin:0 0 6px}
-.l-src p{margin:0;color:#4a5262;font-size:15.5px;line-height:1.55}
-.l-fig{margin:0;background:#fff;border-radius:22px;padding:clamp(18px,2.6vw,34px);box-shadow:0 0 0 1px #d6e3f2}
-.l-fig figcaption{font-size:13px;color:var(--muted);margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
-.l-dg{width:100%;height:auto;display:block;overflow:visible}
-.l-dg.l-v{display:none}
-.l-dg .bx rect{fill:#fff;stroke:#cfd6e3;stroke-width:1.5}
-.l-dg .bt{font-family:var(--serif);font-weight:500;fill:var(--ink)}
-.l-dg .bs{font-family:var(--sans);fill:#5b6474}
-.l-dg .mid rect{fill:var(--c);stroke:none}.l-dg .mid .bt{fill:#fff}.l-dg .mid .bs{fill:rgba(255,255,255,.85)}
-.l-dg .out rect{fill:var(--mist);stroke:none}.l-dg .out .bt{fill:var(--c)}
-.l-dg .cn{fill:none;stroke:#aab6d3;stroke-width:1.6;stroke-dasharray:1;stroke-dashoffset:1}
-.in-view .l-dg .cn{transition:stroke-dashoffset 1.3s ease .15s;stroke-dashoffset:0}
-.l-dg .rt{fill:none;stroke:none}
-.l-dg .mv{fill:var(--c)}
+/* pricing: real listings, the robot they price, its loan. Everything stands on one line. */
+.l-pricing .h2{margin-bottom:clamp(32px,4vw,56px)}
+.l-gather{position:relative;margin:0;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.83fr) auto;column-gap:clamp(24px,3.4vw,56px);align-items:end}
+.l-sc,.l-rb,.l-loan{min-width:0}
+.l-plot{position:relative}
+.l-plot svg{display:block;width:100%;height:auto;overflow:visible}
+.l-gr rect{fill:#dfe4ed}
+.l-pts circle{fill:var(--c);opacity:.38}
+.l-yl{position:absolute;left:0;font-size:12px;line-height:1;color:#6b7383;transform:translateY(calc(-100% - 5px))}
+.l-xs{position:relative;height:30px}
+.l-xl{position:absolute;top:12px;font-size:12px;line-height:1;color:#6b7383;transform:translateX(-50%);white-space:nowrap}
+.l-xl:first-child{transform:none}.l-xl:last-child{transform:translateX(-100%)}
+.l-rb,.l-loan{padding-bottom:30px}
+.l-rp{margin:0 0 14px;font-size:17px;color:#3e4656;text-align:center;white-space:nowrap}
+.l-rp b{font-weight:700;font-size:clamp(24px,2.2vw,32px);letter-spacing:-.02em;color:var(--ink)}
+.l-rb .rstage .rs-base{background:#c9d1de}
+.l-lt{margin:0 0 8px;font-size:17px;color:#3e4656}
+.l-ln{margin:0;font:700 clamp(60px,5.7vw,82px)/.9 var(--serif);letter-spacing:-.04em;color:var(--c);white-space:nowrap}
+.l-fly{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;display:none}
+.l-gc{grid-column:1 / -1;margin:12px 0 0;max-width:86ch;font-size:14px}
+/* before the dots move (p-lenders.js adds these; without them the page shows the final state) */
+.l-wait .l-pts circle{opacity:.92}
+.l-wait .l-rb canvas,.l-wait .l-rp,.l-wait .l-loan{opacity:0}
+.l-wait .l-loan{transform:translateY(10px)}
+.l-go .l-pts circle{transition:opacity .6s ease}
+.l-go .l-rb canvas{transition:opacity .65s ease 1.25s}
+.l-go .l-rp{transition:opacity .45s ease 1.85s}
+.l-go .l-loan{transition:opacity .55s ease 2.2s,transform .55s cubic-bezier(.2,.7,.2,1) 2.2s}
+.l-pt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,4vw,64px);margin-top:clamp(32px,4vw,48px)}
+.l-pt p{margin:0;color:#3e4656;font-size:17px;line-height:1.55;max-width:50ch}
 
-/* what a lender receives: three documents on one top line, equal heights */
-.l-docs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(24px,3vw,40px);row-gap:0}
-.l-dcol{min-width:0;display:grid;grid-row:span 3;grid-template-rows:subgrid;align-items:stretch}
-.l-dcol .h3{margin:30px 0 6px;font-size:24px;align-self:start}
-.l-dcol > p{margin:0;color:#4a5262;font-size:15.5px;align-self:start}
-.l-doc{position:relative;margin:0 10px 0 0;display:flex}
-.l-doc::before{content:"";position:absolute;inset:10px -10px -10px 10px;background:#fff;border-radius:16px;box-shadow:0 0 0 1px var(--line),var(--sh-doc)}
-.l-doc .sheet{position:relative;flex:1;display:flex;flex-direction:column;padding:20px 22px 14px;font-size:13.5px;border-radius:16px}
-.l-doc .sh-h .ilock{font-size:14px}
-.l-doc .sh-t{font-size:20px;margin:14px 0 6px}
-.l-doc .sh-f{margin-top:auto;padding-top:14px}
-.l-doc .dr{padding:9px 0;border-radius:0}
-.l-doc .dr[data-row="3"] b{font-size:17px}
-.l-th,.l-rn,.l-tot{display:grid;gap:8px;align-items:baseline}
-.l-c3{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr)}
-.l-c4{grid-template-columns:minmax(0,.86fr) minmax(0,.72fr) minmax(0,1.12fr) minmax(0,1.12fr)}
-.l-th{font-size:11.5px;color:#8a93a4;padding:6px 0;border-bottom:1px solid var(--line)}
-.l-th span:nth-child(n+3),.l-rn b:nth-of-type(n+2),.l-tot b{text-align:right}
-.l-r{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
-.l-r span{color:#4a5262;min-width:0}.l-r b{font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
-.l-rn{display:grid}
-.l-rn b:first-of-type{color:#4a5262;font-weight:400}
-.l-r.l-c b{color:var(--c);font-family:var(--serif);font-size:17px}
-.l-tot{padding:10px 0 4px;border-top:1.5px solid var(--deep);margin-top:-1px;font-weight:600}
-.l-tot span{grid-column:span 2}
-.l-tot b{font-weight:600;font-size:13.5px;white-space:nowrap;font-variant-numeric:tabular-nums}.l-tot b:last-child{color:var(--c)}
+/* what a lender receives: tabs in plain type beside one sheet of paper */
+.l-rg{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:start}
+.l-rs{position:sticky;top:112px}
+.l-tabs{display:flex;flex-direction:column;align-items:flex-start;margin-top:clamp(24px,3vw,40px)}
+.l-tab{appearance:none;background:none;border:0;padding:6px 0;min-height:44px;cursor:pointer;font:700 clamp(28px,2.8vw,40px)/1.15 var(--serif);letter-spacing:-.025em;color:#7b8496;text-align:left;transition:color .2s ease}
+.l-tab:hover{color:#3e4656}
+.l-tab[aria-selected="true"]{color:var(--ink)}
+.l-tab:focus-visible{outline:2px solid var(--c);outline-offset:4px;border-radius:2px}
+.l-pages{display:flex;flex-direction:column;gap:32px;min-width:0}
+.l-pages.l-tabbed{display:grid;gap:0}
+.l-tabbed .l-page{grid-area:1 / 1;transition:opacity .2s ease}
+.l-tabbed .l-off{opacity:0;visibility:hidden}
+.l-page{display:flex;flex-direction:column;aspect-ratio:8.5 / 11;min-width:0;padding:clamp(24px,4.4vw,60px) clamp(20px,4.4vw,60px) clamp(20px,2.6vw,34px)}
+.l-page:focus-visible{outline:2px solid var(--c);outline-offset:4px}
+.l-page .sh-t{font-size:clamp(25px,2.4vw,31px);margin:clamp(22px,2.6vw,34px) 0 10px}
+.l-page .sh-f{margin-top:auto;padding-top:24px;font-size:14px}
+.l-pi{margin:0 0 22px;color:#3e4656;font-size:16px;line-height:1.5}
+.l-pn{margin:20px 0 0;color:#3e4656;font-size:14px;line-height:1.5}
+.l-pn a{color:var(--c)}
+.l-dl{margin:0}
+.l-dl > div{display:grid;grid-template-columns:minmax(0,132px) minmax(0,1fr);gap:4px 16px;padding:9px 0;border-bottom:1px solid var(--line)}
+.l-dl > div:first-child{border-top:1px solid var(--ink)}
+.stmt + .l-dl > div:first-child{border-top:0;padding-top:0}
+.l-dl dt{font-weight:600;color:var(--ink)}
+.l-dl dd{margin:0;color:#2f3747}
+.l-page .stmt{font-size:16px;margin-bottom:28px}
+.l-page .stmt thead th{font-size:14px}
+.l-page .stmt tbody th{font-weight:400}
 
-/* fleet price list: 50 cobalt squares (one per unit) under the title, then the per-unit figures and the fleet total */
-.l-units{display:block;margin:4px 0 12px;width:87px;height:42px}
-.l-units rect{fill:var(--c)}
-.l-pl .l-tot{grid-template-columns:minmax(0,1fr) auto auto;gap:18px}
-.l-pl .l-tot span{grid-column:auto}
-
-/* contact band: the page's one ink band */
+/* contact band: the page's one ink band. What happens next is plain numbered lines on the band. */
 .l-band{background:var(--ink)}
-.l-cg{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,80px);align-items:center}
+.l-cg{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,80px);align-items:start}
 .l-band .h2{max-width:16ch;margin-bottom:28px}
 .l-band .lede{margin-top:-10px}
-.l-next .sheet{padding:26px 28px 18px;border-radius:18px;color:var(--ink)}
-.l-next .sh-t{font-size:26px;margin:18px 0 4px}
-.l-next ol{list-style:none;margin:6px 0 0;padding:0}
-.l-next li{display:grid;grid-template-columns:44px minmax(0,1fr);padding:14px 0;border-bottom:1px solid var(--line);font-size:16px;color:#2f3747}
-.l-next li .num{font:500 18px/1.5 var(--serif);color:var(--c)}
+.l-next .h3{color:#fff;margin:6px 0 14px}
+.l-next ol{list-style:none;margin:0;padding:0}
+.l-next li{display:grid;grid-template-columns:32px minmax(0,1fr);padding:14px 0;border-top:1px solid rgba(255,255,255,.18);font-size:17px;line-height:1.45;color:rgba(255,255,255,.88)}
+.l-next li .num{font-weight:600;color:rgba(255,255,255,.6)}
 
 @media (max-width:1060px){
- .l-hg,.l-sg,.l-pg,.l-cg{grid-template-columns:minmax(0,1fr)}
- .l-hc{padding-top:0}
- .l-hero.phero{padding-top:clamp(48px,7vw,96px)}
- .l-stage{max-width:760px;width:100%;margin:8px 0 0}
- .l-docs{grid-template-columns:minmax(0,1fr);max-width:520px}
- .l-dcol{display:block;grid-row:auto;margin-bottom:28px}
+ .l-cg{grid-template-columns:minmax(0,1fr)}
+ .l-rg{grid-template-columns:minmax(0,1fr)}
+ .l-rs{position:static}
+ .l-tabs{flex-direction:row;flex-wrap:wrap;gap:0 24px;margin-top:20px}
+ .l-tab{font-size:clamp(21px,3vw,28px)}
+ .l-pages{max-width:760px}
+}
+@media (max-width:960px){
+ /* phone and small tablet: the plot, then the robot, then the loan, top to bottom */
+ .l-gather{grid-template-columns:minmax(0,1fr);row-gap:24px}
+ .l-rb,.l-loan{padding-bottom:0}
+ .l-rb{max-width:280px;margin:0 auto;width:100%}
+ .l-loan{text-align:center}
+ .l-pt{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:680px){
- .l-dg.l-h{display:none}.l-dg.l-v{display:block;max-width:400px;margin:0 auto}
- .l-lh{flex-direction:column;gap:6px}
- .l-two{max-width:none}
- .l-doc .sheet{padding:18px 18px 12px}
+ .l-lh{flex-direction:column;gap:10px;margin-bottom:12px}
+ .l-lk{max-width:none}
+ .l-page{aspect-ratio:auto}
+ .l-pages.l-tabbed{display:block}
+ .l-tabbed .l-off{display:none}
+ .l-dl > div{grid-template-columns:minmax(0,1fr);gap:1px}
+ .l-page .stmt{font-size:15px}
+ .l-ln{font-size:72px}
 }
-@media (prefers-reduced-motion:reduce){.l-bar .on{transition:none}.l-dg .cn{stroke-dashoffset:0}.l-dg .mv{display:none}}
-/* pricing: the plain note under the three sources, on what the listings price and what the curve covers */
-.l-arm{margin:18px 0 0;color:#4a5262;font-size:15px;line-height:1.55;max-width:46ch}
+@media (prefers-reduced-motion:reduce){.l-bar .on,.l-tabbed .l-page{transition:none}}

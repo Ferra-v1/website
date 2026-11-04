@@ -3,7 +3,7 @@
 /* two-tone headings: the shared .two grid utility must not turn a heading into columns */
 [data-page="fleets.html"] .h2.two{display:block}
 [data-page="fleets.html"] .h2 .mute{color:#8b93a4}
-[data-page="fleets.html"] .num-xl{font-family:var(--serif);font-weight:500;font-size:clamp(48px,6vw,72px);line-height:.95;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums}
+[data-page="fleets.html"] .num-xl{font-family:var(--serif);font-weight:700;font-size:clamp(48px,6vw,72px);line-height:.95;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums}
 [data-page="fleets.html"] .rule-t{border-top:var(--hair);padding-top:16px}
 /* F1 hero: the quote form on the left, "Your fleet loan, as you type" on the right, sticky beside the fields */
 .f-hero{padding-top:72px;padding-bottom:clamp(72px,8vw,112px)}
@@ -21,15 +21,6 @@
 .f-quote .la{margin-top:6px}
 .f-pv{grid-column:2;grid-row:1 / span 2;position:sticky;top:96px;min-width:0}
 .f-pv .fp:empty{min-height:600px}
-/* four figures across a 512px panel: 26px numerals collide, so this placement sets them at 23px and lets the labels wrap (see Requests) */
-@media (min-width:901px){
- .f-pv .fp-full .fp-k dd{font-size:23px}
- .f-pv .fp-full .fp-k dt{white-space:normal;overflow:visible;line-height:1.3}
- .f-pv .fp-full .fp-k{align-items:end}
- .f-pv[data-big="1"] .fp-full .fp-k dd{font-size:19px}
- .f-pv[data-big="2"] .fp-full .fp-k dd{font-size:15.5px}}
-/* after a sent request the preview marks Priced as the next step */
-.fp-path .f-next{display:block;font-size:12px;color:var(--muted);margin-top:2px;font-weight:400}
 /* F2 from request to funded: the mobile robot drives along the rule in step with the fill, stopping at each step */
 .f-tlw{position:relative;margin-top:22px;padding-top:96px}
 .f-track{position:absolute;top:103px;left:8px;width:calc(75% + 18px);height:2px;background:rgba(40,71,206,.16)}
@@ -45,10 +36,10 @@
 .f-tl li{position:relative;display:flex;flex-direction:column;gap:6px;padding-top:34px}
 .f-node{position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px rgba(40,71,206,.35);transition:background .3s ease,box-shadow .3s ease;transition-delay:calc(var(--s) * 1.34s + .4s)}
 .f-tlw.in-view .f-node{background:var(--c);box-shadow:inset 0 0 0 2px var(--c),0 0 0 5px rgba(40,71,206,.12)}
-.f-tl b{font:500 23px/1.2 var(--serif);margin-top:4px}
+.f-tl b{font:600 23px/1.2 var(--serif);margin-top:4px}
 .f-tl em{font-style:normal;color:#4a5262;font-size:15.5px;max-width:28ch}
 .f-tk{margin-top:14px;padding-top:12px;border-top:1px solid rgba(40,71,206,.18);font-weight:600;font-size:15px}
-.f-tk small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-bottom:2px}
+.f-tk small{display:block;font-weight:400;font-size:14px;color:var(--muted);margin-bottom:2px}
 /* F3 why a loan: two-tone heading, then two hairline-topped columns */
 .f-whys .h2{margin-bottom:56px}
 .f-whyg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px}
@@ -59,22 +50,14 @@
 .f-wn small{font-size:17px;color:var(--muted)}
 .f-wc .h3{margin:0 0 8px}
 .f-wp{margin:0;color:#4a5262;font-size:16px;max-width:40ch}
-.f-adv{display:flex;flex-direction:column;gap:8px;max-width:300px;margin-top:28px}
-.f-dr{display:grid;grid-template-columns:repeat(20,10px);justify-content:space-between;column-gap:2px}
-.f-adv i{display:block;width:10px;height:10px;border-radius:50%;background:var(--c);transform:scale(0);transition:transform .35s cubic-bezier(.2,1.4,.4,1) calc(var(--k) * 30ms + .3s)}
-.f-adv i.c{background:rgba(3,148,224,.32)}
 .f-wc.in-view .f-adv i{transform:none}
-.f-al{display:flex;justify-content:space-between;gap:10px}
-.f-al small{font-size:12.5px;line-height:1.2;color:var(--muted)}
 /* both cards end on a dot row at the same height: the loan split under 70%, the ownership kept under 0 */
-.f-whyg .f-adv{margin-top:auto;padding-top:28px}
-.f-own i{background:var(--ink)}
 /* F4 the page's one gradient band: one statement, one button back to the form */
 .f-end{padding-block:112px}
 .f-endi{display:flex;flex-direction:column;align-items:center;text-align:center}
-.f-end .vis{font-family:var(--serif);font-weight:500;font-size:clamp(30px,3.5vw,50px);line-height:1.12;letter-spacing:-.02em;color:#fff;max-width:20ch;margin:0;text-wrap:balance}
+.f-end .vis{font-family:var(--serif);font-weight:700;font-size:clamp(30px,3.5vw,50px);line-height:1.12;letter-spacing:-.02em;color:#fff;max-width:20ch;margin:0;text-wrap:balance}
 .f-end .btn{margin-top:32px}
-@media (prefers-reduced-motion:reduce){.f-adv i{transform:none;transition:none}.f-tlw.in-view .f-fill,.f-tlw.in-view .f-runner{animation:none}.f-fill,.f-tl li::after{transform:none;transition:none}.f-runner{left:100%}.f-node{background:var(--c);transition:none}.f-msg{transition:none}}
+@media (prefers-reduced-motion:reduce){.f-tlw.in-view .f-fill,.f-tlw.in-view .f-runner{animation:none}.f-fill,.f-tl li::after{transform:none;transition:none}.f-runner{left:100%}.f-node{background:var(--c);transition:none}.f-msg{transition:none}}
 @media (max-width:1100px){.f-heg{column-gap:40px}}
 /* under 900px one column: h1, lede, the four fleet fields, the preview, then email, company and the button.
    The form and its field wrapper step out of the layout (display:contents) so their groups can sit either side of the preview. */

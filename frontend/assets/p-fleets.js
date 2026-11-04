@@ -75,20 +75,6 @@
   const toForm = smooth => { const wide = matchMedia('(min-width: 901px)').matches, el = wide ? document.querySelector('.f-hero') : (form || ty), nav = document.querySelector('.nav'), nh = nav ? nav.getBoundingClientRect().height : 0, top = Math.max(0, el.getBoundingClientRect().top + scrollY - (wide ? nh - 24 : nh + 24)); scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); ty.focus({ preventScroll: true }); };
   document.querySelectorAll('a[href="#quote"]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); history.replaceState(null, '', '#quote'); toForm(!matchMedia('(prefers-reduced-motion: reduce)').matches); }));
   if (location.hash === '#quote') addEventListener('load', () => setTimeout(() => toForm(false), 60));
-  // fit the preview's dot fleet to its panel: 10 across with each robot as large as the panel allows (up to 46px), so the robots
-  // read as robots and the grid never runs past the panel on a phone. Wide screens keep room for the "+N" label beside the grid.
-  const fitFleet = () => {
-    const A = window.FerraApp; if (!pv || !pv._p || !A || !A.units) return;
-    const cv = pv.querySelector('.fp-units'), wrap = pv.querySelector('.fp-fleet'); if (!cv || !wrap) return;
-    const wide = matchMedia('(min-width: 721px)').matches, gap = 3, avail = wrap.clientWidth - (wide ? 56 : 0);
-    const cell = Math.max(20, Math.min(46, Math.floor((avail - 9 * gap) / 10)));
-    const old = pv._p.st, cfg = pv._p.cfg; if (old && old.cell === cell && old._fit) return;
-    if (old) old.tok = -1;   // stops a robot arrival still running on the old grid
-    const shown = Math.min(cfg.n, 50), st = A.units(cv, { rid: cfg.rid, n: cfg.n, max: 50, cell, gap, rows: 5, priced: shown });
-    st._fit = 1; pv._p.st = st;
-  };
-  fitFleet();
-  let fz; addEventListener('resize', () => { clearTimeout(fz); fz = setTimeout(() => { if (pv && pv._p && pv._p.st) pv._p.st._fit = 0; fitFleet(); }, 220); });
   // the timeline drive plays once; afterwards hold the final frame as plain styles
   const tw = document.querySelector('.f-tlw'), run = tw && tw.querySelector('.f-runner');
   if (run) run.addEventListener('animationend', () => tw.classList.add('done'));
