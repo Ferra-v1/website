@@ -14,7 +14,7 @@
     const tick = t => { const p = Math.min(1, (t - t0) / D), k = 1 - Math.pow(1 - p, 3); show(end * k); if (p < 1) requestAnimationFrame(tick); else show(end); }; requestAnimationFrame(tick); }), { threshold: .6 });
   document.querySelectorAll('[data-count]').forEach(el => el.closest('.hero') ? null : cio.observe(el));
   // how it works: steps highlight the matching rows of the term sheet, and advance on their own until touched
-  const steps = [...document.querySelectorAll('.step')], live = document.querySelector('.sheet.live');
+  const steps = [...document.querySelectorAll('.step')], live = document.querySelector('.sheet.live,.h-tk.live');
   if (steps.length && live) { let i = 0, auto = !reduce, timer;
     const set = k => { i = k; steps.forEach((s, j) => s.classList.toggle('on', j === k)); const rows = (steps[k].dataset.rows || '').split(',').filter(Boolean); live.querySelectorAll('.dr').forEach(r => r.classList.toggle('hl', rows.includes(r.dataset.row))); };
     steps.forEach((s, k) => s.addEventListener('click', () => { auto = false; clearInterval(timer); set(k); })); set(0);

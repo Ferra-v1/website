@@ -106,17 +106,6 @@
 .h-man .step.on .h-prog i{animation:none;transform:none}
 @keyframes h-fill{to{transform:none}}
 .h-how-r{display:flex;justify-content:flex-end;align-items:flex-start}
-.page[data-page="index.html"] .h-live{width:100%;max-width:520px;position:sticky;top:120px}
-.page[data-page="index.html"] .h-live .sh-t{margin:20px 0 10px}
-.page[data-page="index.html"] .h-live .dr{padding:14px 0}
-.page[data-page="index.html"] .h-live .dr[data-row="3"] b{color:inherit;font-family:inherit;font-size:inherit}
-.page[data-page="index.html"] .h-live .dr[data-row="2"] b{color:var(--c)}
-.page[data-page="index.html"] .h-live .h-lend{max-height:0;padding-top:0;padding-bottom:0;opacity:0;overflow:hidden;border-bottom-color:transparent;transition:max-height .4s ease,opacity .4s ease,padding .4s ease,background .3s ease}
-.page[data-page="index.html"] .h-live:not([data-step="0"]) .h-lend{max-height:60px;padding-top:14px;padding-bottom:14px;opacity:1;border-bottom-color:var(--line)}
-.h-lend b{color:var(--cyl)}
-.page[data-page="index.html"] .h-live .h-upd{border-bottom:0;font-size:14px;max-height:0;padding-top:0;padding-bottom:0;opacity:0;overflow:hidden;transition:max-height .4s ease,opacity .4s ease,padding .4s ease,background .3s ease;color:var(--deep)}
-.page[data-page="index.html"] .h-upd span{font-weight:600;color:var(--deep)}.h-upd em{font-style:normal;color:var(--muted)}
-.page[data-page="index.html"] .h-live[data-step="3"] .h-upd{max-height:48px;padding-top:12px;padding-bottom:12px;opacity:1}
 
 /* H6 both sides of the loan: two names as type-only tabs on the left, the matching visual in a 440px box on the right.
    Grid lines: column 1 holds tab, text, tab, text; column 2 holds the visuals. Without JavaScript (.h-js absent) each panel
@@ -217,7 +206,6 @@
 @media (max-width:1060px){
  .page[data-page="index.html"] .h-howg{grid-template-columns:minmax(0,1fr);gap:40px}
  .h-how-r{justify-content:flex-start}
- .page[data-page="index.html"] .h-live{position:static}
  .h-close-g{grid-template-columns:minmax(0,1fr)}
  .h-bh,.h-br{grid-template-columns:180px minmax(0,1fr) 130px 130px;padding:0}
  .h-bst{width:156px}
@@ -328,3 +316,23 @@
 /* hero polish: the floor fades out above the ledger, so its lines never crowd the figures or double the ledger's rule */
 .h-stage .floor{-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent 96%);mask-image:linear-gradient(180deg,#000 72%,transparent 96%)}
 @media (max-width:720px){.h-sent{font-size:clamp(30px,8.4vw,44px)}.h-row{margin-top:18px}.h-links .tlink{display:inline-flex;align-items:center;min-height:44px}}
+
+/* How a fleet loan works: the example loan as a ticket. The stub holds the loan and tears off once it closes. */
+.h-tk{display:flex;width:100%;max-width:620px;position:sticky;top:120px;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));font:400 16px/1.4 var(--doc);font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
+.h-tk-m{flex:1;min-width:0;background:#fff;padding:30px 30px 18px;-webkit-mask-image:radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);-webkit-mask-composite:source-in;mask-composite:intersect}
+.h-tk .sh-t{margin:18px 0 8px}
+.h-tk-s{flex:none;width:206px;box-sizing:border-box;background:var(--c);color:#fff;padding:24px 22px;display:flex;flex-direction:column;justify-content:center;gap:18px;position:relative;transition:transform .6s cubic-bezier(.25,.9,.3,1);-webkit-mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px);-webkit-mask-composite:source-in;mask-composite:intersect}
+.h-tk-s::before{content:"";position:absolute;left:0;top:18px;bottom:18px;border-left:2px dashed rgba(255,255,255,.65)}
+.h-tk-s .dr{display:block;padding:0;border:0}.h-tk-s .dr span,.h-tk-s .dr.hl span{display:block;color:rgba(255,255,255,.85);font-size:14px}.h-tk-s .dr b,.h-tk-s .dr.hl b{color:#fff;display:block;text-align:left}
+.h-tk-s .h-tk-l{font:700 27px/1.1 var(--serif);letter-spacing:-.03em}
+.h-tk .h-lend b{color:var(--cyl)}
+.h-tk .h-lend,.h-tk .h-upd{opacity:.32;transition:opacity .35s ease}.h-tk .h-upd{border-bottom:0}
+.h-tk:not([data-step="0"]) .h-lend,.h-tk[data-step="3"] .h-upd{opacity:1}
+.h-tk[data-step="2"] .h-tk-s,.h-tk[data-step="3"] .h-tk-s{transform:translate(18px,14px) rotate(5deg)}
+@media (max-width:1060px){.h-tk{position:static}}
+@media (max-width:560px){.h-tk{flex-direction:column;max-width:none}
+ .h-tk-m{padding:24px 22px 14px;-webkit-mask-image:radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px)}
+ .h-tk-s{width:100%;flex-direction:row;justify-content:space-between;align-items:end;gap:14px;-webkit-mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px)}
+ .h-tk-s::before{left:18px;right:18px;top:0;bottom:auto;border-left:0;border-top:2px dashed rgba(255,255,255,.65)}
+ .h-tk[data-step="2"] .h-tk-s,.h-tk[data-step="3"] .h-tk-s{transform:translate(5px,20px) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.h-tk-s{transition:none}}
