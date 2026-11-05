@@ -5,8 +5,11 @@
 [data-page="company.html"] .rstage .rs-bot canvas{display:block;max-width:100%}
 
 /* letter: the destination across the top, then the collaborative arm in dots beside the letter */
-.c-letter{margin-top:clamp(40px,5vw,72px)}
-.c-pic{max-width:440px}
+.c-letter{margin-top:clamp(40px,5vw,72px);grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:stretch}
+/* the arm fills its column and stands on a floor level with the end of the letter, so neither side runs on alone */
+.c-letter .lh{position:static;display:flex;align-items:flex-end;min-width:0}
+.c-pic{width:100%}
+.c-letter .lb .sig{margin-bottom:0}
 .c-pic .rstage .rs-base{background:#cfd6e3}
 
 /* what we are building: three lines in large type, each with its link */
@@ -28,8 +31,8 @@
 .c-aud .h3{margin-bottom:6px}
 .c-aud p{margin:0;color:#3e4656;font-size:16px;line-height:1.5;max-width:44ch}
 
-@media (max-width:1060px){.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:380px}.c-letter{gap:36px}}
+@media (max-width:1060px){.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:420px}.c-letter{gap:36px;grid-template-columns:minmax(0,1fr)}.c-pic .c-bot .rs-bot{height:calc(var(--h) * .8)}}
 @media (max-width:680px){
  .c-lines li{grid-template-columns:minmax(0,1fr)}
- .c-pic .c-bot .rs-bot{height:calc(var(--h) * .72)}
+ .c-pic .c-bot .rs-bot{height:calc(var(--h) * .68)}
 }

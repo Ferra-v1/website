@@ -270,3 +270,36 @@
   });
   settle(); let st; addEventListener('resize', () => { clearTimeout(st); st = setTimeout(() => { fitH(); settle(); }, 120); });
 })();
+
+// The vision statement: every word starts grey and turns ink one after another as the sentence scrolls up the screen, and reverses
+// on the way back. Without JavaScript, or with reduced motion, the sentence is simply ink.
+(() => {
+  const el = document.querySelector('[data-scrub]');
+  if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const words = el.textContent.trim().split(/\s+/);
+  el.textContent = '';
+  const spans = words.map((w, i) => { const s = document.createElement('span'); s.textContent = w; el.append(s, i < words.length - 1 ? ' ' : ''); return s; });
+  const FROM = [139, 147, 164];
+  const TO = (getComputedStyle(el).color.match(/\d+/g) || [14, 22, 38]).slice(0, 3).map(Number);
+  const SOFT = 5; // how many words are mid-change at once
+  const last = new Array(spans.length).fill(-1);
+  let queued = false;
+  const paint = () => {
+    queued = false;
+    const r = el.getBoundingClientRect(), vh = innerHeight;
+    // starts when the sentence enters the lower part of the screen, done by the time it is a little above the middle
+    const start = vh * .86, end = vh * .42 - r.height;
+    const p = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
+    const head = p * (spans.length + SOFT);
+    spans.forEach((s, i) => {
+      const t = Math.round(Math.min(1, Math.max(0, (head - i) / SOFT)) * 100) / 100;
+      if (t === last[i]) return;
+      last[i] = t;
+      s.style.color = `rgb(${FROM.map((f, k) => Math.round(f + (TO[k] - f) * t)).join(',')})`;
+    });
+  };
+  const ask = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+  paint();
+  addEventListener('scroll', ask, { passive: true });
+  addEventListener('resize', ask);
+})();
