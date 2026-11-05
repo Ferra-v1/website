@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.ferra.world/sitemap.xml
+Sitemap: https://www.ferra.company/sitemap.xml
