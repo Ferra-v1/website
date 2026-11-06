@@ -43,13 +43,12 @@
   const cv = story.querySelector('.hw-grid'), paper = story.querySelector('.hw-paper'), pay = story.querySelector('.hw-pay'), pays = [...pay.children];
   const ra = story.querySelector('.hw-ra'), rb = story.querySelector('.hw-rb'), steps = [...story.querySelectorAll('.hw-ch')], stage = story.querySelector('.hw-stage');
   const ctx = cv.getContext('2d');
-  let F = null, blocks = [], line = 0, focus = 0, target = 0, cur = 0, raf = 0, shown = '', intro = reduce ? 1 : 0, t0 = 0, aside = { s: 1, x: 0 };
+  let F = null, blocks = [], line = 0, focus = 0, target = 0, cur = 0, raf = 0, shown = '', intro = reduce ? 1 : 0, t0 = 0;
   function size() {
     const si = stage.querySelector('.hw-si'), col = si.clientWidth, ph = phone();
     F = fit(cv, col, ph ? Math.min(innerHeight * .31, 300) : Math.max(320, innerHeight - 270));
-    // beside the paper the robot stands smaller at the left of the same floor
-    if (!ph) { const room = Math.min(336, col * .6), s = clamp((col - room - 32) / F.w, .36, .72); aside = { s, x: (col - F.w * s) / 2 }; paper.style.width = room + 'px'; }
-    else { aside = { s: 1, x: 0 }; cv.style.transform = ''; }
+    // the robot keeps its size. The paper slides over its right third, as far right as the page allows, into the space under the arm.
+    if (!ph) { const room = Math.min(300, col * .62), right = (col + F.w) / 2, spare = Math.max(0, Math.min(24, innerWidth - si.getBoundingClientRect().right - 16)); paper.style.width = room + 'px'; paper.style.left = Math.min(right - F.w / 3, col + spare - room) + 'px'; }
   }
   function read(a, b, an, bn) {
     if (a !== shown) { shown = a; ra.firstChild.textContent = a; rb.firstChild.textContent = b; }
@@ -66,11 +65,10 @@
     else if (i === 4) { py = 108 - 108 * ease(clamp(t * 2.4)); st = { scan: 2, level: OWN }; read('The loan, ' + D.adv + '%', 'The company pays, ' + D.rest + '%', money(D.l), money(D.v - D.l)); }
     else if (i === 5) { py = 108 * ease(clamp(t * 3)); st = { scan: 2, level: OWN, wave: -0.2 + t * 1.5 }; read('The lender pays', "Ferra's fee, once", money(D.l), exact(D.fee)); }
     else if (i === 6) { m = t * (D.term - 1); showPay = true; st = { scan: 2, level: level(m) }; const k = Math.round(m), s = D.months[k]; read('Still owed, month ' + k, 'The robots are worth', money(s[1]), money(s[0])); }
-    else { m = D.term - 1; showPay = true; st = { scan: 2, level: level(m) }; read('Still owed, month ' + m, 'The robots are worth', money(D.months[m][1]), money(D.months[m][0])); }
+    else { const u = i === 7 ? t : 1; m = D.term; showPay = true; st = { scan: 2, level: level(m - 1) + (1.05 - level(m - 1)) * ease(clamp(u * 3)), wave: u < 1 ? -0.2 + u * 1.7 : undefined }; read('Still owed, month ' + m, 'The robots are worth', '$0', money(D.months[m][0])); }
     if (!phone()) {
       const a = 1 - py / 108;
       paper.style.opacity = a > .01 ? 1 : 0; paper.style.transform = `translateY(${py}%)`;
-      cv.style.transform = a > .001 ? `translateX(${-aside.x * a}px) scale(${1 - (1 - aside.s) * a})` : '';
     }
     pay.classList.toggle('on', showPay);
     const k = Math.round(m); pays.forEach((d, j) => d.classList.toggle('p', j < k));
@@ -108,30 +106,71 @@
     if (reduce) { render(3.99); } else { measure(); onScroll(); cur = target; if (!raf) raf = requestAnimationFrame(tick); }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!reduce) { measure(); onScroll(); } });
   }
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { refresh(); fsize(); fpaint(); lsize(); lpaint(); }, 120); });
+  let rt, lw = innerWidth, lh = innerHeight; addEventListener('resize', () => { if (innerWidth === lw && Math.abs(innerHeight - lh) < 140) return; lw = innerWidth; lh = innerHeight; clearTimeout(rt); rt = setTimeout(() => { refresh(); fsize(); fpaint(); }, 120); });
   if (!reduce) addEventListener('scroll', onScroll, { passive: true });
   addEventListener('load', () => { if (!reduce && bot) { measure(); onScroll(); } });
 
-  // ---------------------------------------------------------------- what if the company fails: one slider. The robot stands for what is still owed; the bright part is what the sale pays back.
+  // ---------------------------------------------------------------- what if the company fails: one slider.
+  // The robot stands for what is still owed. The dots still standing are what the sale pays back. The rest fall into a heap under the arm, the top of the machine first, and come back as the slider moves up.
   const box = document.querySelector('[data-fail]');
-  let FF = null, fc = null, flevel = 0, ftarget = 0, fraf = 0, inp = null;
+  let FF = null, fc = null, fraf = 0, flast = 0, inp = null, arrived = false, heap = null;
   const FD = box ? JSON.parse(box.dataset.fail) : null, fg = box && box.querySelector('.hw-fgrid');
   const out = n => box.querySelector(`[data-fo="${n}"]`);
-  function fsize() { if (!box || !load()) return; FF = fit(fg, box.clientWidth, phone() ? 240 : Math.min(360, innerHeight * .4)); }
+  const LIVE = 'rgb(150,232,255)', LOST = 'rgba(255,255,255,.36)', FALL_MS = 760;
+  // the heap's places, in the order they fill: from the floor up, the middle first, so at any count it reads as a rounded mound under the arm
+  function heapSlots() {
+    const low = bot.pts.filter(d => d.y > bot.rows * .72), edge = Math.max(...low.map(d => d.x)) + 1.5, mid = (edge + bot.w) / 2, half = (bot.w - edge) / 2, list = [];
+    for (let r = 0; r < 70; r++) for (let x = edge + (r % 2 ? .5 : 0); x < bot.w - .4; x += 1) { const u = (x - mid) / half; list.push({ x, y: bot.rows - .5 - r * .84, score: r + 26 * u * u }); }
+    return list.sort((a, b) => a.score - b.score);
+  }
+  // the order the machine comes apart: walking outward from the floor through touching dots, so the tip of the arm goes first and what stands is always one connected piece
+  function failOrder() {
+    const at = new Map(bot.pts.map(d => [d.x + ',' + d.y, d])), low = Math.max(...bot.pts.map(d => d.y)), seen = new Set(), order = [];
+    let wave = bot.pts.filter(d => d.y === low);
+    wave.forEach(d => seen.add(d));
+    while (wave.length) {
+      order.push(...wave.slice().sort((a, b) => a.r - b.r));
+      const next = [];
+      for (const d of wave) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const n = at.get((d.x + dx) + ',' + (d.y + dy)); if (n && !seen.has(n)) { seen.add(n); next.push(n); } }
+      wave = next;
+    }
+    bot.pts.forEach(d => { if (!seen.has(d)) order.push(d); });
+    order.forEach((d, i) => { d.fr = i / order.length; d.fi = order.length - 1 - i; });
+  }
+  function fsize() { if (!box) return; FF = fit(fg, box.clientWidth, phone() ? 300 : Math.min(440, innerHeight * .46)); }
   function fpaint() {
     if (!FF) return;
-    const b = bot, p = FF.pitch, paid = [], rest = [];
+    const p = FF.pitch, r = p * .41, up = [], down = [];
     fc.setTransform(FF.dpr, 0, 0, FF.dpr, 0, 0); fc.clearRect(0, 0, FF.w, FF.h);
-    for (const d of b.pts) { (d.rank < flevel ? paid : rest).push([(d.x + .5) * p, (d.y + .5) * p, p * .41]); }
-    dots(fc, rest, 'rgba(255,255,255,.2)');
-    dots(fc, paid, 'rgb(150,232,255)');
+    for (const d of bot.pts) {
+      const h = d.h, x = d.x + (h.x - d.x) * d.k, y = d.y + (h.y - d.y) * d.k * d.k;   // gravity: slow at the top of the fall, fast at the floor
+      (d.to === 0 ? up : down).push([(x + .5) * p, (y + .5) * p, r]);
+    }
+    dots(fc, down, LOST); dots(fc, up, LIVE);
   }
   function sale(pc) {
     const each = FD.val / FD.n * pc, total = each * FD.n;
     if (total >= FD.debt) return { sold: Math.ceil(FD.debt / each - 1e-9), back: FD.debt, left: total - FD.debt, short: 0, share: 1.02 };
     return { sold: FD.n, back: total, left: 0, short: FD.debt - total, share: total / FD.debt };
   }
-  function ftick() { fraf = 0; const d = ftarget - flevel; flevel = Math.abs(d) < .002 || reduce ? ftarget : flevel + d * .22; fpaint(); if (flevel !== ftarget) fraf = requestAnimationFrame(ftick); }
+  function ftick(now) {
+    fraf = 0; const dt = Math.min(48, now - (flast || now)); flast = now; let busy = false;
+    for (const d of bot.pts) {
+      if (d.k === d.to) continue;
+      if (d.wait > 0) { d.wait -= dt; busy = true; continue; }
+      d.k = d.to > d.k ? Math.min(1, d.k + dt / FALL_MS) : Math.max(0, d.k - dt / FALL_MS); busy = true;
+    }
+    fpaint(); if (busy) fraf = requestAnimationFrame(ftick); else flast = 0;
+  }
+  function settle(share) {
+    // dots that change sides leave in order, the top of the machine first when falling and the lowest gap first when coming back
+    const change = bot.pts.filter(d => d.to !== (d.fr < share ? 0 : 1));
+    change.sort((a, b) => a.to === 0 ? b.fr - a.fr : a.fr - b.fr);
+    const gap = Math.min(2, 800 / Math.max(1, change.length));
+    change.forEach((d, i) => { d.to = d.to ? 0 : 1; d.wait = i * gap; if (reduce) d.k = d.to; });
+    if (reduce) { fpaint(); return; }
+    if (!fraf) fraf = requestAnimationFrame(ftick);
+  }
   function apply() {
     const pc = +inp.value / 100, s = sale(pc);
     out('pct').textContent = inp.value + '%';
@@ -141,39 +180,21 @@
     out('say').textContent = s.short > 0 ? `All ${FD.n} robots are sold and it comes up ${money(s.short)} short. The lender takes that loss.` : `It takes ${s.sold === FD.n ? 'all ' + FD.n + ' robots' : s.sold + ' of the ' + FD.n + ' robots'} to pay back the lender. The rest of the money goes to the company.`;
     inp.style.setProperty('--f', ((+inp.value - +inp.min) / (+inp.max - +inp.min) * 100) + '%');
     inp.setAttribute('aria-valuetext', inp.value + ' percent');
-    ftarget = s.share; if (!fraf) fraf = requestAnimationFrame(ftick);
+    if (arrived) settle(s.share);
   }
   function fstart() {
-    if (!box || !load()) return;
+    if (!box) return;
     const sl = box.querySelector('.hw-sl'); inp = sl.querySelector('input'); fc = fg.getContext('2d');
+    heap = heapSlots(); failOrder(); bot.pts.forEach(d => { Object.assign(d, { k: 0, to: 0, wait: 0, h: heap[d.fi] }); });
     sl.hidden = false; inp.addEventListener('input', apply);
-    sl.querySelector('.hw-tick').addEventListener('click', () => { inp.value = box.dataset.mid; apply(); });
-    fsize(); flevel = sale(+inp.value / 100).share; apply(); fpaint();
+    sl.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { inp.value = b.dataset.to; apply(); }));
+    fsize(); fpaint(); apply();
+    // the robot stands whole until the reader arrives, then what the sale cannot pay comes down
+    const arrive = () => { arrived = true; apply(); };
+    if (reduce || !('IntersectionObserver' in window)) arrive();
+    else new IntersectionObserver((es, o) => es.forEach(en => { if (en.isIntersecting) { o.disconnect(); arrive(); } }), { threshold: .5 }).observe(fg);
   }
 
-  // ---------------------------------------------------------------- nothing is owed: the last dots go in when the reader arrives
-  const fin = document.querySelector('[data-fin]');
-  let LF = null, lc = null, lu = 0, lraf = 0, lt0 = 0;
-  const FN = fin ? JSON.parse(fin.dataset.fin) : null, lcv = fin && fin.querySelector('.hw-fing-c');
-  const lpays = fin ? [...fin.querySelector('.hw-pay').children] : [], lwhen = fin && fin.querySelector('[data-fi="when"]'), lowed = fin && fin.querySelector('[data-fi="owed"]');
-  function lsize() { if (!fin || !load()) return; LF = fit(lcv, fin.querySelector('.hw-fins').clientWidth, phone() ? 300 : Math.min(560, innerHeight * .62)); }
-  function lpaint() {
-    if (!LF) return;
-    const done = lu >= .5, wave = lu > .5 ? -0.2 + (lu - .5) * 2.8 : undefined;
-    paint(lc, LF, { scan: 2, level: done ? 1.05 : level(FN.term - 1) + (1.05 - level(FN.term - 1)) * ease(lu * 2), wave }, 1);
-    lpays.forEach((d, j) => d.classList.toggle('p', j < FN.term - 1 || lu >= .25));
-    lwhen.textContent = 'Still owed, month ' + (lu >= .25 ? FN.term : FN.term - 1);
-    lowed.textContent = lu >= .25 ? '$0' : money(FN.from);
-  }
-  function lrun(now) { if (!lt0) lt0 = now; lu = clamp((now - lt0) / 2200); lpaint(); lraf = lu < 1 ? requestAnimationFrame(lrun) : 0; }
-  function lstart() {
-    if (!fin || !load()) return;
-    lc = lcv.getContext('2d'); lsize();
-    if (reduce) { lu = 1; lpaint(); return; }
-    lu = 0; lpaint();
-    new IntersectionObserver((es, o) => es.forEach(en => { if (en.isIntersecting) { o.disconnect(); lraf = requestAnimationFrame(lrun); } }), { threshold: .45 }).observe(lcv);
-  }
-
-  const boot = () => { start(); fstart(); lstart(); };
+  const boot = () => { start(); fstart(); };
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', boot) : boot();
 })();

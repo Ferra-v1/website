@@ -151,7 +151,7 @@
       if (sel === shown) return; shown = sel;
       const c = D.curve[sel], y = D.now - sel, near = P.filter(q => Math.abs(q.whole - sel) <= 1).length;
       root.querySelector('.r-ra').textContent = sel === 1 ? '1 year old' : sel + ' years old';
-      root.querySelectorAll('.r-ry').forEach(s => s.textContent = y);
+      document.querySelectorAll('.r-ry').forEach(s => s.textContent = y);
       const thin = D.tier === 'thin';
       root.querySelector('.r-rv').textContent = thin ? `${money(c[0])} to ${money(c[2])}` : money(c[1]);
       // one sentence for each state, counting only the listings that back the price when those are few
@@ -159,7 +159,7 @@
       const nf = P.filter(q => q.fit && Math.abs(q.whole - sel) <= 1).length, F = D.fit;
       root.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' backs' : 's back'} this, ${nf === 0 ? 'none this age. Our guess from other ages.' : nf === F ? (F === 1 ? 'near this age.' : F === 2 ? 'both near this age.' : 'all near this age.') : NW[nf] + ' near this age.'}` : `Most ask ${money(c[0])} to ${money(c[2])}.`;
       root.querySelector('.r-rn').textContent = thin ? '' : near ? `${near} listing${near === 1 ? '' : 's'} within a year of this age.` : 'No listings this age yet. Our guess from other ages.';
-      root.querySelector('.r-rl').href = `price.html#r=${D.id}&y=${y}&p=${Math.round(c[1] / 100) * 100}`;
+      const ask = Math.round(c[1] / 100) * 100, go = document.querySelector('.r-rl'); if (go) go.href = `price.html#r=${D.id}&y=${y}&p=${ask}&m=${Math.round(ask * .036 / 10) * 10}`;   // the tool opens on this price with a rent that fits it
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
       place();
@@ -220,6 +220,14 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); place(); kick(); });
     // the finished still draws the robot once, beside the words
     if (!live) { const s = root.querySelector('.r-still'); if (s && G) { s.style.aspectRatio = `${G.x1 - G.x0 + 1}/${G.y1 - G.y0 + 1}`; requestAnimationFrame(() => { if (!s.clientWidth) return; const { c, w, h } = fit(s); const cell = w / (G.x1 - G.x0 + 1); c.drawImage(ghostBitmap(G, cell, BODY), 0, 0, w, h); c.fillStyle = '#fff'; c.beginPath(); P.forEach(q => { const X_ = (q.gx - G.x0 + .5) * cell, Y_ = (q.gy - G.y0 + .5) * cell; c.moveTo(X_ + 3, Y_); c.arc(X_, Y_, clamp(cell * .72, 2, 3.4), 0, 6.2832); }); c.fill(); }); } }
+    // the arms at each age: all stand at the first arm's height, then settle to their own price, drawn to scale on one floor
+    const ags = document.querySelector('.r-ags');
+    if (ags && G) {
+      const cvs = [...ags.querySelectorAll('canvas')], cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1;
+      const put = () => cvs.forEach(cv => { const { c, w, h } = fit(cv), cell = Math.min(w / cols, h / rows); if (!cell) return; const faint = cv.closest('.e0') ? .24 : cv.closest('.e1') ? .55 : .9; c.drawImage(ghostBitmap(G, cell, faint, '40,71,206'), 0, h - rows * cell, cols * cell, rows * cell); });
+      new ResizeObserver(put).observe(ags);
+      if (live) { ags.classList.add('wait'); const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); setTimeout(() => ags.classList.remove('wait'), 150); } }), { threshold: .4 }); io.observe(ags); }
+    }
     // the long lists start short
     const mds = document.querySelector('.r-mds');
     if (mds) { const links = [...mds.children], keep = 12; if (links.length > keep + 3) { links.slice(keep).forEach(a => { a.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${links.length} models \u2192`; mds.after(b); b.addEventListener('click', () => { links.forEach(a => { a.hidden = false; }); b.remove(); }); } }

@@ -2,41 +2,33 @@
 .page[data-page="index.html"]{--cy:rgb(150,232,255);--cyl:#0394e0}
 .page[data-page="index.html"] > .sec{padding-top:clamp(64px,5.2vw,76px);padding-bottom:clamp(64px,5.2vw,76px)}
 .page[data-page="index.html"] > .band{padding-top:clamp(64px,5.2vw,76px);padding-bottom:clamp(64px,5.2vw,76px)}
-/* H2 the question: the film stays pinned while the words ride up over it */
-.h-world{position:relative;z-index:2;margin-top:-150vh;margin-top:-150svh;background:#04060c;color:#fff}
-.h-world.h-wj{background:none;pointer-events:none}
-.h-world.h-wj .h-wv,.h-world.h-wj .h-wt{opacity:0}
+/* H2 the question: one pinned scene. The stage comes up out of black once the section has reached the top of the screen. */
+.h-world{position:relative;z-index:2;margin-top:-125svh;height:130vh;height:130lvh;background:#04060c;color:#fff}
+.h-world.h-wj{background:none}
+.h-world.h-wj .h-wv{opacity:0}
 .h-wv{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden;background:#04060c}
-.h-wv::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(4,6,12,.28),rgba(4,6,12,0) 30%,rgba(4,6,12,.1) 55%,rgba(4,6,12,.72))}
+.h-wv::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(4,6,12,.28),rgba(4,6,12,0) 30%,rgba(4,6,12,.12) 52%,rgba(4,6,12,.78))}
 .h-wf{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.h-wt{position:relative;margin-top:-100vh;margin-top:-100lvh}
-.h-wb{display:flex;flex-direction:column;justify-content:flex-end;min-height:24vh}
-.h-wb0{min-height:92vh;min-height:92svh;padding-bottom:clamp(32px,6vh,64px)}
+.h-wt{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + clamp(32px,6vh,64px));z-index:1}
 .h-wq{font:700 clamp(52px,min(9vw,15.5vh),148px)/.96 var(--serif);letter-spacing:-.04em;margin:0;color:#fff}
-.h-ws{font:600 clamp(30px,min(4vw,7vh),60px)/1.08 var(--serif);letter-spacing:-.03em;margin:0;color:#fff;max-width:17em;text-wrap:balance;text-shadow:0 1px 20px rgba(4,6,12,.55)}
-/* H3 the answer: one sentence in display type, then twelve priced robots on one hairline (four groups of three) */
+.h-ws{font:500 clamp(22px,min(2.5vw,4.4vh),36px)/1.2 var(--sans);letter-spacing:-.016em;margin:clamp(14px,2.4vh,24px) 0 0;color:#fff;max-width:30em;text-wrap:balance}
+/* H3 the answer: one sentence in display type, then six moving robots standing on one line across the screen */
 .h-vis{background:#fff;padding:clamp(64px,5.2vw,76px) 0 clamp(64px,5vw,72px)}
-.h-vlead{font:700 clamp(34px,min(4.2vw,7.6vh),60px)/1.06 var(--serif);letter-spacing:-.034em;color:var(--ink);margin:0;max-width:19em;text-wrap:pretty}
-.h-vrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:clamp(44px,4.4vw,64px)}
-.h-vq{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end}
-.h-vs{display:flex;flex-direction:column;align-items:center;min-width:0}
-.h-vp{font:500 13px/16px var(--sans);font-variant-numeric:lining-nums tabular-nums;color:var(--ink);white-space:nowrap}
-.h-vk{display:block;width:1px;height:8px;margin:1px 0;background:var(--line)}
-.h-vs .rs-bot{width:calc(100% + 8px);margin:0 -4px;height:72px;display:flex;align-items:flex-end;justify-content:center}
-.h-vt .rs-bot{height:92px}
-.h-vs canvas{display:block;max-width:100%}
+.h-vlead{font:700 clamp(34px,min(4vw,7.4vh),58px)/1.06 var(--serif);letter-spacing:-.034em;color:var(--ink);margin:0;max-width:20em;text-wrap:pretty}
+.h-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:min(100% - 48px,1640px);margin:clamp(36px,3.6vw,56px) auto 0}
+.h-bot{margin:0;display:flex;flex-direction:column;min-width:0}
+.h-bs{flex:1;display:flex;align-items:flex-end;padding:0 clamp(8px,1vw,18px)}
+.h-bc{display:block;width:100%;height:auto;aspect-ratio:112 / var(--r)}
 .h-defs{position:absolute;width:0;height:0;overflow:hidden}
-.h-vs canvas{filter:url(#h-ink)}
-.h-vl{grid-column:1 / -1;position:relative;display:block;height:1px;background:var(--line)}
-.h-vl i{position:absolute;inset:0;background:var(--c);transform:scaleX(0);transform-origin:left}
-.h-vn{display:block;text-align:center;font-size:14px;line-height:1.25;color:var(--ink);margin-top:10px}
-@media (min-width:1240px){.h-vn{white-space:nowrap;font-size:13px}}
-.h-vn i{display:block;font-style:normal;color:#5a6478}
-.h-vcap{margin:clamp(18px,1.8vw,24px) 0 0}
-.h-vrow.h-wait .h-vp,.h-vrow.h-wait .h-vk,.h-vrow.h-wait .h-vn{opacity:0;transform:translateY(6px)}
-.h-vrow.h-go .h-vp,.h-vrow.h-go .h-vk,.h-vrow.h-go .h-vn{opacity:1;transform:none;transition:opacity .3s ease calc(var(--k) * 120ms + 300ms),transform .3s ease calc(var(--k) * 120ms + 300ms)}
-.h-vrow.h-go .h-vl i{transform:none;transition:transform .425s linear calc(var(--g) * .425s)}
-.h-vrow.h-done .h-vl i{transform:none}
+.h-bl{display:block;height:1px;background:var(--line);position:relative}
+.h-bl::after{content:"";position:absolute;inset:0;background:var(--c);transform:scaleX(0);transform-origin:left}
+.h-bot figcaption{padding:clamp(12px,1.2vw,18px) clamp(8px,1vw,18px) 0}
+.h-bot b{display:block;font:700 clamp(23px,2.1vw,34px)/1.05 var(--serif);letter-spacing:-.028em;color:var(--ink)}
+.h-bot span{display:block;font-size:clamp(15px,1.15vw,17px);line-height:1.3;color:#3e4656;margin-top:5px}
+.h-bot.h-wait figcaption{opacity:0;transform:translateY(8px)}
+.h-bot.h-on figcaption{opacity:1;transform:none;transition:opacity .45s ease .7s,transform .45s ease .7s}
+.h-bot.h-on .h-bl::after{transform:none;transition:transform .5s linear .1s}
+.page[data-page="index.html"] .h-vcap{grid-column:1 / -1;margin:clamp(16px,1.6vw,22px) 0 0;padding:0 clamp(8px,1vw,18px)}
 /* H5 how it works: four sentences, the one being told in ink, beside the ticket */
 .h-big{font:700 clamp(38px,min(4.6vw,8.2vh),66px)/1.02 var(--serif);letter-spacing:-.034em;margin:0;text-wrap:balance}
 .h-ink .h-big{color:#fff}
@@ -54,8 +46,11 @@
 .h-how-r{display:flex;justify-content:flex-end;align-items:center;padding-right:18px}
 /* H9 what if a loan goes bad: one big thing, the 50 robots. They arrive as one block, then part: 35 cover the loan, 15 are extra. */
 .h-ink{background:var(--ink);overflow-x:clip}
-.h-qp{font-size:clamp(19px,1.7vw,24px);line-height:1.42;letter-spacing:-.008em;color:rgba(255,255,255,.82);margin:clamp(18px,2vw,28px) 0 0;max-width:34em;text-wrap:pretty}
-.h-split{--g:6px;--part:clamp(28px,4.4vw,64px);display:grid;grid-template-columns:calc((100% - var(--part) - 8 * var(--g)) * .7 + 6 * var(--g)) minmax(0,1fr);column-gap:var(--part);margin-top:clamp(36px,3.4vw,48px)}
+.h-qh{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:end}
+.h-qh .h-big{text-wrap:wrap}
+.page[data-page="index.html"] .h-qp{font-size:clamp(18px,1.4vw,20px);line-height:1.4;letter-spacing:-.006em;color:rgba(255,255,255,.86);margin:0;text-wrap:pretty}
+.h-split{--g:6px;--part:clamp(28px,4.4vw,64px);display:grid;grid-template-columns:calc((100% - var(--part) - 8 * var(--g)) * .7 + 6 * var(--g)) minmax(0,1fr);column-gap:var(--part);margin:clamp(30px,2.8vw,40px) 0 0}
+.h-qh,.h-split,.h-low,.h-qfoot{max-width:min(100%,calc(100vh * 1.19))}
 .h-fgrid{display:grid;gap:4px var(--g);grid-auto-flow:column;grid-template-rows:repeat(5,auto)}
 .h-f7{grid-template-columns:repeat(7,minmax(0,1fr))}
 .h-f3{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -81,22 +76,35 @@
 .h-qfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 32px;margin-top:clamp(14px,1.4vw,20px)}
 .page[data-page="index.html"] .h-icap{margin:0;color:rgba(255,255,255,.66);font-size:15px}
 .page[data-page="index.html"] .h-qfoot .tlink{margin:0}
-.h-close-g{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(32px,5vw,96px);align-items:center}
-.h-close-l .h-big{margin-bottom:14px}
-.page[data-page="index.html"] .h-close-l .body{margin-bottom:28px;font-size:clamp(18px,1.4vw,20px);line-height:1.4;max-width:30em;color:#3e4656;text-wrap:pretty}
-.h-close-r{transition-delay:.1s}
+/* H11 closing: the form as a sheet of paper in the loading bay. The band above it runs down into the picture with no edge. */
+.h-close{position:relative;background:var(--ink);padding:clamp(40px,4.4vw,64px) 0 clamp(48px,5vw,72px);overflow:hidden}
+.h-dock{position:absolute;inset:0}
+.h-df{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right 60%;display:block}
+.h-dock::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,var(--ink),rgba(14,22,38,0) 26%)}
+.h-close-g{position:relative;display:block}
+.h-close-l{background:#fff;color:var(--ink);padding:clamp(28px,2.6vw,40px);max-width:560px;border-radius:4px}
+.h-close-l .h-big{font-size:clamp(34px,3.2vw,46px);margin-bottom:12px}
+.page[data-page="index.html"] .h-close-l .body{margin-bottom:22px;font-size:clamp(17px,1.3vw,19px);line-height:1.4;max-width:30em;color:#3e4656;text-wrap:pretty}
+.h-close-r{display:none}
 .h-loopbot .rs-base{background:#cfd6e3}
 .h-loopbot canvas{filter:url(#h-ink)}
+@media (max-width:720px){
+ .h-close{background:var(--paper,#f8fafd);padding:64px 0}
+ .h-dock{display:none}
+ .h-close-l{background:none;padding:0;max-width:none;border-radius:0}
+ .h-close-r{display:block;margin-top:40px}
+ .h-loopbot .rs-bot{justify-content:flex-start}
+}
 /* reduced motion */
 @media (prefers-reduced-motion:reduce){
- .h-st em,.h-st b,.h-fb,.h-sb,.h-sl,.h-fc canvas,.h-tk-d i,.h-vp,.h-vk,.h-vn,.h-vl i{transform:none!important;transition:none!important;animation:none!important}
- .h-vp,.h-vk,.h-vn,.h-split:not(.h-lo) .h-fb,.h-split:not(.h-lo) .h-sl,.h-split.h-lo .h-sa .h-sl,.h-split.h-lo .h-f7 .h-fb:nth-child(-n+12){opacity:1!important}
- .h-world{margin-top:0}}
+ .h-st em,.h-st b,.h-fb,.h-sb,.h-sl,.h-fc canvas,.h-tk-d i,.h-bot figcaption,.h-bl::after{transform:none!important;transition:none!important;animation:none!important}
+ .h-bot figcaption,.h-split:not(.h-lo) .h-fb,.h-split:not(.h-lo) .h-sl,.h-split.h-lo .h-sa .h-sl,.h-split.h-lo .h-f7 .h-fb:nth-child(-n+12){opacity:1!important}
+ .h-world{margin-top:0;height:auto}}
 /* tablet */
 @media (max-width:1060px){
+ .h-qh{grid-template-columns:minmax(0,1fr);gap:16px}
  .page[data-page="index.html"] .h-howg{grid-template-columns:minmax(0,1fr);gap:48px}
  .h-how-r{justify-content:flex-start}
- .h-close-g{grid-template-columns:minmax(0,1fr)}
 }
 /* phone */
 @media (max-width:680px){
@@ -104,12 +112,10 @@
  .page[data-page="index.html"] > .band{padding-top:72px;padding-bottom:72px}
  /* the picture fills the upper band of the phone cut, so the question stands in the dark under it */
  .page[data-page="index.html"] .h-vcap,.page[data-page="index.html"] .h-icap{font-size:15px}
- .h-vis .h-vp,.h-vn{font-size:15px}
  .h-tk .sh-h span,.h-tk .h-tk-s .dr span,.h-close .fl span{font-size:15px}
- .h-wb0{padding-bottom:max(36px,5vh)}
+ .h-wt{bottom:calc(100lvh - 100svh + 22px)}
  .h-wq{font-size:clamp(40px,11.5vw,60px)}
- .h-ws{font-size:clamp(28px,8vw,36px);line-height:1.12}
- .h-wb:not(.h-wb0){min-height:60vh}
+ .h-ws{font-size:clamp(19px,5.2vw,24px);margin-top:10px}
  /* every sentence stays open on a phone, so the ticket under them never jumps */
  .h-st em{grid-template-rows:1fr;opacity:1;margin-top:6px;font-size:16px}
  .h-how-r{padding-right:0}
@@ -117,15 +123,16 @@
  .h-split{display:block;--part:36px}
  .h-fgrid{grid-auto-flow:row;grid-template-rows:none;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px var(--g)}
  .h-sb{margin-top:var(--part);transform:translateY(-36px)}
- .h-loopbot .rs-bot{justify-content:flex-start}
 }
 @media (max-width:680px){
  .h-vis{padding:64px 0 72px}
- .h-vrow{grid-template-columns:330px;row-gap:36px;margin-top:40px}
- .h-vq2,.h-vq3{display:none}
- .h-vq{grid-template-columns:repeat(3,110px)}
- .h-vs .rs-bot{height:56px}.h-vt .rs-bot{height:72px}
- .h-vrow.h-go .h-vl i{transition-duration:.85s;transition-delay:calc(var(--g) * .85s)}
+ /* two across: each robot stays at least 170px wide on the smallest phone we check */
+ .h-six{grid-template-columns:repeat(2,minmax(0,1fr));width:calc(100% - 32px);row-gap:34px;margin-top:36px}
+ .h-bs{padding:0}
+ .h-bot figcaption{padding:10px 0 0}
+ .page[data-page="index.html"] .h-vcap{padding:0;margin-top:0}
+ .h-bot:nth-child(odd) .h-bs,.h-bot:nth-child(odd) figcaption{padding-right:6px}
+ .h-bot:nth-child(even) .h-bs,.h-bot:nth-child(even) figcaption{padding-left:6px}
 }
 /* How it works: the example loan as a ticket. The stub holds the loan and tears off once it closes. */
 .h-tk{display:flex;width:100%;max-width:620px;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));font:400 16px/1.4 var(--doc);font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
@@ -135,8 +142,7 @@
 .h-tk-s::before{content:"";position:absolute;left:0;top:18px;bottom:18px;border-left:2px dashed rgba(255,255,255,.65)}
 .h-tk-s .dr{display:block;padding:0;border:0}.h-tk-s .dr span{display:block;color:rgba(255,255,255,.85);font-size:14px}.h-tk-s .dr b{color:#fff;display:block;text-align:left}
 .h-tk-s .h-tk-l{font:700 27px/1.1 var(--serif);letter-spacing:-.03em}
-.h-tk .h-lend b{color:var(--cyl)}
-.h-tk .h-lend,.h-tk .h-upd{opacity:.32;transition:opacity .35s ease}.h-tk .h-upd{border-bottom:0}
+.h-tk .h-lend,.h-tk .h-upd{opacity:.42;transition:opacity .35s ease}.h-tk .h-upd{border-bottom:0}
 .h-tk:not([data-step="0"]) .h-lend,.h-tk[data-step="3"] .h-upd{opacity:1}
 .h-tk[data-step="2"] .h-tk-s,.h-tk[data-step="3"] .h-tk-s{transform:translate(18px,14px) rotate(5deg)}
 .h-tk-d{display:grid;grid-template-columns:repeat(25,minmax(0,1fr));gap:5px;margin:2px 0 8px}
@@ -163,13 +169,16 @@
 .page[data-page="index.html"] .h-sel select:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
 .h-res{--nf:clamp(32px,min(3.1vw,5.2vh),44px);display:grid;grid-template-columns:calc(var(--nf) * 4.08) minmax(0,1fr);gap:clamp(8px,1.5vh,14px) clamp(12px,1.4vw,20px);align-items:baseline;margin-top:clamp(16px,2.8vh,26px)}
 .h-res b{font:700 var(--nf)/1 var(--serif);letter-spacing:-.03em;color:#fff}
-.h-res span{font-size:16px;line-height:1.3;color:rgba(255,255,255,.92);text-wrap:pretty;max-width:22em}
+.h-res b:first-child{font-size:calc(var(--nf) * .66);font-weight:600;letter-spacing:-.02em}
+.h-res span{font-size:16px;line-height:1.3;color:rgba(255,255,255,.92);text-wrap:pretty;max-width:25em}
+.page[data-page="index.html"] .h-note{grid-column:1 / -1;font-size:15px;line-height:1.3;color:rgba(255,255,255,.92);margin:0;max-width:40em;text-wrap:pretty}
+.h-note[hidden]{display:none}
 .h-acts{display:flex;flex-wrap:wrap;gap:0 26px;align-items:center;margin:clamp(6px,1.6vh,16px) 0 0}
 .h-acts a{display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:#fff;text-decoration:none}
 .h-acts a:hover{text-decoration:underline;text-underline-offset:4px}
 .h-tool{font-weight:600}
 .h-lendl{color:rgba(255,255,255,.88)!important}
-.h-film{position:relative;height:458vh;height:458svh;color:#fff}
+.h-film{position:relative;height:396vh;height:396svh;color:#fff}
 .h-stick{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden}
 .h-probe{position:absolute;top:0;left:0;width:1px;height:100vh;height:100svh;visibility:hidden;pointer-events:none}
 .h-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -209,7 +218,7 @@
 .h-tip a:hover{text-decoration:underline;text-underline-offset:3px}
 @media (max-width:900px){.h-h1{font-size:clamp(46px,10vw,96px)}.h-copy{max-width:none;padding-top:8px}}
 @media (max-width:1060px){.h-bt,.h-b3 .h-bt,.h-b4 .h-bt{max-width:none}.h-beat .in{justify-content:flex-start;padding-top:28px}.h-b2 .in{padding-top:28px}.h-say,.h-b2 .h-say,.h-b3 .h-say,.h-b4 .h-say{font-size:clamp(34px,9.6vw,64px)}}
-@media (max-width:760px){.h-h1{font-size:clamp(46px,13vw,64px)}.h-lede{font-size:17px;line-height:1.28;margin-top:8px}.h-box{margin-top:14px}.h-ask{margin-bottom:10px}.h-ctrls{flex-wrap:nowrap}.h-sel-r{flex:1 1 auto}.h-sel-y{flex:0 0 140px}.page[data-page="index.html"] .h-sel select{height:48px;font-size:15px;padding:0 30px 0 15px;background-position:right 12px center}.h-res{--nf:32px;gap:8px 12px;margin-top:14px}.h-res span{font-size:15px;line-height:1.25}.h-acts{margin-top:0;gap:0 18px}.h-axis span{font-size:15px}.h-sub{font-size:16px;margin-top:12px}.h-hint{margin-top:6px}.h-tip{font-size:15px}.h-tip a{min-height:44px}.h-xl i{display:none}.h-axis .h-l0,.h-axis .h-l1 b{font-size:15px}.h-axis .h-l1{width:auto;white-space:nowrap;text-align:right;font-size:15px}.h-axis .h-l1 b{margin-bottom:2px}.h-b2 .h-say span{display:inline}}
+@media (max-width:760px){.h-h1{font-size:clamp(46px,13vw,64px)}.h-lede{font-size:17px;line-height:1.28;margin-top:8px}.h-box{margin-top:14px}.h-ask{margin-bottom:10px}.h-ask span{display:none}.h-ctrls{flex-wrap:nowrap}.h-sel-r{flex:1 1 auto}.h-sel-y{flex:0 0 140px}.page[data-page="index.html"] .h-sel select{height:48px;font-size:15px;padding:0 30px 0 15px;background-position:right 12px center}.h-res{--nf:32px;gap:8px 12px;margin-top:14px}.h-res span{font-size:15px;line-height:1.25}.h-acts{margin-top:0;gap:0 18px}.h-axis span{font-size:15px}.h-sub{font-size:16px;margin-top:12px}.h-hint{margin-top:6px}.h-tip{font-size:15px}.h-tip a{min-height:44px}.h-xl i{display:none}.h-axis .h-l0,.h-axis .h-l1 b{font-size:15px}.h-axis .h-l1{width:auto;white-space:nowrap;text-align:right;font-size:15px}.h-axis .h-l1 b{margin-bottom:2px}.h-b2 .h-say span{display:inline}}
 .h-vnext{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,5vw,72px);align-items:end;margin-top:clamp(36px,3.6vw,52px)}
 .page[data-page="index.html"] .h-vtx{font:600 clamp(24px,2.2vw,32px)/1.18 var(--serif);letter-spacing:-.024em;color:var(--ink);margin:0;text-wrap:pretty}
 .page[data-page="index.html"] .h-vnot{font-size:clamp(17px,1.4vw,19px);line-height:1.4;color:#3e4656;margin:0}
@@ -220,7 +229,5 @@
 @media (max-width:760px) and (max-height:760px){.h-copy{padding-top:0}.h-h1{font-size:46px}.h-lede{font-size:16px;margin-top:6px}.h-box{margin-top:10px}.h-ask{margin-bottom:6px;font-size:16px}.h-res{--nf:28px;margin-top:10px;gap:5px 10px}.h-acts{margin-top:0}}
 /* a short laptop screen: tighter copy, so the links stay above the line the robot stands on */
 @media (min-width:761px) and (max-height:800px){.h-copy{padding-top:6px}.h-h1{font-size:min(7vw,10vh)}.h-lede{font-size:18px;margin-top:8px}.h-box{margin-top:14px}.h-ask{font-size:16px;margin-bottom:8px}.page[data-page="index.html"] .h-sel select{height:46px}.h-res{--nf:min(3vw,4.8vh);margin-top:12px;gap:6px 14px}.h-res span{font-size:15px}.h-acts{margin-top:0}.h-acts a{min-height:40px}}
-/* a tablet: two rows of six, so each robot stays big enough to read */
-@media (min-width:681px) and (max-width:1060px){.h-vrow{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:32px}}
-/* the three results: even rows beside the numbers on anything wider than a phone */
-@media (min-width:761px){.h-res{grid-auto-rows:1fr}}
+/* a tablet: three across, two rows */
+@media (min-width:681px) and (max-width:1060px){.h-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:36px}}

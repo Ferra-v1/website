@@ -1,12 +1,7 @@
-// Home page behaviour: the vision row, the step-synced term sheet, dot robots standing on hairlines, the vision statement, and the first screen
-// with its film (the last block in this file). Runs after dotbot.js and site.js, before DOMContentLoaded.
+// Home page behaviour: the step-synced ticket, six moving robots on one line, the two films, the vision statement, and the first screen
+// with its film. Runs after dotbot.js and site.js, before DOMContentLoaded.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const D = window.FERRA_DOTS || {};
-  // dot names fall back the way dotbot.js does: drop -l, then the names below, then the coarse grid's own fallback
-  const FALL = { cell: 'arm2', cartons: 'pallet', 'cell-loop': 'cell', 'cobot-loop': 'cobot', 'arm2-loop': 'arm2', 'pallet-loop': 'pallet', 'arm-loop': 'arm' };
-  const pick = n => { const seen = new Set(); while (n && !seen.has(n)) { seen.add(n); if (D[n]) return { name: n, b: D[n] };
-    if (n.endsWith('-l')) n = n.slice(0, -2); else n = FALL[n] || (n.endsWith('-s') && FALL[n.slice(0, -2)] ? FALL[n.slice(0, -2)] + '-s' : null); } return null; };
 
   // ---------------------------------------------------------------- H5 how it works
   // The sentences tell themselves in turn, from the first, while the section is on screen; touching one stops that. The ticket follows the sentence being told.
@@ -26,58 +21,79 @@
     }
   }
 
-  // ---------------------------------------------------------------- H3 vision: twelve robots assemble in turn, each price rises after its robot
-  // One motion for the section: when the row is 35% in view, robots assemble left to right 120ms apart, each price fades in and rises
-  // 300ms after its robot (CSS delays), and the hairline fills cobalt left to right. Once. Reduced motion draws the final state.
-  const vrow = document.querySelector('.h-vrow');
-  if (vrow) {
-    const vb = [...vrow.querySelectorAll('canvas.h-vbot')];
-    const drawV = (cv, anim) => { cv.dataset.anim = anim; window.FerraDots && window.FerraDots.draw(cv); };
-    const shown = () => vb.filter(cv => cv.offsetParent !== null);
-    if (reduce) { vrow.classList.add('h-done'); shown().forEach(cv => drawV(cv, 'static')); }
-    else {
-      vrow.classList.add('h-wait');
-      const o = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; o.disconnect();
-        vrow.classList.remove('h-wait'); vrow.classList.add('h-go');
-        shown().forEach((cv, k) => setTimeout(() => drawV(cv, 'assemble'), k * 120));
-        setTimeout(() => vrow.classList.add('h-done'), 3200); }), { threshold: .35 });
-      o.observe(vrow);
-    }
-    let vt; addEventListener('resize', () => { clearTimeout(vt); vt = setTimeout(() => { if (vrow.classList.contains('h-go') || reduce) shown().forEach(cv => drawV(cv, 'static')); }, 160); });
-  }
+})();
 
-  // ---------------------------------------------------------------- dot robots standing on a hairline
-  // Robots on a baseline are sized by height: each canvas gets the width that makes its dot grid exactly as tall as its slot, then
-  // is pulled down by its empty bottom rows so its lowest dots touch the line.
-  const grid = {};
-  const info = name => { if (name in grid) return grid[name]; const r = pick(name); if (!r) return grid[name] = null;
-    let my = 0, ny = 1e9, nx = 1e9, mx = 0; for (const s of r.b.d.split(';')) { const [x, y] = s.split(',').map(Number); if (y > my) my = y; if (y < ny) ny = y; if (x < nx) nx = x; if (x > mx) mx = x; }
-    return grid[name] = { w: r.b.w, h: r.b.h, rows: r.b.h - 1 - my, my, ny, nx, mx }; };
-
-  // vision row: each robot's visible dots stand exactly data-th px tall (data-thm on phones). dotbot.js sizes a robot
-  // by its box height with the empty rows under the feet already cut, so the box is made taller by the empty rows above the head and
-  // pulled up by the same amount: the price and its tick then sit right on the robot's top dot.
-  const fitH = () => document.querySelectorAll('.h-vs .rs-bot[data-th]').forEach(box => {
-    const cv = box.querySelector('canvas'), g = cv && info(cv.dataset.bot); if (!g) return;
-    const phone = innerWidth <= 680, T = +(phone ? box.dataset.thm : box.dataset.th), rows = g.my + 1, Hb = T * rows / (rows - g.ny);
-    box.style.height = Hb.toFixed(2) + 'px'; box.style.marginTop = -(Hb - T).toFixed(2) + 'px';
-  });
-  fitH();
-  let st; addEventListener('resize', () => { clearTimeout(st); st = setTimeout(fitH, 120); });
+// Six moving robots on one line. Each plays from its own sprite, repainted only when its frame changes (twelve a second), as one path per colour, and only while it is on screen.
+// A robot assembles when it arrives, its price following. Reduced motion draws each robot's first frame, still. If a sprite fails to load, the nearest still takes its place.
+(() => {
+  const figs = [...document.querySelectorAll('.h-bot')]; if (!figs.length) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, COB = '#2847ce', DEEP = '#1e339b';
+  const ARM = { x0: 5, x1: 106, y0: 9, y1: 118 };   // the first screen's arm carries empty rows round it; the rest stand on their lowest row
+  const bots = figs.map(fig => ({ fig, cv: fig.querySelector('canvas'), ctx: fig.querySelector('canvas').getContext('2d'), name: fig.querySelector('canvas').dataset.loop, frames: null, on: 0, f: 0, vis: false, cols: 112, rows: +getComputedStyle(fig).getPropertyValue('--r') }));
+  const size = b => { const w = b.cv.clientWidth, dpr = Math.min(2, devicePixelRatio || 1); if (!w) return; b.p = w / 112; b.dpr = dpr; const W = Math.round(w * dpr), H = Math.round(b.p * b.rows * dpr); if (b.cv.width !== W || b.cv.height !== H) { b.cv.width = W; b.cv.height = H; } b.stale = true; };
+  // one sprite to one Float32Array a frame: x, y, size, with the trim's dots after index frame.n
+  const decode = (b, m, ok) => { const im = new Image(), ia = new Image(); let got = 0;
+    const done = () => { if (++got < 2) return;
+      const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d', { willReadFrequently: true });
+      x.drawImage(im, 0, 0); const sz = x.getImageData(0, 0, c.width, c.height).data; x.clearRect(0, 0, c.width, c.height); x.drawImage(ia, 0, 0); const ac = x.getImageData(0, 0, c.width, c.height).data;
+      const per = m.per || Math.floor(im.width / m.w), arm = b.name === 'hero-arm-loop', frames = []; let lo = 1e9, hi = 0, low = 0;
+      for (let f = 0; f < m.frames; f++) { const ox = (f % per) * m.w, oy = Math.floor(f / per) * m.h, base = [], trim = [];
+        for (let y = 0; y < m.h; y++) { if (arm && (y < ARM.y0 || y > ARM.y1)) continue;
+          for (let X = 0; X < m.w; X++) { const i = ((oy + y) * c.width + ox + X) * 4, v = sz[i]; if (!v) continue; if (X < lo) lo = X; if (X > hi) hi = X; if (y > low) low = y;
+            // the arm is shaded for the blue screen, so bright plastic is big there: on white the shading turns over, the same way the other five were cut
+            const q = v / 252, s = arm ? Math.min(1, .62 + (1 - q) * 1.05) : Math.pow(q, .72); (ac[i] > 127 || s > .86 ? trim : base).push(X, y, s); } }
+        const a = new Float32Array(base.length + trim.length); a.set(base); a.set(trim, base.length); a.n = base.length; frames.push(a); }
+      b.dx = (112 - (hi + lo + 1)) / 2; b.dy = b.rows - 1 - low; b.n = m.frames; b.fps = m.fps || 12; ok(frames); };
+    im.onload = ia.onload = done; im.onerror = ia.onerror = () => ok(null); im.src = m.src; ia.src = m.acc; };
+  const paint = (b, k, now) => { const { ctx, p, dpr } = b, a = b.frames[b.f], n = a.length, dx = b.dx + .5, dy = b.dy + .5; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, b.cv.width, b.cv.height);
+    for (let part = 0; part < 2; part++) { ctx.fillStyle = part ? DEEP : COB; ctx.beginPath();
+      for (let i = part ? a.n : 0, e = part ? n : a.n; i < e; i += 3) { let x = (a[i] + dx) * p, y = (a[i + 1] + dy) * p, r = Math.max(.4, p * .5 * a[i + 2]);
+        if (k < 1) { const h = ((a[i] * 73 + a[i + 1] * 151) % 97) / 97, de = a[i + 1] / b.rows * .45 + h * .25, q = Math.min(1, Math.max(0, (k - de) / .3)), o = 1 - Math.pow(1 - q, 3); if (o <= 0) continue; x += (1 - o) * (h - .5) * p * 26; y += (1 - o) * (h * 1.7 - 1.1) * p * 18; r *= .35 + .65 * o; }
+        ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, 6.2832); }
+      ctx.fill(); } };
+  let run = false;
+  const tick = now => { let any = false;
+    for (const b of bots) { if (!b.frames || !b.on || !b.vis) continue; if (!b.t0) b.t0 = now; any = true;
+      const el = (now - b.t0) / 1000, k = reduce ? 1 : Math.min(1, el / 1.25), f = reduce ? 0 : k < 1 ? 0 : Math.floor((el - 1.25) * b.fps) % b.n;
+      if (k < 1 || f !== b.f || b.stale) { b.f = f; b.stale = false; paint(b, k, now); } }
+    if (any && !reduce) requestAnimationFrame(tick); else { run = false; if (any) bots.forEach(b => { if (b.frames && b.on && b.stale) { b.stale = false; paint(b, 1, now); } }); } };
+  const go = () => { if (!run) { run = true; requestAnimationFrame(tick); } };
+  const still = b => { const c = b.cv; c.classList.add('dotbot'); c.dataset.bot = c.dataset.still; c.dataset.tone = 'ink'; c.dataset.anim = 'static'; window.FerraDots && window.FerraDots.draw(c); };
+  const sprite = b => b.name === 'hero-arm-loop' ? window.FERRA_ARM : (window.FERRA_SEQ || {})[b.name + '-ink'];
+  const start = b => { const m = sprite(b); if (!m) return b.tries > 40 ? still(b) : (b.tries = (b.tries || 0) + 1, setTimeout(() => start(b), 250)); decode(b, m, fr => { if (!fr) return still(b); b.frames = fr; b.f = 0; size(b); b.stale = true; go(); }); };
+  const fetchAll = () => { bots.forEach((b, i) => { if (b.name === 'hero-arm-loop') return (window.requestIdleCallback || setTimeout)(() => start(b), { timeout: 400 }); const s = document.createElement('script'); s.src = 'media/dots/loops/' + b.name + '-ink.js'; s.onload = () => (window.requestIdleCallback || setTimeout)(() => start(b), { timeout: 400 }); s.onerror = () => still(b); document.head.appendChild(s); }); };
+  bots.forEach(size);
+  const near = new IntersectionObserver(es => { if (!es.some(en => en.isIntersecting)) return; near.disconnect(); fetchAll(); }, { rootMargin: '1200px' }); near.observe(figs[0]);
+  if (reduce) figs.forEach(f => f.classList.add('h-on')); else figs.forEach(f => f.classList.add('h-wait'));
+  const see = new IntersectionObserver(es => es.forEach(en => { const b = bots[figs.indexOf(en.target)]; b.vis = en.isIntersecting;
+    if (en.isIntersecting && !b.on) { const cols = innerWidth <= 680 ? 2 : innerWidth <= 1060 ? 3 : 6, k = figs.indexOf(en.target) % cols; setTimeout(() => { b.on = 1; b.t0 = 0; en.target.classList.remove('h-wait'); en.target.classList.add('h-on'); go(); }, reduce ? 0 : k * 130); }
+    if (en.isIntersecting) go(); }), { threshold: .25 });
+  figs.forEach(f => see.observe(f));
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { bots.forEach(size); go(); }, 140); });
 })();
 
 // The world's work film: fetched when the section is near and played only while it is on screen. Reduced motion keeps the poster.
-// The section arrives under the film's darkened stage, and once it has reached the top of the screen its picture and words come up out of black, in place.
+// The section arrives under the film's darkened stage. Once it has reached the top of the screen its picture and question come up out of black, in place, and the one line follows.
 (() => {
   const w = document.querySelector('.h-world'), v = w && w.querySelector('.h-wf'); if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const parts = [w.querySelector('.h-wv'), w.querySelector('.h-wt')]; let last = -1;
+  const stage = w.querySelector('.h-wv'), line = w.querySelector('.h-ws'); let last = -1, lastL = -1;
   w.classList.add('h-wj');
-  const fade = () => { const k = Math.min(1, Math.max(0, -w.getBoundingClientRect().top / (innerHeight * .22))); if (k === last) return; last = k; parts.forEach(p => p.style.opacity = k.toFixed(3)); };
+  const fade = () => { const t = -w.getBoundingClientRect().top / innerHeight, k = Math.min(1, Math.max(0, t / .2)), l = Math.min(1, Math.max(0, (t - .1) / .16));
+    if (k !== last) { last = k; stage.style.opacity = k.toFixed(3); }
+    if (l !== lastL) { lastL = l; line.style.opacity = l.toFixed(3); line.style.transform = l < 1 ? `translateY(${((1 - l) * 16).toFixed(1)}px)` : ''; } };
   fade(); addEventListener('scroll', fade, { passive: true }); addEventListener('resize', fade);
   v.muted = true;
   const near = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; near.disconnect(); v.preload = 'auto'; }, { rootMargin: '900px' });
   near.observe(v);
   new IntersectionObserver(es => { if (es[0].isIntersecting) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); }, { threshold: .01 }).observe(v);
+})();
+
+// The loading bay behind the form: plays once when the form arrives and holds its last frame. No film on a phone; reduced motion keeps the poster.
+(() => {
+  const v = document.querySelector('.h-df'); if (!v || innerWidth <= 720 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  v.muted = true;
+  const near = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; near.disconnect(); v.preload = 'auto'; }, { rootMargin: '900px' }); near.observe(v);
+  const o = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; o.disconnect(); const p = v.play(); if (p && p.catch) p.catch(() => {}); }, { threshold: .45 }); o.observe(v);
 })();
 
 // The vision statement: every word starts grey and turns ink one after another as the sentence scrolls up the screen, and reverses
@@ -125,9 +141,10 @@
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, seg = (s, a, b) => clamp((s - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
   // the timeline, in screens scrolled
-  const T = { slow: [0, .14], gather: [.14, .56], cam: [.08, .6], b1: [.54, .72, 1.06, 1.16], fly: [1.08, 1.54], axis: [1.22, 1.44], b2: [1.3, 1.44, 1.74, 1.84], curve: [1.42, 1.62],
+  const TS = .88, T = { slow: [0, .14], gather: [.14, .56], cam: [.08, .6], b1: [.54, .72, 1.06, 1.16], fly: [1.08, 1.54], axis: [1.22, 1.44], b2: [1.3, 1.44, 1.74, 1.84], curve: [1.42, 1.62],
     fall: [1.76, 2.04], axisOut: [1.78, 2], grow: [1.96, 2.18], b3: [2.02, 2.16, 2.38, 2.46], split: [2.4, 2.64], b4: [2.46, 2.62, 2.8, 2.9], end: [2.84, 3.08], dim: [2.8, 3.08] };
   const RESTS = [[.34, 0], [1.1, .94], [1.8, 1.68], [2.42, 2.28], [99, 2.72]];
+  for (const k in T) T[k] = T[k].map(v => v * TS); RESTS.forEach((r, i) => { if (i < 4) r[0] *= TS; r[1] *= TS; });
   const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
   let autoOK = true, W = 0, H = 0, FH = 0, dpr = 1, phone = false, frames = null, nF = 96, fps = 12, t0 = 0, D = null, R = null, dirty = true, vis = true, pose = 84;
   let hero = { p: 6, r: 1000, a: 1 }, beat = { p: 6, r: 1000 }, floorY = 800, C = { l: 0, r: 1000, t: 0, b: 800 }, disc = {}, age = 10, ask = 14700, sale = 6100, loan = 4300, rest = 1800;
@@ -135,7 +152,7 @@
 
   // ---------------------------------------------------------------- the price box: the only numbers baked into the page
   const tab = JSON.parse(document.getElementById('h-prices').textContent), rSel = document.getElementById('h-r'), ySel = document.getElementById('h-y'), tool = document.getElementById('h-tool');
-  const outs = ['h-av', 'h-pv', 'h-lv'].map(id => document.getElementById(id)), whyEl = document.getElementById('h-why');
+  const outs = ['h-av', 'h-pv', 'h-lv'].map(id => document.getElementById(id)), whyEl = document.getElementById('h-why'), noteEl = document.getElementById('h-note');
   const fmt = n => '$' + Math.round(n).toLocaleString('en-US'), r100 = v => Math.round(v / 100) * 100;
   let shown = null, tw = 0;
   const putAll = (sel, v) => film.querySelectorAll(sel).forEach(s => s.textContent = v);
@@ -143,11 +160,13 @@
     const f = tab.fam[rSel.value], y = +ySel.value; age = clamp(tab.now - y, 0, 30);
     const a = f.c[age], k = tab.sk[age < 10 ? 0 : 1];   // the price tool's Expected sale rule
     ask = r100(a); sale = r100(a * k); loan = r100(a * k * tab.share); rest = sale - loan;
-    tool.href = `price.html#r=${f.t}&y=${y}&p=${ask}`;
+    tool.href = `price.html#r=${f.t}&y=${y}&p=${ask}&m=${Math.round(ask * .036 / 10) * 10}`;   // every link into the tool carries a rent, 3.6% of the price a month, or the tool warns about one the reader never typed
     const say = f.s.charAt(0).toUpperCase() + f.s.slice(1);
     putAll('[data-say]', say); putAll('[data-yr]', y); putAll('[data-a]', fmt(ask)); putAll('[data-p]', fmt(sale)); putAll('[data-l]', fmt(loan)); putAll('[data-e]', fmt(rest));
     const want = [ask, sale, loan];
-    whyEl.textContent = age < f.g[0] || age > f.g[1] ? 'Our estimate of a real sale. We have no listings of this robot at this age, so it only follows the trend.' : tab.why[age < 10 ? 0 : 1];
+    const old = age < 10 ? 0 : 1;
+    whyEl.textContent = age < f.g[0] || age > f.g[1] ? 'Our estimate of a real sale. We have no listings of this robot at this age, so it only follows the trend.' : `Our estimate of a real sale. At auction, arms like this bring about ${fmt(r100(ask * tab.ar[old]))}, going by ${tab.an[old]} sales.`;
+    noteEl.hidden = age < 8 || age > 11;
     if (shown === null || reduce) { shown = want; outs.forEach((o, i) => o.textContent = fmt(want[i])); } else {
       const from = shown.slice(), st = performance.now(); cancelAnimationFrame(tw);
       const step = t => { const q = out3(clamp((t - st) / 320)); shown = from.map((v, i) => lerp(v, want[i], q)); outs.forEach((o, i) => o.textContent = fmt(q < 1 ? r100(shown[i]) : want[i])); if (q < 1) tw = requestAnimationFrame(step); };
@@ -202,7 +221,7 @@
       const tb = b1.querySelector('.h-bt').getBoundingClientRect(), bottom = tb.height + 28 + 12, q = Math.min((W - 20) / cols, (floorY - bottom) / rows);
       beat = { p: q, r: W - (W - cols * q) / 2 };
     } else beat = { p: hero.p, r: hero.r };
-    const copyEnd = (docBot(document.querySelector('.h-copy')) - stageTop) / H; T.b1[0] = Math.max(.54, copyEnd - .08); T.b1[1] = T.b1[0] + .16; RESTS[0][0] = Math.max(.7, copyEnd - .1);
+    const copyEnd = (docBot(document.querySelector('.h-copy')) - stageTop) / H, b1Top = b1.querySelector('.h-bt').offsetTop / H; T.b1[0] = Math.max(.54 * TS, copyEnd - b1Top - .02); T.b1[1] = T.b1[0] + .14; RESTS[0][0] = Math.max(.7 * TS, copyEnd - b1Top - .04);
     autoOK = !narrow || !D || (floorY - (BY1 - D.rows[D.demo][7]) * beat.p - 130 > b1.querySelector('.h-bt').getBoundingClientRect().height + 28);
     // the chart stands on the same line: its bottom edge is the floor the robot stood on
     const bt = b2.querySelector('.h-bt').getBoundingClientRect();

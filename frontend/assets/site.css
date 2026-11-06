@@ -410,8 +410,7 @@ body{overflow-x:clip}
    These win over page styles on purpose: a page that sets its own heading size is how every section came to shout. */
 .page h1:not(.giant,.sr):not(.v-open-t h1){font-size:var(--t-title)!important;letter-spacing:-.033em}
 .page h2:not(.giant,.sr,.nh,.h-wq,.hw-finh,.h-say,.v-h):not(.v-beat h2,.d-unk h2,.d-pr h2,.c-nots h2,.d-sec h2){font-size:var(--t-section)!important;line-height:1.08;letter-spacing:-.028em}
-.page .h-say,.page .v-h,.page .v-beat h2,.page .pr-stage.live .pr-step h3{font-size:var(--t-film)!important;line-height:1.06;letter-spacing:-.03em}
-.page .v-beat.v-b3 h2{font-size:clamp(42px,5vw,72px)!important}
+.page .h-say,.page .v-h,.page .v-beat h2:not(.giant),.page .pr-stage.live .pr-step h3{font-size:var(--t-film)!important;line-height:1.06;letter-spacing:-.03em}
 .page .lede{font-size:var(--t-lead)!important;line-height:1.45}
 /* body text: 17px on a desktop for anything meant to be read, 15px the floor on a phone */
 .body,.stat p,.aud p,.rcard em,.tl em,.step em,.ldone ol{font-size:17px}

@@ -1,5 +1,5 @@
 /* Vision page (v-). One long sunrise: the blue before dawn in the film, full daylight at the ask. Only the first screen, the road and the dawn stage move; everything is plain page text. */
-[data-page="vision.html"]{background:#04060c;color:#fff;--night:#04060c;--rh:min(46vh,62vw)}
+[data-page="vision.html"]{background:#04060c;color:#fff;--night:#04060c;--gy:72svh;--gy2:53svh;--rh:min(47svh,31vw)}
 .v-h{font:700 clamp(36px,5.4vw,80px)/1.02 var(--serif);letter-spacing:-.033em;color:#fff;margin:0;text-wrap:balance}
 
 /* the film */
@@ -11,30 +11,34 @@
 .v-open-t{position:relative;z-index:2;margin-top:auto;width:100%;padding-bottom:clamp(36px,6vh,72px)}
 .v-open-t h1{font:700 clamp(46px,7vw,112px)/.98 var(--serif);letter-spacing:-.04em;color:#fff;margin:0;max-width:11.5em;text-wrap:balance}
 
-/* robots at work: the page scrolls, they drive past on one line */
+/* robots at work: the page scrolls, they drive past on one line that sits high enough for robot and caption to fit together. Without motion they are a plain list */
 .v-work{position:relative;background:var(--night)}
-.v-live .v-work{height:230vh}
-/* the point arrives when the camera pulls back and all of them stand together */
-.v-live .v-work [data-world]{opacity:0}
-.v-work-pin{display:flex;flex-direction:column;justify-content:space-between;gap:clamp(24px,5vh,56px);padding-block:clamp(56px,10vh,104px) clamp(32px,6vh,64px);overflow:hidden}
-.v-live .v-work-pin{position:sticky;top:0;height:100svh}
-.v-road{position:relative;--slot:min(46vw,640px)}
-.v-track{display:flex;width:max-content;will-change:transform;transform-origin:0 var(--rh)}
-.v-slot{flex:none;width:var(--slot);margin:0;display:flex;flex-direction:column;align-items:center;text-align:center;will-change:opacity}
-.v-slot .rstage{--h:var(--rh)!important;width:100%}
-.v-slot .rs-bot{height:var(--rh)}
-.v-slot .rs-base{display:none}
+.v-work-pin{display:flex;flex-direction:column;gap:clamp(32px,6vh,64px);padding-block:clamp(56px,10vh,104px) clamp(32px,6vh,64px)}
+.v-track{display:flex;flex-direction:column;align-items:center;gap:48px}
+.v-slot{margin:0;display:flex;flex-direction:column;align-items:center;text-align:center;width:min(88vw,640px)}
+.v-slot .rs-bot{display:flex;align-items:flex-end;justify-content:center;height:var(--rh);width:100%}
+.v-slot canvas,.v-crowd canvas{display:block;height:100%;width:auto;max-width:100%}
 /* drawn twice over itself, so the robots read full white on the night colour */
-.v-slot canvas{filter:drop-shadow(0 0 0 #fff)}
-.v-ground{position:absolute;left:0;right:0;top:var(--rh);height:1px;background:rgba(255,255,255,.34)}
-.v-slot figcaption{font:600 clamp(25px,2.7vw,38px)/1.16 var(--serif);letter-spacing:-.022em;color:#fff;text-wrap:balance}
-.v-slot figcaption{margin-top:clamp(18px,3vh,30px);padding-inline:12px;min-height:2.4em}
+.v-slot canvas,.v-crowd canvas{filter:drop-shadow(0 0 0 #fff)}
+.v-ground,.v-crowd{display:none}
+.v-slot figcaption{margin-top:clamp(18px,3vh,30px);padding-inline:12px;font:600 clamp(25px,2.7vw,38px)/1.16 var(--serif);letter-spacing:-.022em;color:#fff;text-wrap:balance}
+.v-live .v-work{height:300vh}
+.v-live .v-work-pin{position:sticky;top:0;height:100svh;display:block;padding:0;overflow:hidden}
+/* the page's point takes the captions' place under the line, and the line rises so the two sit in the middle of the screen */
+.v-live .v-world{position:absolute;left:0;right:0;top:calc(var(--gy2) + clamp(24px,4.4svh,44px));z-index:1;text-align:center}
+.v-live .v-world .v-h{margin-inline:auto;max-width:18em}
+/* the point arrives when the camera pulls back and all of them stand together */
+.v-live [data-world]{opacity:0}
+.v-live .v-road{position:absolute;inset:0}
+.v-live .v-ground{display:block;position:absolute;left:0;right:0;top:var(--gy);height:1px;background:rgba(255,255,255,.34)}
+.v-live .v-track{display:block;position:absolute;left:0;top:calc(var(--gy) - var(--rh));width:100%;height:calc(100svh - var(--gy) + var(--rh))}
+.v-live .v-slot{--slot:min(46vw,640px);position:absolute;left:0;top:0;width:var(--slot);transform-origin:50% var(--rh);will-change:transform,opacity}
 /* where they end: drawn at their final size, and only shown once the pull-back has nearly finished */
-.v-crowd{display:none;position:absolute;left:0;bottom:calc(100% - var(--rh));align-items:flex-end;pointer-events:none}
-.v-crowded .v-crowd{display:flex}
-.v-crowd .rstage{flex:none}
-.v-crowd canvas{filter:drop-shadow(0 0 0 #fff)}
-.v-settled .v-track canvas{display:none}
+.v-live .v-crowd{position:absolute;bottom:calc(100svh - var(--gy));align-items:flex-end;pointer-events:none;opacity:0}
+.v-crowded .v-crowd{display:flex!important}
+.v-crowdbot{flex:none}
+.v-crowd .rs-bot{display:flex;align-items:flex-end;justify-content:center}
+.v-settled .v-track{visibility:hidden}
 
 /* the loading bay: one job, one real place. The words sit low on the floor, clear of the open door */
 .v-dock{position:relative;background:var(--night);min-height:100svh;display:flex;align-items:flex-end;overflow:hidden}
@@ -57,15 +61,18 @@
 .v-beat h2{font:700 clamp(34px,4.2vw,64px)/1.03 var(--serif);letter-spacing:-.032em;color:#fff;margin:0;text-wrap:balance}
 .v-beat p{margin:clamp(14px,2vh,22px) 0 0;max-width:30em;font-size:clamp(18px,1.5vw,22px);line-height:1.42;color:#fff}
 .v-beat p a{color:#fff;font-weight:600}
-/* the one number on the page, and the way into the price tool */
-.v-tag{display:block;margin-top:clamp(14px,2.2vh,24px);min-height:44px;color:#fff;max-width:24em}
+/* the one number on the page: the count of the bright dots beside it */
+.v-beat p.v-tag{margin-top:clamp(14px,2.2vh,24px);max-width:24em}
 .v-tag b{display:block;font:700 clamp(46px,5vw,76px)/1 var(--serif);letter-spacing:-.034em}
-.v-tag span{display:block;margin-top:6px;font-size:16px;line-height:1.35;font-weight:600}
-.v-tag:hover{opacity:.82}
+.v-tag span{display:block;margin-top:6px;font-weight:600}
 .v-how{display:flex;align-items:center;width:fit-content;min-height:44px;margin-top:2px}
-/* the wish is the largest line on the page */
+/* the wish is the largest line on the page, and when it comes the robot's dots have left it the whole sky */
 .v-b3 h2{font-size:clamp(52px,6.5vw,98px);line-height:.98;letter-spacing:-.04em}
 .v-b3 .v-plain{font-weight:600}
+.v-live .v-beat.v-b3{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-inline:24px}
+.v-live .v-b3>*{width:fit-content;max-width:min(100%,1100px)}
+[data-page="vision.html"].v-live .v-beat.v-b3 h2.giant{font-size:clamp(58px,min(9.4vw,17vh),148px)!important;line-height:.96;letter-spacing:-.045em;max-width:8.4em}
+.v-live .v-b3 p{font-size:clamp(19px,1.7vw,24px);max-width:34em;text-wrap:balance}
 
 /* without motion (and before the script runs): the robot beside the steps in order, all on the deep colour */
 [data-page="vision.html"]:not(.v-live) .v-dawn{background:var(--deep)}
@@ -74,17 +81,19 @@
 [data-page="vision.html"]:not(.v-live) .v-botbox{position:sticky;top:64px}
 .v-own-pin{padding-block:clamp(56px,8vw,112px)}
 .v-beats{display:flex;flex-direction:column;gap:56px}
-.v-live .v-own{height:300vh}
-.v-live .v-own-pin{position:sticky;top:0;height:100svh;padding-block:0;display:flex;align-items:center}
+.v-live .v-own{height:440vh}
+.v-live .v-own-pin{position:sticky;top:0;height:100svh;padding-block:0;display:flex;align-items:center;overflow:hidden}
 .v-live .v-own-g{height:100%;padding-block:clamp(40px,6vh,64px)}
-.v-live .v-botbox{height:100%}
+/* the robot's canvas covers the whole screen, because its dots leave the robot's box; the box only says where the robot stands */
+.v-live .v-botbox{position:static;height:100%;align-self:stretch}
+.v-live .v-bot{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .v-live .v-beats{display:grid;gap:0;align-items:center}
-.v-live .v-beat{grid-area:1/1;opacity:0;transform:translateY(16px);transition:opacity .45s ease,transform .6s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.v-live .v-beat{position:relative;z-index:1;grid-area:1/1;opacity:0;transform:translateY(16px);transition:opacity .45s ease,transform .6s cubic-bezier(.2,.7,.2,1);pointer-events:none}
 .v-live .v-beat.on{opacity:1;transform:none;pointer-events:auto}
+.v-live .v-b3{transform:scale(.97);transform-origin:50% 50%}
 
-/* the ask, in full daylight beside the finished robot: smaller than the wish, one clear thing to do */
-.v-b4 h2{font-size:clamp(38px,4.6vw,66px)}
-.v-go{margin-top:clamp(18px,3vh,28px)}
+/* the ask, in full daylight beside the finished robot: one clear thing to do */
+.v-go{margin-top:clamp(18px,3vh,28px);min-height:60px;padding-inline:32px;font-size:18px}
 .v-doors{display:flex;flex-direction:column;align-items:flex-start;margin-top:clamp(10px,1.6vh,18px)}
 .v-doors a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;font-size:16px;color:#fff}
 .v-doors a:hover{opacity:.8}
@@ -92,13 +101,15 @@
 .v-sign span{display:block;font:400 15px/1.4 var(--sans);letter-spacing:0}
 
 @media (max-width:820px){
- .v-road{--slot:88vw}
- [data-page="vision.html"]{--rh:min(40svh,76vw)}
+ .v-live .v-slot{--slot:88vw}
+ .v-live .v-world{top:clamp(44px,9svh,96px);text-align:left}
+ .v-live .v-world .v-h{margin-inline:0}
+ [data-page="vision.html"]{--gy:64svh;--rh:min(40svh,76vw)}
  .v-own-g{grid-template-columns:minmax(0,1fr);gap:18px}
  .v-live .v-own-g{grid-template-rows:minmax(0,42svh) minmax(0,1fr);align-items:start;padding-block:64px 24px;height:100%}
- .v-tag{margin-top:12px}
+ .v-beat p.v-tag{margin-top:10px}
  .v-tag b{font-size:40px}
- .v-tag span{font-size:15px;margin-top:4px}
+ .v-tag span{margin-top:2px}
  .v-live .v-beats{align-items:start}
 }
 @media (max-width:820px) and (max-height:740px){
@@ -120,8 +131,4 @@
 }
 @media (prefers-reduced-motion:reduce){
  .v-beat{transition:none}
- .v-road{overflow-x:visible}
- .v-track{flex-direction:column;width:auto;transform:none!important;align-items:center;gap:48px}
- .v-road{--slot:100%}
- .v-ground{display:none}
 }

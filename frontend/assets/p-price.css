@@ -122,14 +122,16 @@
 .pp-stale .pp-a,.pp-stale .pp-sec,.pp-stale .pp-risk{opacity:.38;filter:grayscale(1);transition:opacity .2s ease}
 
 /* other robots to try, and what the figure rests on */
-.pp-bar{display:flex;align-items:center;justify-content:space-between;gap:0 24px;flex-wrap:wrap;margin:clamp(24px,2.6vw,36px) 0 0}
+.pp-bar{display:flex;align-items:center;justify-content:space-between;gap:0 24px;flex-wrap:wrap;margin:clamp(20px,2.2vw,28px) 0 0}
+.pp-lft .pp-pres{margin-top:2px}
+.pp-bar .pp-pres{display:none}
 .pp-pres{display:flex;flex-wrap:wrap;align-items:center;gap:0 20px;min-width:0}
 .pp-pres > span{font-size:15px;color:var(--muted)}
 .pp-pre,.pp-copy{min-height:44px;border:0;background:none;padding:0;font:500 15px var(--sans);color:var(--c);cursor:pointer;position:relative;text-decoration:none}
 .pp-pre:hover,.pp-copy:hover,.pp-copy.done{color:var(--ink)}
 .pp-pre[aria-pressed="true"],.pp-pre[aria-pressed="true"]:hover{color:var(--ink);font-weight:600}
 .pp-copy{white-space:nowrap}
-.page[data-page="price.html"] .pp-dl{margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--muted);max-width:90ch}
+.page[data-page="price.html"] .pp-dl{margin:0;font-size:15px;line-height:1.5;color:var(--muted);max-width:90ch}
 .pp-dl b{color:var(--ink);font-weight:500}
 .pp-dl a:not(.pp-mk){color:var(--c);font-weight:500;display:inline-block;padding:12px 0;margin:-12px 0}
 
@@ -254,7 +256,10 @@
 .pp-tall thead th.pp-trb{z-index:3}
 
 /* 4. value: one rate beside the sentences that set it up, then the two lines that matter: what the robot is worth and what is still owed */
-.pp-vtop{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px 36px;align-items:start;margin-bottom:clamp(40px,5vw,72px)}
+.pp-vtop{margin-bottom:clamp(44px,5.4vw,80px)}
+.page[data-page="price.html"] .pp-vtop .h2{max-width:none;margin:0 0 clamp(24px,2.6vw,36px)}
+.pp-vfig{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px 36px;align-items:end}
+.page[data-page="price.html"] .pp-vfig .lead-1{margin:0 0 4px;font-size:19px}
 .pp-vtop .pp-av{font-size:clamp(60px,6vw,88px);letter-spacing:-.04em;line-height:.95}
 .page[data-page="price.html"] .pp-vtxt .lead-1{margin:0 0 12px;font-size:19px}
 .pp-cov{margin:0}
@@ -282,8 +287,10 @@
 .pp-covs .bl.cu{fill:var(--deep);font-weight:500}
 .pp-covs .bl.al{fill:#7a8396;font-weight:500}
 .pp-covs .gl2{font-size:14px;fill:#5b6474}
-.pp-covn{margin:0 0 clamp(28px,3vw,40px);font-size:15px;line-height:1.5;color:#4a5262}
-.pp-covn b{display:block;font:600 clamp(24px,2.3vw,32px)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink);margin-bottom:8px}
+.pp-covn{margin:0 0 10px;font-size:15px;line-height:1.5;color:#4a5262;max-width:68ch}
+.pp-covw{margin:0 0 clamp(28px,3vw,40px);font-size:15px;line-height:1.5;color:#4a5262;max-width:68ch}
+.pp-vfolds{margin-top:8px}
+.pp-covn b{display:block;max-width:46ch;text-wrap:balance;font:600 clamp(24px,2.3vw,32px)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink);margin-bottom:8px}
 .pp-cmpw{margin-top:0}
 .pp-cmpb{padding-top:6px}
 .pp-cmpt small{display:block;font-size:15px;font-weight:400;color:var(--muted);margin-top:2px}
@@ -428,7 +435,6 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 @media (max-width:600px){
   .pp-hero{padding-top:8px}
   .pp-bot{right:24px;top:4px;width:146px;height:112px;--bh:108px}
-  .pp-l2{display:none}
   .pp-lft .h1{font-size:46px}
   .pp-lft .lede{max-width:none;font-size:17px;margin-top:18px}
   .pp-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;font-size:21px}
@@ -532,3 +538,59 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 .pp-grad summary:focus-visible,.pp-risk summary:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
 .pp-grad .pp-whyb p{color:#fff}
 .pp-grad .pp-whyb b{color:#fff}
+
+/* round 4 */
+/* the first screen keeps one line about the listings behind the number; the count under the sentence said the same thing again */
+.pp-cbn{display:none}
+
+/* the risk band: the machine goes dark when the company behind it fails, and comes back with a backup partner */
+.pp-rk{grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3fr);gap:40px clamp(28px,3.4vw,56px)}
+.pp-rbot{align-self:end;min-width:0;opacity:.24;transition:opacity .6s ease}
+.pp-rbot .rstage{margin:0}
+.pp-rk.bk .pp-rbot{opacity:1}
+.pp-rdef{font-size:17px;color:rgba(255,255,255,.76)}
+.pp-rsw{flex-direction:column;align-items:stretch;gap:2px;width:100%;max-width:360px}
+.pp-rb{justify-content:space-between}
+
+/* the loan: paper with the loan on top and two terms under it. The other rows keep their place in the page with no height until the reader opens them */
+.pp-offer .pp-sheet .sh-t{margin-bottom:8px}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)){flex:none;height:0;min-height:0;padding:0;margin:0;border:0;overflow:hidden;order:9}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)) .pp-mk{display:none}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.hl{background:none}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big{order:1;display:block;padding:6px 8px 18px;border:0}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big span{display:block;font-size:15px;color:#5b6474}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big b{display:block;margin:6px 0 8px;text-align:left;font-size:clamp(40px,4vw,56px);line-height:1;letter-spacing:-.025em}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(3){order:2}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(6){order:3}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(9){order:4}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .sh-f{order:10}
+.pp-oup{margin:24px 0 0;max-width:72ch;font-size:15px;line-height:1.5;color:#3e4656}
+.pp-fullt{margin-top:6px}
+.pp-fullt summary .b,.pp-fullt[open] summary .a{display:none}
+.pp-fullt[open] summary .b{display:inline}
+.pp-fullb{columns:1;max-width:72ch}
+
+@media (max-width:1180px){
+  .pp-rk{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .pp-rbot{display:none}
+}
+@media (max-width:1000px){
+  .pp-rk{grid-template-columns:minmax(0,1fr)}
+  /* the machine sits just over the number and the switch, so it stays in view when the switch is flipped */
+  .pp-rbot{display:block;order:1;max-width:220px;margin-bottom:-12px}
+  .pp-rbot .rstage{--h:240px!important}
+  .pp-rbig{order:2}
+  .pp-rsw{max-width:none}
+}
+@media (max-width:1000px){
+  .pp-lft .pp-pres{display:none}
+  .pp-bar .pp-pres{display:flex}
+}
+@media (prefers-reduced-motion:reduce){.pp-rbot{transition:none}}
+@media (max-width:600px){
+  .pp-vfig{grid-template-columns:minmax(0,1fr);gap:14px}
+  /* the marker keeps its place on the label's line, with a space before it */
+  .pp-a[data-k="v"] .pp-mk{margin-left:8px}
+}
+/* a label that crosses a line stays readable */
+.pp-covc svg text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}

@@ -22,8 +22,8 @@
 .f-pill-t,.f-pill-w{position:relative;padding-right:1.25em}
 .f-pill-t::after,.f-pill-w::after{content:"";position:absolute;right:.52em;top:50%;width:.34em;height:.34em;margin-top:-.26em;border:solid var(--c);border-width:0 .09em .09em 0;transform:rotate(45deg);pointer-events:none}
 .f-pill [aria-invalid="true"]{color:#b42318}
-/* the range message keeps its own line under the sentence, so showing it never moves the button */
-.f-msg{min-height:20px;margin:6px 0 0 2px;color:#fff;font-size:14px;opacity:0;transition:opacity .2s ease}
+/* the range message has its own line under the sentence, set under the field that was wrong, so showing it moves nothing and covers nothing */
+.f-msg{margin:4px 0 0;min-height:21px;color:#fff;font-size:15px;line-height:21px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s ease}
 .f-msg.on{opacity:1}
 .f-who{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:6px;max-width:560px}
 .f-who[hidden]{display:none}
@@ -33,12 +33,12 @@
 .f-quote .ldone{margin-top:6px;max-width:560px}
 /* what you could borrow: directly under the sentence that makes it, sized in p-fleets.js so any answer fits its column */
 .f-quote .lf[hidden],.f-quote .la[hidden]{display:none}
-.f-out{margin-top:clamp(4px,.8vw,12px)}
+.f-out{margin-top:clamp(2px,.4vw,6px)}
 .f-out p{margin:0;color:#fff}
 .f-l{font-size:clamp(16px,1.3vw,18px);line-height:1.3}
 .f-big{font:700 clamp(56px,7.4vw,112px)/1.02 var(--serif);letter-spacing:-.04em;white-space:nowrap;font-variant-numeric:lining-nums tabular-nums;margin-top:2px!important}
 .f-pay{margin-top:clamp(4px,.6vw,8px)!important;font-size:clamp(17px,1.4vw,20px);line-height:1.3}
-.f-pay b{font-weight:700;font-size:clamp(20px,1.8vw,26px);letter-spacing:-.02em;margin-left:4px}
+.f-pay b{font-weight:700;letter-spacing:-.01em}
 .f-used{margin-top:clamp(8px,1vw,12px)!important;font-size:16px;line-height:1.42;max-width:32em}
 .f-used a{color:#fff;font-weight:600;display:inline-flex;align-items:center;min-height:32px}
 .f-used a:hover{opacity:.8}
@@ -50,11 +50,23 @@
 .f-pile{display:block;width:100%;height:clamp(300px,min(34vw,calc(100svh - 400px)),500px)}
 .f-dotsay{margin:10px 0 0;font-size:15px;line-height:1.35;color:#fff;text-align:right}
 
-/* the pain, beside one robot */
-.f-whyg{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,6vw,96px);align-items:end}
-.f-whyt .lead-1{margin-top:clamp(18px,2vw,28px);font-size:clamp(18px,1.5vw,21px);max-width:38em}
-.f-whyb .rs-bot{height:clamp(220px,28vw,400px)}
-.f-whyb .rs-base{background:rgba(40,71,206,.28)}
+/* the pain: the words stay put while one robot fills, month by month, beside them */
+.f-why{background:#fff;padding-top:clamp(40px,6vw,88px)}
+.f-whyg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(32px,5vw,80px);align-items:start}
+.f-whyt .lead-1{margin-top:clamp(18px,2vw,28px);max-width:36em}
+.f-try{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--c)}
+.f-try:hover{opacity:.75}
+.f-run-pin{position:relative}
+.f-pay-bot{display:block;width:100%;max-width:560px;margin-inline:auto}
+.f-read{margin:clamp(14px,2vw,24px) 0 0;color:var(--ink)}
+.f-read b{display:block;font:700 var(--t-film)/1.05 var(--serif);letter-spacing:-.034em;color:var(--c);font-variant-numeric:lining-nums tabular-nums}
+.f-read span{display:block;margin-top:6px;font-size:17px;line-height:1.4;color:#3e4656;max-width:24em}
+/* with motion: the robot's column is the long one, and both columns hold still while it fills */
+.f-why-live .f-whyt{position:sticky;top:clamp(72px,16svh,160px)}
+.f-why-live .f-run{height:230vh}
+.f-why-live .f-run-pin{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;justify-content:center;padding-block:clamp(24px,5svh,56px)}
+.f-why-live .f-pay-bot{flex:1 1 0;min-height:0;width:100%;max-width:none;height:0}
+.f-why-live .f-read{flex:none}
 
 /* the one big number */
 .f-keepg{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:clamp(32px,5vw,72px);align-items:center}
@@ -81,8 +93,8 @@
 .f-yall:hover{opacity:.8}
 
 /* from hello to money: the robot drives along the one line it stands on as the page scrolls, stopping over each step */
-.f-tlw{position:relative;margin-top:clamp(28px,3vw,44px);--run:clamp(110px,10vw,150px)}
-.f-track{position:relative;height:var(--run);border-bottom:1px solid rgba(40,71,206,.28)}
+.f-tlw{position:relative;margin-top:clamp(12px,2vw,28px);--run:clamp(200px,21vw,300px)}
+.f-track{position:relative;height:calc(var(--run) * .88);border-bottom:1px solid rgba(40,71,206,.28)}
 .f-runner{position:absolute;bottom:0;left:0;width:var(--run);will-change:transform}
 .f-runner canvas{display:block;width:100%}
 .f-tl{list-style:none;margin:0;padding:clamp(20px,2.4vw,32px) 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
@@ -114,11 +126,23 @@
 [data-page="fleets.html"] .notes a{color:#fff;font-weight:600}
 
 @media (prefers-reduced-motion:reduce){.f-msg{transition:none}}
+/* a short laptop screen still shows the button on the first screen */
+@media (min-width:901px) and (max-height:800px){
+ .f-h1{margin-bottom:12px}
+ .f-say{line-height:1.5}
+ .f-big{font-size:clamp(56px,min(7.4vw,11vh),112px)}
+ .f-used{font-size:15px;margin-top:6px!important}
+ .f-quote .la{margin-top:8px}
+}
 @media (max-width:900px){
  .f-heg{display:flex;flex-direction:column;align-items:stretch}
  .f-stage{margin:32px 0 0}
  .f-big-bot,.f-pile{height:min(60vw,360px)}
- .f-whyg{grid-template-columns:minmax(0,1fr)}
+ .f-whyg{grid-template-columns:minmax(0,1fr);gap:8px}
+ .f-why-live .f-whyt{position:static}
+ .f-why-live .f-run{height:210vh}
+ .f-why-live .f-run-pin{padding-block:16px 24px}
+ .f-why-live .f-pay-bot{flex:none;height:auto;aspect-ratio:112/123;max-height:62svh;width:auto;max-width:100%;margin-inline:auto}
  .f-faqg{grid-template-columns:minmax(0,1fr)}
  .f-yard{grid-template-columns:minmax(0,1fr);row-gap:32px}
 }
@@ -129,6 +153,8 @@
 @media (max-width:680px){
  .f-who{grid-template-columns:minmax(0,1fr)}
  .f-used a{display:flex;width:fit-content;min-height:44px}
+ .f-tlw{--run:220px}
+
  .f-faq-g{grid-template-columns:minmax(0,1fr)}
  .f-bot .rs-bot{height:min(40vw,168px)}
  .f-est .f-ybots{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:18px}

@@ -130,18 +130,29 @@
   layout(); onScroll();
   if (reduce) { P.forEach(q => { q.a = .9; }); A.forEach(q => { q.a = 1; }); band = 1; line = 1; marks(); kick(); }
 
-  // the robot at the top: every one of those dots, lit one by one, with the highest asks at the top
-  const hb = document.querySelector('.pr-hbot');
-  if (hb && F.ghost) {
-    const G = F.ghost('arm'), order = D.seat.map((s, i) => D.seat[(i * 7919) % D.seat.length]);
-    const paint = t => { const { c, w, h } = fit(hb), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, h / rows), ox = 0, oy = h - rows * cell;
-      if (hb._c !== cell) { hb._c = cell; hb._b = F.ghostBitmap(G, cell, .42, '40,71,206'); }
-      c.drawImage(hb._b, ox, oy, cols * cell, rows * cell);
-      const r = clamp(cell * .62, 1.6, 3), n = Math.round(order.length * t); c.fillStyle = 'rgb(40,71,206)'; c.beginPath();
-      for (let i = 0; i < n; i++) { const x = ox + (order[i][0] - G.x0 + .5) * cell, y = oy + (order[i][1] - G.y0 + .5) * cell; c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); } c.fill(); };
-    let done = reduce;
-    const start = () => { if (reduce) { paint(1); return; } const t0 = performance.now(), step = now => { const t = clamp((now - t0) / 1500); paint(t); if (t < 1) requestAnimationFrame(step); else done = true; }; requestAnimationFrame(step); };
-    new ResizeObserver(() => { if (done) paint(1); else paint(0); }).observe(hb);
-    start();
+  // the first screen: the arm is the ruler, its height is the ask. On arrival the paint drains down to each lower price in turn, and each line appears as the paint reaches it.
+  const hb = document.querySelector('.pr-hbot'), lad = document.querySelector('.pr-lad');
+  const G = hb && F.ghost && F.ghost('arm');
+  if (G) {
+    const rows = G.y1 - G.y0 + 1, cols = G.x1 - G.x0 + 1, [mid, low] = lad.dataset.h.split(' ').map(Number), rungs = lad.querySelectorAll('.pr-r');
+    lad.style.setProperty('--ar', `${cols}/${rows}`);
+    const pts = G.pts.map(([x, y, s]) => ({ x: x - G.x0 + .5, y: y - G.y0 + .5, s, h: (rows - (y - G.y0 + .5)) / rows }));
+    const paint = L => {
+      const { c, w, h } = fit(hb), cell = Math.min(w / cols, h / rows), ox = w - cols * cell, oy = h - rows * cell;
+      // solid up to the level, half under the estimate, faint above it
+      const tiers = [[], [], []];
+      for (const p of pts) tiers[p.h <= L ? 0 : p.h <= mid ? 1 : 2].push(p);
+      [1, .62, .3].forEach((al, i) => { c.fillStyle = `rgba(40,71,206,${al})`; c.beginPath(); for (const p of tiers[i]) { const x = ox + p.x * cell, y = oy + p.y * cell, r = Math.max(.35, cell * (i ? .4 : .46) * (.55 + .45 * p.s)); c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); } c.fill(); });
+    };
+    let level = low;
+    const now = () => paint(level);
+    new ResizeObserver(now).observe(hb);
+    if (reduce) now();
+    else {
+      lad.classList.add('live'); rungs[0].classList.add('lit');
+      const seg = (from, to, ms, done) => { const t0 = performance.now(), tick = t => { const k = clamp((t - t0) / ms); level = from + (to - from) * ease(k); now(); if (k < 1) requestAnimationFrame(tick); else done && done(); }; requestAnimationFrame(tick); };
+      level = 1; now();
+      setTimeout(() => seg(1, mid, 1000, () => { rungs[1].classList.add('lit'); setTimeout(() => seg(mid, low, 800, () => rungs[2].classList.add('lit')), 260); }), 500);
+    }
   }
 })();

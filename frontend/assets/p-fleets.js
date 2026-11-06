@@ -1,5 +1,5 @@
 // Robot companies page: the quote form's four robot fields stay in range and every change turns into the outcome beside them:
-// what you could borrow, what you would pay, the robot you picked, and one dot for each robot you typed. All drawn here.
+// what you could borrow, what the robots cost, what you pay yourself, the robot you picked, and one dot for each robot you typed, white for what the loan buys and pale for what you buy. All drawn here.
 // The closing band's button brings the visitor back to the form with the robot type field focused.
 (() => {
   const ty = document.getElementById('sz-type'), n = document.getElementById('sz-n'), p = document.getElementById('sz-p'), wh = document.getElementById('sz-when');
@@ -11,18 +11,21 @@
     return (count, animate) => { const W = pile.clientWidth, H = pile.clientHeight; if (!W || !H) return;
       const d = Math.min(2, devicePixelRatio || 1); pile.width = Math.round(W * d); pile.height = Math.round(H * d); x.setTransform(d, 0, 0, d, 0, 0); x.fillStyle = '#fff';
       let P = Math.min(24, Math.floor(Math.sqrt(W * H / count))), cols, rows; for (;;) { cols = Math.max(1, Math.floor(W / P)); rows = Math.ceil(count / cols); if (rows * P <= H || P <= 3) break; P--; }
-      const put = i => { x.beginPath(); x.arc(W - (i % cols + .5) * P, H - (Math.floor(i / cols) + .5) * P, P * .34, 0, 6.2832); x.fill(); };
+      // the loan's share sits at the bottom of the pile. The dot where the share ends is white only as far up as the share reaches, so 1 robot reads as 70% of one dot.
+      const share = count * .7, whole = Math.floor(share + 1e-9), part = share - whole;
+      const put = i => { const cx = W - (i % cols + .5) * P, cy = H - (Math.floor(i / cols) + .5) * P, r = P * .34; x.fillStyle = i < whole ? '#fff' : 'rgba(255,255,255,.34)'; x.beginPath(); x.arc(cx, cy, r, 0, 6.2832); x.fill();
+        if (i === whole && part > .001) { x.save(); x.beginPath(); x.rect(cx - r, cy + r - 2 * r * part, 2 * r, 2 * r * part); x.clip(); x.fillStyle = '#fff'; x.beginPath(); x.arc(cx, cy, r, 0, 6.2832); x.fill(); x.restore(); } };
       const me = ++tok, from = animate && !still ? Math.min(had, count) : count, t0 = performance.now(), D = had ? 260 : 700; had = count;
       for (let i = 0; i < from; i++) put(i);
       let done = from; if (from < count) { const tick = t => { if (me !== tok) return; const end = Math.min(count, from + Math.ceil((count - from) * Math.min(1, (t - t0) / D))); while (done < end) put(done++); if (done < count) requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
     }; })();
   // the big figure stays on one line in its column whatever is typed: its size comes from the width of the answer it is about to show
-  const big = document.getElementById('f-big'), pay = document.getElementById('f-pay'), COL = big && big.parentElement;
+  const big = document.getElementById('f-big'), cost = document.getElementById('f-cost'), mine = document.getElementById('f-own'), the = document.getElementById('f-the'), COL = big && big.parentElement;
   const fitBig = text => { if (!big) return; big.style.fontSize = ''; const cs = getComputedStyle(big), max = parseFloat(cs.fontSize), m = document.createElement('span'); m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-family:' + cs.fontFamily + ';font-weight:' + cs.fontWeight + ';letter-spacing:' + cs.letterSpacing + ';font-size:' + max + 'px;font-variant-numeric:lining-nums tabular-nums'; m.textContent = text; document.body.appendChild(m); const w = m.getBoundingClientRect().width; m.remove(); const room = COL.clientWidth; if (w > room) big.style.fontSize = Math.floor(max * room / w) + 'px'; };
   let tick0, shownV = 6250000;
   const fmtBig = v => '$' + Math.round(v).toLocaleString('en-US');
   const sr = document.getElementById('f-sr');
-  const showMoney = V => { fitBig(fmtBig(V * .7)); pay.textContent = fmtBig(V); if (sr) sr.textContent = 'You could borrow ' + fmtBig(V * .7) + '. You would pay ' + fmtBig(V) + '.'; cancelAnimationFrame(tick0); if (still) { shownV = V; big.textContent = fmtBig(V * .7); return; }
+  const showMoney = V => { const lend = Math.round(V * .7), own = V - lend, one = val(n) === 1; fitBig(fmtBig(lend)); cost.textContent = fmtBig(V); mine.textContent = fmtBig(own); if (the) the.textContent = one ? 'The robot costs' : 'The robots cost'; if (sr) sr.textContent = 'You could borrow ' + fmtBig(lend) + '. ' + (one ? 'The robot costs ' : 'The robots cost ') + fmtBig(V) + '. You pay ' + fmtBig(own) + ' yourself.'; cancelAnimationFrame(tick0); if (still) { shownV = V; big.textContent = fmtBig(V * .7); return; }
     const a = shownV, t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 300), e = 1 - Math.pow(1 - k, 3); shownV = a + (V - a) * e; big.textContent = fmtBig(k === 1 ? V * .7 : shownV * .7); if (k < 1) tick0 = requestAnimationFrame(tick); }; tick0 = requestAnimationFrame(tick); };
   const digits = el => el.value.replace(/[^0-9]/g, '');
   const lim = el => [+el.dataset.min, +el.dataset.max];
@@ -32,10 +35,10 @@
   const comma = el => { el.value = val(el).toLocaleString('en-US'); };
   // the range message: one line under the fields for 4 seconds
   const msg = document.getElementById('f-msg'); let mt;
-  const say = el => { if (!msg) return; msg.textContent = el === n ? 'Up to 1,000 robots' : 'Between $1,000 and $1,000,000'; msg.classList.add('on'); el.setAttribute('aria-invalid', 'true');
+  const say = el => { if (!msg) return; msg.textContent = el === n ? 'Between 1 and 1,000 robots' : 'Between $1,000 and $1,000,000'; const b = msg.parentElement.getBoundingClientRect(), r = el.closest('.f-pill').getBoundingClientRect(), room = b.width - 250; msg.style.paddingLeft = Math.max(0, Math.min(r.left - b.left, room)) + 'px'; msg.classList.add('on'); el.setAttribute('aria-invalid', 'true');
     clearTimeout(mt); mt = setTimeout(() => { msg.classList.remove('on'); [n, p].forEach(x => x.removeAttribute('aria-invalid')); }, 4000); };
   // one robot reads as one robot, in the sentence and under the dots
-  const say1 = c => { [...ty.options].forEach(o => { o.textContent = c === 1 ? o.dataset.one : o.dataset.many; }); if (dotsay) dotsay.textContent = c === 1 ? 'This dot is your one robot.' : 'Each dot is one of your ' + c.toLocaleString('en-US') + ' robots.'; if (pile) pile.setAttribute('aria-label', c === 1 ? 'One dot for one robot' : c.toLocaleString('en-US') + ' dots, one for each robot'); if (fitReady) fitSel(ty); };
+  const say1 = c => { [...ty.options].forEach(o => { o.textContent = c === 1 ? o.dataset.one : o.dataset.many; }); if (dotsay) dotsay.textContent = c === 1 ? 'This dot is your one robot. The loan buys the white part. You buy the pale part.' : 'Each dot is one of your ' + c.toLocaleString('en-US') + ' robots. The loan buys the white ones. You buy the pale ones.'; if (pile) pile.setAttribute('aria-label', c === 1 ? 'One dot for one robot, 70% white' : c.toLocaleString('en-US') + ' dots, one for each robot. 70% are white, the rest are pale.'); if (fitReady) fitSel(ty); };
   let fitReady = false;
   // every valid change goes straight to the answer; it counts and redraws in 300ms
   const state = () => ({ rid: ty.value, n: val(n), price: val(p), when: wh ? wh.value : 'Within 3 months' });
@@ -52,13 +55,14 @@
       if (!d) return;   // empty: keep the last preview, no message until the field is left
       const v = +d, [lo, hi] = lim(el);
       if (v > hi) { el.value = String(hi); last.set(el, hi); say(el); }   // above the top: clamp now and write it back
-      else last.set(el, Math.max(lo, v));   // below the floor while typing (a price is typed from its first digit): settle on blur
+      else if (v >= lo) { last.set(el, v); clearTimeout(mt); msg.classList.remove('on'); el.removeAttribute('aria-invalid'); }
+      else return;   // below the floor while typing (a price is typed from its first digit): the answer keeps its last good value until the field is left
       upd();
     });
     el.addEventListener('focus', () => { el.value = digits(el); el.select(); });
     el.addEventListener('blur', () => {
       const d = digits(el);
-      if (d) { const v = +d, c = clamp(el, v); if (c !== v) say(el); last.set(el, c); }
+      if (!d || +d < lim(el)[0]) say(el);   // empty or too small: the field goes back to its last good value and says why
       comma(el); upd();
     });
   });
@@ -114,5 +118,28 @@
       run.style.transform = `translate3d(${(at * span).toFixed(1)}px,0,0)`; };
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) run.style.transform = 'translate3d(' + (tw.clientWidth - run.offsetWidth) + 'px,0,0)';
     else { addEventListener('scroll', place, { passive: true }); addEventListener('resize', place); place(); }
+  }
+  // one robot earning its price back: as the page scrolls, one month of rent at a time, the dots fill from the base up. Each dot is an equal share of the robot's price.
+  const pb = document.querySelector('.f-pay-bot'), pbSec = pb && pb.closest('.f-why');
+  const pbData = pb && (window.FERRA_DOTS || {})[pb.dataset.bot];
+  if (pb && pbData) {
+    const price = +pb.dataset.price, rent = +pb.dataset.rent, months = +pb.dataset.months, usd = v => '$' + v.toLocaleString('en-US');
+    const list = pbData.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A, , ed] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .3 + .7 * Math.pow(L / 100, .9) + (ed / 100) * .35) }; });
+    const ys = list.map(q => q.cy), y0 = Math.min(...ys), rows = Math.max(...ys) - y0 + 1;
+    list.sort((a, b) => b.cy - a.cy || a.cx - b.cx); list.forEach((q, i) => { q.rank = i / list.length; });
+    const nEl = document.getElementById('f-read-n'), sEl = document.getElementById('f-read-s'), run = pb.closest('.f-run'), ctx = pb.getContext('2d');
+    let W = 0, H = 0, pitch = 0, ox = 0, oy = 0, shown = -1;
+    const size = () => { W = pb.clientWidth; H = pb.clientHeight || W * rows / pbData.w; const d = Math.min(2, devicePixelRatio || 1); pitch = Math.min(W / pbData.w, H / rows); ox = (W - pitch * pbData.w) / 2; oy = H - pitch * rows; pb.width = Math.round(W * d); pb.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); shown = -1; };
+    const paint = m => { const share = Math.min(1, m * rent / price), on = new Path2D(), off = new Path2D();
+      for (const q of list) { const r = Math.max(.5, pitch * .5 * Math.max(.34, q.s)), X = ox + (q.cx + .5) * pitch, Y = oy + (q.cy - y0 + .5) * pitch, path = q.rank < share ? on : off; path.moveTo(X + r, Y); path.arc(X, Y, r, 0, 6.2832); }
+      ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(40,71,206,.15)'; ctx.fill(off); ctx.fillStyle = '#2847ce'; ctx.fill(on); };
+    const read = m => { nEl.textContent = usd(m * rent); sEl.textContent = m === 0 ? 'of rent on day one. You have paid ' + usd(price) + ' for the robot.' : m < months ? 'of rent after ' + m + (m === 1 ? ' month.' : ' months.') : 'of rent after ' + m + ' months. The robot has earned back its price.'; };
+    const show = m => { if (m === shown) return; shown = m; paint(m); read(m); };
+    if (still) { pb.style.height = pb.clientWidth * rows / pbData.w + 'px'; size(); show(months); addEventListener('resize', () => { pb.style.height = pb.clientWidth * rows / pbData.w + 'px'; size(); show(months); }); }
+    else {
+      pbSec.classList.add('f-why-live'); size();
+      const onScroll = () => { const r = run.getBoundingClientRect(), span = r.height - innerHeight, p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0; show(Math.round(Math.min(1, p / .86) * months)); };
+      addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', () => { size(); onScroll(); }); onScroll();
+    }
   }
 })();
