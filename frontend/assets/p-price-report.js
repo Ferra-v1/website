@@ -3,7 +3,7 @@
 (() => {
   const root = document.querySelector('[data-pr-stage]'), F = window.FerraPlot;
   if (!root || !F) return;
-  const { clamp, money, usd, ease, fit, TICKS, placeTip, reduce } = F;
+  const { clamp, money, usd, ease, fit, TICKS, placeTip, reduce, clearLabel, lowest } = F;
   const D = JSON.parse(root.querySelector('.pr-data').textContent);
   const pin = root.querySelector('.pr-pin'), chart = root.querySelector('.pr-chart'), cv = root.querySelector('.pr-cv'), ax = root.querySelector('.pr-ax'), tip = root.querySelector('.pr-tip');
   const [tb, ts, ta] = [tip.querySelector('b'), tip.querySelector('span'), tip.querySelector('a')];
@@ -19,7 +19,7 @@
 
   function layout() {
     const W = chart.clientWidth, H = chart.clientHeight, phone = W < 560;
-    const L = phone ? 0 : 56, R = W - 4, base = H - (phone ? 30 : 40), top = phone ? 10 : 8;
+    const L = 60, R = W - 4, base = H - (phone ? 30 : 40), top = phone ? 10 : 8;
     const X = a => L + a / 32 * (R - L), Y = v => base - 8 - (Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (base - 8 - top);
     g = { W, H, phone, L, R, base, top, X, Y, r: phone ? 2.7 : 3.6 };
     P.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); });
@@ -28,20 +28,27 @@
   }
   function labels() {
     const { X, Y, L, R, base, phone, W, H } = g;
-    let s = `<line class="ax" x1="${L}" x2="${R}" y1="${base + .5}" y2="${base + .5}"/>`;
-    TICKS.filter(t => t > lo * 1.2 && t < hi).forEach(t => { s += phone ? `<text x="0" y="${Y(t) - 5}">${usd(t)}</text>` : `<text x="0" y="${Y(t) + 5}">${usd(t)}</text>`; });
+    let s = `<line class="ax" x1="0" x2="${R}" y1="${base + .5}" y2="${base + .5}"/>`;
+    TICKS.filter(t => t > lo * 1.2 && t < hi).forEach(t => { s += `<text x="0" y="${Y(t) + 5}">${usd(t)}</text>`; });
     [5, 10, 15, 20, 25, 30].forEach(a => { s += `<text x="${X(a)}" y="${base + (phone ? 22 : 26)}" text-anchor="middle">${a === 30 && !phone ? '30 years old' : a}</text>`; });
     if (phone) s += `<text x="0" y="${base + 22}">Age</text>`;
-    const c = D.curve;
-    s += `<g class="lg" data-s="1 2"><text class="lb" x="${X(32)}" y="${Y(c[23][1]) - 14}" text-anchor="end">Typical asking price</text></g>`;
-    s += `<g class="lg" data-s="2"><text x="${X(32)}" y="${Y(c[30][0]) + 24}" text-anchor="end">8 in 10 ask inside this band</text></g>`;
+    const c = D.curve, dots = P.map(q => ({ x: q.x, y: q.y })), box = { l: L + 12, r: R, t: g.top, b: base - 6 }, ages = [30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 8, 6, 4, 2];
+    // each label goes in the clearest place near what it names, with a short line to it
+    const near = (cu, gaps) => { const o = []; ages.forEach(a => { const ty = Y(cu[a]); gaps.forEach(d => o.push({ x: X(a), y: ty + d, tx: X(a), ty })); }); return o; };
+    const u1 = [], u2 = [], u3 = [];
+    s += `<g class="lg" data-s="1 2">${clearLabel('Typical asking price', near(c.map(v => v[1]), [-26, 26, -48, 48, -80, 80]), dots, box, u1)}</g>`;
+    s += `<g class="lg" data-s="2">${clearLabel('8 in 10 ask inside this band', near(c.map(v => v[0]), [20, 44]), dots, box, u1, 'pl')}</g>`;
     const dx = X(D.cheap[0]), dy = Y(D.cheap[1]), hx = X(D.dear[0]), hy = Y(D.dear[1]);
     s += `<g class="lg" data-s="2"><text class="lb" x="${dx + 12}" y="${dy + 5}">${usd(D.cheap[1])}</text><text class="lb" x="${hx + 12}" y="${hy + 5}">${usd(D.dear[1])}</text></g>`;
-    const fa = phone ? 24 : 26;
-    s += `<g class="lg" data-s="3"><text class="lb" x="${X(32)}" y="${Y(D.hi.curve[fa]) - 12}" text-anchor="end">${D.hi.label}</text><text class="lb cy" x="${X(32)}" y="${Y(D.lo.curve[fa]) + 22}" text-anchor="end">${D.lo.label}</text></g>`;
-    const low = A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]);
-    s += `<g class="lg" data-s="4"><text class="lb" x="${low.x + 12}" y="${low.y + 22}">Sold at auction</text></g>`;
-    P.filter(q => q.usd < lo).forEach(q => { s += `<text x="${q.x - 10}" y="${q.y + 5}" text-anchor="end">${usd(q.usd)}</text>`; });
+    const inFam = P.filter(q => q.fam === D.hi.id || q.fam === D.lo.id).map(q => ({ x: q.x, y: q.y }));
+    s += `<g class="lg" data-s="3">${clearLabel(D.hi.label, near(D.hi.curve, [-24, -44, -70]), inFam, box, u2)}${clearLabel(D.lo.label, near(D.lo.curve, [24, 44, 70]), inFam, box, u2, 'lb cy')}</g>`;
+    // what the dark dots imply, counted from the data: a sale is under the band when it brought less than the band's floor for its age
+    const under = A.filter(q => q.usd < c[Math.round(q.age)][0]).length, say = under === A.length ? 'Every sale here landed under the band' : `${under} of these ${A.length} sales landed under the band`;
+    const low = A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]), w = say.length * 8, rt = low.x + 12 + w < R, lf = low.x - 12 - w > L;
+    if (rt || lf) s += `<g class="lg" data-s="4"><text class="lb" x="${low.x + (rt ? 12 : -12)}" y="${low.y + 5}" text-anchor="${rt ? 'start' : 'end'}">${say}</text></g>`;
+    else { const i = say.indexOf(' landed'), x = Math.min(low.x - w * .31, R - w * .62), y = low.y + 40 < base - 6 ? low.y + 22 : low.y - 30; s += `<g class="lg" data-s="4"><text class="lb" x="${x}" y="${y}">${say.slice(0, i)}<tspan x="${x}" dy="18">${say.slice(i + 1)}</tspan></text></g>`; }
+    // on a phone the chart is too short for this note beside the last step's label, and the last step is about something else
+    s += phone ? `<g class="lg" data-s="0 1 2 3">${lowest(P, lo)}</g>` : lowest(P, lo);
     ax.setAttribute('viewBox', `0 0 ${W} ${H}`); ax.innerHTML = s;
     marks();
   }
@@ -122,4 +129,19 @@
   new ResizeObserver(layout).observe(chart);
   layout(); onScroll();
   if (reduce) { P.forEach(q => { q.a = .9; }); A.forEach(q => { q.a = 1; }); band = 1; line = 1; marks(); kick(); }
+
+  // the robot at the top: every one of those dots, lit one by one, with the highest asks at the top
+  const hb = document.querySelector('.pr-hbot');
+  if (hb && F.ghost) {
+    const G = F.ghost('arm'), order = D.seat.map((s, i) => D.seat[(i * 7919) % D.seat.length]);
+    const paint = t => { const { c, w, h } = fit(hb), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, h / rows), ox = 0, oy = h - rows * cell;
+      if (hb._c !== cell) { hb._c = cell; hb._b = F.ghostBitmap(G, cell, .42, '40,71,206'); }
+      c.drawImage(hb._b, ox, oy, cols * cell, rows * cell);
+      const r = clamp(cell * .62, 1.6, 3), n = Math.round(order.length * t); c.fillStyle = 'rgb(40,71,206)'; c.beginPath();
+      for (let i = 0; i < n; i++) { const x = ox + (order[i][0] - G.x0 + .5) * cell, y = oy + (order[i][1] - G.y0 + .5) * cell; c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); } c.fill(); };
+    let done = reduce;
+    const start = () => { if (reduce) { paint(1); return; } const t0 = performance.now(), step = now => { const t = clamp((now - t0) / 1500); paint(t); if (t < 1) requestAnimationFrame(step); else done = true; }; requestAnimationFrame(step); };
+    new ResizeObserver(() => { if (done) paint(1); else paint(0); }).observe(hb);
+    start();
+  }
 })();

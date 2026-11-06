@@ -12,8 +12,10 @@
 .pp-nwr{white-space:nowrap}
 
 /* Model marker: every engine figure links to the method. Plain text, the size of the label it sits beside */
-.pp-mk{display:inline-block;margin-left:8px;color:var(--c);font:500 15px/1.2 var(--sans);text-decoration:none;position:relative;white-space:nowrap;vertical-align:baseline}
-.pp-mk::after{content:"";position:absolute;inset:-14px -6px}
+.pp-mk{display:inline-flex;align-items:center;min-height:44px;min-width:44px;justify-content:center;margin:-13px 0 -13px 4px;padding:0 4px;color:var(--c);font:500 15px/18px var(--sans);text-decoration:none;white-space:nowrap}
+/* the rest of a section's markers: still there, still links, and easy to read past */
+.pp-a[data-k="o"] .pp-mk,.pp-rfolds .pp-mk,#pp-s1 .pp-mk,#pp-s0 .dr:has(.pp-mk) ~ .dr .pp-mk{color:var(--muted);font:400 14px/18px var(--sans)}
+.pp-rfolds .pp-mk.dk{color:rgba(255,255,255,.6)}
 .pp-mk:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 .page[data-page="price.html"] section a:not(.btn){text-decoration:none}
 .page[data-page="price.html"] section a:not(.btn):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
@@ -22,14 +24,14 @@
 
 /* 1. the first screen: a sentence on the left, the machine and its number on the right */
 .pp-hero{padding-top:clamp(16px,2vw,32px);padding-bottom:clamp(56px,6vw,88px);position:relative}
-.pp-tool{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto 1fr auto;column-gap:24px;align-items:start}
-.pp-lft{grid-column:1 / 8;grid-row:1 / 3;min-width:0;position:relative;z-index:2}
+.pp-tool{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto auto auto 1fr;column-gap:24px;align-items:start}
+.pp-lft{grid-column:1 / 8;grid-row:1 / 5;min-width:0;position:relative;z-index:2}
 .pp-lft .h1{font-size:clamp(46px,5.6vw,84px);line-height:1;letter-spacing:-.035em;margin:0}
 .pp-lft .lede{max-width:52ch;margin:16px 0 0;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656}
 .pp-lft .lede b{font-weight:600;color:var(--ink)}
 
 /* the machine: one robot for the job picked in the form, standing on its line */
-.pp-bot{grid-column:8 / 13;grid-row:1;margin:0;position:relative;height:340px;--bh:330px}
+.pp-bot{grid-column:8 / 13;grid-row:1;margin:0;position:relative;height:270px;--bh:262px}
 .pp-bs{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;pointer-events:none}
 .pp-bs .rstage{position:absolute;left:0;right:0;bottom:0}
 .pp-bs .rs-bot{height:var(--bh)}
@@ -85,8 +87,7 @@
 .pp-more{flex:1 1 100%;min-width:0}
 .pp-more summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font-size:15px;font-weight:500;list-style:none;white-space:nowrap}
 .pp-more summary::-webkit-details-marker{display:none}
-.pp-more summary::before{content:"+";display:inline-block;font:500 18px/1 var(--sans);color:var(--c);width:12px;transition:transform .2s ease}
-.pp-more[open] summary::before{transform:rotate(45deg)}
+.pp-more summary::after{order:3;color:var(--c)}
 .pp-more summary span{font-weight:400;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .pp-more[open] summary span{display:none}
 .pp-mg{display:flex;flex-wrap:wrap;gap:14px 36px;margin-top:6px}
@@ -95,16 +96,18 @@
 .pp-cnt input{font:500 16px var(--sans);color:var(--ink);width:4em}
 .pp-cnt em{font-style:normal;font-size:15px;color:var(--muted);white-space:nowrap}
 
-/* the answers: the robot's number under the robot, the other three in a row */
+/* the answers: under the robot, what it is worth and what a lender could offer. Nothing else on the first screen */
 .pp-ans{display:contents}
 .pp-a{min-width:0;display:flex;flex-direction:column}
 .pp-a[data-k="v"]{grid-column:8 / 13;grid-row:2;padding-top:18px;position:relative;z-index:1}
-.pp-a[data-k="o"]{grid-column:1 / 5;grid-row:3;margin-top:clamp(28px,3vw,44px)}
-.pp-a[data-k="d"]{grid-column:5 / 8;grid-row:3;margin-top:clamp(28px,3vw,44px)}
-.pp-a[data-k="l"]{grid-column:8 / 13;grid-row:3;margin-top:clamp(28px,3vw,44px)}
+.pp-a[data-k="o"]{grid-column:8 / 13;grid-row:3;margin-top:24px}
 .pp-al{font-size:15px;font-weight:500;color:#4a5262;min-height:22px}
 .pp-av{display:block;font-size:clamp(40px,3.9vw,56px);margin:6px 0 8px;white-space:nowrap;min-height:1em}
-.pp-a[data-k="v"] .pp-av{font-size:clamp(64px,6.6vw,96px);letter-spacing:-.04em;color:var(--c);margin:6px 0 10px}
+.pp-a[data-k="v"] .pp-av{font-size:clamp(56px,5.4vw,78px);letter-spacing:-.04em;color:var(--c);margin:6px 0 10px}
+.pp-arml{margin:0 0 4px;font-size:17px;line-height:1.4;font-weight:500;color:var(--ink)}
+.pp-arml[hidden]{display:none}
+.pp-arml b{font-weight:600}
+.pp-arml a{display:inline-flex;align-items:center;min-height:44px;margin:-10px 0;color:var(--c);font-weight:500}
 .pp-av .v0{color:var(--ink)}.pp-av .v1{color:var(--cyl)}
 .pp-av i{font-style:normal;font-size:.5em;color:#9aa3b3;margin:0 .22em;position:relative;top:-.14em}
 .page[data-page="price.html"] .pp-ac{font-size:15px;line-height:1.4;color:#4a5262;display:block}
@@ -129,73 +132,83 @@
 .page[data-page="price.html"] .pp-dl{margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--muted);max-width:90ch}
 .pp-dl b{color:var(--ink);font-weight:500}
 .pp-dl a:not(.pp-mk){color:var(--c);font-weight:500;display:inline-block;padding:12px 0;margin:-12px 0}
-.page[data-page="price.html"] .pp-diff{margin:4px 0 0;font-size:15px;color:var(--muted);max-width:90ch}
 
 /* drawn by the tool's script, unseen on this page */
 .pp-vh{position:absolute;left:0;right:0;height:0;overflow:hidden;visibility:hidden}
 
-/* section heads: the heading, and beside it the sentence that sets it up */
-.pp-sh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 56px;align-items:end;margin-bottom:clamp(32px,3.6vw,48px)}
-.pp-sh .h2{max-width:14ch}
-.page[data-page="price.html"] .pp-sh .lead-1{margin:0;font-size:18px;max-width:50ch}
+/* section heads: the heading, and under it the sentence that sets it up */
+.pp-sh{margin-bottom:clamp(32px,3.6vw,48px)}
+.pp-sh .h2{max-width:16ch}
+.page[data-page="price.html"] .pp-sh .lead-1{margin:18px 0 0;font-size:19px;max-width:58ch}
+.page[data-page="price.html"] .pp-sh .pp-onote2{margin-top:8px}
 .pp-why{margin-top:10px}
 .pp-why summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:500 15px var(--sans);color:var(--c)}
 .pp-why summary::-webkit-details-marker{display:none}
-.pp-why summary::before{content:"+";display:inline-block;font:500 18px/1 var(--sans);transition:transform .2s ease}
-.pp-why[open] summary::before{transform:rotate(45deg)}
 .pp-whyb{columns:2;column-gap:56px;max-width:1000px;padding:6px 0 4px}
 .pp-whyb p{margin:0 0 12px;font-size:15px;line-height:1.6;color:#4a5262;break-inside:avoid}
 .pp-whyb b{color:var(--ink);font-weight:600}
 .pp-why.dk summary{color:var(--cy)}
-.pp-why.dk .pp-whyb p{color:rgba(255,255,255,.7)}
-.pp-why.dk .pp-whyb b{color:#fff}
+.pp-risk .pp-whyb p{color:rgba(255,255,255,.76)}
+.pp-risk .pp-whyb b{color:#fff}
 
-/* 3. resale: three large figures over the full-width scatter, then two printed statements */
-.pp-lad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 36px;margin-bottom:28px}
-.pp-ladh{grid-column:1 / -1;display:block;font-size:15px;font-weight:600;margin-bottom:14px}
+/* 3. resale, on the brand gradient. Three prices at one size, high to low, because none has been tested against real sales. */
+.pp-grad{padding-block:clamp(72px,9vw,128px);color:#fff;background-size:130% 130%;background-position:0 100%;scroll-margin-top:72px}
+.page[data-page="price.html"] .pp-grad .lead-1{color:#fff}
+.pp-lad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px clamp(24px,3.4vw,48px);margin-bottom:clamp(40px,5vw,72px)}
+.pp-ladh{grid-column:1 / -1;display:block;font-size:17px;font-weight:600;margin-bottom:12px}
 .pp-rung{min-width:0}
-.pp-rung > span:first-child{display:block;font-size:15px;font-weight:500;color:var(--muted)}
-.pp-rung > b{display:block;font:700 clamp(38px,3.6vw,52px)/1 var(--serif);letter-spacing:-.025em;margin:8px 0 12px;font-variant-numeric:lining-nums tabular-nums}
-.pp-rung.hi > b{color:var(--c)}
-.pp-rung p{margin:10px 0 0;font-size:15px;line-height:1.45;color:#4a5262}
+.pp-rung > span:first-child{display:block;font-size:17px;font-weight:600;color:#fff}
+.pp-rung > b{display:block;font:700 clamp(44px,5.4vw,78px)/1 var(--serif);letter-spacing:-.04em;margin:10px 0 12px;font-variant-numeric:lining-nums tabular-nums;color:#fff}
+.pp-rung.hi > b{color:#fff}
+.pp-rung p{margin:0;font-size:16px;line-height:1.45;color:#fff;max-width:30ch}
 .pp-dr{display:block;height:4px;background:#eceff4}
 .pp-dr i{display:block;height:100%}
 .pp-dr i.l{background:var(--soft)}.pp-dr i.c{background:var(--c)}.pp-dr i.a{background:var(--deep)}
-.pp-thin{grid-column:1 / -1;margin:16px 0 0;font-size:15px;line-height:1.5;color:#3e4656}
-.pp-thin b{color:var(--ink);font-weight:600}
-.pp-acc{grid-column:1 / -1;margin:16px 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
+.pp-thin{grid-column:1 / -1;margin:16px 0 0;font-size:16px;line-height:1.5;color:#fff}
+.pp-thin b{color:#fff;font-weight:600}
+.pp-acc{grid-column:1 / -1;margin:16px 0 0;font-size:16px;line-height:1.5;color:#fff}
 .pp-scw{position:relative;margin:0}
 .pp-tb{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
 .pp-segs{border-bottom:0}
-.pp-log{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--muted);cursor:pointer;min-height:44px}
-.pp-log input{width:16px;height:16px;accent-color:var(--c)}
+.pp-grad .pp-seg button{color:#fff}
+.pp-grad .pp-seg button:hover{background:rgba(255,255,255,.14);color:#fff}
+.pp-grad .pp-seg button[aria-checked="true"],.pp-grad .pp-seg button[aria-checked="true"]:hover{background:#fff;color:var(--c)}
+.pp-grad .pp-seg button:focus-visible{outline-color:#fff}
+.pp-log{position:relative;display:flex;align-items:center;gap:8px;font-size:15px;color:#fff;cursor:pointer;min-height:44px}
+.pp-log input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.pp-log::before{content:"";flex:none;width:16px;height:16px;border-radius:4px;box-shadow:inset 0 0 0 1.5px #fff;background:center/10px 8px no-repeat}
+.pp-log:has(input:checked)::before{box-shadow:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath d='M1 4l3 3 5-6' fill='none' stroke='%232847ce' stroke-width='1.6'/%3E%3C/svg%3E")}
+.pp-log:has(input:focus-visible){outline:2px solid #fff;outline-offset:2px;border-radius:6px}
 .pp-sc{position:relative;width:100%;touch-action:manipulation}
 .pp-sc svg{display:block;width:100%;height:auto;overflow:visible}
-.pp-scs .gl,.pp-covs .gl{stroke:#e8ecf2}
-.pp-scs .ax,.pp-covs .ax{font:12px var(--sans);fill:#6b7383}
-.pp-scs .band{fill:rgba(40,71,206,.07)}
-.pp-scs .med{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
-.pp-scs .med.mc{stroke:var(--cyl)}
-.pp-scs .pt{fill:rgba(40,71,206,.5)}
-.pp-scs .pt.me{fill:var(--c)}
-.pp-scs .pt.nf{fill:#fff;stroke:rgba(40,71,206,.5);stroke-width:1.4}
-.pp-scs .pt.cut{stroke:var(--c);stroke-width:1.2}
-.pp-scs .au{fill:var(--cyl);stroke:#fff;stroke-width:1.5}
-.pp-scs .au.im{fill:#fff;stroke:var(--cyl);stroke-width:1.6}
-.pp-scs .ub{stroke:var(--cyl);stroke-width:2;stroke-linecap:butt}
-.pp-scs .uo{fill:#fff;stroke:var(--cyl);stroke-width:3}
-.pp-scs .ui{fill:var(--cyl)}
+.pp-covs .gl{stroke:#e8ecf2}
+.pp-covs .ax{font:12px var(--sans);fill:#6b7383}
+.pp-scs .gl{stroke:rgba(255,255,255,.2)}
+.pp-scs .ax{font:13px var(--sans);fill:#fff}
+.pp-scs .band{fill:rgba(255,255,255,.13)}
+.pp-scs .med{fill:none;stroke:#fff;stroke-width:2.5;stroke-linejoin:round}
+.pp-scs .med.mc{stroke:#fff;stroke-dasharray:6 5}
+.pp-scs .pt{fill:rgba(255,255,255,.62)}
+.pp-scs .pt.me{fill:#fff}
+.pp-scs .pt.nf{fill:none;stroke:rgba(255,255,255,.8);stroke-width:1.4}
+.pp-scs .pt.cut{stroke:#fff;stroke-width:1.2}
+.pp-scs .au{fill:var(--ink);stroke:#fff;stroke-width:1.5}
+.pp-scs .au.im{fill:none;stroke:var(--ink);stroke-width:1.8}
+.pp-scs .ub{stroke:#fff;stroke-width:2;stroke-linecap:butt}
+.pp-scs .uo{fill:var(--c);stroke:#fff;stroke-width:3}
+.pp-scs .ui{fill:#fff}
 .pp-scs .ul rect{fill:none}
-.pp-scs .ul text{font:500 14px var(--sans);fill:var(--muted);paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
-.pp-scs .ul .uv{font:700 17px var(--serif);fill:var(--ink)}
+.pp-scs .ul text{font:500 14px var(--sans);fill:#fff;paint-order:stroke;stroke:rgba(38,72,206,.86);stroke-width:4px;stroke-linejoin:round}
+.pp-scs .ul .uv{font:700 18px var(--serif);fill:#fff}
 .pp-scs .hit{fill:transparent;cursor:crosshair}
-.pp-scs .hl{fill:none;stroke:var(--ink);stroke-width:2;pointer-events:none}
-.pp-scs .lab{font:500 14px var(--sans);fill:#5b6474;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
-.pp-scs .lab.ttl{fill:#5b6474;stroke:none}
-.pp-scs .lab.au{fill:#0378b8;font-weight:600}
-.pp-scs .lab.mc{fill:var(--cyl);font-weight:600}
-.pp-empty{position:absolute;right:4%;top:6%;width:min(360px,62%);margin:0;padding:6px 0;background:rgba(255,255,255,.94);font-size:15px;color:#4a5262}
-.pp-empty b{color:var(--ink)}
+.pp-scs .hl{fill:none;stroke:#fff;stroke-width:2;pointer-events:none}
+.pp-scs .lab{font:500 14px var(--sans);fill:#fff;paint-order:stroke;stroke:rgba(38,72,206,.86);stroke-width:4px;stroke-linejoin:round}
+.pp-scs .lab.ttl{fill:#fff;stroke:none}
+.pp-scs .lab.au{fill:#fff;font-weight:600}
+.pp-scs .lab.mc{fill:#fff;font-weight:600}
+.pp-empty{position:absolute;right:4%;top:6%;width:min(360px,62%);margin:0;padding:6px 0;font-size:16px;color:#fff}
+.pp-empty b{color:#fff}
+.pp-empty .pp-lk{color:#fff}
 .pp-lk{display:inline-flex;align-items:center;min-height:44px;border:0;background:none;padding:0;color:var(--c);font:500 15px var(--sans);cursor:pointer;text-decoration:none}
 .pp-lk:hover{text-decoration:underline;text-underline-offset:3px}
 .pp-tip{position:absolute;z-index:10;width:280px;padding:12px 14px 6px;background:#fff;border-radius:10px;box-shadow:0 0 0 1px var(--line),0 18px 40px -16px rgba(10,20,60,.35);font-size:15px;line-height:1.45;display:flex;flex-direction:column;gap:2px;color:#4a5262}
@@ -204,16 +217,23 @@
 .pp-tip em{font-style:normal;font-size:15px;color:var(--muted)}
 .pp-tip a{color:var(--c);font-weight:500;text-decoration:none;padding:9px 0;margin-top:2px}
 .pp-tx{position:absolute;right:2px;top:2px;width:36px;height:36px;border:0;background:none;font-size:20px;color:var(--muted);cursor:pointer}
-.pp-cut{margin:6px 0 0;font-size:15px;color:var(--muted)}
+.pp-cut{margin:6px 0 0;font-size:15px;color:#fff}
 .pp-cut:empty{display:none}
-.pp-tabs{display:flex;flex-direction:column;gap:48px;margin-top:40px}
+.pp-tsec{padding-block:clamp(56px,7vw,96px) clamp(40px,5vw,64px)}
+.pp-tabs{display:flex;flex-direction:column;gap:48px}
+.pp-tw:has(.pp-rest:not([open])) tbody tr:nth-child(n+4){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.pp-rest summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;color:var(--c);font-weight:500;font-size:15px;list-style:none}
+.pp-rest summary::-webkit-details-marker{display:none}
+.pp-rest .b,.pp-rest[open] .a{display:none}
+.pp-rest[open] .b{display:inline}
+.pp-tw:has(.pp-tnone) .pp-rest{display:none}
 .pp-tw{min-width:0}
 .pp-tw .h3,.pp-cmpw .h3{margin:0}
 .pp-tn{margin:4px 0 16px;font-size:15px;line-height:1.45;color:var(--muted);max-width:80ch}
 .pp-ts{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .pp-t th,.pp-t td{white-space:nowrap;vertical-align:top}
 .pp-t .wr{white-space:normal;min-width:180px}
-.pp-t a{color:var(--c);font-weight:500;text-decoration:none;display:inline-block}
+.pp-t a{color:var(--c);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;margin:-13px 0}
 .pp-t a:hover{text-decoration:underline;text-underline-offset:3px}
 .page[data-page="price.html"] .stmt.pp-t thead th,.page[data-page="price.html"] .stmt.pp-cmpt thead th{border-top:0;padding-top:0;font-size:15px}
 .pp-t tbody tr:last-child td{border-bottom:0}
@@ -229,13 +249,14 @@
 .pp-all{margin-top:20px}
 .pp-all summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;color:var(--c);font-weight:500;font-size:15px;list-style:none}
 .pp-all summary::-webkit-details-marker{display:none}
-.pp-all summary::before{content:"+";display:inline-block;font:500 18px/1 var(--sans);transition:transform .2s ease}
-.pp-all[open] summary::before{transform:rotate(45deg)}
 .pp-tall{max-height:480px;overflow:auto;margin-top:6px}
 .pp-tall thead th{position:sticky;top:0;background:#fff;z-index:2}
 .pp-tall thead th.pp-trb{z-index:3}
 
-/* 4. value: the cover chart runs full width on the page, the family rates print as a statement beneath it */
+/* 4. value: one rate beside the sentences that set it up, then the two lines that matter: what the robot is worth and what is still owed */
+.pp-vtop{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px 36px;align-items:start;margin-bottom:clamp(40px,5vw,72px)}
+.pp-vtop .pp-av{font-size:clamp(60px,6vw,88px);letter-spacing:-.04em;line-height:.95}
+.page[data-page="price.html"] .pp-vtxt .lead-1{margin:0 0 12px;font-size:19px}
 .pp-cov{margin:0}
 .pp-covh{display:flex;align-items:baseline;flex-wrap:wrap;row-gap:6px;margin-bottom:12px;font-size:16px}
 .pp-covh b{font-weight:600}
@@ -245,9 +266,12 @@
 .pp-covc svg{display:block;width:100%;height:auto;overflow:visible}
 .pp-covs .bar{opacity:0;transform:translateY(5px);transition:opacity .35s ease var(--d),transform .45s cubic-bezier(.2,.7,.2,1) var(--d)}
 .pp-covc.on .pp-covs .bar{opacity:1;transform:none}
-.pp-covs .c{fill:#c6d0f3}.pp-covs .c2{fill:#dbe1f7}.pp-covs .gr{fill:#ebeef8}
-.pp-covs .bad{fill:#c2410c}
-.pp-covs .cush{fill:rgba(40,71,206,.14)}
+/* each year's range is a thin bar from its low case to its high case. The script draws wide columns, so these narrow them and hold them on their year. */
+.pp-covs .bar{width:4px;--bx:9px;transform:translate(var(--bx),5px)}
+.pp-covc.on .pp-covs .bar{transform:translate(var(--bx),0)}
+.pp-covs .c{display:none}.pp-covs .c2,.pp-covs .gr{fill:#c6d0f3}
+.pp-covs .c2.bad,.pp-covs .gr.bad{fill:#c2410c}
+.pp-covs .cush{fill:rgba(40,71,206,.1)}
 .pp-covs .after{fill:transparent}
 .pp-covs .aft{font-size:14px;fill:#5b6474}
 .pp-covs .p50{fill:none;stroke:var(--c);stroke-width:3;stroke-linejoin:round}
@@ -280,9 +304,10 @@
 .pp-rk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px 72px;align-items:start}
 .pp-rh .h2{max-width:12ch;margin:0}
 .page[data-page="price.html"] .pp-rp{margin:20px 0 0;max-width:40ch;font-size:19px;color:rgba(255,255,255,.76)}
+.pp-rdef{margin:14px 0 0;max-width:40ch;font-size:19px;line-height:1.5;color:#fff}
 .pp-rbig{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
 .pp-rl{display:block;font-size:15px;color:rgba(255,255,255,.78)}
-.pp-rv{display:block;font:700 clamp(96px,13vw,188px)/.9 var(--serif);letter-spacing:-.045em;color:#fff;margin:14px 0 26px -.03em;font-variant-numeric:lining-nums tabular-nums;transition:color .6s ease;white-space:nowrap}
+.pp-rv{display:block;font:700 clamp(88px,10vw,144px)/.9 var(--serif);letter-spacing:-.045em;color:#fff;margin:14px 0 26px -.03em;font-variant-numeric:lining-nums tabular-nums;transition:color .6s ease;white-space:nowrap}
 .pp-rk.bk .pp-rv{color:var(--cy)}
 .pp-rsw{display:flex;flex-wrap:wrap;gap:4px;max-width:100%}
 .pp-rb{display:flex;align-items:baseline;gap:10px;min-height:44px;padding:12px 16px;border:0;border-radius:999px;background:none;color:#fff;cursor:pointer;font-family:var(--sans)}
@@ -292,10 +317,14 @@
 .pp-rb[aria-checked="true"]{background:#fff}
 .pp-rb[aria-checked="true"] span,.pp-rb[aria-checked="true"] b,.pp-rb[aria-checked="true"]:hover span{color:var(--ink)}
 .pp-rb[data-v="1"][aria-checked="true"] b{color:var(--c)}
-.pp-rcap{margin:16px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.7);max-width:46ch;min-height:3em}
+.pp-rcap{margin:16px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.78);max-width:46ch}
+.pp-rnote{margin:10px 0 0;font-size:15px;line-height:1.5;color:#fff;max-width:46ch}
 /* the fuller picture stays folded away; it stays in the layout so the tool's script can measure and draw it */
-.pp-hx{margin-top:10px}
-.pp-histw{margin:6px 0 24px;min-width:0;max-width:760px}
+.pp-rfolds{margin-top:clamp(32px,4vw,56px)}
+.pp-rfolds .pp-why{margin-top:0}
+.pp-hx{margin-top:0}
+.pp-histw{margin:18px 0 0;min-width:0;display:flex;flex-direction:column;gap:clamp(32px,4vw,48px)}
+.pp-histf{margin:0;min-width:0;max-width:760px}
 .pp-hx:not([open]) + .pp-histw{height:0;margin:0;overflow:hidden;visibility:hidden}
 .pp-dkh{display:flex;align-items:baseline;margin-bottom:8px;color:#fff;font-size:16px}
 .pp-dkh b{font-weight:600}
@@ -308,8 +337,8 @@
 .pp-hs .ax{font:12px var(--sans);fill:rgba(255,255,255,.62)}
 .pp-dkn{margin:10px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.72)}
 .pp-dkn b{color:#fff;font-weight:600}
-.pp-drw{margin:0;padding-top:clamp(40px,5vw,72px)}
-.pp-drw .pp-dkh{margin-bottom:14px}
+.pp-drw{margin:0;padding-top:8px}
+.pp-drwf{max-width:none;min-width:0}
 .pp-drd{display:flex;gap:2px;height:14px}
 .pp-drd i{display:block;min-width:0;transition:background .35s ease,box-shadow .35s ease}
 .pp-drd i.op{background:var(--cy)}.pp-drd i.cu{background:#fff}.pp-drd i.re{background:#7d93ff}
@@ -339,6 +368,7 @@
 .pp-sheet .dr.hl span{color:#3e4656}.pp-sheet .dr.hl b{color:var(--ink)}.pp-sheet .dr.hl.big b{color:var(--c)}
 .pp-sheet .sh-f{margin-top:14px;padding-top:0;font-size:15px;line-height:1.4}
 .pp-sb .sh-t{color:var(--deep)}
+.pp-sheet .sh-h span{font-size:15px}
 .pp-warn{color:#9a3412;font-weight:600}
 .pp-cta{display:flex;align-items:center;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;margin-top:40px}
 .pp-cta .h3{margin:0}
@@ -351,8 +381,8 @@
 .pp-how summary{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 16px;min-height:72px;padding:22px 0;cursor:pointer;list-style:none;scroll-margin-top:80px}
 .pp-how summary::-webkit-details-marker{display:none}
 .pp-how summary .h3{margin:0;font-size:clamp(26px,2.4vw,32px)}
-.pp-how summary .h3::after{content:"+";display:inline-block;margin-left:10px;color:var(--c);transition:transform .2s ease}
-.pp-how[open] summary .h3::after{transform:rotate(45deg)}
+.pp-how summary .h3::after{content:"";display:inline-block;width:.34em;height:.34em;margin:0 .1em .16em .42em;border-right:2.5px solid var(--c);border-bottom:2.5px solid var(--c);transform:rotate(45deg);transition:transform .2s ease}
+.pp-how[open] summary .h3::after{transform:translateY(.12em) rotate(225deg)}
 .pp-how summary em{font-style:normal;color:var(--muted);font-size:15px}
 .pp-hg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;padding-top:28px}
 .pp-hc h3{font:700 22px/1.2 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
@@ -377,15 +407,13 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
   .pp-seg button{padding:0 11px}
 }
 @media (max-width:1000px){
-  .pp-lft,.pp-bot,.pp-a[data-k="v"],.pp-a[data-k="o"],.pp-a[data-k="d"],.pp-a[data-k="l"]{grid-row:auto}
+  .pp-lft,.pp-bot,.pp-a[data-k="v"],.pp-a[data-k="o"]{grid-row:auto}
   .pp-lft{grid-column:1 / -1}
   .pp-bot{position:absolute;right:24px;top:clamp(16px,2vw,32px);width:240px;height:190px;--bh:180px;grid-column:auto}
   .pp-lft .h1{max-width:7ch}
-  .pp-lft .lede{max-width:none;margin-top:28px}
+  .pp-lft .lede{max-width:58%;margin-top:28px}
   .pp-a[data-k="v"]{grid-column:1 / -1;padding-top:28px}
   .pp-a[data-k="o"]{grid-column:1 / -1;margin-top:24px}
-  .pp-a[data-k="d"]{grid-column:1 / 7;margin-top:24px}
-  .pp-a[data-k="l"]{grid-column:7 / -1;margin-top:24px}
   .pp-rk{grid-template-columns:minmax(0,1fr);gap:36px}
   .pp-sh{grid-template-columns:minmax(0,1fr)}
   .pp-sh .h2{max-width:none}
@@ -402,11 +430,12 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
   .pp-bot{right:24px;top:4px;width:146px;height:112px;--bh:108px}
   .pp-l2{display:none}
   .pp-lft .h1{font-size:46px}
-  .pp-lft .lede{font-size:17px;margin-top:18px}
+  .pp-lft .lede{max-width:none;font-size:17px;margin-top:18px}
   .pp-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;font-size:21px}
   .pp-row .pp-f{display:grid;grid-template-columns:6.2em minmax(0,1fr);gap:6px;align-items:center}
   .pp-row .pp-f:last-child{grid-template-columns:6.2em minmax(0,1fr) auto}
-  .pp-row label{font-size:18px;color:#3e4656;white-space:nowrap}
+  .pp-row label{display:flex;align-items:center;min-height:44px;font-size:18px;color:#3e4656;white-space:nowrap}
+  .pp-covk{font-size:15px}
   .pp-tail{font-size:18px;color:#3e4656}
   .pp-cb input,.pp-money,.pp-yr{height:46px;width:100%;min-width:0}
   .pp-money input{width:100%;field-sizing:fixed}
@@ -423,22 +452,19 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
   .pp-seg button{min-height:44px;white-space:normal;padding:0 8px}
   .pp-seg4 button{background:var(--mist)}
   .pp-more summary span{display:none}
-  .pp-a[data-k="v"] .pp-av{font-size:64px}
+  .pp-a[data-k="v"] .pp-av{font-size:58px}
   .pp-av{font-size:36px;margin:4px 0 6px}
   .pp-a[data-k="o"]{margin-top:20px}
-  .pp-a[data-k="d"]{grid-column:1 / 6;margin-top:20px}
-  .pp-a[data-k="l"]{grid-column:6 / -1;margin-top:20px}
-  .pp-a[data-k="l"] .pp-av i{margin:0 .08em}
-  .pp-a[data-k="l"] .pp-av{font-size:30px}
-  .pp-a[data-k="d"] .pp-al,.pp-a[data-k="l"] .pp-al{min-height:44px}
   .pp-pres{gap:0 18px}
   .pp-pres > span{flex:1 1 100%;margin-bottom:-6px}
   .pp-pre,.pp-copy{min-height:44px;text-align:left}
   .pp-copy{width:100%}
   .page[data-page="price.html"] .lead-1{font-size:17px}
-  .pp-lad{grid-template-columns:minmax(0,1fr);row-gap:22px}
+  .pp-lad{grid-template-columns:minmax(0,1fr);gap:24px}
   .pp-ladh{margin-bottom:0}
-  .pp-rung > b{font-size:44px}
+  .pp-scs .ul text:not(.uv){display:none}
+  .pp-rung > b{font-size:52px;margin:6px 0 8px}
+  .pp-rung p{max-width:none}
   .pp-thin,.pp-acc{margin-top:0}
   .pp-empty{position:static;width:auto;margin-top:10px}
   .pp-tip{width:min(270px,calc(100% - 16px))}
@@ -457,7 +483,7 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
   .pp-t td.pp-tln a{display:inline-flex;align-items:center;min-height:44px;margin:-10px 0}
   .pp-covk{margin-left:0;flex-basis:100%}
   .pp-cmpt tbody th{width:46%}
-  .pp-rv{font-size:96px}
+  .pp-rv{font-size:88px}
   .pp-rsw{flex-direction:column;align-items:stretch;gap:0;width:100%}
   .pp-rb{justify-content:space-between;width:100%}
   .pp-dls,.pp-dls.two{height:auto;display:flex;flex-direction:column;gap:10px}
@@ -469,13 +495,40 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
   .pp-sheet{padding:20px 16px 14px}
   .pp-sheet .dr{padding:10px 4px}
   .pp-cta{flex-direction:column;align-items:flex-start}
-  .pp-mk::after{inset:-14px -8px}
+  .pp-mk,.pp-a[data-k="o"] .pp-mk,.pp-rfolds .pp-mk,#pp-s1 .pp-mk,#pp-s0 .dr:has(.pp-mk) ~ .dr .pp-mk{font-size:15px}
+  /* long labels wrap on a phone, and the marker starts its own line flush with them */
+  .pp-a[data-k="v"] .pp-mk,.pp-covh .pp-mk{margin-left:0;padding-left:0;justify-content:flex-start}
+  .pp-vtop{grid-template-columns:minmax(0,1fr)}
+  .pp-vtop .pp-av{font-size:64px}
+  /* the coverage chart draws 12px columns on a phone */
+  .pp-covs .bar{width:3px;--bx:4.5px}
+  /* auction rows: the lot on its own line, then price, date and venue under it. Five columns crushed the titles into one-word lines. */
+  #pp-auc,#pp-auc tbody{display:block}
+  #pp-auc thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  #pp-auc tr{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:2px 14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+  #pp-auc tr:last-child{border-bottom:0}
+  .stmt#pp-auc tbody td{padding:0;border:0;white-space:normal}
+  #pp-auc .pp-trb{grid-column:1 / 4;grid-row:1;position:static;max-width:none;background:none}
+  #pp-auc .pp-tln{grid-column:4;grid-row:1;width:auto}
+  #pp-auc td.r:nth-child(2){grid-column:1;grid-row:2;font-weight:600;color:var(--ink)}
+  #pp-auc td.dt{grid-column:2;grid-row:2;white-space:nowrap;min-width:0;color:#4a5262}
+  #pp-auc td.pp-tmp{grid-column:3 / -1;grid-row:2;color:#4a5262}
 }
 @media (prefers-reduced-motion:reduce){
   .pp-a.busy .pp-av,.pp-a.busy .pp-ac{animation:none}
-  .pp-covs .bar{opacity:1;transform:none;transition:none}
+  .pp-covs .bar,.pp-covc.on .pp-covs .bar{opacity:1;transform:translate(var(--bx),0);transition:none}
   .pp-hs rect,.pp-rv{transition:none}
 }
 
-.pp-diff{margin:14px 0 0}
+.page[data-page="price.html"] .fine-w{font-size:15px;line-height:1.5}
 .pp-rung .pp-dr{display:none}
+
+/* every fold: quiet text with a small chevron, the same mark the robot picker uses */
+.pp-why summary::after,.pp-rest summary::after,.pp-all summary::after,.pp-more summary::after{content:"";flex:none;width:7px;height:7px;margin:-3px 2px 0 2px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);transition:transform .2s ease}
+.pp-why[open] > summary::after,.pp-rest[open] > summary::after,.pp-all[open] > summary::after,.pp-more[open] > summary::after{transform:translateY(4px) rotate(225deg)}
+.pp-more summary::after{color:var(--c)}
+.pp-why.dk summary{color:#fff}
+.pp-grad .pp-why summary{color:#fff}
+.pp-grad summary:focus-visible,.pp-risk summary:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
+.pp-grad .pp-whyb p{color:#fff}
+.pp-grad .pp-whyb b{color:#fff}

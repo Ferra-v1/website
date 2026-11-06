@@ -1,31 +1,39 @@
-/* How it works (hw-). One loan drawn as 50 robots: the story (white), what if the company fails (the page's one dark band), who does what (white), what it costs (mist), what the lender receives (paper), closing (white). */
+/* How it works (hw-). One loan drawn as one big robot: the story (white), who does what and what it costs (mist), what if the company fails (the page's one dark band), nothing is owed (white). */
 [data-page="how-it-works.html"] .h2{max-width:20ch;margin-bottom:20px}
 
-/* the story: words on the left, the 50 robots held on the right while the page scrolls */
+/* the story: words on the left, the robot held on the right while the page scrolls */
 .hw-story{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:clamp(40px,6vw,96px);align-items:start}
-.hw-hero{grid-column:1;grid-row:1;padding-top:clamp(40px,7vh,88px);min-height:calc(100vh - 200px)}
+.hw-hero{grid-column:1;grid-row:1;padding-top:clamp(40px,7vh,88px);min-height:calc(100vh - 280px)}
 [data-page="how-it-works.html"] .hw-hero .h1{font-size:clamp(56px,6.6vw,96px);line-height:.98;letter-spacing:-.035em}
 [data-page="how-it-works.html"] .hw-hero .lede{font-size:clamp(19px,1.6vw,22px);line-height:1.45;max-width:30ch;margin:28px 0 0}
-.hw-chs{grid-column:1;grid-row:2;padding-bottom:18vh}
+.hw-chs{grid-column:1;grid-row:2;padding-bottom:8vh}
 .hw-stage{grid-column:2;grid-row:1 / span 2;position:sticky;top:0;height:100vh;display:flex;align-items:center;min-width:0}
 .hw-si{width:100%}
-.hw-gw{position:relative;display:flex;justify-content:center;align-items:flex-end;overflow:hidden}
-.hw-grid{display:block}
+.hw-gw{position:relative;display:flex;justify-content:center;align-items:flex-end;overflow:clip;overflow-clip-margin:28px}
+.hw-grid{display:block;transform-origin:50% 100%;will-change:transform}
 .hw-base{display:block;height:1px;background:var(--line)}
 .hw-fail .hw-base{background:rgba(255,255,255,.24)}
 
 /* each step takes about a screen, and the one being read stays dark */
-.hw-ch{min-height:84vh;display:flex;flex-direction:column;justify-content:center;padding-block:24px}
-.hw-long{min-height:72vh}
-.hw-note{min-height:80vh;display:flex;flex-direction:column;justify-content:center}
+.hw-ch{min-height:62vh;display:flex;flex-direction:column;justify-content:center;padding-block:24px}
 .hw-t{font:700 clamp(32px,3.4vw,48px)/1.06 var(--serif);letter-spacing:-.028em;margin:0 0 20px;text-wrap:balance}
-.hw-ch p,.hw-note p{margin:0 0 14px;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656;max-width:40ch;text-wrap:pretty}
-.hw-on .hw-ch,.hw-on .hw-note{opacity:.22;transition:opacity .35s ease}
-.hw-on .hw-ch.hw-live,.hw-on .hw-note.hw-live{opacity:1}
+.hw-ch a{color:var(--c);font-weight:500;display:inline-block;padding-block:11px;margin-block:-11px}
+.hw-ch p{margin:0 0 14px;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656;max-width:40ch;text-wrap:pretty}
+.hw-on .hw-ch{opacity:.26;transition:opacity .35s ease}
+.hw-on .hw-ch.hw-live{opacity:1}
+.hw-inl{display:none}
 
-/* the paper that slides over the robots */
-.hw-paper{position:absolute;left:50%;top:6%;width:min(440px,86%);transform:translate(-50%,108%);opacity:0;will-change:transform;pointer-events:none}
-.hw-paper .sheet{padding:28px 32px 20px}
+/* the monthly step is long: its words hold together while the months pass */
+.hw-long{display:block;min-height:132vh;padding-block:0}
+.hw-li{position:sticky;top:clamp(90px,19vh,190px)}
+
+/* the paper that comes in beside the robot, standing on the same floor */
+.hw-paper{position:absolute;right:0;bottom:0;width:336px;transform:translateY(108%);opacity:0;will-change:transform;pointer-events:none}
+.hw-paper .sheet{padding:20px 22px 14px;font-size:15px}
+.hw-paper .sh-t{margin:14px 0 6px;font-size:21px}
+.hw-paper .dr{padding:8px 0}
+.hw-paper .dr b{white-space:nowrap}
+.hw-paper .sh-f{margin:12px 0 0}
 
 /* one dot is one monthly payment */
 .hw-pay{display:grid;grid-template-columns:repeat(36,minmax(0,1fr));gap:0;margin:clamp(14px,2vh,24px) 0 0;height:12px;opacity:0;transition:opacity .3s ease}
@@ -33,14 +41,28 @@
 .hw-pay i{display:block;width:8px;height:8px;margin:2px auto;border-radius:50%;background:rgba(40,71,206,.18);transition:background .12s linear}
 .hw-pay i.p{background:var(--deep)}
 
-/* two figures under the robots */
+/* two figures under the robot */
 .hw-read{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:clamp(16px,2.4vh,28px) 0 0}
 .hw-read dt{font-size:15px;line-height:1.3;color:var(--muted);margin-bottom:6px}
 .hw-read dd{margin:0;font:700 clamp(30px,3.6vw,52px)/1 var(--serif);letter-spacing:-.03em;white-space:nowrap;color:var(--ink)}
 .hw-ra dd{color:var(--deep)}
 
-/* what if the company fails */
-.hw-fail{background:var(--ink);color:#fff;padding-block:clamp(80px,10vw,144px)}
+/* who does what, and what it costs: three short lines beside one sheet of paper */
+.hw-cg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,96px);align-items:start}
+.hw-who{margin-top:clamp(24px,3vw,36px)}
+.hw-who h3{font:600 19px/1.3 var(--sans);margin:0 0 4px}
+.hw-who p{margin:0 0 22px;font-size:17px;line-height:1.5;color:#3e4656;max-width:40ch;text-wrap:pretty}
+.hw-ct .tlink{margin-top:0}
+.hw-bill{padding:clamp(24px,3.6vw,48px) clamp(20px,3.6vw,48px) clamp(18px,2.2vw,28px)}
+.hw-bill .sh-t{font-size:clamp(25px,2.4vw,31px)}
+.hw-bill .stmt{font-size:16px;margin-top:20px}
+.hw-bill .stmt thead th{border-top:0;border-bottom:1px solid var(--ink);font-size:14px}
+.hw-bill .stmt tbody th{font-weight:400}
+.hw-bill .stmt tbody th,.hw-bill .stmt tbody td{padding-block:10px}
+
+/* what if the company fails: the steps stay beside the robot while the reader tries a sale */
+.hw-ft{position:sticky;top:48px}
+.hw-fail{background:var(--ink);color:#fff;padding-block:clamp(72px,8vw,112px)}
 .hw-fg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,96px);align-items:start}
 .hw-fh{font:700 clamp(44px,5.4vw,80px)/1 var(--serif);letter-spacing:-.032em;margin:0;text-wrap:balance}
 .hw-steps{list-style:none;margin:clamp(28px,3.4vw,44px) 0 0;padding:0}
@@ -48,6 +70,9 @@
 .hw-steps b{display:block;font-weight:600;color:#fff;font-size:19px;margin-bottom:2px}
 .hw-fw{display:flex;justify-content:center;align-items:flex-end}
 .hw-fgrid{display:block}
+.hw-lc{margin:-4px 0 0;padding-left:calc(14px + (100% - 28px) * var(--at) + 10px);max-width:calc(40ch + 14px + (100% - 28px) * var(--at));font-size:15px;line-height:1.45;color:rgba(255,255,255,.82)}
+.hw-lc a{color:#fff;font-weight:600;display:inline-block;padding-block:12px;margin-block:-12px}
+.hw-cap{margin:12px 0 0;font-size:15px;line-height:1.45;color:rgba(255,255,255,.72)}
 .hw-sl{display:block;margin:clamp(20px,2.6vw,32px) 0 0;font-size:clamp(17px,1.4vw,19px);line-height:1.4;color:rgba(255,255,255,.9)}
 .hw-sl b{font-weight:700;color:rgb(150,232,255)}
 .hw-sl input{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:6px 0 0;background:none;cursor:pointer;touch-action:pan-y}
@@ -57,6 +82,12 @@
 .hw-sl input::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-12px;border-radius:50%;background:#fff;border:0}
 .hw-sl input::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:0}
 .hw-sl input:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
+/* the labelled mark on the slider: its line starts under the thumb's position for that value, and pressing it goes back there */
+.hw-tick{appearance:none;display:block;position:relative;width:100%;min-height:44px;margin:-6px 0 0;padding:10px 0 4px calc(14px + (100% - 28px) * var(--at));background:none;border:0;color:rgba(255,255,255,.82);font:400 15px/1.4 var(--sans);text-align:left;cursor:pointer}
+.hw-tick::before{content:"";position:absolute;top:-3px;left:calc(14px + (100% - 28px) * var(--at) - 1px);width:2px;height:calc(100% + 3px);background:rgba(255,255,255,.4)}
+.hw-tick span{display:block;padding-left:10px;max-width:42ch}
+.hw-tick:hover{color:#fff}
+.hw-tick:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
 .hw-out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:clamp(14px,2vw,24px) 0 0}
 .hw-out dt{font-size:15px;line-height:1.3;color:rgba(255,255,255,.72);margin-bottom:6px}
 .hw-out dd{margin:0;font:700 clamp(30px,3.6vw,52px)/1 var(--serif);letter-spacing:-.03em;white-space:nowrap}
@@ -65,61 +96,47 @@
 .hw-fine{margin:12px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.72);max-width:60ch}
 [data-page="how-it-works.html"] .hw-fine a{color:#fff;font-weight:600;display:inline-block;padding-block:11px;margin-block:-11px}
 
-/* who does what: three sentences */
-.hw-role{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:clamp(16px,4vw,64px);align-items:end;padding-block:clamp(22px,2.8vw,40px)}
-.hw-role:first-of-type{padding-top:0}.hw-role:last-child{padding-bottom:0}
-.hw-rs{margin:0;font:700 clamp(32px,4.4vw,64px)/1.04 var(--serif);letter-spacing:-.032em;text-wrap:balance}
-.hw-rd{margin:0;font-size:17px;line-height:1.5;color:#3e4656;max-width:36ch;text-wrap:pretty}
+/* nothing is owed: the same robot, the last dots, then one ask */
+.hw-fing{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,96px);align-items:end}
+.hw-finh{font:700 clamp(60px,7.8vw,116px)/.96 var(--serif);letter-spacing:-.04em;margin:0 0 clamp(24px,3vw,40px);max-width:7ch}
+.hw-fint p{margin:0 0 14px;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656;max-width:40ch;text-wrap:pretty}
+.hw-finw{display:flex;justify-content:center;align-items:flex-end}
+.hw-fing-c{display:block}
+.hw-ask{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 48px;margin-top:clamp(72px,9vw,128px)}
+.hw-askh{font:700 clamp(32px,3.4vw,48px)/1.06 var(--serif);letter-spacing:-.028em;margin:0 0 10px}
+.hw-ask p{margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656}
+.hw-ask .hlinks{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
+.hw-ask .tlink{margin-top:0}
 
-/* what it costs: the words beside one sheet of paper */
-.hw-cg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,96px);align-items:start}
-.hw-cp{margin-top:clamp(28px,3.4vw,44px)}
-.hw-cp h3{font:600 19px/1.3 var(--sans);margin:0 0 4px}
-.hw-cp p{margin:0 0 22px;font-size:17px;line-height:1.5;color:#3e4656;max-width:40ch}
-.hw-bill{padding:clamp(24px,3.6vw,48px) clamp(20px,3.6vw,48px) clamp(18px,2.2vw,28px)}
-.hw-bill .sh-t{font-size:clamp(25px,2.4vw,31px)}
-.hw-bill .stmt{font-size:16px;margin-top:20px}
-.hw-bill .stmt thead th{border-top:0;border-bottom:1px solid var(--ink);font-size:14px}
-.hw-bill .stmt tbody th{font-weight:400}
-.hw-bill .stmt tbody th,.hw-bill .stmt tbody td{padding-block:10px}
-
-/* what the lender receives */
-.hw-lg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:start}
-.hw-gg > div{padding-bottom:clamp(20px,2.4vw,32px)}
-.hw-gg .h3{font-size:clamp(25px,2.6vw,36px);margin-bottom:6px}
-.hw-gg p{margin:0;font-size:17px;line-height:1.5;color:#3e4656;max-width:44ch}
-
-/* closing */
-.hw-eg{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,64px);align-items:end}
-[data-page="how-it-works.html"] .hw-end .h1{font-size:clamp(44px,6vw,84px);max-width:10ch}
-[data-page="how-it-works.html"] .hw-end .lede{margin:22px 0 26px}
-.hw-end .hlinks{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
-.hw-es{margin:0}
-
-/* phone: the robots hold at the top of the screen and the words pass under them */
+/* phone: the robot and its figures hold at the top, each heading docks right under them, and the words pass under the heading */
 @media (max-width:900px){
  .hw-story{display:block}
  .hw-hero{min-height:0;padding-top:12px;padding-bottom:20px}
  [data-page="how-it-works.html"] .hw-hero .h1{font-size:clamp(48px,14vw,76px)}
  [data-page="how-it-works.html"] .hw-hero .lede{margin-top:18px;max-width:34ch}
  .hw-stage{height:auto;display:block;top:0;z-index:5;background:#fff;padding:10px 0 12px;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax)}
+ .hw-paper{display:none}
  .hw-pay{margin-top:8px;height:8px}.hw-pay i{width:5px;height:5px;margin:1.5px auto}
- .hw-read{margin-top:10px;gap:14px}.hw-read dt{font-size:14px;margin-bottom:2px}.hw-read dd{font-size:28px}
- .hw-chs{padding-top:12px;padding-bottom:12vh}
- .hw-ch{min-height:58vh;justify-content:flex-start;padding-block:28px 12px}
- .hw-long{min-height:48vh}
- .hw-note{min-height:50vh;justify-content:flex-start;padding-top:12px}
- .hw-t{font-size:clamp(30px,8.6vw,40px);margin-bottom:12px}
- .hw-ch p,.hw-note p{font-size:17px;max-width:none}
- .hw-paper{width:min(330px,92%)}
- .hw-paper .sheet{padding:14px 16px 10px;font-size:13px}
- .hw-paper .sh-h{padding-bottom:8px;font-size:12px}.hw-paper .sh-t{font-size:17px;margin:8px 0 2px}.hw-paper .dr{padding:5px 0}.hw-paper .sh-f{display:none}
- .hw-fg,.hw-cg,.hw-eg{grid-template-columns:minmax(0,1fr)}
- .hw-role{grid-template-columns:minmax(0,1fr);gap:8px}
- .hw-lg{grid-template-columns:minmax(0,1fr)}
+ .hw-read{margin-top:10px;gap:14px}.hw-read dt{font-size:15px;line-height:1.2;margin-bottom:2px}.hw-read dd{font-size:28px}
+ .hw-chs{padding-top:0;padding-bottom:10vh}
+ .hw-ch{display:block;min-height:46vh;padding-block:0 28px}
+ .hw-t{position:sticky;top:var(--hw-sh,340px);z-index:2;background:#fff;font-size:clamp(28px,7.6vw,36px);line-height:1.08;margin:0 0 6px;padding-block:14px 8px}
+ .hw-long .hw-t{position:static}
+ .hw-ch p{font-size:17px;max-width:none}
+ .hw-long{min-height:112vh;padding-block:0 28px}
+ .hw-li{top:var(--hw-sh,340px)}
+ .hw-long p{font-size:16px;line-height:1.45;margin-bottom:10px}
+ .hw-inl{display:block;margin-top:18px}
+ .hw-inl .sheet{padding:20px 20px 14px}
+ .hw-inl .sh-t{margin:14px 0 6px}
+ .hw-inl .dr{padding:9px 0}
+ .hw-fg,.hw-cg,.hw-fing{grid-template-columns:minmax(0,1fr)}
+ .hw-ft{position:static}
  .hw-out{gap:14px}.hw-out dd{font-size:28px}
  .hw-say{min-height:4.4em}
- .hw-er{max-width:320px}
+ .hw-finh{font-size:clamp(60px,18vw,96px)}
+ .hw-ask{margin-top:64px;display:block}
+ .hw-ask .hlinks{margin-top:20px}
 }
 @media (max-width:420px){
  .hw-bill .stmt{font-size:15px}
@@ -127,7 +144,11 @@
 /* reduced motion: the finished picture sits still above the words */
 @media (prefers-reduced-motion:reduce){
  .hw-stage{position:static;height:auto;padding-block:24px}
- .hw-on .hw-ch,.hw-on .hw-note{opacity:1;transition:none}
- .hw-ch,.hw-long,.hw-note{min-height:0;padding-block:20px}
+ .hw-on .hw-ch{opacity:1;transition:none}
+ .hw-ch{min-height:0;padding-block:20px}
+ .hw-t{position:static}
+ .hw-long{min-height:0;padding-block:20px}.hw-li{position:static}
  .hw-pay,.hw-pay i{transition:none}
+ .hw-paper{display:none}
+ .hw-inl{display:block;margin-top:18px}
 }

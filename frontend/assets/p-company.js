@@ -1,35 +1,23 @@
-// Company page: one dot for every listing in the data, plus the auction results in the dark colour. The film plays only while on screen.
+// Company page: one dot for every listing in the data, darkest first, shaded by how far it got (found, priced, dated, sets the price). As it comes on screen, the whole field lands faint, then each stage darkens in turn and its line in the key comes up.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.querySelectorAll('video[data-film]').forEach(v => { if (reduce) return;
-    new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { const p = v.play(); if (p) p.catch(() => {}); } else v.pause(); }), { rootMargin: '200px' }).observe(v); });
-  const cv = document.querySelector('.c-dots'); if (!cv) return;
-  const L = +cv.dataset.listings, A = +cv.dataset.auctions, N = L + A, x = cv.getContext('2d');
-  // the auction dots sit in fixed scattered places (a small seeded shuffle), one to each stretch of the field, so none clumps and no pattern forms
-  let sd = 17; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
-  const isAuc = new Set(); for (let i = 0; i < A; i++) isAuc.add(Math.floor((i + .15 + rnd() * .7) * N / A));
-  let raf = 0, started = false, order = null;
-  const lay = () => {
-    const W = cv.clientWidth, target = W > 820 ? 3.6 : 1.5;   // columns against rows: a wide band on a wide screen, a tall block on a phone
-    const rows = Math.round(Math.sqrt(N / target)), cols = Math.ceil(N / rows), pitch = W / cols, d = Math.min(2, devicePixelRatio || 1);
-    cv.width = W * d; cv.height = pitch * rows * d; cv.style.height = pitch * rows + 'px';
-    return { W, rows, cols, pitch, d };
-  };
-  const draw = (g, count) => {
-    x.setTransform(g.d, 0, 0, g.d, 0, 0); x.clearRect(0, 0, g.W, g.pitch * g.rows);
-    for (let k = 0; k < count; k++) { const i = order[k], cx = (i % g.cols + .5) * g.pitch, cy = (Math.floor(i / g.cols) + .5) * g.pitch, auc = isAuc.has(i);
-      x.fillStyle = auc ? '#0e1626' : '#2847ce'; x.beginPath(); x.arc(cx, cy, g.pitch * (auc ? .46 : .32), 0, 6.2832); x.fill(); }
-  };
-  const start = () => {
-    cancelAnimationFrame(raf); const g = lay();
-    if (!order) { order = Array.from({ length: N }, (_, i) => i); for (let i = N - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } }
-    if (reduce || started === 'done') { draw(g, N); return; }
-    started = true; const t0 = performance.now(), D = 1800;
-    const tick = t => { const p = Math.min(1, (t - t0) / D), e = 1 - Math.pow(1 - p, 2.4); draw(g, Math.ceil(e * N)); if (p < 1) raf = requestAnimationFrame(tick); else started = 'done'; };
-    raf = requestAnimationFrame(tick);
-  };
-  const g0 = lay(); order = Array.from({ length: N }, (_, i) => i); for (let i = N - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-  if (reduce) draw(g0, N);
-  else { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); start(); } }, { threshold: .15 }); io.observe(cv); }
-  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { started = started ? 'done' : started; if (started) draw(lay(), N); }, 120); });
+  const dot = (x, px, py, r, c) => { x.fillStyle = c; x.beginPath(); x.arc(px, py, r, 0, 6.2832); x.fill(); };
+  const cv = document.querySelector('.c-dots'), small = document.querySelector('.c-aucs');
+  const SH = ['rgba(40,71,206,.13)', 'rgba(40,71,206,.32)', 'rgba(40,71,206,.62)', '#2847ce'];
+  const pitch = () => innerWidth > 900 ? 13 : 8;
+  if (cv) {
+    const C = cv.dataset.counts.split(',').map(Number), n = C[0], keys = [...document.querySelectorAll('[data-key]')];
+    const size = () => { const W = cv.clientWidth, P = pitch(), cols = Math.max(1, Math.floor(W / P)), rows = Math.ceil(n / cols), d = Math.min(2, devicePixelRatio || 1); cv.style.height = rows * P + 'px'; cv.width = W * d; cv.height = rows * P * d; const x = cv.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); return { x, cols, P, W, H: rows * P }; };
+    // stage s of 0 to 3 is fully shaded; f is how far the next stage has reached through its dots
+    const paint = (g, s, f) => { const { x, cols, P, W, H } = g, r = P * .34; x.clearRect(0, 0, W, H);
+      for (let i = 0; i < n; i++) { let k = 0; for (let j = 1; j <= 3; j++) if (i < C[j] && (j <= s || (j === s + 1 && i < C[j] * f))) k = j;
+        dot(x, (i % cols + .5) * P, (Math.floor(i / cols) + .5) * P, r, SH[k]); } };
+    let g = size(), done = reduce;
+    if (reduce) paint(g, 3, 1); else { keys.forEach((k, i) => { if (i) k.style.opacity = '.25'; }); paint(g, 0, 0);
+      new IntersectionObserver((es, io) => es.forEach(en => { if (!en.isIntersecting) return; io.disconnect();
+        const t0 = performance.now(), D = 620, tick = t => { const a = (t - t0) / D - .2; const s = Math.min(3, Math.max(0, Math.floor(a))), f = Math.max(0, Math.min(1, a - s));
+          paint(g, a >= 3 ? 3 : s, f); keys.forEach((k, i) => { if (a >= i - .15) k.style.opacity = ''; }); if (a < 3) requestAnimationFrame(tick); else done = true; }; requestAnimationFrame(tick); }), { threshold: .25 }).observe(cv); }
+    let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { g = size(); paint(g, done ? 3 : 0, done ? 1 : 0); }, 120); });
+  }
+  if (small) { const draw = () => { const W = small.clientWidth, P = pitch(), n = +small.dataset.n, cols = Math.max(1, Math.floor(W / P)), rows = Math.ceil(n / cols), d = Math.min(2, devicePixelRatio || 1); small.style.height = rows * P + 'px'; small.width = W * d; small.height = rows * P * d; const x = small.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); for (let i = 0; i < n; i++) dot(x, (i % cols + .5) * P, (Math.floor(i / cols) + .5) * P, P * .34, '#0e1626'); }; draw(); addEventListener('resize', draw); }
 })();

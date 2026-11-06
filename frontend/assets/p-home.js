@@ -67,8 +67,13 @@
 })();
 
 // The world's work film: fetched when the section is near and played only while it is on screen. Reduced motion keeps the poster.
+// The section arrives under the film's darkened stage, and once it has reached the top of the screen its picture and words come up out of black, in place.
 (() => {
-  const v = document.querySelector('.h-wf'); if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const w = document.querySelector('.h-world'), v = w && w.querySelector('.h-wf'); if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const parts = [w.querySelector('.h-wv'), w.querySelector('.h-wt')]; let last = -1;
+  w.classList.add('h-wj');
+  const fade = () => { const k = Math.min(1, Math.max(0, -w.getBoundingClientRect().top / (innerHeight * .22))); if (k === last) return; last = k; parts.forEach(p => p.style.opacity = k.toFixed(3)); };
+  fade(); addEventListener('scroll', fade, { passive: true }); addEventListener('resize', fade);
   v.muted = true;
   const near = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; near.disconnect(); v.preload = 'auto'; }, { rootMargin: '900px' });
   near.observe(v);
@@ -110,7 +115,7 @@
 
 // The first screen and film. One canvas on one pinned stage, painted as a pure function of how far the page has scrolled, so scrolling back plays it backwards.
 // Order: the moving robot slows to its pose, its fine dots gather into the 433 listing dots on the same silhouette, those dots fly to their true place on a chart
-// of age against asking price, the line of typical prices draws, the field collapses into one dot on the chosen robot's price, the dot grows into the price,
+// of age against asking price, the line of typical prices draws, the field collapses into one dot on the chosen robot's likely sale price, the dot grows into that price,
 // and the price splits into what a company could borrow and the rest. The picker on the first screen sets which price the film ends on.
 (() => {
   const film = document.querySelector('.h-film'), stick = film && film.querySelector('.h-stick'); if (!film) return;
@@ -120,27 +125,32 @@
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, seg = (s, a, b) => clamp((s - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
   // the timeline, in screens scrolled
-  const T = { slow: [0, .16], gather: [.16, .6], cam: [.1, .64], b1: [.54, .72, 1.16, 1.3], fly: [1.22, 1.96], axis: [1.5, 1.8], b2: [1.62, 1.84, 2.52, 2.66], curve: [1.85, 2.25],
-    fall: [2.52, 2.98], axisOut: [2.56, 2.84], grow: [2.86, 3.2], b3: [2.94, 3.12, 3.5, 3.6], split: [3.52, 3.88], b4: [3.7, 3.92, 9, 9] };
-  const RESTS = [[.34, 0], [1.2, .98], [2.5, 2.3], [3.5, 3.3], [99, 4.2]];
+  const T = { slow: [0, .14], gather: [.14, .56], cam: [.08, .6], b1: [.54, .72, 1.06, 1.16], fly: [1.08, 1.54], axis: [1.22, 1.44], b2: [1.3, 1.44, 1.74, 1.84], curve: [1.42, 1.62],
+    fall: [1.76, 2.04], axisOut: [1.78, 2], grow: [1.96, 2.18], b3: [2.02, 2.16, 2.38, 2.46], split: [2.4, 2.64], b4: [2.46, 2.62, 2.8, 2.9], end: [2.84, 3.08], dim: [2.8, 3.08] };
+  const RESTS = [[.34, 0], [1.1, .94], [1.8, 1.68], [2.42, 2.28], [99, 2.72]];
   const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
   let autoOK = true, W = 0, H = 0, FH = 0, dpr = 1, phone = false, frames = null, nF = 96, fps = 12, t0 = 0, D = null, R = null, dirty = true, vis = true, pose = 84;
-  let hero = { p: 6, r: 1000, a: 1 }, beat = { p: 6, r: 1000 }, floorY = 800, C = { l: 0, r: 1000, t: 0, b: 800 }, disc = {}, age = 10, price = 14700, loan = 10300, rest = 4400;
+  let hero = { p: 6, r: 1000, a: 1 }, beat = { p: 6, r: 1000 }, floorY = 800, C = { l: 0, r: 1000, t: 0, b: 800 }, disc = {}, age = 10, ask = 14700, sale = 6100, loan = 4300, rest = 1800;
   const X = a => C.l + a / 30 * (C.r - C.l), Y = u => C.t + (Math.log(HI) - Math.log(u)) / (Math.log(HI) - Math.log(LO)) * (C.b - C.t);
 
   // ---------------------------------------------------------------- the price box: the only numbers baked into the page
-  const tab = JSON.parse(document.getElementById('h-prices').textContent), rSel = document.getElementById('h-r'), ySel = document.getElementById('h-y'), pv = document.getElementById('h-pv'), lv = document.getElementById('h-lv'), tool = document.getElementById('h-tool');
+  const tab = JSON.parse(document.getElementById('h-prices').textContent), rSel = document.getElementById('h-r'), ySel = document.getElementById('h-y'), tool = document.getElementById('h-tool');
+  const outs = ['h-av', 'h-pv', 'h-lv'].map(id => document.getElementById(id)), whyEl = document.getElementById('h-why');
   const fmt = n => '$' + Math.round(n).toLocaleString('en-US'), r100 = v => Math.round(v / 100) * 100;
-  let shownP = null, shownL = null, tw = 0;
+  let shown = null, tw = 0;
+  const putAll = (sel, v) => film.querySelectorAll(sel).forEach(s => s.textContent = v);
   const setBox = () => {
     const f = tab.fam[rSel.value], y = +ySel.value; age = clamp(tab.now - y, 0, 30);
-    price = r100(f.c[age]); loan = r100(f.c[age] * tab.share); rest = price - loan;
-    const href = `price.html#r=${f.t}&y=${y}`; tool.href = href; film.querySelectorAll('[data-tool]').forEach(a => a.href = href);
-    film.querySelectorAll('[data-say]').forEach(s => s.textContent = f.s); film.querySelectorAll('[data-yr]').forEach(s => s.textContent = y);
-    film.querySelectorAll('[data-p]').forEach(s => s.textContent = fmt(price)); film.querySelectorAll('[data-l]').forEach(s => s.textContent = fmt(loan)); film.querySelectorAll('[data-e]').forEach(s => s.textContent = fmt(rest));
-    if (shownP === null || reduce) { shownP = price; shownL = loan; pv.textContent = fmt(price); lv.textContent = fmt(loan); } else {
-      const a = shownP, b = shownL, st = performance.now(); cancelAnimationFrame(tw);
-      const step = t => { const k = out3(clamp((t - st) / 320)); shownP = lerp(a, price, k); shownL = lerp(b, loan, k); pv.textContent = fmt(r100(shownP)); lv.textContent = fmt(r100(shownL)); if (k < 1) tw = requestAnimationFrame(step); };
+    const a = f.c[age], k = tab.sk[age < 10 ? 0 : 1];   // the price tool's Expected sale rule
+    ask = r100(a); sale = r100(a * k); loan = r100(a * k * tab.share); rest = sale - loan;
+    tool.href = `price.html#r=${f.t}&y=${y}&p=${ask}`;
+    const say = f.s.charAt(0).toUpperCase() + f.s.slice(1);
+    putAll('[data-say]', say); putAll('[data-yr]', y); putAll('[data-a]', fmt(ask)); putAll('[data-p]', fmt(sale)); putAll('[data-l]', fmt(loan)); putAll('[data-e]', fmt(rest));
+    const want = [ask, sale, loan];
+    whyEl.textContent = age < f.g[0] || age > f.g[1] ? 'Our estimate of a real sale. We have no listings of this robot at this age, so it only follows the trend.' : tab.why[age < 10 ? 0 : 1];
+    if (shown === null || reduce) { shown = want; outs.forEach((o, i) => o.textContent = fmt(want[i])); } else {
+      const from = shown.slice(), st = performance.now(); cancelAnimationFrame(tw);
+      const step = t => { const q = out3(clamp((t - st) / 320)); shown = from.map((v, i) => lerp(v, want[i], q)); outs.forEach((o, i) => o.textContent = fmt(q < 1 ? r100(shown[i]) : want[i])); if (q < 1) tw = requestAnimationFrame(step); };
       tw = requestAnimationFrame(step);
     }
     if (W) layout();
@@ -173,12 +183,12 @@
 
   // ---------------------------------------------------------------- layout
   const docTop = el => el.getBoundingClientRect().top + scrollY, docBot = el => el.getBoundingClientRect().bottom + scrollY;
-  const place = (el, x, y) => { el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%)`; };
+  const place = (el, x, y, z = 1) => { el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%) scale(${z.toFixed(3)})`; };
   function layout() {
     W = stick.clientWidth; FH = stick.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 760;
     cv.width = Math.round(W * dpr); cv.height = Math.round(FH * dpr);
     const narrow = W <= 1060, cols = BX1 - BX0, rows = BY1 - BY0 + 1, stageTop = docTop(film);
-    floorY = phone ? H - (H < 720 ? 44 : 62) : narrow ? H - 84 : Math.round(H * .925);
+    floorY = phone ? H - (H < 720 ? 40 : 46) : narrow ? H - 84 : Math.round(H * .925);
     const wrap = Math.min(W, 1200), mar = (W - wrap) / 2 + (phone ? 16 : 24);
     // the robot on the first screen stands on the floor line, beside the copy on desktop and under it on a phone
     if (W <= 900) {
@@ -192,7 +202,7 @@
       const tb = b1.querySelector('.h-bt').getBoundingClientRect(), bottom = tb.height + 28 + 12, q = Math.min((W - 20) / cols, (floorY - bottom) / rows);
       beat = { p: q, r: W - (W - cols * q) / 2 };
     } else beat = { p: hero.p, r: hero.r };
-    const copyEnd = (docBot(document.querySelector('.h-copy')) - stageTop) / H; T.b1[0] = Math.max(.54, copyEnd - .08); T.b1[1] = T.b1[0] + .18; RESTS[0][0] = Math.max(.8, copyEnd + .05);
+    const copyEnd = (docBot(document.querySelector('.h-copy')) - stageTop) / H; T.b1[0] = Math.max(.54, copyEnd - .08); T.b1[1] = T.b1[0] + .16; RESTS[0][0] = Math.max(.7, copyEnd - .1);
     autoOK = !narrow || !D || (floorY - (BY1 - D.rows[D.demo][7]) * beat.p - 130 > b1.querySelector('.h-bt').getBoundingClientRect().height + 28);
     // the chart stands on the same line: its bottom edge is the floor the robot stood on
     const bt = b2.querySelector('.h-bt').getBoundingClientRect();
@@ -216,12 +226,12 @@
       disc = { x: rightX - area / 2, y: cy, R: Rm, r1, r2, c1x, c1y: base - r1, c2x, c2y: base - r2 }; }
     n0.querySelector('b').style.fontSize = (disc.R * .4).toFixed(1) + 'px';
     n1.querySelector('b').style.fontSize = (disc.r1 * .4).toFixed(1) + 'px'; n2.querySelector('b').style.fontSize = (disc.r2 * .4).toFixed(1) + 'px';
-    place(n1, disc.c1x, disc.c1y); place(n2, disc.c2x, disc.c2y); n1.style.width = (disc.r1 * 1.7) + 'px'; n2.style.width = (disc.r2 * 1.7) + 'px';
+    n1.style.width = (disc.r1 * 1.7) + 'px'; n2.style.width = (disc.r2 * 1.7) + 'px';
     if (R) { const base = beat.p;
       for (let j = 0; j < R.n; j++) { const q = D.rows[j], f = rad(q[2]); R.x0[j] = beat.r - (q[6] - BX0) * beat.p; R.y0[j] = floorY - (BY1 - q[7]) * beat.p;
         R.r0[j] = base * .94 * f; R.x1[j] = X(q[5]); R.y1[j] = Y(q[2]); R.r1[j] = (phone ? 2.8 : 4.8) * Math.pow(f, .8); }
       // the chart drains into the chosen price nearest dots first, at an even rate, so the screen is never empty before the price arrives
-      const by = Array.from({ length: R.n }, (_, j) => j).map(j => [Math.hypot(R.x1[j] - X(age), R.y1[j] - Y(price)), j]).sort((a, b) => a[0] - b[0]);
+      const by = Array.from({ length: R.n }, (_, j) => j).map(j => [Math.hypot(R.x1[j] - X(age), R.y1[j] - Y(sale)), j]).sort((a, b) => a[0] - b[0]);
       by.forEach((q, i) => { R.f[q[1]] = i / R.n; }); }
     dirty = true;
   }
@@ -262,7 +272,7 @@
     if (lineA > 0) { ctx.fillStyle = `rgba(255,255,255,${(.55 * lineA).toFixed(3)})`; ctx.fillRect(0, floorY, W, 1); }
     // listing dots
     let hitOK = false;
-    const mx = X(age), my = Y(price);
+    const mx = X(age), my = Y(sale);
     if (k < 1 || !R) paintFine(s, now, g, k, cam);
     if (R && k > 0 && grow < 1) {
       const n = R.n, gk = seg(k, .12, 1), grown = Math.sqrt(gk), chartA = lerp(1, .8, seg(s, T.curve[0], T.curve[1]));
@@ -282,7 +292,7 @@
       hitOK = k > .9 && fall === 0;
       // the auction results, square so they are never mistaken for a listing
       const au = seg(s, T.curve[0], T.curve[1]) * (1 - seg(s, ...T.axisOut));
-      if (au > 0) { ctx.fillStyle = `rgba(150,232,255,${au.toFixed(3)})`; const z = phone ? 6 : 8; D.aucs.forEach(q => ctx.fillRect(X(q[5]) - z / 2, Y(q[1]) - z / 2, z, z)); }
+      if (au > 0) { ctx.fillStyle = `rgba(14,22,38,${au.toFixed(3)})`; const z = phone ? 7 : 10; D.aucs.forEach(q => ctx.fillRect(X(q[5]) - z / 2, Y(q[1]) - z / 2, z, z)); }
       // the line of typical prices draws through them
       const cu = seg(s, ...T.curve), out = 1 - seg(s, ...T.axisOut);
       if (cu > 0 && out > 0) { const end = cu * 30; ctx.lineJoin = ctx.lineCap = 'round'; ctx.beginPath();
@@ -293,18 +303,24 @@
       if (hl >= 0 && R.r[hl] > 0) { ctx.fillStyle = 'rgb(150,232,255)'; ctx.beginPath(); ctx.arc(R.x[hl], R.y[hl], Math.max(R.r[hl] * 1.25, phone ? 5 : 6), 0, 6.2832); ctx.fill(); }
       if (fall > 0 && grow === 0) { const m = Math.sqrt(arrived / n) * (phone ? 16 : 26) + 3; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(mx, my, m, 0, 6.2832); ctx.fill(); }
     }
-    // one dot, one price, then two
-    if (grow > 0) { const m0 = (phone ? 16 : 26) + 3, e = io3(grow), cx = lerp(mx, disc.x, e), cy = lerp(my, disc.y, e), rr = lerp(m0, disc.R, e), sp = io3(split);
-      const r1 = lerp(rr, disc.r1, sp), r2 = disc.r2 * out3(split), x1 = lerp(cx, disc.c1x, sp), y1 = lerp(cy, disc.c1y, sp), x2 = lerp(cx, disc.c2x, sp), y2 = lerp(cy, disc.c2y, sp);
+    // one dot, one price, then two. Each number is glued to its disc and scales with it, so a disc is never blank.
+    const dark = seg(s, ...T.dim); if (dark > 0) { ctx.fillStyle = `rgba(4,6,12,${dark.toFixed(3)})`; ctx.fillRect(0, 0, W, FH); }
+    let G = null;
+    if (grow > 0) { const m0 = (phone ? 16 : 26) + 3, e = io3(grow), cx = lerp(mx, disc.x, e), cy = lerp(my, disc.y, e), rr = lerp(m0, disc.R, e), sp = io3(split), fin = io3(seg(s, ...T.end));
+      // the end of the film: both discs close to nothing while the stage goes dark, so the next section's picture comes up out of black with no edge
+      const r1 = lerp(rr, disc.r1, sp) * (1 - fin), r2 = disc.r2 * out3(split) * (1 - fin), x1 = lerp(cx, disc.c1x, sp), y1 = lerp(cy, disc.c1y, sp), x2 = lerp(lerp(cx, disc.c2x, sp), x1, fin), y2 = lerp(lerp(cy, disc.c2y, sp), y1, fin);
       if (sp > 0) { ctx.fillStyle = '#1e339b'; ctx.beginPath(); ctx.arc(x2, y2, r2, 0, 6.2832); ctx.fill(); }
-      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x1, y1, r1, 0, 6.2832); ctx.fill(); }
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x1, y1, r1, 0, 6.2832); ctx.fill(); G = { x1, y1, r1, x2, y2, r2 }; }
     // page text
     const a1 = beatA(s, T.b1), a2 = beatA(s, T.b2), a3 = beatA(s, T.b3), a4 = beatA(s, T.b4);
     show(b1, a1.a, a1.dy); show(b2, a2.a, a2.dy); show(b3, a3.a, a3.dy); show(b4, a4.a, a4.dy);
     show(axis, seg(s, ...T.axis) * (1 - seg(s, ...T.axisOut)));
     const cu2 = seg(s, T.curve[1] - .15, T.curve[1]); axLate.forEach(e => e.style.opacity = cu2);
-    const e0 = io3(grow), nv = seg(grow, .55, 1) * (1 - seg(split, 0, .16)); if (nv > 0) { place(n0, lerp(mx, disc.x, e0), lerp(my, disc.y, e0)); } show(n0, nv);
-    const nk = seg(split, .3, .72); show(n1, nk); show(n2, nk);
+    const fin = io3(seg(s, ...T.end)), go = 1 - seg(fin, .45, .8), split2 = seg(split, .1, .4);
+    const nv = seg(grow, .04, .3) * (1 - seg(split, 0, .32)) * go; if (nv > 0 && G) place(n0, G.x1, G.y1, G.r1 / disc.R); show(n0, nv);
+    const na = split2 * go, nb = seg(split, .6, .85) * go;
+    if (G) { if (na > 0) place(n1, G.x1, G.y1, G.r1 / disc.r1); if (nb > 0) place(n2, G.x2, G.y2, G.r2 / disc.r2); }
+    show(n1, G ? na : 0); show(n2, G ? nb : 0);
     hit = hitOK; autoTip(s); placeTip();
   }
 
@@ -342,4 +358,13 @@
   new IntersectionObserver(es => { vis = es[0].isIntersecting; }, { rootMargin: '60px' }).observe(stick);
   const loop = now => { requestAnimationFrame(loop); if (!vis) return; const moving = !reduce && frames && (scrollY - docTop(film)) / (H || 1) < T.slow[1]; const intro = frames && now - t0 < 1600; if (!dirty && !moving && !intro) return; dirty = false; paint(now); };
   requestAnimationFrame(loop);
+})();
+
+// What if a loan goes bad: one button shows the same 50 robots at the middle auction sale, and back. The sentence beside it says the same thing without it.
+(() => {
+  const b = document.getElementById('h-lowb'), sp = document.getElementById('h-split'); if (!b || !sp) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, left = sp.querySelector('.h-sa .h-sl'), base = left.innerHTML, low = left.dataset.low;
+  b.hidden = false;
+  b.addEventListener('click', () => { const on = !sp.classList.contains('h-lo'); sp.classList.add('h-tch', 'in-view'); sp.classList.toggle('h-lo', on); left.innerHTML = on ? low : base; b.textContent = on ? 'Back to our example' : 'Show that on the robots';
+    const top = sp.getBoundingClientRect().top; if (top < 72) scrollBy({ top: top - 84, behavior: reduce ? 'auto' : 'smooth' }); });
 })();

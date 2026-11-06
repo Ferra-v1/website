@@ -2,7 +2,9 @@
 .d-hero{padding-top:clamp(36px,5vw,72px);padding-bottom:clamp(40px,5vw,72px)}
 .d-hg{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr);gap:clamp(28px,5vw,72px);align-items:end}
 .d-hero .h1{font-size:clamp(52px,7.4vw,108px);line-height:.98;letter-spacing:-.035em;max-width:9ch}
-.d-hero .lede{margin:clamp(20px,2vw,28px) 0 0;max-width:40ch;font-size:clamp(19px,1.7vw,24px);line-height:1.4}
+.d-hero .lede{margin:clamp(20px,2vw,28px) 0 0;max-width:44ch;font-size:clamp(19px,1.7vw,24px);line-height:1.4}
+/* the size of the error, in the same breath as the method */
+.d-miss{margin:16px 0 0;max-width:44ch;font-size:clamp(19px,1.7vw,24px);line-height:1.4;font-weight:500;color:var(--ink)}
 .d-upd{margin:18px 0 0;font-size:15px;color:var(--muted)}
 .d-hbot .rstage{max-width:420px;margin-left:auto}
 
@@ -10,7 +12,7 @@
 .d-flow{background:var(--ink);color:#fff;--cy:rgb(150,232,255)}
 .d-fst{padding-block:clamp(64px,8vw,112px)}
 .d-fg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,72px);align-items:center}
-.d-fh .h2{margin:0;max-width:11ch}
+.d-fh .h2{margin:0;max-width:14ch}
 .d-fh > p{margin:14px 0 0;font-size:19px;line-height:1.45;color:rgba(255,255,255,.72)}
 .d-frs{list-style:none;margin:clamp(24px,3vw,40px) 0 0;padding:0}
 .d-fr{display:grid;grid-template-columns:clamp(116px,12.5vw,184px) minmax(0,1fr);gap:0 16px;align-items:baseline;padding:7px 0;transition:opacity .35s ease}
@@ -22,15 +24,26 @@
 .d-flow[data-s="3"] .k4{stroke:var(--cy)}
 .d-flow[data-s="3"] .d-fr:last-child b{color:var(--cy)}
 /* pinned: a tall section with a stage held on screen by position sticky */
-.d-flow.d-pin{height:340vh}
+.d-flow.d-pin{height:175vh}
 .d-flow.d-pin .d-fst{position:sticky;top:0;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding-block:32px}
 .d-flow.d-pin .d-fg{width:100%}
 .d-flow.d-pin .d-fr{opacity:.42}
 .d-flow.d-pin[data-s="0"] .d-fr:nth-child(1),.d-flow.d-pin[data-s="1"] .d-fr:nth-child(2),.d-flow.d-pin[data-s="2"] .d-fr:nth-child(3),.d-flow.d-pin[data-s="3"] .d-fr:nth-child(4){opacity:1}
 
+/* what we do not know: one admission at full size, three more under it. Straight after the funnel, where it gets read */
+.d-unk{background:var(--mist);padding-block:clamp(72px,9vw,128px);scroll-margin-top:0}
+.d-unk .h2{margin:0;font-size:clamp(21px,1.9vw,26px);line-height:1.25;letter-spacing:-.02em;color:var(--ink)}
+.d-unb{margin:clamp(16px,2vw,24px) 0 0;max-width:20ch;font:600 clamp(40px,5.6vw,80px)/1.04 var(--serif);letter-spacing:-.035em;color:var(--ink)}
+.d-uns{margin:clamp(16px,2vw,24px) 0 0;font-size:clamp(19px,1.7vw,24px);line-height:1.4;color:#3e4656}
+.d-ung{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(28px,4vw,56px);margin-top:clamp(48px,6vw,88px)}
+/* headings of one line and two lines still start their text together */
+.d-ung > div{display:grid;grid-row:span 2;grid-template-rows:subgrid;row-gap:0}
+.d-ung h3{margin:0 0 10px;font:600 clamp(21px,1.9vw,26px)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.d-ung p{margin:0;font-size:18px;line-height:1.55;color:#3e4656}
+
 /* the read */
 .d-body{padding-top:clamp(56px,7vw,104px)}
-.d-g{display:grid;grid-template-columns:232px minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start}
+.d-g{display:grid;grid-template-columns:168px minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start}
 .d-toc{position:sticky;top:96px;grid-row:1 / span 2}
 .d-toc b{display:block;font-size:15px;font-weight:600;color:var(--ink);padding-bottom:6px}
 .d-toc ol,.d-tocx ol{list-style:none;margin:0;padding:0}
@@ -39,16 +52,18 @@
 .d-toc a.on{color:var(--c);font-weight:500}
 .d-tocx{display:none}
 .d-art{max-width:720px;min-width:0}
-.d-short{margin:0 0 clamp(16px,2vw,24px);font:500 clamp(23px,2.2vw,30px)/1.32 var(--serif);letter-spacing:-.018em;color:var(--ink)}
-.d-sec{padding:clamp(44px,5vw,68px) 0 0;scroll-margin-top:72px}
-.d-sec .h2{font-size:clamp(30px,3vw,42px);line-height:1.08;margin:0 0 18px;letter-spacing:-.028em}
+.d-sec{padding:clamp(48px,5.6vw,80px) 0 0;scroll-margin-top:72px}
+.d-sec:first-child{padding-top:0}
+/* a long read: its many headings sit one step below the site's section size, so the text and the big figures lead */
+.page .d-art .d-sec h2.h2{font-size:clamp(28px,2.5vw,36px)!important;line-height:1.12;margin:0 0 16px;letter-spacing:-.026em}
 .d-sec p{margin:0 0 16px;color:#3e4656;font-size:18px;line-height:1.65}
-.d-sec a{color:var(--c);text-decoration:none;font-weight:500;position:relative}
-.d-sec p a::after,.d-pr a::after{content:"";position:absolute;inset:-12px -2px}
+/* a link is told by its colour alone. Its box reaches 44px tall without moving the line it sits on. */
+.d-sec a,.d-pr a{color:var(--c);text-decoration:none}
+.d-sec p a,.d-pr p a,[data-page="methodology.html"] .notes a{display:inline-flex;align-items:center;min-height:44px;margin:calc((1.6em - 44px) / 2) 0;padding:0}
 .d-t a{display:inline-flex;align-items:center;min-height:44px;margin:-13px 0}
 .d-sec a:hover{color:var(--ink)}
 .d-sec b{color:var(--ink);font-weight:600}
-[data-page="methodology.html"] .notes a,[data-page="privacy.html"] .notes a{text-decoration:none}
+[data-page="methodology.html"] .notes a{text-decoration:none;color:var(--c)}
 
 /* big numbers sit straight on the page */
 .d-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 28px;margin:clamp(24px,3vw,36px) 0 clamp(24px,3vw,36px)}
@@ -58,10 +73,37 @@
 .d-nums dt{margin-top:10px;font-size:15px;line-height:1.35;color:#4a5262}
 .d-nums:has(div:nth-child(4)){grid-template-columns:repeat(4,minmax(0,1fr))}
 
+/* the one large figure in a section */
+.d-sec .d-big{margin:clamp(24px,3vw,36px) 0;display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 18px}
+.d-big b{font:700 clamp(64px,7vw,104px)/.95 var(--serif);letter-spacing:-.045em;color:var(--c)}
+.d-big span{font-size:18px;line-height:1.35;color:#3e4656;flex:1 1 180px;max-width:24ch}
+
+/* one dot for each auction lot */
+.d-lots{margin:clamp(28px,3vw,40px) 0 clamp(28px,3vw,36px)}
+.d-lr{margin-bottom:22px}
+.d-sec .d-ll{margin:0 0 6px;font-size:16px;line-height:1.4;color:#3e4656}
+.d-lt{position:relative;height:66px;border-bottom:1px solid var(--line)}
+.d-lo{position:absolute;display:block;width:14px;height:14px;margin:0 0 4px -7px;border-radius:50%;background:rgba(40,71,206,.55)}
+.d-lo.on{background:var(--c)}
+.d-lm{position:absolute;bottom:0;display:block;width:2px;height:28px;margin-left:-1px;background:var(--ink)}
+.d-ln{position:absolute;bottom:6px;right:0;font-size:15px;line-height:1.25;color:var(--ink);font-weight:500}
+.d-lax{position:relative;height:22px;margin-top:-16px;font-size:15px;color:#5b6474;font-variant-numeric:lining-nums tabular-nums}
+.d-lax span{position:absolute;transform:translateX(-50%)}
+.d-lax span:first-child{transform:none}.d-lax span:last-child{transform:translateX(-100%)}
+.d-lots figcaption{margin-top:10px;font-size:15px;line-height:1.4;color:#5b6474}
+.d-sec .d-note{margin:10px 0 0;font-size:15px;line-height:1.5;color:#5b6474}
+
 /* a worked example, three steps in order */
 .d-steps{list-style:none;counter-reset:s;margin:22px 0 0;padding:0}
 .d-steps li{counter-increment:s;position:relative;padding:0 0 18px 44px;font-size:18px;line-height:1.6;color:#3e4656}
 .d-steps li::before{content:counter(s);position:absolute;left:0;top:-1px;font:700 26px/1.2 var(--serif);color:var(--c)}
+
+/* a long table that repeats another page stays folded */
+.d-fold{margin-top:8px}
+.d-fold summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:500 16px var(--sans);color:var(--c)}
+.d-fold summary::-webkit-details-marker{display:none}
+.d-fold summary::after{content:"";flex:none;width:7px;height:7px;margin:-3px 2px 0 2px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);transition:transform .2s ease}
+.d-fold[open] summary::after{transform:translateY(4px) rotate(225deg)}
 
 /* tables: real tables keep their rules, and only those */
 .d-tw{overflow-x:auto;margin:24px 0 8px}
@@ -74,10 +116,12 @@
 .d-2t .d-tw{margin-bottom:0}
 .d-yr{margin:24px 0 8px}
 .d-yr tbody th,.d-yr tbody td{font-weight:600}
+#chart tbody th,#chart tbody td{font-weight:400}#chart tbody th{font-weight:500}
 
 /* the one sheet of paper on the page */
 .d-sheet{max-width:560px;margin:28px 0 28px;padding:28px 32px 16px}
 .d-sheet .dr:last-child{border-bottom:0}
+.d-sheet .sh-h span{font-size:15px}
 
 /* words we use */
 .d-gl{margin:20px 0 0}
@@ -96,21 +140,30 @@
 .d-phero .lede{max-width:34ch}
 .d-pbody{padding-top:clamp(40px,5vw,72px);padding-bottom:clamp(64px,7vw,104px)}
 .d-pr{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:8px clamp(24px,4vw,56px);padding:0 0 clamp(26px,3vw,40px)}
-.d-pr h2{margin:0;font:600 clamp(21px,1.9vw,26px)/1.25 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.d-pr h2{margin:0;font:600 21px/1.3 var(--serif);letter-spacing:-.015em;color:var(--ink)}
 .d-pr p{margin:0;font-size:18px;line-height:1.6;color:#3e4656;max-width:60ch}
-.d-pr a{color:var(--c);font-weight:500;text-decoration:none;position:relative}
+.d-pr p + p,.d-pl + p{margin-top:12px}
+.d-pl{list-style:none;margin:8px 0 0;padding:0;font-size:18px;line-height:1.5;color:var(--ink)}
+.d-pl li{padding:3px 0}
 .d-pr a:hover{color:var(--ink)}
 
 @media (max-width:1060px){
-  .d-g{grid-template-columns:minmax(0,1fr);gap:0}
+  /* a block here, because a sticky child of a grid only travels within its own row */
+  .d-g{display:block}
   .d-toc{display:none}
-  .d-tocx{display:block;margin-bottom:28px;border-radius:12px;background:var(--mist);padding:0 16px}
-  .d-tocx summary{display:flex;align-items:center;min-height:48px;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
+  .d-tocx{display:block;position:sticky;top:8px;z-index:20;margin-bottom:28px;border-radius:12px;background:var(--mist);padding:0 16px;transition:top .3s cubic-bezier(.2,.7,.2,1)}
+  /* the site's floating bar comes back when the reader scrolls up: the control steps down under it */
+  html:has(.fbar.on) .d-tocx{top:76px}
+  .d-tocx summary{display:flex;align-items:center;gap:10px;min-height:48px;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
   .d-tocx summary::-webkit-details-marker{display:none}
-  .d-tocx summary::after{content:"+";margin-left:auto;font:500 20px/1 var(--sans);color:var(--c);transition:transform .2s ease}
-  .d-tocx[open] summary::after{transform:rotate(45deg)}
+  .d-tocnow{font-weight:400;color:#4a5262;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .d-tocx summary::after{content:"";flex:none;width:8px;height:8px;margin:-4px 4px 0 auto;border-right:1.8px solid var(--c);border-bottom:1.8px solid var(--c);transform:rotate(45deg);transition:transform .2s ease}
+  .d-tocx[open] summary::after{transform:translateY(4px) rotate(225deg)}
+  /* the list opens over the page, so the text under it does not jump */
+  .d-tocx nav{position:absolute;left:0;right:0;top:100%;margin-top:-6px;padding:0 16px 8px;background:var(--mist);border-radius:0 0 12px 12px;max-height:calc(100vh - 80px);overflow:auto}
   .d-tocx a{min-height:44px;padding:8px 0}
-  .d-tocx ol{padding-bottom:8px}
+  .d-tocx a.on{color:var(--c);font-weight:500}
+  .d-sec{scroll-margin-top:72px}
   .d-art{max-width:none}
   .d-fg{grid-template-columns:minmax(0,1fr);gap:24px}
   .d-fsv{order:-1}
@@ -126,6 +179,9 @@
   .d-fr span{font-size:15px}
   .d-fh > p{font-size:17px}
   .d-sec p,.d-steps li{font-size:17px}
+  .d-ung{grid-template-columns:minmax(0,1fr);row-gap:28px}
+  .d-ung > div{display:block}
+  .d-ung p{font-size:17px}
   .d-nums,.d-nums:has(div:nth-child(4)){grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .d-nums dd{font-size:38px}
   .d-2t{grid-template-columns:minmax(0,1fr);gap:8px}
@@ -135,9 +191,12 @@
   .d-yr{font-size:15px;table-layout:fixed}
   .d-yr th,.d-yr td{padding-right:3px}
   .d-yr th:first-child{display:none}
+  /* the dollar table keeps its robot names and drops four years, new, year 3 and year 6 stay, so it reads on a phone with no sideways swipe */
+  #chart th:first-child{display:table-cell;width:31%}
+  #chart th:nth-child(3),#chart td:nth-child(3),#chart th:nth-child(4),#chart td:nth-child(4),#chart th:nth-child(6),#chart td:nth-child(6),#chart th:nth-child(7),#chart td:nth-child(7){display:none}
   .d-yr thead th{font-size:15px;white-space:normal;line-height:1.15}
   .d-yr .r,.d-yr thead th.r{white-space:normal}
   .d-pr{grid-template-columns:minmax(0,1fr)}
-  .d-pr p{font-size:17px}
+  .d-pr p,.d-pl{font-size:17px}
 }
-@media (prefers-reduced-motion:reduce){.d-fsv path,.d-fr{transition:none}}
+@media (prefers-reduced-motion:reduce){.d-fsv path,.d-fr,.d-tocx{transition:none}}

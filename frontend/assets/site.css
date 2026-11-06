@@ -1,4 +1,4 @@
-:root{color-scheme:light only;--ink:#0e1626;--c:#2847ce;--deep:#1e339b;--mist:#ebf5fd;--paper:#f8fafd;--muted:#5b6474;--line:#e2e6ee;--w:1200px;--serif:'Inter',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--sans:'Inter',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--doc:'Source Serif 4',Georgia,'Times New Roman',serif;--r-card:20px;--r-doc:16px;--hair:1px solid var(--line);--cap:#6b7383;--sh-doc:0 1px 0 rgba(10,20,60,.04),0 18px 40px -24px rgba(10,20,60,.28)}
+:root{color-scheme:light only;--ink:#0e1626;--c:#2847ce;--deep:#1e339b;--mist:#ebf5fd;--paper:#f8fafd;--muted:#5b6474;--line:#e2e6ee;--w:1200px;--serif:'Inter',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--sans:'Geist',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--t-title:clamp(46px,5.56vw,80px);--t-section:clamp(31px,3.06vw,44px);--t-film:clamp(34px,min(3.9vw,7vh),56px);--t-lead:clamp(19px,1.53vw,22px);--doc:'Source Serif 4',Georgia,'Times New Roman',serif;--r-card:20px;--r-doc:16px;--hair:1px solid var(--line);--cap:#6b7383;--sh-doc:0 1px 0 rgba(10,20,60,.04),0 18px 40px -24px rgba(10,20,60,.28)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{background:#fff;margin:0}
@@ -15,22 +15,22 @@ a{color:inherit;text-decoration:none}
 .in{max-width:var(--w);margin:0 auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 .num{font-variant-numeric:lining-nums tabular-nums}
 .h1,.h2,.h3{font-family:var(--serif);font-weight:700;letter-spacing:-.025em;text-wrap:balance;margin:0}
-.h1{font-size:clamp(44px,6.2vw,84px);line-height:1;color:#fff}
+.h1{font-size:var(--t-title);line-height:1;color:#fff}
 .h1.ink{color:var(--ink)}
-.h2{font-size:clamp(34px,4vw,54px);line-height:1.05;margin-bottom:16px}
+.h2{font-size:var(--t-section);line-height:1.08;margin-bottom:16px}
 .h2 + .lead-1{margin-bottom:40px}
 .h2.w{color:#fff}
-.h3{font-size:clamp(23px,2vw,28px);line-height:1.15;margin-bottom:10px}
-.lede{font-size:clamp(17px,1.4vw,20px);line-height:1.55;color:rgba(255,255,255,.88);max-width:44ch;margin:22px 0 30px}
+.h3{font-size:clamp(21px,1.67vw,24px);line-height:1.2;margin-bottom:10px}
+.lede{font-size:var(--t-lead);line-height:1.45;color:rgba(255,255,255,.88);max-width:44ch;margin:22px 0 30px}
 .lede.ink{color:#3e4656}
 .body{color:#4a5262;font-size:17px;max-width:46ch;margin:0 0 22px}
-.fine{font-size:13px;color:var(--muted);margin:10px 0 0}
-.cap{font-size:13px;line-height:1.45;color:var(--cap)}
+.fine{font-size:15px;line-height:1.5;color:var(--muted);margin:10px 0 0}
+.cap{font-size:15px;line-height:1.45;color:var(--cap)}
 .big-num{font-family:var(--serif);font-weight:700;font-size:clamp(40px,4.4vw,60px);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
-.lead-1{font-size:19px;line-height:1.5;color:#3e4656;max-width:52ch;margin:0}
+.lead-1{font-size:var(--t-lead);line-height:1.45;color:#3e4656;max-width:52ch;margin:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;font:600 15px/1 var(--sans);padding:0 22px;height:48px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .15s ease,background .2s ease}
 .btn:hover{transform:translateY(-1px)}
-.btn.sm{height:40px;padding:0 16px;font-size:14px}
+.btn.sm{height:44px;padding:0 18px;font-size:15px}
 .btn-c{background:var(--c);color:#fff}.btn-c:hover{background:#2140bf}
 .btn-w{background:#fff;color:var(--c)}
 .btn-o{background:#fff;color:var(--c);border:1.5px solid var(--c)}
@@ -39,7 +39,6 @@ a{color:inherit;text-decoration:none}
 .tlink:hover{text-decoration:underline;text-underline-offset:4px}
 /* nav: at the top of the page in its own flow. Below the first screen it leaves, and comes back as a floating bar when the reader scrolls up (.fbar, site.js) */
 .nav{position:relative;z-index:30}
-.nav:not(.on-dark):has(+ .paper){background:var(--paper)}
 .nav .in{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:20px;height:80px}
 .nav .btn,.fbar .btn{justify-self:end}
 .brand{display:inline-flex;justify-self:start;text-decoration:none;align-items:center;min-height:44px}
@@ -51,6 +50,14 @@ a{color:inherit;text-decoration:none}
 .links a[aria-current]{color:var(--ink);background:rgba(14,22,38,.05)}
 .lhl{position:absolute;left:0;top:0;height:40px;border-radius:999px;background:rgba(14,22,38,.06);opacity:0;pointer-events:none;transition:transform .26s cubic-bezier(.2,.7,.2,1),width .26s cubic-bezier(.2,.7,.2,1),opacity .16s ease}
 .lhl.on{opacity:1}
+/* the small second level: opens under its nav page on hover or keyboard focus. The padding above the panel keeps the pointer inside on the way down */
+.lk{position:relative;display:inline-flex}
+.lsub{position:absolute;left:0;top:100%;z-index:5;padding-top:8px;visibility:hidden;opacity:0;transform:translateY(-4px);transition:opacity .16s ease,transform .16s ease,visibility 0s .16s}
+.lk:hover .lsub,.lk:focus-within .lsub{visibility:visible;opacity:1;transform:none;transition:opacity .16s ease,transform .16s ease}
+.lsub-in{display:flex;flex-direction:column;gap:2px;width:max-content;padding:8px;border-radius:18px;background:#fff;box-shadow:0 0 0 1px rgba(14,22,38,.07),0 18px 40px -20px rgba(14,22,38,.4)}
+.links .lsub a,.on-dark .links .lsub a{height:44px;border-radius:12px;color:#3e4656}
+.links .lsub a:hover,.on-dark .links .lsub a:hover{color:var(--ink);background:rgba(14,22,38,.05)}
+.links .lsub a[aria-current],.on-dark .links .lsub a[aria-current]{color:var(--ink);background:rgba(14,22,38,.05)}
 .on-dark .links a{color:rgba(255,255,255,.88)}.on-dark .links a:hover{color:#fff}
 .on-dark .links a[aria-current]{color:#fff;background:rgba(255,255,255,.14)}.on-dark .lhl{background:rgba(255,255,255,.14)}
 .menu{display:none;width:44px;height:44px;border:0;background:none;color:inherit;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0;margin-right:-10px}
@@ -71,15 +78,19 @@ a{color:inherit;text-decoration:none}
 .mn-links{display:flex;flex-direction:column;flex:none;padding-top:8px}
 .mn-links a{display:flex;align-items:center;min-height:60px;font:700 clamp(32px,9.5vw,44px)/1.05 var(--serif);letter-spacing:-.03em;color:#fff;animation:mn-up .42s calc(var(--i) * 45ms + 40ms) cubic-bezier(.2,.7,.2,1) both}
 .mn-links a[aria-current]{color:rgb(150,232,255)}
+.mn-sub{display:flex;flex-direction:column;margin:-6px 0 8px}
+.mn-links .mn-sub a{min-height:44px;font:500 17px/1.2 var(--sans);letter-spacing:0;color:rgba(255,255,255,.8)}
+.mn-links .mn-sub a[aria-current]{color:rgb(150,232,255)}
 @keyframes mn-up{from{opacity:0;transform:translateY(14px)}}
 .mn-bot{flex:1 1 0;min-height:0;display:flex;align-items:flex-end;justify-content:flex-end;overflow:hidden;padding-top:16px}
-.mn-bot canvas.dotbot{width:min(62vw,300px)}
-@media (max-height:640px){.mn-bot{display:none}}
+.mn-bot canvas.dotbot{width:min(44vw,170px)}
+@media (max-height:780px){.mn-bot{display:none}}
 .mn-foot{flex:none;padding:18px 0 24px;margin-top:auto}
 .mn-foot .btn{width:100%;height:56px;font-size:16px}
 @media (max-width:900px){.links{display:none}.nav .in,.fbar-in{grid-template-columns:minmax(0,1fr) auto auto;gap:8px}.menu{display:flex}.fbar-in{padding:0 18px 0 18px}}
 @media (min-width:901px){.mn{display:none}}
 @media (max-width:360px){.fbar .btn{display:none}}
+@media (max-width:372px){.btn.sm.lng{display:none}}
 /* hero */
 .hero{color:#fff;overflow:hidden;padding-bottom:clamp(56px,7vw,104px);border-radius:0 0 28px 28px}
 .hero-g{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr);gap:clamp(28px,4vw,64px);align-items:center;padding-top:clamp(28px,5vw,72px)}
@@ -140,7 +151,7 @@ a{color:inherit;text-decoration:none}
 .lead.compact{max-width:520px}.lead.compact .lf{grid-template-columns:minmax(0,1fr)}
 .lead.compact{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}.lead.compact .lf{flex:1 1 240px}.lead.compact .la{margin:0}
 .lead.compact .fl span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.fl{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:14px;color:var(--muted)}
+.fl{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:15px;color:var(--muted)}
 .fl.wide{grid-column:1 / -1}
 .lead-d .fl{color:rgba(255,255,255,.82)}
 .fl input,.fl select,.fl textarea{height:48px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:16px var(--sans);color:var(--ink);background:#fff;width:100%;min-width:0}
@@ -310,13 +321,17 @@ a{color:inherit;text-decoration:none}
 /* notes and document pages */
 .fn{font:500 .62em/0 var(--sans);vertical-align:super;margin-left:1px}
 .fn a{color:inherit;text-decoration:none;opacity:.75;display:inline-block;padding:10px 7px;margin:-10px -6px;line-height:1;position:relative}.fn a::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}.fn a:hover{opacity:1;text-decoration:underline}
-.notes{background:var(--paper);padding-block:40px 48px}
-.notes .nh{font:600 13px/1 var(--sans);letter-spacing:.02em;color:var(--ink);margin:0 0 16px}
-.notes ul{margin:0;padding:0;list-style:none;font-size:13px;line-height:1.5;color:#4a5262}
-@media (min-width:900px){.notes ul{columns:2;column-gap:48px}}
+.notes{background:#fff;padding-block:clamp(40px,5vw,72px) clamp(40px,5vw,64px)}
+.notes .nh{font:600 clamp(21px,1.9vw,26px)/1.25 var(--serif);letter-spacing:-.02em;color:var(--ink);margin:0}
+.notes .in{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:8px clamp(24px,4vw,56px)}
+.notes ul{margin:0;padding:0;list-style:none;columns:auto;font-size:15px;line-height:1.6;color:#3e4656;max-width:64ch}
 .notes li{break-inside:avoid}
-.notes li{margin-bottom:6px;scroll-margin-top:100px}.notes li:target{color:var(--ink)}
+.notes li{margin-bottom:14px;scroll-margin-top:100px}.notes li:target{color:var(--ink)}
+@media (max-width:720px){.notes .in{grid-template-columns:minmax(0,1fr)}}
 .notes a{color:var(--c);display:inline-block;padding:12px 2px;margin:-12px -2px}
+/* the foot block is the same on every page: on white, directly above the footer. These win over page styles on purpose. */
+.page .notes{background:#fff!important;padding-block:clamp(40px,5vw,72px) clamp(40px,5vw,64px)!important}
+.page .notes .nh{color:var(--ink)!important}.page .notes ul{color:#3e4656!important;font-size:15px!important;max-width:64ch!important}.page .notes a{color:var(--c)!important}
 .doc{max-width:760px}
 .dsec{padding:26px 0}.dsec:first-child{padding-top:0}
 .dsec .h3{margin-bottom:10px}
@@ -326,7 +341,7 @@ a{color:inherit;text-decoration:none}
 .foot{background:var(--deep);color:#fff;padding-block:clamp(64px,7vw,104px) 36px;overflow:hidden}
 .fg{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px clamp(48px,8vw,120px);align-items:start}
 .fbrand{display:flex;flex-direction:column;align-items:flex-start}
-.ftag{margin:28px 0 32px;font:700 clamp(44px,6vw,84px)/1 var(--serif);letter-spacing:-.035em;color:#fff;text-wrap:balance}
+.ftag{margin:24px 0 28px;font:700 var(--t-section)/1.08 var(--serif);letter-spacing:-.028em;color:#fff;text-wrap:balance}
 .fact{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px}.fact .tlink{margin:0}
 .fcols{display:grid;grid-template-columns:auto auto;gap:0 clamp(40px,6vw,88px);padding-top:6px}
 .fcols div{display:flex;flex-direction:column;min-width:0}
@@ -334,9 +349,9 @@ a{color:inherit;text-decoration:none}
 .ffleet{display:flex;align-items:flex-end;gap:clamp(16px,3vw,44px);margin-top:clamp(64px,8vw,112px);border-bottom:1px solid rgba(255,255,255,.3)}
 .ff-row{display:contents}
 .ff-bot{display:block;flex:var(--w) 1 0;min-width:0}.ff-bot canvas{aspect-ratio:var(--ar)}
-.fine-w{margin:20px 0 0;max-width:80ch;font-size:13px;line-height:1.5;color:rgba(255,255,255,.72)}
+.fine-w{margin:20px 0 0;max-width:80ch;font-size:15px;line-height:1.5;color:rgba(255,255,255,.72)}
 @media (max-width:760px){.fg{grid-template-columns:minmax(0,1fr)}.fcols{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px;padding-top:0}.fcols a{min-height:44px}
- .ffleet{display:block;border:0;margin-top:48px}.ff-row{display:flex;align-items:flex-end;gap:14px;padding-top:18px;border-bottom:1px solid rgba(255,255,255,.3)}}
+ .ffleet{display:block;border:0;margin-top:48px}.ff-row{display:flex;align-items:flex-end;gap:14px;padding-top:18px;border-bottom:1px solid rgba(255,255,255,.3)}.ff-bot{flex:1 1 0}}
 /* reveal */
 .rv{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
 .rv.in-view{opacity:1;transform:none}
@@ -348,11 +363,6 @@ a{color:inherit;text-decoration:none}
 /* dot robots (assets/dotbot.js) */
 canvas.dotbot{display:block;width:100%}
 
-/* announcement bar */
-.announce{display:flex;justify-content:center;align-items:center;gap:12px;min-height:36px;padding:6px max(16px,env(safe-area-inset-left,0px));background:var(--ink);color:rgba(255,255,255,.86);font-size:14px;line-height:1.4;text-decoration:none;text-align:center;flex-wrap:wrap;row-gap:2px}
-.announce .an-s{display:none}
-@media (max-width:560px){.announce{min-height:44px;flex-wrap:nowrap;white-space:nowrap}.announce .an-l{display:none}.announce .an-s{display:inline}}
-.announce b{color:#fff;font-weight:600}.announce:hover b{text-decoration:underline;text-underline-offset:3px}
 body{overflow-x:clip}
 .fnw{white-space:nowrap}
 /* round 2 shared utilities */
@@ -370,8 +380,7 @@ body{overflow-x:clip}
 @media (max-width:720px){.rstage .rs-bot{height:calc(var(--h) * .72)}}
 /* what happens next, as plain lines */
 .nextl{list-style:none;margin:0;padding:0;font:16px/1.5 var(--sans);color:var(--ink)}
-.nextl li{padding:14px 0;border-top:1px solid var(--line)}
-.nextl li:last-child{border-bottom:1px solid var(--line)}
+.nextl li{padding:8px 0}
 
 /* ---------------------------------------------------------------- round 3 shared */
 /* two-tone heading at a size that keeps it to three lines; the vision statement (.vis), display type with nothing around it */
@@ -379,47 +388,12 @@ body{overflow-x:clip}
 .vis{font-family:var(--serif);font-weight:700;font-size:clamp(30px,3.5vw,50px);line-height:1.12;letter-spacing:-.02em;color:var(--ink);max-width:1120px;margin:0;text-wrap:balance}
 .vis .mute{color:#8b93a4}
 .w .vis,.vis.w{color:#fff}.w .vis .mute,.vis.w .mute{color:rgba(255,255,255,.6)}
-/* the small value chart beside the fleet form (core.cover_svg, FerraApp.cover): solid lines, value in cobalt, loan in ink, the cushion a flat tint */
-.cv{display:block;width:100%;height:auto;overflow:visible;font-family:var(--sans)}
-.cv-vl,.cv-ll{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 1}
-.cv-vl{stroke:var(--c)}.cv-ll{stroke:var(--ink)}.cv-end{fill:#fff;stroke:var(--ink);stroke-width:1.5}
-.cv-cush{fill:rgba(40,71,206,.09)}.cv-base{stroke:var(--line);stroke-width:1}
-.cv-k{font-size:13px;fill:var(--muted)}.cv-c{fill:var(--c);font-weight:600}
-.cv-x text{font-size:12px;fill:#6b7383}
-.cv[data-cvs="wait"] .cv-vl,.cv[data-cvs="wait"] .cv-ll{stroke-dashoffset:1}.cv[data-cvs="wait"] .cv-cush,.cv[data-cvs="wait"] .cv-lab,.cv[data-cvs="wait"] .cv-end{opacity:0}
-.cv[data-cvs="go"] .cv-vl,.cv[data-cvs="go"] .cv-ll{transition:stroke-dashoffset 1s cubic-bezier(.3,.6,.2,1)}
-.cv[data-cvs="go"] .cv-cush{transition:opacity .4s ease .8s}.cv[data-cvs="go"] .cv-lab,.cv[data-cvs="go"] .cv-end{transition:opacity .4s ease 1s}
 /* the value chart (core.value_chart): large figures over a full-width chart, nothing boxed */
-.vc{margin:0}
-.vc-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:0 0 28px}
-.vc-f{min-width:0}
-.vc-f dt{font-size:15px;line-height:1.3;color:var(--muted);margin-bottom:6px}
-.vc-f dd{margin:0;font:700 clamp(30px,4.6vw,64px)/1 var(--serif);letter-spacing:-.03em;white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
-.vc-f-v dd{color:var(--c)}.vc-f-c dd{color:#5b6474}
-.vc-plot{position:relative;outline:none;touch-action:pan-y;cursor:crosshair;-webkit-tap-highlight-color:transparent}
 .vc-plot:focus-visible{outline:2px solid var(--c);outline-offset:6px;border-radius:2px}
-.vc-svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--sans)}
-.vc-svg.vc-m{display:none}
-.vc-v,.vc-l{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 1}
-.vc-v{stroke:var(--c)}.vc-l{stroke:var(--ink)}
-.vc-cush{fill:rgba(40,71,206,.09)}.vc-base{stroke:var(--line)}
-.vc-end{fill:#fff;stroke:var(--ink);stroke-width:2}
-.vc-labs text{font-weight:600}.vc-lv{fill:var(--c)}.vc-ll{fill:var(--ink)}.vc-lc{fill:var(--c)}.vc-lr{fill:var(--muted);font-weight:500!important}
-.vc-x text{fill:#6b7383;font-size:.86em}
-.vc-cl{stroke:rgba(14,22,38,.3);stroke-width:1}
-.vc-cv{fill:var(--c);stroke:#fff;stroke-width:2}.vc-ca{fill:var(--ink);stroke:#fff;stroke-width:2}
-.vc-go .vc-v,.vc-go .vc-l{stroke-dashoffset:1}.vc-go .vc-cush,.vc-go .vc-labs,.vc-go .vc-end{opacity:0}
-.vc-on .vc-v,.vc-on .vc-l{stroke-dashoffset:0;transition:stroke-dashoffset 1.3s cubic-bezier(.3,.6,.2,1)}
-.vc-on .vc-cush{opacity:1;transition:opacity .5s ease 1s}.vc-on .vc-labs,.vc-on .vc-end{opacity:1;transition:opacity .5s ease 1.2s}
-.bg-paper .vc-cv,.paper .vc-cv,.paper .vc-ca{stroke:var(--paper)}
-/* finance terms as one printed line */
-.fin{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 24px;margin:28px 0 0;padding:16px 0 0;border-top:2px solid var(--ink)}
-.fin dt{font-size:14px;color:var(--muted);margin-bottom:2px}
-.fin dd{margin:0;font:600 clamp(18px,1.7vw,22px)/1.2 var(--serif);letter-spacing:-.01em;white-space:nowrap}
 /* a table set the way a financial statement is printed: a heavy rule on top, hairlines between rows, right-aligned even-width digits, a double rule under totals */
 .stmt{width:100%;border-collapse:collapse;font-size:16px;line-height:1.35;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
 .stmt caption{caption-side:top;text-align:left;font-weight:600;padding-bottom:12px}
-.stmt thead th{font-size:14px;font-weight:600;color:var(--ink);text-align:left;vertical-align:bottom;padding:10px 16px 10px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--ink)}
+.stmt thead th{font-size:15px;font-weight:600;color:var(--ink);text-align:left;vertical-align:bottom;padding:10px 16px 10px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--ink)}
 .stmt tbody th,.stmt tbody td{font-weight:400;text-align:left;padding:13px 16px 13px 0;border-bottom:1px solid var(--line)}
 .stmt tbody th{font-weight:500}
 .stmt .r,.stmt thead th.r{text-align:right;white-space:nowrap}
@@ -427,23 +401,25 @@ body{overflow-x:clip}
 .stmt tfoot th,.stmt tfoot td{font-weight:600;text-align:left;padding:13px 16px 13px 0;border-top:1px solid var(--ink);border-bottom:3px double var(--ink)}
 .stmt tfoot .r{text-align:right}
 .stmt tr.hl th,.stmt tr.hl td{color:var(--c);font-weight:600}
-/* "Your fleet loan, as you type" (core.fleet_preview, FerraApp.preview): the loan as one giant figure over the fleet, nothing boxed */
-.fp{color:var(--ink);text-align:left;min-width:0;container-type:inline-size}
-.fp-k{margin:0}.fp-k div{min-width:0}
-.fp-k dt{font-size:15px;line-height:1.3;color:var(--muted);margin-bottom:6px;white-space:nowrap}
-.fp-k dd{margin:0;white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
-.fp-l dd{font:700 clamp(46px,14cqi,84px)/1 var(--serif);letter-spacing:-.035em;color:var(--c)}
-.fp-fleet{margin:26px 0 0;position:relative}
-.fp-units{display:block;max-width:100%}
-.fp-more{display:block;margin-top:6px;font-size:14px;color:var(--muted);text-align:right}
-.fp-k2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 20px;margin:22px 0 26px;padding-top:14px;border-top:2px solid var(--ink)}
-.fp-k2 dt{font-size:14px;margin-bottom:2px}
-.fp-k2 dd{font:600 clamp(18px,5cqi,24px)/1.15 var(--serif);letter-spacing:-.015em}
-.fp-cover{margin:0}
 @media (max-width:720px){
- .vc-figs{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px;margin-bottom:20px}.vc-f-v{grid-column:1/-1}.vc-f-v dd{font-size:44px}.vc-f dd{font-size:28px}.vc-f dt{font-size:14px}
- .vc-svg.vc-d{display:none}.vc-svg.vc-m{display:block}
- .fin{grid-template-columns:repeat(2,minmax(0,1fr))}
  .stmt{font-size:15px}.stmt tbody th,.stmt tbody td,.stmt thead th,.stmt tfoot th,.stmt tfoot td{padding-right:10px}
 }
-@media (prefers-reduced-motion:reduce){.cv-vl,.cv-ll{stroke-dashoffset:0!important}.cv-cush,.cv-lab,.cv-end{opacity:1!important}}
+
+/* ---------------------------------------------------------------- one type scale for the whole site
+   One page title, one section size, one size for lines inside a pinned film, and one giant moment per page. To make a heading that moment, give it the class .giant.
+   These win over page styles on purpose: a page that sets its own heading size is how every section came to shout. */
+.page h1:not(.giant,.sr):not(.v-open-t h1){font-size:var(--t-title)!important;letter-spacing:-.033em}
+.page h2:not(.giant,.sr,.nh,.h-wq,.hw-finh,.h-say,.v-h):not(.v-beat h2,.d-unk h2,.d-pr h2,.c-nots h2,.d-sec h2){font-size:var(--t-section)!important;line-height:1.08;letter-spacing:-.028em}
+.page .h-say,.page .v-h,.page .v-beat h2,.page .pr-stage.live .pr-step h3{font-size:var(--t-film)!important;line-height:1.06;letter-spacing:-.03em}
+.page .v-beat.v-b3 h2{font-size:clamp(42px,5vw,72px)!important}
+.page .lede{font-size:var(--t-lead)!important;line-height:1.45}
+/* body text: 17px on a desktop for anything meant to be read, 15px the floor on a phone */
+.body,.stat p,.aud p,.rcard em,.tl em,.step em,.ldone ol{font-size:17px}
+@media (min-width:901px){.page :is(.h-fifty,.l-cn,.l-ft,.l-cov p,.c-src p,.hw-cap,.hw-fine,.pr-from,.pr-pick,.pr-bot-n,.r-rh,.r-drawn,.r-what,.r-fine,.pp-hc p,.pp-hc li,.pp-whyb p,.pp-rung p){font-size:17px}}
+@media (max-width:720px){.notes ul,.fine-w,.cap,.fine,.lerr,.fl,.ldone span,.sz label,.szo .k,.stmt thead th,.sh-h span,.sh-f{font-size:15px!important}}
+
+/* one light background per page: white. Charts, robots and numbers bring the colour. The brand gradient stays on first screens and the home film */
+.paper,.mist,.page .c-paper,.page .d-unk{background:#fff}
+/* two sections that used to differ in colour now share it, so the gap between them is one padding rather than two */
+.sec:is(.paper,.mist) + .sec:is(.white,.paper,.mist),.sec.white + .sec:is(.paper,.mist),.page .c-paper + .sec.white,.page .d-unk + .sec.white{padding-top:0}
+.f-end,.l-bad{background:var(--deep)!important}

@@ -1,20 +1,26 @@
-/* Price report (pr-). Hero (white), one pinned chart (the page's one gradient band), robot by robot (white), two records (mist), what it leaves out (white), the example values (paper). */
+/* Price report (pr-). Hero (white), one pinned chart (the page's one gradient band), one listing and one sale (mist), robot by robot (white), what it leaves out (paper). */
 [data-page="price-report.html"] .h2{max-width:22ch;margin-bottom:20px}
 [data-page="price-report.html"] .lead-1{max-width:62ch}
 [data-page="price-report.html"] .notes a{text-decoration:none}
 
 /* hero: the whole report, in three plain sentences, beside the robot */
 .pr-hero.phero{padding-top:clamp(32px,4vw,56px);padding-bottom:clamp(48px,5vw,72px)}
-.pr-heg{display:grid;grid-template-columns:minmax(0,7.4fr) minmax(0,4.6fr);gap:clamp(24px,4vw,56px);align-items:end}
+.pr-heg{display:grid;grid-template-columns:minmax(0,6.8fr) minmax(0,5.2fr);gap:clamp(24px,4vw,56px);align-items:end}
 .pr-copy{padding-bottom:clamp(8px,2vw,24px)}
-[data-page="price-report.html"] .pr-copy .h1{font-size:clamp(52px,min(7.4vw,13vh),108px);line-height:.96;letter-spacing:-.04em;max-width:9em}
-.pr-short{margin:clamp(24px,3vw,36px) 0 0;max-width:27em;font-size:clamp(23px,2.35vw,33px);line-height:1.26;letter-spacing:-.018em;color:var(--ink);font-weight:500;text-wrap:pretty}
-.pr-short b{font-weight:700;color:var(--c)}
-.pr-from{margin:18px 0 0;font-size:16px;line-height:1.45;color:#4a5262}
+[data-page="price-report.html"] .pr-copy .h1{font-size:clamp(44px,min(4.9vw,9.4vh),70px);line-height:1;letter-spacing:-.038em}
+/* one account of the price, three figures, each as big as the evidence behind it */
+.pr-three{margin:clamp(22px,2.6vw,34px) 0 0;display:grid;gap:clamp(12px,1.3vw,18px)}
+.pr-three>div{display:grid;grid-template-columns:clamp(230px,20vw,288px) minmax(0,1fr);column-gap:clamp(14px,1.6vw,24px);align-items:baseline}
+.pr-three b{font-family:var(--serif);font-weight:700;color:var(--c);white-space:nowrap}
+.pr-three span{font-size:16px;line-height:1.4;color:#3e4656;max-width:24em;text-wrap:pretty}
+.pr-p1 b{font-size:clamp(52px,5vw,74px);line-height:1;letter-spacing:-.045em}
+.pr-p2 b{font-size:clamp(36px,3.3vw,48px);line-height:1;letter-spacing:-.035em}
+.pr-p3 b{font-size:clamp(20px,1.8vw,26px);line-height:1.1;letter-spacing:-.022em}
+.pr-from{margin:18px 0 0;max-width:40em;font-size:16px;line-height:1.5;color:#4a5262;text-wrap:pretty}
 .pr-acts{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:26px}
 .pr-acts .tlink{margin:0}
-.pr-rs{margin:0}
-.pr-rs .rs-bot canvas{height:100%;width:auto;max-width:100%}
+.pr-hbot{display:block;width:100%;height:min(66vh,620px);border-bottom:1px solid var(--line)}
+.pr-bot-n{margin:12px 0 0;font-size:15px;line-height:1.4;color:#4a5262;text-wrap:pretty}
 
 /* the pinned chart */
 .pr-stage{position:relative;background:var(--deep);color:#fff;height:calc(100svh + var(--n) * 64svh)}
@@ -33,6 +39,7 @@
 .pr-ax .lb{fill:#fff;font-weight:600;font-size:15px}
 .pr-ax .lb.cy{fill:rgb(150,232,255)}
 .pr-ax .ax{stroke:rgba(255,255,255,.55);stroke-width:1}
+.pr-ax .ld{stroke:rgba(255,255,255,.7);stroke-width:1}
 .pr-ax .lg{opacity:0;transition:opacity .4s ease}
 .pr-ax .lg.on{opacity:1}
 .pr-tip{position:absolute;z-index:3;width:300px;max-width:calc(100% - 32px);background:#fff;color:var(--ink);border-radius:2px;padding:14px 16px 6px;font-size:15px;line-height:1.4;box-shadow:0 16px 32px -16px rgba(14,22,38,.45)}
@@ -59,11 +66,17 @@
 .pr-tbl tbody th{padding-left:0}
 .pr-tbl tbody tr:first-child th,.pr-tbl tbody tr:first-child td{padding-top:18px}
 .pr-nm a{font-weight:600;color:var(--c)}
-.pr-nm a:hover{text-decoration:underline;text-underline-offset:4px}
 .pr-nm.pr-sub{padding-left:20px}
 .pr-few{display:block;margin-top:2px;font-size:14px;font-weight:600;color:var(--ink)}
 .pr-few2{font-weight:400;color:var(--muted)}
 .pr-a10{font-weight:700}
+.pr-all .pr-nm a{color:var(--ink)}
+.pr-all th,.pr-all td{padding-bottom:18px!important}
+.pr-tbl tbody tr{position:relative}
+.pr-nm a::after{content:"";position:absolute;inset:0}
+.pr-tbl tbody tr:hover .pr-nm a{text-decoration:underline;text-underline-offset:4px}
+.pr-thin td{color:var(--muted);font-weight:400}
+.pr-thin .pr-a10{font-weight:500}
 .pr-rg{color:#4a5262;white-space:nowrap}
 
 /* where the prices come from: two real records, set as paper */
@@ -76,37 +89,27 @@
 .pr-stamp{position:absolute;right:20px;top:-18px;padding:3px 13px;background:#fff;border:2.5px solid var(--c);color:var(--c);font:700 20px var(--serif);letter-spacing:-.01em;transform:rotate(-8deg)}.pr-stamp.a{border-color:var(--ink);color:var(--ink)}
 .pr-dl{align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;margin-top:auto;padding-top:8px;font-weight:600;color:var(--c);text-decoration:none}
 .pr-dl:hover{text-decoration:underline;text-underline-offset:4px}
+.pr-pick{margin:32px 0 0;max-width:46em;font-size:16px;line-height:1.5;color:#3e4656}
 
 /* what it leaves out */
-.pr-left-g{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,80px);align-items:start}
+.pr-left-g{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-rows:auto 1fr;column-gap:clamp(32px,5vw,80px);row-gap:20px;align-items:start}
+.pr-lst{grid-column:2;grid-row:1 / 3}
+.pr-end{grid-column:1;grid-row:2;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.pr-end .tlink{margin:0}
 .pr-lst{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 32px}
 .pr-lst li{font-size:17px;line-height:1.45;color:#3e4656}
 .pr-lst b{display:block;margin-bottom:4px;font-weight:600;color:var(--ink);font-size:18px}
 
-/* the example values: one small robot at the head of each row */
-.pr-ex-t{width:100%;border-collapse:collapse;margin-top:clamp(32px,4vw,48px);font-size:16px;font-variant-numeric:lining-nums tabular-nums}
-.pr-ex-t thead th{font-size:14px;font-weight:500;color:var(--muted);text-align:left;padding:0 0 12px 12px;border-bottom:1px solid var(--line)}
-.pr-ex-t thead th:first-child{padding-left:0}
-.pr-ex-t .r{text-align:right}
-.pr-ex-t tbody th,.pr-ex-t tbody td{padding:7px 0 7px 12px;vertical-align:middle;text-align:left;font-weight:400}
-.pr-ex-t tbody td.r{text-align:right}
-.pr-ex-t tbody th{padding-left:0;font-weight:500;white-space:nowrap}
-.pr-eb{display:inline-block;width:64px;vertical-align:middle;margin-right:14px}
-.pr-eb canvas{display:block;width:100%}
-.pr-new{font-weight:600}
-.pr-ex-t tfoot td{padding:14px 0 0 12px;color:var(--muted);text-align:left}
-.pr-ex-t tfoot td.r{text-align:right}
-.pr-k{font-size:15px;padding-left:0!important}
-
 @media (max-width:1060px){
  .pr-heg,.pr-left-g{grid-template-columns:minmax(0,1fr)}
- .pr-bot{max-width:420px;width:100%;margin:0 auto}
+ .pr-bot{width:100%}
+ .pr-hbot{height:min(92vw,560px)}
 }
 /* under 900px the chart sits above the words */
 @media (max-width:900px){
  .pr-pg{display:flex;flex-direction:column;gap:0;align-items:stretch;padding-top:14px;padding-bottom:14px}
- .pr-chart{order:1;flex:1 1 56%;height:auto;min-height:0}
- .pr-steps{order:2;flex:0 0 40%;height:auto}
+ .pr-chart{order:1;flex:1 1 auto;height:auto;min-height:0}
+ .pr-steps{order:2;flex:0 0 clamp(250px,37svh,324px);height:auto}
  .pr-step{top:12px;transform:translateY(12px)}
  .pr-step.on{transform:none}
  .pr-step h3{font-size:clamp(27px,7.6vw,40px)}
@@ -114,32 +117,29 @@
  .pr-stage:not(.live) .pr-pg{padding-top:0}
  .pr-stage:not(.live) .pr-chart{height:64vh}
 }
-/* each robot becomes a small block of its own */
+/* on a phone each robot is one tappable row: its name, its price at 10 years old, and a note when the data is thin */
 @media (max-width:820px){
- .pr-tbl,.pr-tbl tbody{display:block}
- .pr-tbl thead{display:none}
- .pr-tbl tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px;padding:14px 0}
- .pr-tbl tbody th,.pr-tbl tbody td,.pr-tbl tbody td.r,.pr-tbl tbody tr:first-child th,.pr-tbl tbody tr:first-child td{padding:0;text-align:left;font-size:15px}
- .pr-tbl tbody th{grid-column:1 / -1;font-size:18px}
- .pr-nm.pr-sub{padding-left:0}
- .pr-nm a{display:inline-flex;align-items:center;min-height:44px}
- .pr-few{font-size:15px}
- .pr-tbl td[data-l]::before{content:attr(data-l);display:block;margin-bottom:2px;font-size:15px;font-weight:400;color:var(--muted)}
- .pr-tbl .pr-rg{grid-column:span 2;white-space:normal}
- .pr-lst{grid-template-columns:minmax(0,1fr)}
- .pr-ex-t .pr-odd{display:none}
- .pr-ex-t .pr-k{white-space:normal}
+ .pr-tbl,.pr-tbl tbody,.pr-tbl thead{display:block}
+ .pr-tbl thead tr,.pr-tbl tbody tr{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
+ .pr-tbl .pr-x{display:none}
+ .pr-tbl thead th,.pr-tbl thead th:first-child{padding:0 0 10px;font-size:15px}
+ .pr-tbl thead th:first-child{padding-left:0}
+ .pr-tbl tbody tr{min-height:44px;padding:6px 0}
+ .pr-tbl tbody th,.pr-tbl tbody td,.pr-tbl tbody td.r,.pr-tbl tbody tr:first-child th,.pr-tbl tbody tr:first-child td{padding:0;font-size:16px}
+ .pr-tbl tbody tr:first-child{padding-top:12px}
+ .pr-nm.pr-sub{padding-left:14px}
+ .pr-nm a{display:flex;align-items:center;min-height:44px;line-height:1.3}
+ .pr-few{margin-top:-8px;padding-bottom:6px}
+ .pr-three>div{grid-template-columns:minmax(0,1fr);row-gap:2px}
+ .pr-three{gap:16px}
+ .pr-few{font-size:15px;font-weight:500}
+ .pr-left-g{display:block}
+ .pr-lst{grid-template-columns:minmax(0,1fr);margin-top:24px}
+ .pr-end{margin-top:32px}
 }
 @media (max-width:680px){
  .pr-srcg{grid-template-columns:minmax(0,1fr);gap:56px}
  .pr-lot{padding:18px 22px 14px}
- .pr-ex-t,.pr-ex-t thead,.pr-ex-t tbody,.pr-ex-t tfoot{display:block}
- .pr-ex-t tr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 8px;align-items:center;padding:12px 0}
- .pr-ex-t thead tr{padding:0}
- .pr-ex-t thead th:first-child{display:none}
- .pr-ex-t tr > :first-child{grid-column:1 / -1}
- .pr-ex-t th,.pr-ex-t td,.pr-ex-t tbody td.r,.pr-ex-t tfoot td,.pr-ex-t tfoot td.r{padding:0;text-align:left;font-size:15px}
- .pr-ex-t thead th,.pr-ex-t thead th.r{padding:0;text-align:left;border-bottom:0}
- .pr-ex-t tbody th{font-size:17px;font-weight:600}
+ .pr-lot .dr span{flex:none;max-width:40%}
  .pr-tip{width:calc(100% - 32px)}
 }

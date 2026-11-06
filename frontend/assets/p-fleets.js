@@ -1,46 +1,29 @@
 // Robot companies page: the quote form's four robot fields stay in range and every change turns into the outcome beside them:
-// what you could borrow (core.fleet_preview, driven by FerraApp.preview in site.js) and your robots, one for each you typed, drawn here.
+// what you could borrow, what you would pay, the robot you picked, and one dot for each robot you typed. All drawn here.
 // The closing band's button brings the visitor back to the form with the robot type field focused.
 (() => {
   const ty = document.getElementById('sz-type'), n = document.getElementById('sz-n'), p = document.getElementById('sz-p'), wh = document.getElementById('sz-when');
   if (!ty) return;
-  const pv = document.getElementById('fp-fleets');
-  // your robots: as many as the typed count (up to CAP), packed so they fill the space, so one robot is huge and five hundred are a crowd
-  const drawBots = (() => {
-    const box = pv && pv.querySelector('.fp-fleet'); if (!box) return () => {};
-    box.insertAdjacentHTML('afterbegin', '<canvas class="f-bots" role="img"></canvas><span class="f-more" hidden></span>');
-    const cv = box.querySelector('.f-bots'), more = box.querySelector('.f-more'), x = cv.getContext('2d'), CAP = 200, GAP = 6, cache = {};
-    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let tok = 0, had = 0;
-    // one robot in white from its coarse dot grid, standing on the bottom edge of its cell
-    const glyph = (rid, cell, dpr) => {
-      const key = [rid, cell, dpr].join('|'); if (cache[key]) return cache[key];
-      const c = document.createElement('canvas'); c.width = c.height = Math.ceil(cell * dpr);
-      const g = c.getContext('2d'); g.scale(dpr, dpr); g.fillStyle = '#fff';
-      const b = (window.FERRA_DOTS || {})[rid + '-s'], p = b && b.d ? b.d.split(';').map(s => s.split(',').map(Number)) : [];
-      if (p.length) { const xs = p.map(q => q[0]), ys = p.map(q => q[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-        const pit = cell / Math.max(x1 - x0 + 1, y1 - y0 + 1), ox = (cell - (x1 - x0 + 1) * pit) / 2, oy = cell - (y1 - y0 + 1) * pit;
-        for (const q of p) { const s = Math.min(1, (q[3] / 100) * 1.15 * Math.min(1, .5 + .5 * q[2] / 100 + (q[5] || 0) / 300)); g.beginPath(); g.arc(ox + (q[0] - x0 + .5) * pit, oy + (q[1] - y0 + .5) * pit, Math.max(.42, pit * .62 * s), 0, 6.283); g.fill(); } }
-      return (cache[key] = c); };
-    // the column count that gives the biggest robots, preferring a full last row
-    const pack = (n, W, H) => { let best = { cols: 1, cell: 1, score: 0 };
-      for (let cols = 1; cols <= n; cols++) { const rows = Math.ceil(n / cols), cell = Math.floor(Math.min((W - (cols - 1) * GAP) / cols, (H - (rows - 1) * GAP) / rows)), score = cell * (1 - .06 * (cols * rows - n) / cols);
-        if (cell > 0 && score > best.score) best = { cols, cell, score }; }
-      return best; };
-    return (rid, count, animate) => {
-      const n = Math.min(count, CAP), W = cv.clientWidth, H = cv.clientHeight; if (!W || !H) return;
-      const dpr = Math.min(2, devicePixelRatio || 1); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-      x.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const { cols, cell } = pack(n, W, H), g = glyph(rid, cell, dpr);
-      const put = i => x.drawImage(g, (i % cols) * (cell + GAP), Math.floor(i / cols) * (cell + GAP), cell, cell);
-      cv.setAttribute('aria-label', count === 1 ? '1 robot' : count.toLocaleString('en-US') + ' robots');
-      more.hidden = count <= CAP; more.textContent = '+' + (count - CAP).toLocaleString('en-US') + ' more';
-      const me = ++tok, from = animate && !still ? Math.min(had, n) : n, t0 = performance.now(), D = had ? 260 : 700;
+  // the pile: one real dot for each robot typed, stacked up from the line the big robot stands on. Same dot pitch until it would not fit, then smaller, so 1 is one dot and 1,000 is 1,000 dots.
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pile = document.getElementById('f-pile'), bot = document.getElementById('f-bot'), dotsay = document.getElementById('f-dotsay');
+  const drawPile = (() => { if (!pile) return () => {}; const x = pile.getContext('2d'); let tok = 0, had = 0;
+    return (count, animate) => { const W = pile.clientWidth, H = pile.clientHeight; if (!W || !H) return;
+      const d = Math.min(2, devicePixelRatio || 1); pile.width = Math.round(W * d); pile.height = Math.round(H * d); x.setTransform(d, 0, 0, d, 0, 0); x.fillStyle = '#fff';
+      let P = Math.min(24, Math.floor(Math.sqrt(W * H / count))), cols, rows; for (;;) { cols = Math.max(1, Math.floor(W / P)); rows = Math.ceil(count / cols); if (rows * P <= H || P <= 3) break; P--; }
+      const put = i => { x.beginPath(); x.arc(W - (i % cols + .5) * P, H - (Math.floor(i / cols) + .5) * P, P * .34, 0, 6.2832); x.fill(); };
+      const me = ++tok, from = animate && !still ? Math.min(had, count) : count, t0 = performance.now(), D = had ? 260 : 700; had = count;
       for (let i = 0; i < from; i++) put(i);
-      had = n; let done = from;
-      if (from < n) { const tick = t => { if (me !== tok) return; const end = Math.min(n, from + Math.ceil((n - from) * Math.min(1, (t - t0) / D))); while (done < end) put(done++); if (done < n) requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
+      let done = from; if (from < count) { const tick = t => { if (me !== tok) return; const end = Math.min(count, from + Math.ceil((count - from) * Math.min(1, (t - t0) / D))); while (done < end) put(done++); if (done < count) requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
     }; })();
-  const fmt = v => '$' + Math.round(v).toLocaleString('en-US');
+  // the big figure stays on one line in its column whatever is typed: its size comes from the width of the answer it is about to show
+  const big = document.getElementById('f-big'), pay = document.getElementById('f-pay'), COL = big && big.parentElement;
+  const fitBig = text => { if (!big) return; big.style.fontSize = ''; const cs = getComputedStyle(big), max = parseFloat(cs.fontSize), m = document.createElement('span'); m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-family:' + cs.fontFamily + ';font-weight:' + cs.fontWeight + ';letter-spacing:' + cs.letterSpacing + ';font-size:' + max + 'px;font-variant-numeric:lining-nums tabular-nums'; m.textContent = text; document.body.appendChild(m); const w = m.getBoundingClientRect().width; m.remove(); const room = COL.clientWidth; if (w > room) big.style.fontSize = Math.floor(max * room / w) + 'px'; };
+  let tick0, shownV = 6250000;
+  const fmtBig = v => '$' + Math.round(v).toLocaleString('en-US');
+  const sr = document.getElementById('f-sr');
+  const showMoney = V => { fitBig(fmtBig(V * .7)); pay.textContent = fmtBig(V); if (sr) sr.textContent = 'You could borrow ' + fmtBig(V * .7) + '. You would pay ' + fmtBig(V) + '.'; cancelAnimationFrame(tick0); if (still) { shownV = V; big.textContent = fmtBig(V * .7); return; }
+    const a = shownV, t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 300), e = 1 - Math.pow(1 - k, 3); shownV = a + (V - a) * e; big.textContent = fmtBig(k === 1 ? V * .7 : shownV * .7); if (k < 1) tick0 = requestAnimationFrame(tick); }; tick0 = requestAnimationFrame(tick); };
   const digits = el => el.value.replace(/[^0-9]/g, '');
   const lim = el => [+el.dataset.min, +el.dataset.max];
   const clamp = (el, v) => { const [lo, hi] = lim(el); return Math.min(hi, Math.max(lo, v)); };
@@ -51,18 +34,16 @@
   const msg = document.getElementById('f-msg'); let mt;
   const say = el => { if (!msg) return; msg.textContent = el === n ? 'Up to 1,000 robots' : 'Between $1,000 and $1,000,000'; msg.classList.add('on'); el.setAttribute('aria-invalid', 'true');
     clearTimeout(mt); mt = setTimeout(() => { msg.classList.remove('on'); [n, p].forEach(x => x.removeAttribute('aria-invalid')); }, 4000); };
-  // every valid change goes straight to the preview; it counts and redraws in 300ms
+  // one robot reads as one robot, in the sentence and under the dots
+  const say1 = c => { [...ty.options].forEach(o => { o.textContent = c === 1 ? o.dataset.one : o.dataset.many; }); if (dotsay) dotsay.textContent = c === 1 ? 'This dot is your one robot.' : 'Each dot is one of your ' + c.toLocaleString('en-US') + ' robots.'; if (pile) pile.setAttribute('aria-label', c === 1 ? 'One dot for one robot' : c.toLocaleString('en-US') + ' dots, one for each robot'); if (fitReady) fitSel(ty); };
+  let fitReady = false;
+  // every valid change goes straight to the answer; it counts and redraws in 300ms
   const state = () => ({ rid: ty.value, n: val(n), price: val(p), when: wh ? wh.value : 'Within 3 months' });
   let lastKey = '';
   const upd = () => {
     const s = state(), key = [s.rid, s.n, s.price, s.when].join('|');
     if (key === lastKey) return; lastKey = key;
-    drawBots(s.rid, s.n, true);
-    if (pv && window.FerraApp && window.FerraApp.preview) return window.FerraApp.preview(pv, s);
-    // shared preview script not loaded yet: keep the four figures and the funding window honest
-    if (!pv) return;
-    const V = s.n * s.price, f = pv.querySelectorAll('.fp-k dd');
-    [fmt(V), fmt(V * .7), fmt(V * .3), Math.abs(V * .7 * .015 - 65625) < .5 ? '$65,625' : '$' + (Math.floor(V * .7 * .015 / 100 + .5) * 100).toLocaleString('en-US')].forEach((t, i) => { if (f[i]) f[i].textContent = t; });
+    drawPile(s.n, true); showMoney(s.n * s.price); say1(s.n);
   };
   lastKey = [ty.value, 50, 125000, wh ? wh.value : ''].join('|');   // the page is built on these defaults
   [n, p].forEach(el => {
@@ -82,7 +63,7 @@
     });
   });
   // a new robot type brings its own typical price
-  ty.addEventListener('change', () => { last.set(p, clamp(p, +ty.selectedOptions[0].dataset.price)); comma(p); upd(); });
+  ty.addEventListener('change', () => { last.set(p, clamp(p, +ty.selectedOptions[0].dataset.price)); comma(p); swapBot(); upd(); });
   if (wh) wh.addEventListener('change', upd);
   // site.js reads the fleet fields as plain numbers when the form submits, so hand it digits for that moment
   const form = document.getElementById('quote');
@@ -93,9 +74,11 @@
     [n, p].forEach(el => { el.value = String(val(el)); });
     setTimeout(() => [n, p].forEach(comma), 0);
   }, true);
+  // the big robot is the one picked in the sentence
+  const swapBot = () => { if (!bot) return; const o = ty.selectedOptions[0]; bot.dataset.bot = o.dataset.bot; bot.setAttribute('aria-label', o.dataset.one + ' at work, drawn in dots'); if (window.FerraDots) FerraDots.draw(bot); };
   comma(n); comma(p);
-  drawBots(ty.value, val(n), true);
-  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => drawBots(ty.value, val(n), false), 150); });
+  drawPile(val(n), true); fitBig(big ? big.textContent : '');
+  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawPile(val(n), false); fitBig(fmtBig(val(n) * val(p) * .7)); }, 150); });
   // once the request is in, the fields are gone, so their message line goes too
   const done = form && form.querySelector('.ldone');
   if (done && msg) new MutationObserver(() => { if (!done.hidden) msg.hidden = true; }).observe(done, { attributes: true, attributeFilter: ['hidden'] });
@@ -107,9 +90,10 @@
   // each dropdown in the sentence is as wide as the words it shows, so the sentence reads as a sentence
   const fitSel = sel => { const m = document.createElement('span'), cs = getComputedStyle(sel); m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;text-transform:lowercase;font:' + cs.font + ';letter-spacing:' + cs.letterSpacing; m.textContent = sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : ''; document.body.appendChild(m); sel.style.width = Math.ceil(m.getBoundingClientRect().width + 2) + 'px'; m.remove(); };
   // the two typed answers follow what is in them too
-  const fitNum = el => { const m = document.createElement('span'), cs = getComputedStyle(el); m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:' + cs.font + ';letter-spacing:' + cs.letterSpacing + ';font-variant-numeric:lining-nums tabular-nums'; m.textContent = el.value || '0'; document.body.appendChild(m); el.style.width = Math.ceil(m.getBoundingClientRect().width + 4) + 'px'; m.remove(); };
+  // (read the font piece by piece: the computed font shorthand comes back empty once tabular figures are set on the field, and the box then measures in the wrong size)
+  const fitNum = el => { const m = document.createElement('span'), cs = getComputedStyle(el); m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-family:' + cs.fontFamily + ';font-size:' + cs.fontSize + ';font-weight:' + cs.fontWeight + ';letter-spacing:' + cs.letterSpacing + ';font-variant-numeric:lining-nums tabular-nums'; m.textContent = el.value || '0'; document.body.appendChild(m); el.style.width = Math.ceil(m.getBoundingClientRect().width + 6) + 'px'; m.remove(); };
   [n, p].forEach(el => { el.addEventListener('input', () => fitNum(el)); el.addEventListener('blur', () => fitNum(el)); el.addEventListener('focus', () => fitNum(el)); });
-  const fitAll = () => { [ty, wh].forEach(s => s && fitSel(s)); [n, p].forEach(fitNum); };
+  const fitAll = () => { fitReady = true; [ty, wh].forEach(s => s && fitSel(s)); [n, p].forEach(fitNum); };
   [ty, wh].forEach(s => s && s.addEventListener('change', () => { fitSel(s); fitNum(p); }));
   fitAll(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll); addEventListener('resize', fitAll);
   // the second half of the form: "Get a quote" opens email and company and turns into Send
