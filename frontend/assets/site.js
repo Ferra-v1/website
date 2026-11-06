@@ -56,7 +56,9 @@
   }));
   // the floating bar: out of the way while reading, back as soon as the reader scrolls up, and gone again near the top where the page's own nav sits
   const fbar = document.querySelector('.fbar');
-  if (fbar) { let last = scrollY, on = false; addEventListener('scroll', () => { const y = scrollY, d = y - last; if (Math.abs(d) < 6) return; last = y; const v = d < 0 && y > 240; if (v !== on) { on = v; fbar.classList.toggle('on', v); } }, { passive: true }); }
+  // its action comes back on a phone only once the hero has gone by: the part of the page holding the nav, or the section right after a nav that stands alone
+  if (fbar) { const nv = document.querySelector('.page .nav'); let top = nv; while (top && top.parentElement && !top.parentElement.classList.contains('page')) top = top.parentElement; const hero = top === nv && nv ? nv.nextElementSibling : top;
+    let last = scrollY, on = false; addEventListener('scroll', () => { const y = scrollY, d = y - last; if (Math.abs(d) < 6) return; last = y; const v = d < 0 && y > 240; if (v) fbar.classList.toggle('past', !hero || hero.getBoundingClientRect().bottom <= 0); if (v !== on) { on = v; fbar.classList.toggle('on', v); } }, { passive: true }); }
   // one soft pill slides between the nav links under the pointer
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) document.querySelectorAll('.links').forEach(w => { const h = w.querySelector('.lhl'); if (!h) return;
     w.querySelectorAll(':scope > a, :scope > .lk > a').forEach(a => a.addEventListener('pointerenter', () => { const first = !h.classList.contains('on'); if (first) h.style.transition = 'none'; h.style.width = a.offsetWidth + 'px'; h.style.transform = `translateX(${a.getBoundingClientRect().left - w.getBoundingClientRect().left}px)`; if (first) { h.getBoundingClientRect(); h.style.transition = ''; } h.classList.add('on'); }));

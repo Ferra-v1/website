@@ -24,7 +24,7 @@
   // what the picture shows: scan (0 to 1, the price passing from head to foot), level (the share of dots paid for), wave (a pass of brightness, the money arriving)
   function paint(c, F, s, intro) {
     if (!F) return;
-    const p = F.pitch, wait = [], priced = [], paid = [], hot = [];
+    const p = F.pitch, wait = [], priced = [], paid = [], hot = [], rings = [];
     c.setTransform(F.dpr, 0, 0, F.dpr, 0, 0); c.clearRect(0, 0, F.w, F.h);
     for (const d of bot.pts) {
       const k = intro >= 1 ? 1 : ease(clamp(intro * 1.7 - d.r * .7));
@@ -34,9 +34,12 @@
       const wave = s.wave !== undefined ? clamp(1 - Math.abs((d.x / bot.w + py) / 2 - s.wave) / .1) : 0;
       if (d.rank < s.level) { (wave > .4 ? hot : paid).push([cx, cy, base * (1 + clamp(1 - (s.level - d.rank) / .02) * .14)]); continue; }
       if (near > .3) { hot.push([cx, cy, base * (1 + near * .12)]); continue; }
+      // no lender yet: the share still to be lent stands as empty rings, and the lender's money fills them in a sweep
+      if (s.hollow > 0) { const front = s.fill === undefined ? -1 : s.fill - (d.x / bot.w + py) / 2; if (front > 0 && front < .05) { hot.push([cx, cy, base]); continue; } if (front <= 0 && d.r < s.hollow) { rings.push([cx, cy, base * .8]); continue; } }
       (py + d.r * .02 < s.scan ? priced : wait).push([cx, cy, base * .94]);
     }
     dots(c, wait, WAITING); dots(c, priced, PRICED); dots(c, paid, COBALT); dots(c, hot, FLASH);
+    if (rings.length) { c.strokeStyle = COBALT; c.lineWidth = Math.max(.8, p * .1); c.beginPath(); for (const d of rings) { c.moveTo(d[0] + d[2], d[1]); c.arc(d[0], d[1], d[2], 0, TAU); } c.stroke(); }
   }
 
   // ---------------------------------------------------------------- the story
@@ -52,7 +55,7 @@
   }
   function read(a, b, an, bn) {
     if (a !== shown) { shown = a; ra.firstChild.textContent = a; rb.firstChild.textContent = b; }
-    ra.lastChild.textContent = an; rb.lastChild.textContent = bn;
+    ra.querySelector('dd').textContent = an; rb.lastChild.textContent = bn;
   }
   const OWN = (100 - D.adv) / 100, level = m => OWN + (1 - OWN) * m / D.term;
   function render(G) {
@@ -62,8 +65,8 @@
     else if (i === 1) read('Robot arms', 'Each, new and installed', String(D.n), money(D.arm));
     else if (i === 2) { const u = clamp(t * 1.25), n = Math.floor(u * D.n + 1e-6); st.scan = u * 1.08; read('Robots priced', 'Worth in all', n + ' of ' + D.n, money(n * D.arm)); }
     else if (i === 3) { st = { scan: 2, level: OWN * ease(clamp(t * 2.2)) }; read('The loan, ' + D.adv + '%', 'The company pays, ' + D.rest + '%', money(D.l), money(D.v - D.l)); }
-    else if (i === 4) { py = 108 - 108 * ease(clamp(t * 2.4)); st = { scan: 2, level: OWN }; read('The loan, ' + D.adv + '%', 'The company pays, ' + D.rest + '%', money(D.l), money(D.v - D.l)); }
-    else if (i === 5) { py = 108 * ease(clamp(t * 3)); st = { scan: 2, level: OWN, wave: -0.2 + t * 1.5 }; read('The lender pays', "Ferra's fee, once", money(D.l), exact(D.fee)); }
+    else if (i === 4) { py = 108 - 108 * ease(clamp(t * 2.4)); st = { scan: 2, level: OWN, hollow: ease(clamp(t * 2.6)) }; read(phone() ? 'The loan: no lender yet' : 'The loan, ' + D.adv + '%', 'The company pays, ' + D.rest + '%', money(D.l), money(D.v - D.l)); }
+    else if (i === 5) { py = 108 * ease(clamp(t * 3)); st = { scan: 2, level: OWN, hollow: 1, fill: t * 1.3 - .05 }; read('The lender pays', "Ferra's fee, once", money(D.l), exact(D.fee)); }
     else if (i === 6) { m = t * (D.term - 1); showPay = true; st = { scan: 2, level: level(m) }; const k = Math.round(m), s = D.months[k]; read('Still owed, month ' + k, 'The robots are worth', money(s[1]), money(s[0])); }
     else { const u = i === 7 ? t : 1; m = D.term; showPay = true; st = { scan: 2, level: level(m - 1) + (1.05 - level(m - 1)) * ease(clamp(u * 3)), wave: u < 1 ? -0.2 + u * 1.7 : undefined }; read('Still owed, month ' + m, 'The robots are worth', '$0', money(D.months[m][0])); }
     if (!phone()) {
@@ -71,6 +74,7 @@
       paper.style.opacity = a > .01 ? 1 : 0; paper.style.transform = `translateY(${py}%)`;
     }
     pay.classList.toggle('on', showPay);
+    ra.classList.toggle('hw-empty', i === 4);
     const k = Math.round(m); pays.forEach((d, j) => d.classList.toggle('p', j < k));
     paint(ctx, F, st, intro);
   }

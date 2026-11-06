@@ -130,7 +130,7 @@
   const film = document.querySelector('.h-film'), stick = film && film.querySelector('.h-stick'); if (!film) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const cv = film.querySelector('.h-cv'), ctx = cv.getContext('2d'), probe = film.querySelector('.h-probe');
-  const $ = s => film.querySelector(s), b1 = $('.h-b1'), b2 = $('.h-b2'), b3 = $('.h-b3'), b4 = $('.h-b4'), b5 = $('.h-b5'), b6 = $('.h-b6'), axis = $('.h-axis'), n0 = $('.h-n0'), totEl = $('.h-tot'), totV = totEl.querySelector('b'), tagEl = $('.h-tag'), gl0 = $('.h-gl0'), gl1 = $('.h-gl1'), tipEl = $('.h-tip');
+  const $ = s => film.querySelector(s), b1 = $('.h-b1'), b2 = $('.h-b2'), b3 = $('.h-b3'), b4 = $('.h-b4'), b5 = $('.h-b5'), b6 = $('.h-b6'), axis = $('.h-axis'), n0 = $('.h-n0'), totEl = $('.h-tot'), totV = totEl.querySelector('b'), gl0 = $('.h-gl0'), gl1 = $('.h-gl1'), tipEl = $('.h-tip');
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, seg = (s, a, b) => clamp((s - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
   // the timeline, in screens scrolled. The film's height in p-home.css is the end of this plus the 125 the next section overlaps it by.
@@ -145,7 +145,7 @@
 
   // ---------------------------------------------------------------- the price box: the only numbers baked into the page
   const tab = JSON.parse(document.getElementById('h-prices').textContent), rSel = document.getElementById('h-r'), ySel = document.getElementById('h-y'), tool = document.getElementById('h-tool');
-  const saleEl = document.getElementById('h-pv'), loanEl = document.getElementById('h-lv'), whyEl = document.getElementById('h-why');
+  const saleEl = document.getElementById('h-pv'), whyEl = document.getElementById('h-why');
   const fmt = n => '$' + Math.round(n).toLocaleString('en-US'), r100 = v => Math.round(v / 100) * 100;
   let shown = null, tw = 0;
   const putAll = (sel, v) => film.querySelectorAll(sel).forEach(s => s.textContent = v);
@@ -153,10 +153,9 @@
     const f = tab.fam[rSel.value], y = +ySel.value; age = clamp(tab.now - y, 0, 30);
     const a = f.c[age], k = tab.sk[age < 10 ? 0 : 1];   // the price tool's Expected sale rule
     ask = r100(a); sale = r100(a * k); loan = r100(a * k * tab.share);
-    tool.href = `price.html#r=${f.t}&y=${y}&p=${ask}&m=${Math.round(ask * .036 / 10) * 10}`;   // every link into the tool carries a rent, 3.6% of the price a month, or the tool warns about one the reader never typed
+    tool.href = `price.html#y=${y}&r=${f.t}`;   // the robot and the year only, so the tool opens on the cost of a new robot and shows this used arm beside it
     const say = f.s.charAt(0).toUpperCase() + f.s.slice(1);
     putAll('[data-say]', say); putAll('[data-yr]', y); putAll('[data-a]', fmt(ask)); putAll('[data-p]', fmt(sale));
-    loanEl.textContent = fmt(loan);
     // the one line under the price: what it is, and either of the two honest warnings when it applies
     whyEl.textContent = tab.sale + (age < f.g[0] || age > f.g[1] ? ' We have no listings of this robot at this age, so it only follows the trend.' : '') + (age === 9 || age === 10 ? ' ' + tab.step : '');
     if (shown === null || reduce) { shown = sale; saleEl.textContent = fmt(sale); } else {
@@ -206,7 +205,7 @@
     W = stick.clientWidth; FH = stick.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 760;
     cv.width = Math.round(W * dpr); cv.height = Math.round(FH * dpr);
     const narrow = W <= 1060, cols = BX1 - BX0, rows = BY1 - BY0 + 1, stageTop = docTop(film);
-    floorY = phone ? H - (H < 720 ? 54 : 62) : narrow ? H - 84 : Math.round(H * .885);
+    floorY = phone ? H - (H < 720 ? 54 : 62) : narrow ? H - 84 : Math.round(H * .915);
     const wrap = Math.min(W, 1200), mar = (W - wrap) / 2 + (phone ? 16 : 24);
     // the robot on the first screen stands on the floor line, beside the copy on desktop and under it on a phone
     if (W <= 900) {
@@ -232,8 +231,6 @@
       l0.style.transform = `translate(${(C.l - l0.offsetWidth - (phone ? 6 : 14)).toFixed(1)}px,${(Y(D.curve[0]) - l0.offsetHeight / 2).toFixed(1)}px)`;
       l1.style.transform = phone ? `translate(${(X(30) - l1.offsetWidth).toFixed(1)}px,${(Y(620) - l1.offsetHeight / 2).toFixed(1)}px)` : `translate(${(X(30) + 14).toFixed(1)}px,${(Y(D.curve[30]) - l1.offsetHeight + 15).toFixed(1)}px)`;
       const a = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m); al.style.transform = `translate(${clamp(X(a[5]) - al.offsetWidth / 2, 8, W - al.offsetWidth - 8).toFixed(1)}px,${(Y(a[1]) + 9).toFixed(1)}px)`; }
-    // the robot's own price, under the line it stands on
-    tagEl.style.transform = `translate(${(W <= 900 ? mar : Math.max(mar, hero.r - cols * hero.p)).toFixed(1)}px,${(floorY + (phone ? 7 : 11)).toFixed(1)}px)`;
     // the disc: its area follows the price, up to one new arm's cost; the smallest stays wide enough to hold its number
     const left = phone || narrow, unit = +totEl.dataset.unit, count = +totEl.dataset.robots;
     const bb = (e, top) => e.querySelector('.h-bt').getBoundingClientRect().height + top;
@@ -356,7 +353,6 @@
     const glA = seg(loanK, .5, .9) * (1 - seg(s, T.b6[2], T.b6[3])); show(gl0, glA); show(gl1, glA);
     // the film closes on black, so the next section's picture comes up out of it with no edge
     const dark = seg(s, ...T.dim); if (dark > 0) { ctx.fillStyle = `rgba(4,6,12,${dark.toFixed(3)})`; ctx.fillRect(0, 0, W, FH); }
-    show(tagEl, reduce ? (s < .3 ? 1 : 0) : 1 - seg(s, 0, .14));
     // page text
     const a1 = beatA(s, T.b1), a2 = beatA(s, T.b2), a3 = beatA(s, T.b3), a4 = beatA(s, T.b4), a5 = beatA(s, T.b5), a6 = beatA(s, T.b6);
     show(b1, a1.a, a1.dy); show(b2, a2.a, a2.dy); show(b3, a3.a, a3.dy); show(b4, a4.a, a4.dy); show(b5, a5.a, a5.dy); show(b6, a6.a, a6.dy);
@@ -404,11 +400,12 @@
   requestAnimationFrame(loop);
 })();
 
-// What if a loan goes bad: one button shows the same 50 robots at the middle auction sale, and back. The sentence beside it says the same thing without it.
+// What if a loan goes bad: one button shows the same 50 robots at the middle auction sale (2 lit as bare arms, 10 more dim counting everything fitted), and back. The sentence beside it says the same thing without it.
 (() => {
   const b = document.getElementById('h-lowb'), sp = document.getElementById('h-split'); if (!b || !sp) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, left = sp.querySelector('.h-sa .h-sl'), base = left.innerHTML, low = left.dataset.low;
   b.hidden = false;
-  b.addEventListener('click', () => { const on = !sp.classList.contains('h-lo'); sp.classList.add('h-tch', 'in-view'); sp.classList.toggle('h-lo', on); left.innerHTML = on ? low : base; b.textContent = on ? 'Back to our example' : 'Show that on the robots';
+  const sayBase = sp.getAttribute('aria-label');
+  b.addEventListener('click', () => { const on = !sp.classList.contains('h-lo'); sp.classList.add('h-tch', 'in-view'); sp.classList.toggle('h-lo', on); left.innerHTML = on ? low : base; sp.setAttribute('aria-label', on ? sp.dataset.sayLow : sayBase); b.textContent = on ? 'Back to our example' : 'Show that on the robots';
     const top = sp.getBoundingClientRect().top; if (top < 72) scrollBy({ top: top - 84, behavior: reduce ? 'auto' : 'smooth' }); });
 })();

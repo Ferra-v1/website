@@ -159,7 +159,7 @@
       const nf = P.filter(q => q.fit && Math.abs(q.whole - sel) <= 1).length, F = D.fit;
       root.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' backs' : 's back'} this, ${nf === 0 ? 'none this age. Our guess from other ages.' : nf === F ? (F === 1 ? 'near this age.' : F === 2 ? 'both near this age.' : 'all near this age.') : NW[nf] + ' near this age.'}` : `${D.tier === 'mid' ? `${F} listings back this price. ` : ''}Most ask ${money(c[0])} to ${money(c[2])}.`;
       root.querySelector('.r-rn').textContent = thin ? '' : near ? `${near} listing${near === 1 ? '' : 's'} within a year of this age.` : 'No listings this age yet. Our guess from other ages.';
-      const ask = Math.round(c[1] / 100) * 100, go = document.querySelector('.r-rl'); if (go) go.href = `price.html#r=${D.id}&y=${y}&p=${ask}&m=${Math.round(ask * .036 / 10) * 10}`;   // the tool opens on this price with a rent that fits it
+      const go = document.querySelector('.r-rl'); if (go) go.href = `price.html#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
       place();
@@ -231,8 +231,7 @@
     // the long lists start short
     const mds = document.querySelector('.r-mds');
     if (mds) { const links = [...mds.children], keep = 12; if (links.length > keep + 3) { links.slice(keep).forEach(a => { a.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${links.length} models \u2192`; mds.after(b); b.addEventListener('click', () => { links.forEach(a => { a.hidden = false; }); b.remove(); }); } }
-    const tbl = document.querySelector('[data-listings]');
-    if (tbl) { const rows = [...tbl.tBodies[0].rows], keep = 8; if (rows.length > keep + 2) { const step = (rows.length - 1) / (keep - 1), show = new Set(Array.from({ length: keep }, (_, i) => Math.round(i * step))); rows.forEach((r, i) => { if (!show.has(i)) r.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${rows.length} listings \u2192`; tbl.after(b); b.addEventListener('click', () => { rows.forEach(r => { r.hidden = false; }); b.remove(); }); } }
+    document.querySelectorAll('[data-listings]').forEach(tbl => { const rows = [...tbl.tBodies[0].rows], keep = +tbl.dataset.keep; if (rows.length > keep + 2) { const step = (rows.length - 1) / (keep - 1), show = new Set(Array.from({ length: keep }, (_, i) => Math.round(i * step))); rows.forEach((r, i) => { if (!show.has(i)) r.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${rows.length} listings \u2192`; tbl.after(b); b.addEventListener('click', () => { rows.forEach(r => { r.hidden = false; }); b.remove(); }); } });
   }
 
   // ---------------------------------------------------------------- find a model: type any part of its name
@@ -262,15 +261,19 @@
     // the robot stands at the left of its box, on the line, at the height its listings earn
     const geo = cv => { const G = ghost(cv.dataset.b), w = cv.clientWidth, h = cv.clientHeight, cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, h / rows); return { G, cell, ox: 0, oy: h - rows * cell, cols, rows }; };
     const dotXY = (g, d) => [g.ox + (d[0] - g.G.x0 + .5) * g.cell, g.oy + (d[1] - g.G.y0 + .5) * g.cell];
+    // until the reader moves the age, every dot is bright. After that, only the dots near that age are.
+    const NEAR = 2; let sel = null;
     const paint = (cv, t, hot) => {
       if (!ghost(cv.dataset.b)) return;
       const { c } = fit(cv), g = geo(cv), list = DOTS[cv.dataset.f] || [];
       if (cv._cell !== g.cell) { cv._cell = g.cell; cv._bm = ghostBitmap(g.G, g.cell, g.cell < 2.4 ? BODY + .04 : BODY); }
       c.drawImage(cv._bm, g.ox, g.oy, g.cols * g.cell, g.rows * g.cell);
       const lit = Math.round(list.length * t), r = clamp(g.cell * .62, list.length < 30 ? 2.6 : 1.9, 3.3);
+      const far = [];
       c.fillStyle = '#fff'; c.beginPath();
-      for (let i = 0; i < lit; i++) { const k = list[(i * 7919) % list.length], [x, y] = dotXY(g, k); c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); }
+      for (let i = 0; i < lit; i++) { const k = list[(i * 7919) % list.length]; if (sel !== null && Math.abs(k[7] - sel) > NEAR) { far.push(k); continue; } const [x, y] = dotXY(g, k); c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); }
       c.fill();
+      if (far.length) { const q = r * .72; c.fillStyle = 'rgba(255,255,255,.34)'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
       if (hot) { const [x, y] = dotXY(g, hot); c.fillStyle = 'rgb(150,232,255)'; c.beginPath(); c.arc(x, y, r + 1.6, 0, 6.2832); c.fill(); }
     };
     const cvs = [...shelf.querySelectorAll('canvas[data-b]')];
@@ -300,5 +303,26 @@
     tip.addEventListener('pointerleave', hide);
     document.addEventListener('pointerdown', ev => { if (hot && !tip.contains(ev.target) && !(ev.target.matches && ev.target.matches('canvas[data-b]'))) hide(); });
     document.addEventListener('keydown', ev => { if (ev.key === 'Escape') hide(); });
+    // one age for the whole shelf: every robot reprices from its own curve, and each figure is set at the size its listings near that age earn. robots.py prints the opening state by the same rule.
+    const dial = shelf.querySelector('.r-dial');
+    if (dial) {
+      const CUR = JSON.parse(shelf.querySelector('.r-cur').textContent), inp = dial.querySelector('input'), out = dial.querySelector('output'), cells = [...shelf.querySelectorAll('.r-cell')];
+      const yrs = a => a === 1 ? '1 year' : `${a} years`, dots = n => `${n} dot${n === 1 ? '' : 's'}`;
+      dial.hidden = false; shelf.querySelector('.r-s-age').hidden = false; shelf.classList.add('aged');
+      inp.addEventListener('input', () => {
+        const a = sel = +inp.value;
+        out.textContent = yrs(a); inp.setAttribute('aria-valuetext', `${yrs(a)} old`);
+        for (const ce of cells) {
+          const list = DOTS[ce.dataset.k] || [], n = list.length, nr = list.filter(d => Math.abs(d[7] - a) <= NEAR).length, ct = ce.querySelector('.r-c-ct'), f = CUR[ce.dataset.k];
+          ct.textContent = (nr ? `${nr} of ${dots(n)} near this age.` : `None of its ${dots(n)} are near this age, so this is a rough guess.`) + ct.dataset.n;
+          if (!f) continue;
+          const c = f.c[a], thin = f.t === 'thin', big = f.t === 'big', pr = ce.querySelector('.r-c-pr'), at = ce.querySelector('.r-c-at');
+          pr.className = `r-c-pr ${thin || !nr ? 't' : big && nr >= 5 ? 'b' : nr >= 5 || big ? 'm' : 't'} num`;
+          pr.textContent = thin ? `${money(c[0])} to ${money(c[2])}` : nr ? money(c[1]) : `About ${money(c[1])}`;
+          if (at) at.textContent = `at ${yrs(a)} old`;
+        }
+        cvs.forEach(cv => paint(cv, cv.dataset.done ? 1 : 0));
+      });
+    }
   }
 })();

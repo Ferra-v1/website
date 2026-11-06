@@ -8,27 +8,16 @@
 .d-upd{margin:18px 0 0;font-size:15px;color:var(--muted)}
 .d-hbot .rstage{max-width:420px;margin-left:auto}
 
-/* the band: every dot is one real listing. Still by default; p-docs.js adds .pin and walks data-s from 0 to 3 as the reader scrolls */
-.d-flow{background:var(--ink);color:#fff;--cy:rgb(150,232,255)}
-.d-fst{padding-block:clamp(64px,8vw,112px)}
-.d-fg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,72px);align-items:center}
-.d-fh .h2{margin:0;max-width:14ch}
-.d-fh > p{margin:14px 0 0;font-size:19px;line-height:1.45;color:rgba(255,255,255,.72)}
-.d-frs{list-style:none;margin:clamp(24px,3vw,40px) 0 0;padding:0}
-.d-fr{display:grid;grid-template-columns:clamp(116px,12.5vw,184px) minmax(0,1fr);gap:0 16px;align-items:baseline;padding:7px 0;transition:opacity .35s ease}
-.d-fr b{font:700 clamp(36px,4vw,58px)/1.06 var(--serif);letter-spacing:-.035em}
-.d-fr span{font-size:16px;line-height:1.3;color:rgba(255,255,255,.82)}
-.d-fsv{display:block;width:100%;height:auto;fill:none;stroke-linecap:round}
-.d-fsv path{stroke:#fff;stroke-width:8.4;transition:stroke .5s ease,stroke-width .5s ease,opacity .5s ease}
-.d-flow[data-s="1"] .k1,.d-flow[data-s="2"] .k1,.d-flow[data-s="2"] .k2,.d-flow[data-s="3"] .k1,.d-flow[data-s="3"] .k2,.d-flow[data-s="3"] .k3{stroke-width:3.6;opacity:.3}
-.d-flow[data-s="3"] .k4{stroke:var(--cy)}
-.d-flow[data-s="3"] .d-fr:last-child b{color:var(--cy)}
-/* pinned: a tall section with a stage held on screen by position sticky */
-.d-flow.d-pin{height:175vh}
-.d-flow.d-pin .d-fst{position:sticky;top:0;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding-block:32px}
-.d-flow.d-pin .d-fg{width:100%}
-.d-flow.d-pin .d-fr{opacity:.42}
-.d-flow.d-pin[data-s="0"] .d-fr:nth-child(1),.d-flow.d-pin[data-s="1"] .d-fr:nth-child(2),.d-flow.d-pin[data-s="2"] .d-fr:nth-child(3),.d-flow.d-pin[data-s="3"] .d-fr:nth-child(4){opacity:1}
+/* the funnel in four numbers. Company draws the listings as dots, so this page does not. */
+.d-flow{background:var(--ink);color:#fff;--cy:rgb(150,232,255);padding-block:clamp(64px,8vw,112px)}
+.d-flow .h2{margin:0;max-width:16ch}
+.d-frs{list-style:none;margin:clamp(32px,4vw,56px) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px clamp(24px,3vw,44px)}
+.d-fr b{display:block;font:700 clamp(52px,6.2vw,92px)/1 var(--serif);letter-spacing:-.04em}
+.d-fr span{display:block;margin-top:10px;font-size:17px;line-height:1.35;color:rgba(255,255,255,.82);max-width:22ch}
+.d-fr:last-child b{color:var(--cy)}
+.d-fl{margin:clamp(32px,4vw,48px) 0 0;max-width:62ch;font-size:17px;line-height:1.55;color:rgba(255,255,255,.72)}
+.d-fl a{display:inline-flex;align-items:center;min-height:44px;margin:-10px 0;color:#fff;font-weight:500;text-decoration:none}
+.d-fl a:hover{color:var(--cy)}
 
 /* what we do not know: one admission at full size, three more under it. Straight after the funnel, where it gets read */
 .d-unk{background:var(--mist);padding-block:clamp(72px,9vw,128px);scroll-margin-top:0}
@@ -96,34 +85,32 @@
 .d-lots figcaption{margin-top:10px;font-size:15px;line-height:1.4;color:#5b6474}
 .d-sec .d-note{margin:10px 0 28px;max-width:680px;font-size:15px;line-height:1.5;color:#5b6474}
 
-/* one robot, start to finish: two equal steps down, with the words under each price, then the whole robot and its loan on the same three columns */
+/* one robot, start to finish: six prices on one scale. The robot is the ruler: its height is what it cost, and every line is a price drawn at its true height */
 .d-one{padding-block:clamp(64px,8vw,120px)}
 .d-one .h2{margin:0;max-width:18ch}
 .d-olead{margin:18px 0 0;max-width:46ch;font-size:clamp(20px,1.65vw,23px);line-height:1.42;letter-spacing:-.008em;color:#3e4656}
-.d-lad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(28px,3.4vw,48px);margin:clamp(40px,4vw,64px) 0 0;border-bottom:1px solid var(--line)}
-.d-ls{min-width:0;padding-bottom:clamp(28px,3vw,40px)}
-.d-ls i{display:block;margin-bottom:10px;font-style:normal;font-size:15px;line-height:1.3;color:#5b6474}
-.d-ls span{display:block;font-size:16px;line-height:1.3;font-weight:500;color:#3e4656}
-.d-ls b{display:block;margin-top:8px;font:700 clamp(48px,5.6vw,80px)/1 var(--serif);letter-spacing:-.04em;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
-.d-ls p{margin:16px 0 0;font-size:17px;line-height:1.55;color:#3e4656}
-.d-ls2 b{color:var(--c)}
-.d-ls1{display:flex;flex-direction:column;padding-bottom:0}
-.d-lbot{margin-top:auto;padding-top:24px;max-width:300px}
-.d-lbot .rstage{margin:0}
-.d-lbot .rs-base{display:none}
-.d-ls2{margin-top:96px}
-.d-ls3{margin-top:192px}
-.d-otw{margin:clamp(48px,5vw,72px) 0 0;max-width:30ch;font:600 clamp(28px,2.9vw,42px)/1.14 var(--serif);letter-spacing:-.03em;color:var(--ink)}
-.d-wh{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(28px,3.4vw,48px);margin:clamp(28px,3vw,44px) 0 0}
-.d-wh div{display:flex;flex-direction:column;min-width:0}
-.d-wh dt{font-size:16px;line-height:1.3;font-weight:500;color:#3e4656}
-.d-wh dd{margin:8px 0 0;font:700 clamp(48px,5.6vw,80px)/1 var(--serif);letter-spacing:-.04em;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
-.d-wh .hi dd{color:var(--c)}
-.d-why{margin:clamp(40px,4vw,56px) 0 0;max-width:680px}
-.d-why h3{margin:0 0 14px;font:600 clamp(21px,1.9vw,26px)/1.25 var(--serif);letter-spacing:-.02em;color:var(--ink)}
-.d-why p{margin:0 0 14px;font-size:18px;line-height:1.65;color:#3e4656}
-.d-why a{display:inline-flex;align-items:center;min-height:44px;margin:-6px 0;color:var(--c);font-weight:500;text-decoration:none}
-.d-why a:hover{color:var(--ink)}
+.d-lad{--H:clamp(720px,min(88svh,58vw),860px);--rw:calc(var(--H) * .87);position:relative;height:var(--H);margin-top:clamp(32px,4vw,56px);border-bottom:1px solid var(--ink)}
+.d-lgap{position:absolute;left:0;right:0;top:calc((1 - var(--t)) * 100%);bottom:calc(var(--b) * 100%);background:var(--mist)}
+.d-lbot{position:absolute;left:0;bottom:0;display:block;height:100%;aspect-ratio:var(--ar,.87)}
+.d-r{position:absolute;left:0;right:0;top:calc((1 - var(--h)) * 100%);border-top:1px solid rgba(14,22,38,.28);padding:clamp(8px,.9vw,12px) 0 0 calc(var(--rw) + 28px);box-sizing:border-box}
+.d-r b{display:block;font:700 calc(var(--H) * .06)/1 var(--serif);letter-spacing:-.04em;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
+.d-r span{display:block;margin-top:6px;font-size:16px;line-height:1.35;color:#3e4656}
+.d-r em{display:block;margin-top:10px;max-width:38ch;font-style:normal;font-size:16px;line-height:1.35;font-weight:500;color:var(--ink)}
+.d-r1 b{font-size:calc(var(--H) * .092);letter-spacing:-.045em}
+.d-r3 b{font-size:calc(var(--H) * .074);color:var(--c)}
+/* the three low lines sit close, as they should: one line of text each */
+.d-r.s{display:flex;align-items:baseline;gap:12px;padding-top:3px}
+.d-r.s b{flex:none;width:calc(var(--H) * .09);font-size:max(16px,calc(var(--H) * .0225));letter-spacing:-.015em}
+.d-r.s span{margin:0;font-size:15px;line-height:1;white-space:nowrap}
+.d-rc,.d-lplain{display:none}
+/* how each line is worked out */
+.d-ex{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(32px,5vw,72px);margin-top:clamp(48px,6vw,80px)}
+.d-ex h3{margin:0 0 16px;font:600 clamp(21px,1.9vw,26px)/1.25 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.d-ex p{margin:0 0 14px;font-size:17px;line-height:1.6;color:#3e4656;max-width:58ch}
+.d-ex b{font-weight:600;color:var(--ink)}
+.d-exl{margin-top:4px!important}
+.d-ex a{display:inline-flex;align-items:center;min-height:44px;color:var(--c);font-weight:500;text-decoration:none}
+.d-ex a:hover{color:var(--ink)}
 
 /* the read has two parts, each a real chapter title with one line that sums it up */
 .d-part{padding:clamp(88px,10vw,152px) 0 0}
@@ -198,38 +185,42 @@
   .d-tocx a{min-height:44px;padding:8px 0}
   .d-tocx a.on{color:var(--c);font-weight:500}
   .d-sec{scroll-margin-top:72px}
-  .d-fg{grid-template-columns:minmax(0,1fr);gap:24px}
-  .d-fsv{order:-1}
-  .d-fh .h2{max-width:none}
 }
-@media (max-width:900px){
-  .d-ls b,.d-wh dd{font-size:clamp(36px,5.2vw,48px)}
-  .d-ls2{margin-top:64px}
-  .d-ls3{margin-top:128px}
+@media (min-width:961px) and (max-width:1100px){
+  .d-lad{--H:66vw}
+  .d-r.s{padding-top:1px}
+  .d-r.s b{font-size:16px}
+}
+@media (max-width:960px){
+  /* the picture narrows to the robot's own width; the numbers stay on it and the words follow as a list */
+  .d-lad{--H:min(calc((100vw - 32px) / .87),620px)}
+  .d-r{padding:6px 0 0;text-align:right}
+  .d-r span,.d-r em,.d-r.s b{display:none}
+  .d-r.s{display:block;padding:0}
+  .d-r b{font-size:clamp(26px,7.4vw,44px)}
+  .d-r1 b{font-size:clamp(36px,10vw,60px)}
+  .d-r3 b{font-size:clamp(30px,8.4vw,50px)}
+  /* the arm's gripper sits right under this line, so this one number stands on top of it */
+  .d-r2{padding:0}
+  .d-r2 b{transform:translateY(calc(-100% - 6px))}
+  .d-rc{display:block;position:absolute;right:0;bottom:calc(var(--H) * .136 + 4px);width:43%;margin:0;font-size:15px;line-height:1.2;text-align:right;color:var(--ink)}
+  .d-lplain{display:grid;gap:12px;list-style:none;margin:20px 0 0;padding:0;font-size:16px;line-height:1.4;color:#3e4656}
+  .d-lplain b{font:700 19px var(--serif);letter-spacing:-.015em;color:var(--ink);margin-right:4px}
+  .d-lplain .hi b{color:var(--c)}
+  .d-lplain .g{font-weight:500;color:var(--ink)}
+  .d-ex{grid-template-columns:minmax(0,1fr)}
+  .d-frs{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:720px){
   .d-hg{grid-template-columns:minmax(0,1fr)}
   .d-hbot{display:none}
   .d-hero .h1{font-size:clamp(52px,14vw,72px)}
-  .d-flow.d-pin .d-fst{padding-block:20px}
-  .d-fr{grid-template-columns:92px minmax(0,1fr);padding:5px 0}
-  .d-fr b{font-size:32px}
+  .d-fr b{font-size:clamp(44px,13vw,60px)}
   .d-fr span{font-size:15px}
-  .d-fh > p{font-size:17px}
+  .d-fl{font-size:16px}
   .d-sec p,.d-steps li{font-size:17px}
   .d-sec .d-ld{font-size:19px}
-  .d-lad,.d-wh{grid-template-columns:minmax(0,1fr)}
-  .d-lad{border-bottom:0;margin-top:32px}
-  .d-ls{padding-bottom:32px}
-  .d-ls1{padding-bottom:32px}
-  .d-lbot{order:-1;padding:0 0 24px;margin:0;max-width:210px}
-  .d-lbot .rs-base{display:block}
-  .d-ls2,.d-ls3{margin-top:0}
-  .d-ls b,.d-wh dd{font-size:52px}
-  .d-ls p{font-size:17px}
-  .d-otw{margin-top:8px;font-size:28px}
-  .d-wh{row-gap:24px}
-  .d-why p{font-size:17px}
+  .d-ex p{font-size:17px}
   .d-ung{grid-template-columns:minmax(0,1fr);row-gap:28px}
   .d-ung > div{display:block}
   .d-ung p{font-size:17px}
@@ -250,4 +241,4 @@
   .d-pr{grid-template-columns:minmax(0,1fr)}
   .d-pr p,.d-pl{font-size:17px}
 }
-@media (prefers-reduced-motion:reduce){.d-fsv path,.d-fr,.d-tocx{transition:none}}
+@media (prefers-reduced-motion:reduce){.d-tocx{transition:none}}

@@ -26,8 +26,8 @@
 .r-sub2{margin:8px 0 0;max-width:27em;font-size:clamp(15px,1.25vw,17px);line-height:1.45;color:rgba(255,255,255,.88)}
 .r-admit{margin:clamp(22px,3.6vh,38px) 0 0;max-width:13em;font:700 clamp(28px,min(3.2vw,5.6vh),46px)/1.1 var(--serif);letter-spacing:-.028em;text-wrap:balance}
 .r-t-thin .r-sub2{margin-top:12px}
-.r-few{margin:12px 0 0;max-width:27em;font-size:clamp(15px,1.25vw,17px);line-height:1.45;color:#fff}
-.r-few b{font-weight:600}
+/* how many listings stand behind the price, the same sentence on every page */
+.r-ev{margin:8px 0 0;max-width:24em;font-size:clamp(18px,1.6vw,22px);line-height:1.25;font-weight:600;letter-spacing:-.012em;color:#fff}
 .r-act{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:clamp(16px,2.6vh,26px) 0 0}
 .r-act .tlink{margin:0}
 /* the strip under the line the robot stands on: what Ferra does on the left, what the dots are on the right */
@@ -98,12 +98,22 @@
 .r-tb{white-space:nowrap}
 .r-tbl .r-tp{text-align:right;font-weight:600;white-space:nowrap;padding-right:32px}
 .r-tbl thead th:nth-child(3){padding-right:32px}
+/* the listings: the two tables share their columns, so prices line up down the page */
+.r-tbl[data-listings]{table-layout:fixed}
+.r-cb{width:84px}.r-ca{width:136px}.r-cw{width:240px}
+.r-tbl-u{margin-top:clamp(14px,1.6vw,20px)}
+.r-tbl-u tbody tr:first-child th,.r-tbl-u tbody tr:first-child td{padding-top:9px}
+.r-ls-h{margin:clamp(40px,4.4vw,60px) 0 0;font:700 var(--t-h3,clamp(21px,1.67vw,24px))/1.2 var(--serif);letter-spacing:-.025em;color:var(--ink)}
 .r-tw{color:#3e4656}
 .r-tw span{display:block;font-size:14px;color:var(--muted)}
 .r-more{display:inline-flex;align-items:center;min-height:44px;margin-top:14px;padding:0;border:0;background:none;color:var(--c);font:600 16px/1 var(--sans);cursor:pointer}
 .r-more:hover{text-decoration:underline;text-underline-offset:4px}
 .r-fine{margin:20px 0 0;max-width:62ch;font-size:15px;line-height:1.5;color:var(--muted);text-wrap:pretty}
 
+/* under ten sales, the two middles are set alike: neither figure has earned display size */
+.r-au-both{margin:clamp(14px,2vw,22px) 0 0;max-width:24em;font:700 clamp(30px,3.2vw,46px)/1.14 var(--serif);letter-spacing:-.03em;color:var(--ink);text-wrap:balance}
+.r-au-both b{color:var(--c);font-weight:700}
+.r-au-of{margin:14px 0 0;max-width:40em;font-size:18px;line-height:1.5;color:#3e4656;text-wrap:pretty}
 .r-au-say{display:flex;align-items:center;gap:clamp(20px,3vw,40px);margin:clamp(20px,2.6vw,32px) 0 0;max-width:820px}
 .r-au-say b{font:700 clamp(68px,6.7vw,96px)/.95 var(--serif);letter-spacing:-.05em;color:var(--c);flex:none}
 .r-au-say span{font-size:19px;line-height:1.45;color:#3e4656;max-width:30em}
@@ -165,11 +175,13 @@
 .r-c-t{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:14px 20px 0 0}
 .r-c-nm{font:700 clamp(19px,1.75vw,24px)/1.15 var(--serif);letter-spacing:-.02em;text-wrap:balance}
 .r-c-kd{margin-top:3px;font-size:15px;line-height:1.3;color:rgba(255,255,255,.88)}
-.r-c-pr{margin-top:12px;font:700 26px/1.05 var(--serif);letter-spacing:-.03em}
+/* the figure's line keeps its height as the age moves, so the shelf does not jump under the reader's hand */
+.r-c-pr{display:flex;align-items:flex-end;margin-top:12px;min-height:clamp(34px,3.4vw,49px);font:700 26px/1.05 var(--serif);letter-spacing:-.03em}
 .r-c-pr.b{font-size:clamp(32px,3.2vw,46px)}
 .r-c-pr.m{font-size:clamp(25px,2.2vw,32px)}
 .r-c-pr.t{font-size:clamp(18px,1.45vw,21px);line-height:1.2;letter-spacing:-.018em}
-.r-c-at,.r-c-ct{font-size:15px;line-height:1.3;color:rgba(255,255,255,.92)}
+.r-c-at,.r-c-ct{font-size:15px;line-height:1.35;color:rgba(255,255,255,.92)}
+.r-shelf.aged .r-cell:not(.r-c-top) .r-c-at{display:none}
 .r-c-at{margin-top:3px}
 .r-c-ct{margin-top:8px}
 .r-c-subs{display:flex;flex-direction:column;align-items:flex-start;padding-top:6px}
@@ -180,13 +192,28 @@
 /* the biggest robot stands beside the heading */
 .r-wrap .r-c-top{display:block;grid-column:auto;margin:0;--u:1}
 .r-wrap .r-c-top .r-c-go{display:block}
-.r-c-top .r-c-pr{font-size:clamp(40px,4.4vw,64px)}
+.r-c-top .r-c-pr{justify-content:flex-end;min-height:clamp(44px,4.8vw,68px);font-size:clamp(40px,4.4vw,64px)}
+.r-c-top .r-c-pr.m{font-size:clamp(30px,3vw,44px)}
+.r-c-top .r-c-pr.t{font-size:clamp(22px,2vw,30px)}
 .r-c-top .r-c-nm{font-size:clamp(24px,2.3vw,32px)}
 .r-c-top .r-c-t{padding-right:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:32px;align-items:start}
 .r-c-top .r-c-nm{grid-column:1;grid-row:1}.r-c-top .r-c-kd{grid-column:1;grid-row:2}.r-c-top .r-c-ct{grid-column:1;grid-row:3;margin-top:4px}
 .r-c-top .r-c-pr{grid-column:2;grid-row:1 / 3;margin:0;text-align:right}.r-c-top .r-c-at{grid-column:2;grid-row:3;margin-top:4px;text-align:right}
 .r-shelf>.r-tip{z-index:8}
-.r-s-from{margin:0 0 clamp(16px,2vw,28px);font-size:16px;line-height:1.5;color:rgba(255,255,255,.94);max-width:44em}
+/* the last space on the shelf says what all the dots add up to */
+.r-s-from{grid-column:span var(--sd);grid-row:span 3;align-self:start;margin:0;padding:calc(var(--floor) + 14px) 20px 0 0;font-size:16px;line-height:1.5;color:rgba(255,255,255,.94)}
+/* one age for the whole shelf: the control rides along at the foot of the screen until the shelf ends */
+.r-dial{position:sticky;bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:6;width:min(620px,100%);margin:0 auto clamp(14px,2vw,28px)}
+.r-dial[hidden]{display:none}
+.r-dial label{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;column-gap:12px;min-height:60px;padding:6px 26px;border-radius:999px;background:#fff;color:var(--ink);box-shadow:0 10px 26px -14px rgba(14,22,38,.55)}
+.r-dial-k{font-size:16px;line-height:1.2;color:#3e4656;white-space:nowrap}
+.r-dial-v{min-width:4.6em;font:700 24px/1 var(--serif);letter-spacing:-.025em;color:var(--c);white-space:nowrap}
+.r-dial input{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:ew-resize}
+.r-dial input::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:rgba(40,71,206,.26)}
+.r-dial input::-moz-range-track{height:4px;border-radius:2px;background:rgba(40,71,206,.26)}
+.r-dial input::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-11px;border:0;border-radius:50%;background:var(--c)}
+.r-dial input::-moz-range-thumb{width:26px;height:26px;border:0;border-radius:50%;background:var(--c)}
+.r-dial input:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:4px}
 .r-s-from a{display:inline-flex;align-items:center;min-height:44px;white-space:nowrap;color:#fff;font-weight:600}
 
 /* know the model: the one field on the page, in the price tool's own colours */
@@ -204,12 +231,15 @@
 .r-find-list{display:block;min-height:352px}
 .r-find-any{color:var(--c)!important;font-weight:600;display:inline-flex!important}
 
+/* the same four robots as the Fleets page, quiet and still: no bright dots, because we have no listings to light them with */
 .r-miss .lead-1{margin-bottom:0}
-.r-miss-a{margin:clamp(28px,3.4vw,44px) 0 0}
-.r-miss-q{margin:0;font:700 clamp(23px,2.2vw,30px)/1.15 var(--serif);letter-spacing:-.02em}
-.r-miss-b{display:flex;align-items:center;flex-wrap:wrap;gap:12px 26px;margin:18px 0 0}
-.r-miss-b .tlink{margin:0}
-.r-miss-n{margin:14px 0 0;font-size:15px;line-height:1.5;color:var(--muted);max-width:44em}
+.r-miss-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px clamp(20px,2.4vw,32px);margin-top:clamp(32px,4vw,52px)}
+.r-miss-r{min-width:0}
+.r-miss-r b{display:block;margin-top:14px;font:700 clamp(19px,1.6vw,22px)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.r-miss-bot{display:flex;align-items:flex-end;height:clamp(130px,15vw,210px);border-bottom:1px solid var(--line);opacity:.62}
+.r-miss-bot .dotbot{display:block;width:auto;max-width:100%;height:auto;max-height:100%}
+.r-miss-r .tlink{display:inline-block;margin:4px 0 0;line-height:1.35;padding:10px 0}
+.r-miss-n{display:block;margin:6px 0 0;font-size:15px;line-height:1.4;color:var(--muted)}
 
 /* ------------------------------------------------------------------ narrower */
 @media (max-width:1060px){
@@ -229,7 +259,7 @@
  .r-big{font-size:clamp(46px,13.4vw,64px)}
  .r-t-mid .r-big{font-size:clamp(36px,10.4vw,48px)}
  .r-sub2{margin-top:4px}
- .r-few{margin-top:8px}
+ .r-ev{margin-top:4px;font-size:17px}
  .r-admit{margin-top:12px;font-size:clamp(25px,7vw,32px)}
  .r-act{margin-top:10px;gap:16px}
  /* on a phone the words about the dots sit above the robot, so the fold never clips them */
@@ -266,17 +296,21 @@
  [data-listings] .r-tp{order:1;font-size:17px}
  [data-listings] .r-tb{order:2;color:#3e4656}
  [data-listings] .r-tb::before{content:"Built "}
- [data-listings] .r-tb0{text-transform:lowercase}
- [data-listings] .r-tb0::before{content:"Year ";text-transform:none}
  [data-listings] .r-tw{order:3;grid-column:1 / -1;margin-top:2px}
  .r-tw span{display:inline;margin-left:6px;font-size:15px}
  /* the shelf: two robots a row under the biggest one */
- .r-wrap{--R:min(106cqw,56svh);--floor:112px}
+ .r-wrap{--R:min(88cqw,44svh);--floor:112px}
  .r-cells{--R:232px}
  .r-top{grid-template-columns:minmax(0,1fr);gap:20px}
  .r-s-h{font-size:clamp(44px,12.4vw,60px);margin-top:4px}
  .r-cells{margin-top:44px}
  .r-cells .r-cell{grid-column:span 30;margin-bottom:36px}
+ .r-s-from{grid-column:1 / -1;padding:0 0 28px}
+ .r-dial label{padding:6px 18px;column-gap:9px}
+ .r-dial-k{display:none}
+ .r-dial-v{font-size:21px;min-width:4.2em}
+ .r-miss-g{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .r-miss-bot{height:128px}
  .r-c-t{padding-right:12px}
  .r-c-pr.t{font-size:18px}
  .r-c-kd{font-size:15px}

@@ -19,6 +19,7 @@
 .pr-plain{display:none}
 .pr-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px clamp(24px,4vw,64px);align-items:center;margin-top:clamp(12px,1.2vw,18px)}
 .pr-across{margin:0;max-width:44em;font-size:16px;line-height:1.5;color:#3e4656;text-wrap:pretty}
+.pr-across a{white-space:nowrap}
 .pr-acts{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
 .pr-acts .tlink{margin:0}
 
@@ -31,6 +32,8 @@
 .pr-step.on{opacity:1;visibility:visible;transform:translateY(-50%);transition:opacity .5s ease .08s,transform .6s cubic-bezier(.2,.7,.2,1) .08s}
 .pr-step h3{margin:0;font:700 clamp(38px,4.3vw,62px)/1.02 var(--serif);letter-spacing:-.032em;text-wrap:balance}
 .pr-step p{margin:20px 0 0;font-size:clamp(17px,1.45vw,20px);line-height:1.45;color:rgba(255,255,255,.94);text-wrap:pretty}
+.pr-step p a{color:#fff;font-weight:700}
+.pr-step p a:hover{text-decoration:underline;text-underline-offset:4px}
 .pr-chart{position:relative;height:calc(100% - clamp(48px,10vh,96px));min-width:0}
 .pr-cv,.pr-ax{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pr-cv{touch-action:pan-y}
@@ -45,6 +48,11 @@
 .pr-ax .bs{fill:#fff;font-weight:500;font-size:15px}
 .pr-ax .bn,.pr-ax .bs{stroke-width:6px}
 .pr-stage.still .pr-ax .bn{font-size:24px}
+/* the two joined prices open the listing and the sale */
+.pr-ax a{pointer-events:auto;cursor:pointer}
+.pr-ax .lg:not(.on) a{pointer-events:none}
+.pr-ax .hit{fill:transparent;stroke:none}
+.pr-ax a:hover .bs{text-decoration:underline}
 .pr-ax .lg{opacity:0;transition:opacity .4s ease}
 .pr-ax .lg.on{opacity:1}
 .pr-tip{position:absolute;z-index:3;width:300px;max-width:calc(100% - 32px);background:#fff;color:var(--ink);border-radius:2px;padding:14px 16px 6px;font-size:15px;line-height:1.4;box-shadow:0 16px 32px -16px rgba(14,22,38,.45)}
@@ -72,21 +80,34 @@
 .pr-tbl tbody tr:first-child th,.pr-tbl tbody tr:first-child td{padding-top:18px}
 .pr-nm a{font-weight:600;color:var(--c)}
 .pr-nm.pr-sub{padding-left:20px}
-.pr-few{display:block;margin-top:2px;font-size:14px;font-weight:600;color:var(--ink)}
-.pr-few2{font-weight:400;color:var(--muted)}
 .pr-a10{font-weight:700}
+.pr-tbl tbody td.pr-g{color:#6b7484;font-weight:400}
+/* one dot for each listing behind the price, so a thin price looks thin before a word is read */
+.pr-tbl thead th.pr-ev{padding-left:clamp(24px,3vw,44px)}
+.pr-tbl tbody td.pr-ev{padding-left:clamp(24px,3vw,44px)}
+.pr-ev>div{display:flex;align-items:flex-start;gap:10px}
+.pr-n{flex:none;min-width:30px;text-align:right;font-weight:500}
+.pr-w{display:none}
+.pr-dots{flex:none;display:block;position:relative;z-index:1;margin-top:5px;overflow:visible;cursor:pointer;touch-action:manipulation}
+.pr-dots path{fill:none;stroke:var(--c);stroke-width:4.4;stroke-linecap:round}
+.pr-dots circle{fill:var(--ink);stroke:#fff;stroke-width:1}
+.pr-say{font-size:15px;line-height:23px;color:var(--muted);white-space:nowrap}
+.pr-say.b{color:var(--ink);font-weight:600}
+.pr-tw{position:relative}
+.pr-dtip{z-index:4}
 .pr-all .pr-nm a{color:var(--ink)}
 .pr-all th,.pr-all td{padding-bottom:18px!important}
 .pr-tbl tbody tr{position:relative}
 .pr-nm a::after{content:"";position:absolute;inset:0}
 .pr-tbl tbody tr:hover .pr-nm a{text-decoration:underline;text-underline-offset:4px}
-.pr-thin td{color:var(--muted);font-weight:400}
-.pr-thin .pr-a10{font-weight:500}
+.pr-thin .pr-a10{font-weight:400}
 .pr-rg{color:#4a5262;white-space:nowrap}
 .pr-tnote{margin:clamp(18px,2vw,26px) 0 0;max-width:60em;font-size:16px;line-height:1.5;color:#3e4656}
 
 /* where the prices come from: two real records, set as paper */
-.pr-srcg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px 32px;margin-top:64px}
+/* the two papers rise over the film's last frame, so they read as its proof */
+.sec.pr-srcs{position:relative;z-index:2;padding-top:0}
+.pr-srcg{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px 32px;margin-top:-56px}
 .pr-lot{position:relative;display:flex;flex-direction:column;background:#fff;padding:22px 30px 18px;font:400 16px/1.45 var(--doc);font-variant-numeric:lining-nums tabular-nums;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));min-width:0}
 .pr-lot .dr{align-items:baseline;gap:20px;border-bottom:0;padding:8px 0}
 .pr-lot .dr span{flex:none}
@@ -141,21 +162,31 @@
  .pr-tbl,.pr-tbl tbody,.pr-tbl thead{display:block}
  .pr-tbl thead tr,.pr-tbl tbody tr{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
  .pr-tbl .pr-x{display:none}
- .pr-tbl thead th,.pr-tbl thead th:first-child{padding:0 0 10px;font-size:15px}
+ .pr-tbl thead tr{border-bottom:1px solid var(--line)}
+ .pr-tbl thead th,.pr-tbl thead th:first-child{padding:0 0 10px;font-size:15px;border-bottom:0}
  .pr-tbl thead th:first-child{padding-left:0}
- .pr-tbl tbody tr{min-height:44px;padding:6px 0}
+ .pr-tbl tbody tr{min-height:44px;padding:4px 0}
  .pr-tbl tbody th,.pr-tbl tbody td,.pr-tbl tbody td.r,.pr-tbl tbody tr:first-child th,.pr-tbl tbody tr:first-child td{padding:0;font-size:16px}
  .pr-tbl tbody tr:first-child{padding-top:12px}
  .pr-nm.pr-sub{padding-left:14px}
  .pr-nm a{display:flex;align-items:center;min-height:44px;line-height:1.3}
- .pr-few{margin-top:-8px;padding-bottom:6px}
- .pr-few{font-size:15px;font-weight:500}
+ .pr-tbl tbody td.pr-ev,.pr-tbl tbody tr:first-child td.pr-ev{grid-column:1 / -1;padding:0 0 6px;margin-top:-7px}
+ .pr-sub ~ .pr-ev,.pr-tbl tbody tr:has(.pr-sub) td.pr-ev{padding-left:14px}
+ /* on a phone the dots run under the name, and the count follows them in words */
+ .pr-ev>div{display:block;line-height:1.35}
+ .pr-dots{margin:0 0 3px}
+ .pr-n{display:inline;font-weight:400;color:#3e4656;font-size:15px}
+ .pr-n .sr{display:none}
+ .pr-w{display:inline}
+ .pr-say{line-height:1.35}
+ .pr-say::before{content:", ";font-weight:400;color:#3e4656}
+ .pr-all .pr-ev{display:none}
  .pr-left-g{display:block}
  .pr-lst{grid-template-columns:minmax(0,1fr);margin-top:24px}
  .pr-end{margin-top:32px}
 }
 @media (max-width:680px){
- .pr-srcg{grid-template-columns:minmax(0,1fr);gap:56px}
+ .pr-srcg{grid-template-columns:minmax(0,1fr);gap:56px;margin-top:-10px}
  .pr-lot{padding:18px 22px 14px}
  .pr-lot .dr span{flex:none;max-width:40%}
  .pr-tip{width:calc(100% - 32px)}

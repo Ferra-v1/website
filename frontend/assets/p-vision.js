@@ -86,7 +86,7 @@
     pts.forEach(p => { p.hx = ox + (p.cx + .5) * pitch; p.hy = oy + (p.cy - y0 + .5) * pitch; });
     // on a wide screen the robot starts in the middle, larger, behind the sentence that turns the story
     armX = ox + pitch * bot.w / 2; armY = oy + pitch * rows / 2; armDx = W > 820 ? W / 2 - armX : 0;
-    // where the pieces go: an even field over the whole sky, leaving the words clear
+    // where the pieces go: an even lattice over the whole sky, leaving the words clear. Even, so it reads as one thing shared out and never as weather
     const hole = [...(b3 ? b3.children : [])].map(c => c.getBoundingClientRect()).reduce((a, c) => c.width ? { l: Math.min(a.l, c.left), r: Math.max(a.r, c.right), t: Math.min(a.t, c.top), b: Math.max(a.b, c.bottom) } : a, { l: 1e9, r: -1e9, t: 1e9, b: -1e9 });
     // a soft-cornered clearing around the words: wide enough that the text's corners stay clear, with no straight edge to read as a box
     const m = W > 820 ? 30 : 12, hcx = (hole.l + hole.r) / 2 - pr.left, hcy = (hole.t + hole.b) / 2 - pr.top, ha = Math.max(1, (hole.r - hole.l) / 2 * 1.1 + m), hb = Math.max(1, (hole.b - hole.t) / 2 * 1.1 + m);
@@ -94,22 +94,22 @@
     const free = Math.max(W * H * .2, W * H - 5 * ha * hb);
     let g = Math.sqrt(free / pts.length) * 1.02, cells = [];
     for (let tries = 0; tries < 16; tries++) { cells = []; for (let yy = g / 2; yy < H; yy += g) for (let xx = g / 2; xx < W; xx += g) { if (inHole(xx, yy, rng())) continue; cells.push([xx, yy]); } if (cells.length >= pts.length) break; g *= .97; }
-    const order = shuffled(cells.length); pts.forEach((p, i) => { const c = cells[order[i % cells.length]]; const jx = rng() - .5, jy = rng() - .5; p.tx = c[0] + jx * g * .85; p.ty = c[1] + jy * g * .85; });
+    const order = shuffled(cells.length); pts.forEach((p, i) => { const c = cells[order[i % cells.length]]; p.tx = c[0]; p.ty = c[1]; });
     x = cv.getContext('2d'); lastT = -1;
   };
-  // t runs 0 to 5.6 through the pinned section: the robot in the dark, lit whole once it has a price, the loan's share staying bright, every dot lifting off into the sky, then the robot whole again beside the ask
+  // t runs 0 to 5.6 through the pinned section: the robot in the dark, lit whole once it has a price, the loan's share staying bright, every dot lifting off into the sky, then coming home from the top down until the robot stands whole beside the ask
   const STEPS = 7, paths = () => Array.from({ length: STEPS }, () => new Path2D());
   const paint = t => {
     if (!x) return; x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
     const home = armDx ? smooth(t, .62, 1.05) : 1, sc = 1 + .24 * (1 - home), dx = armDx * (1 - home), base = lerp(.17, .34, home);
-    const lightUp = smooth(t, .98, 1.6) * 1.2, cut = lerp(1.02, .7, smooth(t, 2.02, 2.7)), all = smooth(t, 3, 3.25), out = smooth(t, 3.05, 3.55), back = smooth(t, 4.55, 5.02);
+    const lightUp = smooth(t, .98, 1.6) * 1.2, cut = lerp(1.02, .7, smooth(t, 2.02, 2.7)), all = smooth(t, 3, 3.25), out = smooth(t, 3.05, 3.55), back = smooth(t, 4.32, 5.12);
     const buckets = paths(), R0 = pitch * .5 * sc;
     for (const p of pts) {
       const lit = clamp((lightUp - p.lr) * 7) * clamp((cut - p.lr) * 60), on = Math.max(lit, all);
       const a = base + (1 - base) * on, rad = Math.max(.5, R0 * Math.max(.34, p.s));
-      const k0 = clamp(out * 1.35 - p.r * .35), k1 = clamp(back * 1.35 - p.q * .35), k = k0 * (1 - k1), f = k * k * (3 - 2 * k);
+      const k0 = clamp(out * 1.35 - p.r * .35), k1 = clamp(back * 1.9 - (1 - p.lr) * .9), k = k0 * (1 - k1), f = k * k * (3 - 2 * k);
       const ax = p.hx + (p.hx - armX) * (sc - 1) + dx, ay = p.hy + (p.hy - armY) * (sc - 1);
-      const px = lerp(ax, p.tx, f), py = lerp(ay, p.ty, f), rr = lerp(rad, W > 820 ? 1.5 + 1.5 * p.q : 1.1 + p.q, f);
+      const px = lerp(ax, p.tx, f), py = lerp(ay, p.ty, f), rr = lerp(rad, W > 820 ? 2.6 : 1.7, f);
       const q = Math.min(STEPS - 1, Math.round(a * (STEPS - 1))), path = buckets[q];
       path.moveTo(px + rr, py); path.arc(px, py, rr, 0, 6.2832);
     }
@@ -117,7 +117,7 @@
     buckets.forEach((path, i) => { x.globalAlpha = i / (STEPS - 1); x.fill(path); }); x.globalAlpha = 1;
   };
   // the steps in order. Nothing is written while the dots lift off or come home, so words and flying dots never share the screen: the ask appears only once the robot is whole
-  const MARKS = [[0, 0], [.98, 1], [2, 2], [3, -1], [3.4, 3], [4.5, -1], [5.05, 4]], LEN = 5.6;
+  const MARKS = [[0, 0], [.98, 1], [2, 2], [3, -1], [3.4, 3], [4.28, -1], [5.14, 4]], LEN = 5.6;
   const story = () => {
     if (!own || !cv || !pts) return;
     const r = own.getBoundingClientRect(); if (r.bottom < -40 || r.top > innerHeight + 40) return;

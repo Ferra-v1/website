@@ -53,7 +53,7 @@
     s += `<g class="lg" data-s="${phone ? '0 1 2 3' : '0 1 2 3 4'}">${lowest(P, lo)}</g>`;
     // the two prices the line joins, on the side of each dot away from the line. A dot with no room on that side takes its words under it.
     const up = LI.y <= SA.y, tall = reduce ? 24 : phone ? 28 : 38, gapx = phone ? 13 : 18;
-    const say2 = (q, big, small, top) => { const room = q.x + gapx + big.length * tall * .6 < R, side = q.x > (L + R) / 2 ? (q.x - gapx - big.length * tall * .6 > L ? -1 : 1) : (room ? 1 : -1), x = q.x + side * gapx, a = side > 0 ? 'start' : 'end', y = top ? q.y - 2 : q.y + tall * .72 + 2; return `<text class="bn" x="${x}" y="${y}" text-anchor="${a}">${big}</text><text class="bs" x="${x}" y="${y + 21}" text-anchor="${a}">${small}</text>`; };
+    const say2 = (q, big, small, top) => { const bw = big.length * tall * .6, room = q.x + gapx + bw < R, side = q.x > (L + R) / 2 ? (q.x - gapx - bw > L ? -1 : 1) : (room ? 1 : -1), x = q.x + side * gapx, a = side > 0 ? 'start' : 'end', y = top ? q.y - 2 : q.y + tall * .72 + 2, hw = Math.max(bw, small.length * 8); return `<a href="${q.url}" target="_blank" rel="noopener" tabindex="-1"><rect class="hit" x="${side > 0 ? x - 6 : x - hw - 6}" y="${y - tall}" width="${hw + 12}" height="${tall + 30}"/><text class="bn" x="${x}" y="${y}" text-anchor="${a}">${big}</text><text class="bs" x="${x}" y="${y + 21}" text-anchor="${a}">${small} \u2192</text></a>`; };
     s += `<g class="lg" data-s="5">${say2(LI, usd(LI.usd), 'asking today', up)}${say2(SA, usd(SA.usd), 'sold at auction', !up)}</g>`;
     ax.setAttribute('viewBox', `0 0 ${W} ${H}`); ax.innerHTML = s;
     marks();
@@ -138,6 +138,30 @@
   new ResizeObserver(layout).observe(chart);
   layout(); onScroll();
   if (reduce) { P.forEach(q => { q.a = .5; }); A.forEach(q => { q.a = 1; }); band = 1; line = 1; marks(); kick(); }
+
+  // the table: each dot is one listing behind that robot's price. Its place in the row says which listing it is. Rest on it or tap it to read it.
+  const tw = document.querySelector('.pr-tw'), dt = tw && tw.querySelector('.pr-dtip');
+  if (dt) {
+    const [db, ds, da] = ['b', 'span', 'a'].map(s => dt.querySelector(s)), COLS = 58, PITCH = 6;
+    let ring = null, away = 0;
+    const off = () => { if (ring) { ring.remove(); ring = null; } dt.hidden = true; };
+    const read = (svg, ev) => {
+      const b = svg.getBoundingClientRect(), ix = svg.dataset.i.split(','), i = clamp(Math.floor((ev.clientY - b.top) / PITCH) * COLS + Math.floor((ev.clientX - b.left) / PITCH), 0, ix.length - 1), q = P[+ix[i]];
+      const x = i % COLS * PITCH + PITCH / 2, y = Math.floor(i / COLS) * PITCH + PITCH / 2, w = tw.getBoundingClientRect();
+      if (ring) ring.remove();
+      ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); ring.setAttribute('cx', x); ring.setAttribute('cy', y); ring.setAttribute('r', 3.4); svg.append(ring);
+      db.textContent = q.t; ds.textContent = `Built ${q.year}. Asking ${usd(q.usd)} on ${q.src}.`; da.textContent = 'See the listing \u2192'; da.href = q.url;
+      placeTip(dt, tw, b.left - w.left + x, b.top - w.top + y);
+    };
+    tw.querySelectorAll('.pr-dots').forEach(svg => {
+      svg.addEventListener('pointermove', ev => { if (ev.pointerType === 'touch') return; clearTimeout(away); read(svg, ev); });
+      svg.addEventListener('pointerleave', () => { clearTimeout(away); away = setTimeout(() => { if (!dt.matches(':hover')) off(); }, 240); });
+      svg.addEventListener('click', ev => { clearTimeout(away); read(svg, ev); });
+    });
+    dt.addEventListener('pointerleave', off);
+    document.addEventListener('pointerdown', ev => { if (!dt.contains(ev.target) && !(ev.target.closest && ev.target.closest('.pr-dots'))) off(); });
+    document.addEventListener('keydown', ev => { if (ev.key === 'Escape') off(); });
+  }
 
   // the first screen: the arm is the ruler, its height is the ask. The three prices are there at once, and the paint drains down the arm to the lowest of them.
   const hb = document.querySelector('.pr-hbot'), lad = document.querySelector('.pr-lad');

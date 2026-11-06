@@ -89,12 +89,10 @@ a{color:inherit;text-decoration:none}
 .mn-foot .btn{width:100%;height:56px;font-size:16px}
 @media (max-width:960px){.links{display:none}.nav .in,.fbar-in{grid-template-columns:minmax(0,1fr) auto auto;gap:8px}.menu{display:flex}.fbar-in{padding:0 18px 0 18px}}
 @media (min-width:961px){.mn{display:none}}
-@media (max-width:360px){.fbar .btn{display:none}}
-@media (max-width:372px){.btn.sm.lng{display:none}}
-/* the longest label: tighter on a phone, and it gives way sooner, in the floating bar first. The same action stays in the phone menu. */
-@media (max-width:430px){.btn.sm.lngr{padding:0 12px}}
-@media (max-width:439px){.fbar .btn.lngr{display:none}}
-@media (max-width:389px){.btn.sm.lngr{display:none}}
+/* on a phone the logo has the bar to itself while the hero is on screen. The floating bar brings the action back once the reader is past the hero (.past, set in site.js); it is always in the phone menu. */
+.lb-s{display:none}
+@media (max-width:560px){.nav .btn.sm.lng,.fbar:not(.past) .btn.sm.lng{display:none}}
+@media (max-width:439px){.lb-f{display:none}.lb-s{display:inline}}
 /* hero */
 .hero{color:#fff;overflow:hidden;padding-bottom:clamp(56px,7vw,104px);border-radius:0 0 28px 28px}
 .hero-g{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr);gap:clamp(28px,4vw,64px);align-items:center;padding-top:clamp(28px,5vw,72px)}
@@ -353,6 +351,7 @@ a{color:inherit;text-decoration:none}
 .ffleet{display:flex;align-items:flex-end;gap:clamp(16px,3vw,44px);margin-top:clamp(64px,8vw,112px);border-bottom:1px solid rgba(255,255,255,.3)}
 .ff-row{display:contents}
 .ff-bot{display:block;flex:var(--w) 1 0;min-width:0}.ff-bot canvas{aspect-ratio:var(--ar)}
+.fg + .fine-w{margin-top:clamp(48px,6vw,80px)}
 .fine-w{margin:20px 0 0;max-width:80ch;font-size:15px;line-height:1.5;color:rgba(255,255,255,.72)}
 @media (max-width:760px){.fg{grid-template-columns:minmax(0,1fr)}.fcols{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px;padding-top:0}.fcols a{min-height:44px}
  .ffleet{display:block;border:0;margin-top:48px}.ff-row{display:flex;align-items:flex-end;gap:14px;padding-top:18px;border-bottom:1px solid rgba(255,255,255,.3)}.ff-bot{flex:1 1 0}}

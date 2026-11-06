@@ -1,5 +1,6 @@
 // Robot companies page: the quote form's four robot fields stay in range and every change turns into the outcome beside them:
 // what you could borrow, what the robots cost, what you pay yourself, the robot you picked, and one dot for each robot you typed, white for what the loan buys and pale for what you buy. All drawn here.
+// The sections further down follow the same sentence: one robot earning its price back, and one month of rent split between the loan and the company.
 // The closing band's button brings the visitor back to the form with the robot type field focused.
 (() => {
   const ty = document.getElementById('sz-type'), n = document.getElementById('sz-n'), p = document.getElementById('sz-p'), wh = document.getElementById('sz-when');
@@ -40,13 +41,15 @@
   // one robot reads as one robot, in the sentence and under the dots
   const say1 = c => { [...ty.options].forEach(o => { o.textContent = c === 1 ? o.dataset.one : o.dataset.many; }); if (dotsay) dotsay.textContent = c === 1 ? 'This dot is your one robot. The loan buys the white part. You buy the pale part.' : 'Each dot is one of your ' + c.toLocaleString('en-US') + ' robots. The loan buys the white ones. You buy the pale ones.'; if (pile) pile.setAttribute('aria-label', c === 1 ? 'One dot for one robot, 70% white' : c.toLocaleString('en-US') + ' dots, one for each robot. 70% are white, the rest are pale.'); if (fitReady) fitSel(ty); };
   let fitReady = false;
+  // what the sections further down do when the sentence changes: filled in by them below
+  const followers = []; const follow = s => followers.forEach(f => f(s));
   // every valid change goes straight to the answer; it counts and redraws in 300ms
   const state = () => ({ rid: ty.value, n: val(n), price: val(p), when: wh ? wh.value : 'Within 3 months' });
   let lastKey = '';
   const upd = () => {
     const s = state(), key = [s.rid, s.n, s.price, s.when].join('|');
     if (key === lastKey) return; lastKey = key;
-    drawPile(s.n, true); showMoney(s.n * s.price); say1(s.n);
+    drawPile(s.n, true); showMoney(s.n * s.price); say1(s.n); follow(s);
   };
   lastKey = [ty.value, 50, 125000, wh ? wh.value : ''].join('|');   // the page is built on these defaults
   [n, p].forEach(el => {
@@ -106,47 +109,78 @@
   if (open) open.addEventListener('click', reveal);
   // each robot in the row picks itself in the form on the way back up
   document.querySelectorAll('[data-pick]').forEach(a => a.addEventListener('click', () => { if ([...ty.options].some(o => o.value === a.dataset.pick)) { ty.value = a.dataset.pick; ty.dispatchEvent(new Event('change')); } }));
+  // the rent everywhere below: the reader's price at the price tool's example share. 125,000 rents for 4,500, exactly as the tool opens.
+  const pb = document.querySelector('.f-pay-bot'), SHARE = pb ? +pb.dataset.share : .036, usd = v => '$' + Math.round(v).toLocaleString('en-US');
+  const rentOf = price => Math.max(1, Math.round(price * SHARE));
+  const spriteOf = (rid, k) => (window.FERRA_DOTS || {})[rid + '-' + k] || (window.FERRA_DOTS || {})['arm-' + k];
+  // the link keeps the reader's numbers where the price tool knows the robot; for the rest it opens the tool as it is
+  const TOOL = { arm: 'any-arm', cobot: 'any-arm', amr: 'warehouse-mobile-robot', cleaning: 'cleaning-robot' };
+  const tryLink = document.getElementById('f-try');
   // one robot earning its price back: as the page scrolls, one month of rent at a time, the dots fill from the base up. Each dot is an equal share of the robot's price.
-  const pb = document.querySelector('.f-pay-bot'), pbSec = pb && pb.closest('.f-why');
-  const pbData = pb && (window.FERRA_DOTS || {})[pb.dataset.bot];
-  if (pb && pbData) {
-    const price = +pb.dataset.price, rent = +pb.dataset.rent, months = +pb.dataset.months, usd = v => '$' + v.toLocaleString('en-US');
-    const list = pbData.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A, , ed] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .3 + .7 * Math.pow(L / 100, .9) + (ed / 100) * .35) }; });
-    const ys = list.map(q => q.cy), y0 = Math.min(...ys), rows = Math.max(...ys) - y0 + 1;
-    list.sort((a, b) => b.cy - a.cy || a.cx - b.cx); list.forEach((q, i) => { q.rank = i / list.length; });
+  const pbSec = pb && pb.closest('.f-why');
+  if (pb && spriteOf('arm', 'l')) {
+    let price = +pb.dataset.price, rent = +pb.dataset.rent, months = +pb.dataset.months, data = null, list = [], rows = 1, y0 = 0;
+    const load = rid => { data = spriteOf(rid, 'l'); list = data.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A, , ed] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .3 + .7 * Math.pow(L / 100, .9) + (ed / 100) * .35) }; });
+      const ys = list.map(q => q.cy); y0 = Math.min(...ys); rows = Math.max(...ys) - y0 + 1; list.sort((a, b) => b.cy - a.cy || a.cx - b.cx); list.forEach((q, i) => { q.rank = i / list.length; }); };
+    load('arm');
     const nEl = document.getElementById('f-read-n'), sEl = document.getElementById('f-read-s'), run = pb.closest('.f-run'), ctx = pb.getContext('2d');
     let W = 0, H = 0, pitch = 0, ox = 0, oy = 0, shown = -1;
-    const size = () => { W = pb.clientWidth; H = pb.clientHeight || W * rows / pbData.w; const d = Math.min(2, devicePixelRatio || 1); pitch = Math.min(W / pbData.w, H / rows); ox = (W - pitch * pbData.w) / 2; oy = H - pitch * rows; pb.width = Math.round(W * d); pb.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); shown = -1; };
+    const size = () => { W = pb.clientWidth; H = pb.clientHeight || W * rows / data.w; const d = Math.min(2, devicePixelRatio || 1); pitch = Math.min(W / data.w, H / rows); ox = (W - pitch * data.w) / 2; oy = H - pitch * rows; pb.width = Math.round(W * d); pb.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); shown = -1; };
     const paint = m => { const share = Math.min(1, m * rent / price), on = new Path2D(), off = new Path2D();
       for (const q of list) { const r = Math.max(.5, pitch * .5 * Math.max(.34, q.s)), X = ox + (q.cx + .5) * pitch, Y = oy + (q.cy - y0 + .5) * pitch, path = q.rank < share ? on : off; path.moveTo(X + r, Y); path.arc(X, Y, r, 0, 6.2832); }
       ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(40,71,206,.15)'; ctx.fill(off); ctx.fillStyle = '#2847ce'; ctx.fill(on); };
     const read = m => { nEl.textContent = usd(m * rent); sEl.textContent = m === 0 ? 'of rent on day one. You have paid ' + usd(price) + ' for the robot.' : m < months ? 'of rent after ' + m + (m === 1 ? ' month.' : ' months.') : 'of rent after ' + m + ' months. The robot has earned back its price.'; };
     const show = m => { if (m === shown) return; shown = m; paint(m); read(m); };
-    if (still) { pb.style.height = pb.clientWidth * rows / pbData.w + 'px'; size(); show(months); addEventListener('resize', () => { pb.style.height = pb.clientWidth * rows / pbData.w + 'px'; size(); show(months); }); }
+    let onScroll = () => {};
+    const fix = () => { if (still) pb.style.height = pb.clientWidth * rows / data.w + 'px'; size(); if (still) show(months); else onScroll(); };
+    if (still) { fix(); addEventListener('resize', fix); }
     else {
-      pbSec.classList.add('f-why-live'); size();
-      const onScroll = () => { const r = run.getBoundingClientRect(), span = r.height - innerHeight, p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0; show(Math.round(Math.min(1, p / .86) * months)); };
-      addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', () => { size(); onScroll(); }); onScroll();
+      pbSec.classList.add('f-why-live');
+      onScroll = () => { const r = run.getBoundingClientRect(), span = r.height - innerHeight, p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0; show(Math.round(Math.min(1, p / .86) * months)); };
+      addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', fix); fix();
     }
+    const wP = document.getElementById('f-w-p'), wR = document.getElementById('f-w-r'), wM = document.getElementById('f-w-m');
+    let rid0 = 'arm';
+    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); }
+      wP.textContent = usd(price); wR.textContent = usd(rent); wM.textContent = months; fix();
+      if (tryLink) { const id = TOOL[st.rid]; tryLink.href = id ? 'price.html#r=' + id + '&y=2026&p=' + price + '&m=' + rent + '&n=36&f=' + st.n : 'price.html'; } });
   }
-  // one month: one small robot for each of the 50. When the section arrives each robot's rent comes in, left to right, then the two groups part. Drawn once from one sprite; with reduced motion they stand finished.
-  const mg = document.querySelector('.f-mg'), mc = mg ? [...mg.querySelectorAll('.f-mbots')] : [], arm = (window.FERRA_DOTS || {})['arm-s'];
-  if (mc.length && arm) {
-    const cells = arm.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .35 + .65 * L / 100) }; });   // every second row and column below, so at this size the dots stay dots
-    const y0 = Math.min(...cells.map(q => q.cy)), rows = Math.max(...cells.map(q => q.cy)) - y0 + 1, TOTAL = mc.reduce((a, c) => a + +c.dataset.n, 0);
-    const sprite = cw => { const d = Math.min(2, devicePixelRatio || 1), P = cw * .92 / arm.w, S = document.createElement('canvas'); S.width = Math.ceil(cw * d); S.height = Math.ceil(P * rows * d); const g = S.getContext('2d'); g.scale(d, d); g.fillStyle = '#fff'; g.beginPath(); for (const q of cells) { if (q.cx % 2 || q.cy % 2) continue; const r = Math.max(.6, P * .92 * Math.max(.5, q.s)), X = (q.cx + .5) * P + cw * .04, Y = (q.cy - y0 + .5) * P; g.moveTo(X + r, Y); g.arc(X, Y, r, 0, 6.2832); } g.fill(); return { S, cw, h: P * rows + cw * .1 }; };
-    let spr = null;
-    const layout = () => { const cw = mc[0].clientWidth / +mc[0].dataset.cols; spr = sprite(cw); mc.forEach(c => { const n = +c.dataset.n, R = Math.ceil(n / +c.dataset.cols), useCols = +c.dataset.cols, d = Math.min(2, devicePixelRatio || 1), H = Math.ceil(R * spr.h); c.style.height = H + 'px'; c.width = Math.round(c.clientWidth * d); c.height = Math.round(H * d); c._R = R; c._C = useCols; c._cw = c.clientWidth / useCols; }); };
+  // one month: one small robot for each of the reader's robots, in two groups: the ones whose rent pays the loan, the ones whose rent stays. The picture and every figure come from the sentence on the first screen.
+  // When the section first arrives each robot's rent comes in, left to right, then the two groups part. With reduced motion they stand finished.
+  const mSec = document.querySelector('.f-month'), mg = mSec && mSec.querySelector('.f-mg'), mc = mg ? [...mg.querySelectorAll('.f-mbots')] : [];
+  if (mc.length && spriteOf('arm', 's')) {
+    const ADV = +mSec.dataset.adv, TERM = +mSec.dataset.term, $ = id => document.getElementById(id);
+    const cellsOf = rid => { const b = spriteOf(rid, 's'); if (b._cells) return b; b._cells = b.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .35 + .65 * L / 100) }; }); const ys = b._cells.map(q => q.cy); b._y0 = Math.min(...ys); b._rows = Math.max(...ys) - b._y0 + 1; return b; };
+    let N = 50, PAY = 27, rid = 'arm', spr = null, cw = 0, played = false;
+    // every second row and column below, so at this size the dots stay dots. Very small robots are one dot each: still one mark for each robot
+    const sprite = size => { const b = cellsOf(rid), d = Math.min(2, devicePixelRatio || 1), P = size * .92 / b.w, h = P * b._rows, S = document.createElement('canvas'); S.width = Math.ceil(size * d); S.height = Math.ceil(size * d * Math.max(1, b._rows / b.w)); const g = S.getContext('2d'); g.scale(d, d); g.fillStyle = '#fff'; g.beginPath();
+      if (size < 16) { g.arc(size / 2, size / 2, size * .34, 0, 6.2832); g.fill(); return { S, cw: size, h: size, img: size }; }
+      const every = size < 90 ? 2 : 1; for (const q of b._cells) { if (q.cx % every || q.cy % every) continue; const r = Math.max(.6, P * .46 * every * Math.max(.5, q.s)), X = (q.cx + .5) * P + size * .04, Y = (q.cy - b._y0 + .5) * P; g.moveTo(X + r, Y); g.arc(X, Y, r, 0, 6.2832); } g.fill(); return { S, cw: size, h: h + size * .1, img: S.height / d }; };
+    // one robot size for both groups: the largest that fits both within the height a screen can spare
+    const layout = () => { const stacked = matchMedia('(max-width:820px)').matches, maxH = stacked ? Math.min(320, innerHeight * .34) : Math.min(420, innerHeight * .4), keep = N - PAY, ratio = (cellsOf(rid)._rows / cellsOf(rid).w) + .1; let size = Math.min(150, mc[0].clientWidth);
+      const fits = (m, w) => { if (!m) return true; const c = Math.max(1, Math.floor(w / size)); return Math.ceil(m / c) * size * ratio <= maxH; };
+      while (size > 8 && !(fits(PAY, mc[0].clientWidth) && fits(keep, mc[1].clientWidth))) size -= 1;
+      cw = size; spr = sprite(size); const d = Math.min(2, devicePixelRatio || 1);
+      mc.forEach((c, gi) => { const m = N === 1 ? (gi ? 0 : 1) : gi ? keep : PAY, cols = Math.max(1, Math.floor(c.clientWidth / size)), R = Math.ceil(m / cols), Hh = Math.ceil(R * spr.h); c._m = m; c._C = cols; c._from = gi ? PAY : 0; c.style.height = Hh + 'px'; c.width = Math.round(c.clientWidth * d); c.height = Math.round(Hh * d); }); };
     // k runs 0 to 1: how far the rent has come in; part runs 0 to 1: how far the two groups have turned into bright and pale
-    const draw = (k, part) => { const d = Math.min(2, devicePixelRatio || 1); mc.forEach((c, gi) => { const x = c.getContext('2d'), n = +c.dataset.n, from = +c.dataset.from; x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, c.clientWidth, c.clientHeight);
-      for (let i = 0; i < n; i++) { const a = Math.min(1, Math.max(0, (k * (TOTAL + 6) - (from + i)) / 6)), target = gi ? 1 - .62 * part : 1; x.globalAlpha = (.14 + .86 * a) * target; x.drawImage(spr.S, (i % c._C) * c._cw + (c._cw - spr.cw) / 2, Math.floor(i / c._C) * spr.h, spr.cw, spr.S.height / d); } x.globalAlpha = 1; }); };
+    const draw = (k, part) => { const d = Math.min(2, devicePixelRatio || 1); mc.forEach((c, gi) => { const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, c.clientWidth, c.clientHeight);
+      for (let i = 0; i < c._m; i++) { const a = Math.min(1, Math.max(0, (k * (N + 6) - (c._from + i)) / 6)), target = gi ? 1 - .62 * part : 1, px = (i % c._C) * cw, py = Math.floor(i / c._C) * spr.h;
+        if (N === 1) {   // one robot: the share of its own rent that pays the loan, bright from the base up
+          const cut = py + spr.h * (1 - SHARE_PAY); x.globalAlpha = .38; x.drawImage(spr.S, px, py, cw, spr.img); x.save(); x.beginPath(); x.rect(px, cut, cw, spr.h); x.clip(); x.globalAlpha = 1; x.drawImage(spr.S, px, py, cw, spr.img); x.restore(); continue; }
+        x.globalAlpha = (.14 + .86 * a) * target; x.drawImage(spr.S, px, py, cw, spr.img); } x.globalAlpha = 1; }); };
+    const SHARE_PAY = ADV / TERM / SHARE;   // the loan's monthly part as a share of the rent. It does not depend on how many robots or what they cost
     layout();
     if (still) { draw(1, 1); addEventListener('resize', () => { layout(); draw(1, 1); }); }
-    else {
-      let done = false, raf = 0; draw(0, 0);
-      const run = () => { const t0 = performance.now(), tick = t => { const e = t - t0, k = Math.min(1, e / 1000), p = Math.min(1, Math.max(0, (e - 1050) / 500)); draw(k, p * p * (3 - 2 * p)); if (p < 1) raf = requestAnimationFrame(tick); else done = true; }; raf = requestAnimationFrame(tick); };
-      new IntersectionObserver((es, io) => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); run(); } }), { threshold: .3 }).observe(mg);
-      addEventListener('resize', () => { layout(); if (done) draw(1, 1); else draw(0, 0); });
-    }
+    else { draw(0, 0); new IntersectionObserver((es, io) => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); const t0 = performance.now(), tick = t => { const e = t - t0, k = Math.min(1, e / 1000), p = Math.min(1, Math.max(0, (e - 1050) / 500)); draw(k, p * p * (3 - 2 * p)); if (p < 1) requestAnimationFrame(tick); else played = true; }; requestAnimationFrame(tick); } }), { threshold: .3 }).observe(mg);
+      addEventListener('resize', () => { layout(); if (played) draw(1, 1); else draw(0, 0); }); }
+    // the groups share the width as they share the robots, until the words under them would have no room
+    const widths = () => { const a = N === 1 ? .5 : Math.max(.36, Math.min(.64, PAY / N)); mg.style.gridTemplateColumns = `minmax(0,${a}fr) minmax(0,${1 - a}fr)`; };
+    followers.push(st => { N = st.n; rid = st.rid; PAY = Math.round(N * SHARE_PAY); if (N > 1 && PAY < 1) PAY = 1; const rent = rentOf(st.price), comes = N * rent, V = N * st.price, goes = V * ADV / TERM, left = comes - goes, one = N === 1;
+      $('f-m-h').textContent = one ? "In a month, about half of your robot's rent pays the loan." : 'In a month, ' + PAY.toLocaleString('en-US') + ' of your ' + N.toLocaleString('en-US') + ' robots pay the loan.';
+      $('f-m-lead').innerHTML = one ? 'In our example, <b class="num">' + usd(comes) + '</b> of rent comes in from your robot.' : 'In our example, <b class="num">' + usd(comes) + '</b> of rent comes in, ' + usd(rent) + ' from each robot.';
+      $('f-m-go').textContent = usd(goes); $('f-m-left').textContent = usd(left); $('f-m-v').textContent = usd(V);
+      $('f-m-gos').textContent = 'pays back the loan, before interest. ' + (one ? "That is about half of your robot's rent." : PAY === 1 ? 'That is about the rent from this 1 robot.' : 'That is about the rent from these ' + PAY.toLocaleString('en-US') + ' robots.');
+      $('f-m-sr').textContent = one ? 'One robot. The part of its rent that pays the loan is drawn bright.' : N + ' robots. The rent from ' + PAY + ' of them, drawn bright, pays the loan. The rent from the other ' + (N - PAY) + ', drawn pale, stays with the company.';
+      widths(); layout(); if (played || still) draw(1, 1); else draw(0, 0); });
   }
 })();
