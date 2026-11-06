@@ -16,20 +16,20 @@
 .hw-fail .hw-base{background:rgba(255,255,255,.24)}
 
 /* each step takes about a screen, and the one being read stays dark */
-.hw-ch{min-height:62vh;display:flex;flex-direction:column;justify-content:center;padding-block:24px}
+.hw-ch{min-height:52vh;display:flex;flex-direction:column;justify-content:center;padding-block:24px}
 .hw-t{font:700 clamp(32px,3.4vw,48px)/1.06 var(--serif);letter-spacing:-.028em;margin:0 0 20px;text-wrap:balance}
-.hw-ch a{color:var(--c);font-weight:500;display:inline-block;padding-block:11px;margin-block:-11px}
+.hw-ch a{color:var(--c);font-weight:500;padding-block:11px}
 .hw-ch p{margin:0 0 14px;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656;max-width:40ch;text-wrap:pretty}
 .hw-on .hw-ch{opacity:.26;transition:opacity .35s ease}
 .hw-on .hw-ch.hw-live{opacity:1}
 .hw-inl{display:none}
 
 /* the monthly step is long: its words hold together while the months pass */
-.hw-long{display:block;min-height:132vh;padding-block:0}
+.hw-long{display:block;min-height:112vh;padding-block:0}
 .hw-li{position:sticky;top:clamp(90px,19vh,190px)}
 
 /* the last payment: the robot takes its last dots, and the words are the biggest on the page */
-.hw-end{min-height:96vh}
+.hw-end{min-height:80vh}
 .hw-end .hw-t{font-size:clamp(60px,7vw,104px);line-height:.96;letter-spacing:-.04em;max-width:7ch;margin-bottom:clamp(20px,2.6vw,36px)}
 
 /* the paper slides in over the robot's right third, standing on the same floor */
@@ -67,7 +67,7 @@
 
 /* what if the company fails: the steps stay beside the robot while the reader tries a sale */
 .hw-ft{position:sticky;top:48px}
-.hw-fail{background:var(--ink);color:#fff;padding-block:clamp(72px,8vw,112px)}
+.hw-fail{background:var(--ink);color:#fff;padding-block:clamp(56px,5vw,72px)}
 .hw-fg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,96px);align-items:start}
 .hw-fh{font:700 clamp(44px,5.4vw,80px)/1 var(--serif);letter-spacing:-.032em;margin:0;text-wrap:balance}
 .hw-steps{list-style:none;margin:clamp(28px,3.4vw,44px) 0 0;padding:0}
@@ -76,7 +76,7 @@
 .hw-fw{display:flex;justify-content:center;align-items:flex-end}
 .hw-fgrid{display:block}
 .hw-cap{margin:12px 0 0;font-size:15px;line-height:1.45;color:rgba(255,255,255,.72)}
-.hw-sl{display:block;margin:clamp(20px,2.6vw,32px) 0 0;font-size:clamp(17px,1.4vw,19px);line-height:1.4;color:rgba(255,255,255,.9)}
+.hw-sl{display:block;margin:clamp(12px,1.6vw,20px) 0 0;font-size:clamp(17px,1.4vw,19px);line-height:1.4;color:rgba(255,255,255,.9)}
 .hw-sl b{font-weight:700;color:rgb(150,232,255)}
 .hw-sl input{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:6px 0 0;background:none;cursor:pointer;touch-action:pan-y}
 .hw-sl input::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,rgb(150,232,255) var(--f,44%),rgba(255,255,255,.22) var(--f,44%))}
@@ -86,17 +86,20 @@
 .hw-sl input::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:0}
 .hw-sl input:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
 /* two real values to jump to, in plain type */
-.hw-pre{display:flex;flex-wrap:wrap;gap:0 clamp(20px,3vw,36px);margin:-2px 0 0}
+.hw-pre{display:flex;flex-wrap:wrap;gap:0 clamp(16px,2vw,28px);margin:-2px 0 0}
 .hw-pre button{appearance:none;background:none;border:0;padding:0;min-height:44px;cursor:pointer;color:rgba(255,255,255,.82);font:400 15px/1.3 var(--sans);text-align:left}
 .hw-pre b{font-weight:700;color:rgb(150,232,255)}
 .hw-pre button:hover{color:#fff}
 .hw-pre button:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
-.hw-out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:clamp(14px,2vw,24px) 0 0}
-.hw-out dt{font-size:15px;line-height:1.3;color:rgba(255,255,255,.72);margin-bottom:6px}
-.hw-out dd{margin:0;font:700 clamp(30px,3.6vw,52px)/1 var(--serif);letter-spacing:-.03em;white-space:nowrap}
-.hw-oa dd{color:rgb(150,232,255)}
-.hw-say{margin:18px 0 0;min-height:3em;font-size:clamp(17px,1.4vw,19px);line-height:1.45;color:#fff;max-width:52ch}
-.hw-fine{margin:12px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.72);max-width:60ch}
+.hw-cap b{font-weight:600}.hw-cap .w{color:#fff}.hw-cap .c{color:rgb(150,232,255)}
+/* both sums in one small table, the same size */
+.hw-two{width:100%;border-collapse:collapse;margin:clamp(10px,1.4vw,18px) 0 0;table-layout:fixed;font-variant-numeric:lining-nums tabular-nums}
+.hw-two thead th{padding:0 12px 8px 0;text-align:left;vertical-align:bottom;font:600 15px/1.3 var(--sans);color:#fff}
+.hw-two thead td{width:24%}
+.hw-two tbody th{padding:0 12px 0 0;text-align:left;font:400 15px/1.3 var(--sans);color:rgba(255,255,255,.76)}
+.hw-two tbody td{padding:4px 12px 4px 0;font:700 clamp(26px,2.7vw,38px)/1.1 var(--serif);letter-spacing:-.03em;white-space:nowrap}
+.hw-say{margin:14px 0 0;min-height:2.9em;font-size:clamp(17px,1.4vw,19px);line-height:1.45;color:#fff;max-width:52ch}
+.hw-fine{margin:12px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.82);max-width:62ch}
 [data-page="how-it-works.html"] .hw-fine a{color:#fff;font-weight:600;display:inline-block;padding-block:11px;margin-block:-11px}
 
 /* the ask */
@@ -117,12 +120,12 @@
  .hw-pay{margin-top:8px;height:8px}.hw-pay i{width:5px;height:5px;margin:1.5px auto}
  .hw-read{margin-top:10px;gap:14px}.hw-read dt{font-size:15px;line-height:1.2;margin-bottom:2px}.hw-read dd{font-size:28px}
  .hw-chs{padding-top:0;padding-bottom:10vh}
- .hw-ch{display:block;min-height:46vh;padding-block:0 28px}
+ .hw-ch{display:block;min-height:34vh;padding-block:0 20px}
  .hw-t{position:sticky;top:var(--hw-sh,340px);z-index:2;background:#fff;font-size:clamp(28px,7.6vw,36px);line-height:1.08;margin:0 0 6px;padding-block:14px 8px}
  .hw-long .hw-t{position:static}
  .hw-ch p{font-size:17px;max-width:none}
- .hw-long{min-height:112vh;padding-block:0 28px}
- .hw-end{min-height:56vh}
+ .hw-long{min-height:84vh;padding-block:0 20px}
+ .hw-end{min-height:40vh}
  .hw-end .hw-t{font-size:clamp(36px,10vw,44px);letter-spacing:-.03em;max-width:none;margin-bottom:6px}
  .hw-li{top:var(--hw-sh,340px)}
  .hw-long p{font-size:16px;line-height:1.45;margin-bottom:10px}
@@ -132,8 +135,13 @@
  .hw-inl .dr{padding:9px 0}
  .hw-fg,.hw-cg{grid-template-columns:minmax(0,1fr)}
  .hw-ft{position:static}
- .hw-out{gap:14px}.hw-out dd{font-size:28px}
- .hw-say{min-height:4.4em}
+ .hw-say{min-height:6em}
+ .hw-two thead td{display:none}
+ .hw-two,.hw-two tbody,.hw-two thead{display:block}
+ .hw-two tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+ .hw-two tbody th{grid-column:1 / -1;padding-top:12px}
+ .hw-two tbody td{padding:2px 0 0;font-size:clamp(25px,7vw,30px)}
+ .hw-two thead th{padding:0 0 2px}
  .hw-ask{display:block}
  .hw-ask .hlinks{margin-top:20px}
 }

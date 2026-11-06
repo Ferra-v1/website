@@ -3,7 +3,7 @@
 .page[data-page="index.html"] > .sec{padding-top:clamp(64px,5.2vw,76px);padding-bottom:clamp(64px,5.2vw,76px)}
 .page[data-page="index.html"] > .band{padding-top:clamp(64px,5.2vw,76px);padding-bottom:clamp(64px,5.2vw,76px)}
 /* H2 the question: one pinned scene. The stage comes up out of black once the section has reached the top of the screen. */
-.h-world{position:relative;z-index:2;margin-top:-125svh;height:130vh;height:130lvh;background:#04060c;color:#fff}
+.h-world{position:relative;z-index:2;margin-top:-118vh;margin-top:-118svh;height:120vh;height:120lvh;background:#04060c;color:#fff}
 .h-world.h-wj{background:none}
 .h-world.h-wj .h-wv{opacity:0}
 .h-wv{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden;background:#04060c}
@@ -77,22 +77,16 @@
 .page[data-page="index.html"] .h-icap{margin:0;color:rgba(255,255,255,.66);font-size:15px}
 .page[data-page="index.html"] .h-qfoot .tlink{margin:0}
 /* H11 closing: the form as a sheet of paper in the loading bay. The band above it runs down into the picture with no edge. */
-.h-close{position:relative;background:var(--ink);padding:clamp(40px,4.4vw,64px) 0 clamp(48px,5vw,72px);overflow:hidden}
-.h-dock{position:absolute;inset:0}
-.h-df{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right 60%;display:block}
-.h-dock::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,var(--ink),rgba(14,22,38,0) 26%)}
-.h-close-g{position:relative;display:block}
-.h-close-l{background:#fff;color:var(--ink);padding:clamp(28px,2.6vw,40px);max-width:560px;border-radius:4px}
+.h-close{background:var(--paper,#f8fafd);padding:clamp(72px,7vw,112px) 0}
+.h-close-g{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:end}
 .h-close-l .h-big{font-size:clamp(34px,3.2vw,46px);margin-bottom:12px}
 .page[data-page="index.html"] .h-close-l .body{margin-bottom:22px;font-size:clamp(17px,1.3vw,19px);line-height:1.4;max-width:30em;color:#3e4656;text-wrap:pretty}
-.h-close-r{display:none}
 .h-loopbot .rs-base{background:#cfd6e3}
 .h-loopbot canvas{filter:url(#h-ink)}
 @media (max-width:720px){
- .h-close{background:var(--paper,#f8fafd);padding:64px 0}
- .h-dock{display:none}
- .h-close-l{background:none;padding:0;max-width:none;border-radius:0}
- .h-close-r{display:block;margin-top:40px}
+ .h-close{padding:64px 0}
+ .h-close-g{display:block}
+ .h-close-r{margin-top:40px}
  .h-loopbot .rs-bot{justify-content:flex-start}
 }
 /* reduced motion */
@@ -161,24 +155,19 @@
 .h-h1{font:700 clamp(52px,min(7.4vw,11vh),112px)/.98 var(--serif);letter-spacing:-.035em;margin:0;color:#fff;text-wrap:balance}
 .h-lede{font-size:clamp(19px,min(1.75vw,2.9vh),26px);line-height:1.3;letter-spacing:-.01em;color:#fff;margin:clamp(12px,2.2vh,22px) 0 0;max-width:24em;text-wrap:balance}
 .h-box{margin-top:clamp(18px,3.8vh,40px)}
-.h-ask{font-size:17px;line-height:1.35;margin:0 0 12px;color:#fff;max-width:34em;text-wrap:pretty}
-.h-ask b{font-weight:600;display:block}
+.h-ask{font-size:clamp(17px,1.3vw,19px);font-weight:600;line-height:1.3;margin:0 0 12px;color:#fff}
 .h-ctrls{display:flex;gap:8px;flex-wrap:wrap}
 .h-sel{display:block;flex:0 1 auto;min-width:0}
 .page[data-page="index.html"] .h-sel select{display:block;width:100%;height:52px;border:0;border-radius:999px;background-color:#fff;color:var(--ink);font:600 16px/1 var(--sans);padding:0 42px 0 22px;cursor:pointer;background-position:right 19px center;text-overflow:ellipsis}
 .page[data-page="index.html"] .h-sel select:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
-.h-res{--nf:clamp(32px,min(3.1vw,5.2vh),44px);display:grid;grid-template-columns:calc(var(--nf) * 4.08) minmax(0,1fr);gap:clamp(8px,1.5vh,14px) clamp(12px,1.4vw,20px);align-items:baseline;margin-top:clamp(16px,2.8vh,26px)}
-.h-res b{font:700 var(--nf)/1 var(--serif);letter-spacing:-.03em;color:#fff}
-.h-res b:first-child{font-size:calc(var(--nf) * .66);font-weight:600;letter-spacing:-.02em}
-.h-res span{font-size:16px;line-height:1.3;color:rgba(255,255,255,.92);text-wrap:pretty;max-width:25em}
-.page[data-page="index.html"] .h-note{grid-column:1 / -1;font-size:15px;line-height:1.3;color:rgba(255,255,255,.92);margin:0;max-width:40em;text-wrap:pretty}
-.h-note[hidden]{display:none}
+.h-res{--nf:clamp(40px,min(4vw,6.6vh),60px);display:flex;align-items:center;gap:clamp(14px,1.4vw,20px);margin-top:clamp(14px,2.4vh,22px)}
+.h-res b{flex:none;font:700 var(--nf)/1 var(--serif);letter-spacing:-.03em;color:#fff}
+.h-res span{font-size:16px;line-height:1.3;color:rgba(255,255,255,.92);text-wrap:pretty;max-width:22em}
 .h-acts{display:flex;flex-wrap:wrap;gap:0 26px;align-items:center;margin:clamp(6px,1.6vh,16px) 0 0}
-.h-acts a{display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:#fff;text-decoration:none}
+.h-acts a{display:inline-flex;align-items:center;min-height:44px;font-size:clamp(16px,1.25vw,18px);color:#fff;text-decoration:none}
 .h-acts a:hover{text-decoration:underline;text-underline-offset:4px}
 .h-tool{font-weight:600}
-.h-lendl{color:rgba(255,255,255,.88)!important}
-.h-film{position:relative;height:396vh;height:396svh;color:#fff}
+.h-film{position:relative;height:405vh;height:405svh;color:#fff}
 .h-stick{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden}
 .h-probe{position:absolute;top:0;left:0;width:1px;height:100vh;height:100svh;visibility:hidden;pointer-events:none}
 .h-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -194,8 +183,20 @@
 .h-b2 .h-bt{max-width:none}
 .h-b2 .h-say{font-size:clamp(34px,min(4.4vw,7.6vh),66px)}
 .h-b2 .h-say span{display:block}
-.h-b3 .h-say,.h-b4 .h-say{font-size:clamp(32px,min(3.9vw,7vh),58px);line-height:1.04}
-.h-b3 .h-bt,.h-b4 .h-bt{max-width:min(460px,30vw)}
+.h-b3 .h-say,.h-b4 .h-say,.h-b5 .h-say,.h-b6 .h-say{font-size:clamp(32px,min(3.5vw,6.2vh),52px);line-height:1.04}
+.h-b3 .h-bt,.h-b4 .h-bt,.h-b5 .h-bt,.h-b6 .h-bt{max-width:min(460px,30vw)}
+.page .h-b5 .h-say,.page .h-b6 .h-say{font-size:var(--t-section)!important;text-wrap:wrap}
+.h-sprite{position:absolute;left:0;top:0;visibility:hidden;pointer-events:none}
+/* the end of the film: one running total at the top of the words, and the words start under it */
+.h-b5 .in,.h-b6 .in{justify-content:flex-start;padding-top:calc(var(--tt,240px) + var(--th,90px) + 12px)}
+.h-tot{position:absolute;left:0;right:0;top:var(--tt,240px);opacity:0;visibility:hidden;pointer-events:none;z-index:2}
+.h-tot b{display:block;font:700 96px/1.08 var(--serif);letter-spacing:-.04em;color:#fff;white-space:nowrap;width:max-content}
+.h-gl{position:absolute;left:0;top:0;margin:0;font-size:15px;line-height:1.25;font-weight:500;color:#fff;opacity:0;visibility:hidden;pointer-events:none;z-index:2;text-wrap:balance}
+.h-gl1{color:rgba(255,255,255,.86)}
+/* the robot on the first screen wears its price under the line it stands on */
+.h-tag{position:absolute;left:0;top:0;margin:0;max-width:calc(100% - 32px);display:flex;align-items:baseline;gap:clamp(10px,1vw,16px);z-index:2;pointer-events:none;color:#fff}
+.h-tag b{flex:none;font:700 clamp(30px,min(3.4vw,5.6vh),48px)/1 var(--serif);letter-spacing:-.03em;color:#fff}
+.h-tag span{font-size:15px;line-height:1.25;color:rgba(255,255,255,.92);max-width:15em;text-wrap:balance}
 .h-to a{color:#fff;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;pointer-events:auto}
 .h-to a:hover{text-decoration:underline;text-underline-offset:4px}
 .h-to{margin-top:6px}
@@ -209,16 +210,15 @@
 .h-num{position:absolute;left:0;top:0;opacity:0;visibility:hidden;text-align:center;pointer-events:none;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;will-change:transform,opacity}
 .h-num b{display:block;font-family:var(--serif);font-weight:700;letter-spacing:-.04em;line-height:1;white-space:nowrap}
 .h-num span{display:block;font-size:clamp(15px,1.25vw,18px);line-height:1.25;margin-top:.7em;max-width:12em;font-weight:500;text-wrap:balance}
-.h-n0 b,.h-n1 b,.h-n1 span{color:var(--c)}
-.h-n2 b,.h-n2 span{color:#fff}
+.h-n0 b{color:var(--c)}
 .h-tip{position:absolute;left:0;top:0;z-index:4;width:252px;background:#fff;color:var(--ink);border-radius:12px;padding:12px 14px 6px;box-shadow:0 10px 30px rgba(14,22,38,.22);font-size:14px;line-height:1.35}
 .h-tip b{display:block;font-weight:600}
 .h-tip span{display:block;margin-top:4px;color:#3e4656}
 .h-tip a{display:inline-flex;align-items:center;min-height:36px;font-weight:600;color:var(--c);text-decoration:none}
 .h-tip a:hover{text-decoration:underline;text-underline-offset:3px}
 @media (max-width:900px){.h-h1{font-size:clamp(46px,10vw,96px)}.h-copy{max-width:none;padding-top:8px}}
-@media (max-width:1060px){.h-bt,.h-b3 .h-bt,.h-b4 .h-bt{max-width:none}.h-beat .in{justify-content:flex-start;padding-top:28px}.h-b2 .in{padding-top:28px}.h-say,.h-b2 .h-say,.h-b3 .h-say,.h-b4 .h-say{font-size:clamp(34px,9.6vw,64px)}}
-@media (max-width:760px){.h-h1{font-size:clamp(46px,13vw,64px)}.h-lede{font-size:17px;line-height:1.28;margin-top:8px}.h-box{margin-top:14px}.h-ask{margin-bottom:10px}.h-ask span{display:none}.h-ctrls{flex-wrap:nowrap}.h-sel-r{flex:1 1 auto}.h-sel-y{flex:0 0 140px}.page[data-page="index.html"] .h-sel select{height:48px;font-size:15px;padding:0 30px 0 15px;background-position:right 12px center}.h-res{--nf:32px;gap:8px 12px;margin-top:14px}.h-res span{font-size:15px;line-height:1.25}.h-acts{margin-top:0;gap:0 18px}.h-axis span{font-size:15px}.h-sub{font-size:16px;margin-top:12px}.h-hint{margin-top:6px}.h-tip{font-size:15px}.h-tip a{min-height:44px}.h-xl i{display:none}.h-axis .h-l0,.h-axis .h-l1 b{font-size:15px}.h-axis .h-l1{width:auto;white-space:nowrap;text-align:right;font-size:15px}.h-axis .h-l1 b{margin-bottom:2px}.h-b2 .h-say span{display:inline}}
+@media (max-width:1060px){.h-bt,.h-b3 .h-bt,.h-b4 .h-bt,.h-b5 .h-bt,.h-b6 .h-bt{max-width:none}.h-beat .in{justify-content:flex-start;padding-top:28px}.h-b2 .in{padding-top:28px}.h-b5 .in,.h-b6 .in{padding-top:calc(var(--tt,22px) + var(--th,70px) + 8px)}.h-say,.h-b2 .h-say,.h-b3 .h-say,.h-b4 .h-say{font-size:clamp(34px,9.6vw,64px)}}
+@media (max-width:760px){.h-h1{font-size:clamp(46px,13vw,64px)}.h-lede{font-size:17px;line-height:1.28;margin-top:8px}.h-box{margin-top:14px}.h-ask{margin-bottom:10px}.h-ctrls{flex-wrap:nowrap}.h-sel-r{flex:1 1 auto}.h-sel-y{flex:0 0 140px}.page[data-page="index.html"] .h-sel select{height:48px;font-size:15px;padding:0 30px 0 15px;background-position:right 12px center}.h-res{--nf:44px;gap:12px;margin-top:12px}.h-res span{font-size:15px;line-height:1.25}.h-acts{margin-top:2px}.h-tag b{font-size:30px}.h-tag span{max-width:none}.h-axis span{font-size:15px}.h-sub{font-size:16px;margin-top:12px}.h-hint{margin-top:6px}.h-tip{font-size:15px}.h-tip a{min-height:44px}.h-xl i{display:none}.h-axis .h-l0,.h-axis .h-l1 b{font-size:15px}.h-axis .h-l1{width:auto;white-space:nowrap;text-align:right;font-size:15px}.h-axis .h-l1 b{margin-bottom:2px}.h-b2 .h-say span{display:inline}}
 .h-vnext{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,5vw,72px);align-items:end;margin-top:clamp(36px,3.6vw,52px)}
 .page[data-page="index.html"] .h-vtx{font:600 clamp(24px,2.2vw,32px)/1.18 var(--serif);letter-spacing:-.024em;color:var(--ink);margin:0;text-wrap:pretty}
 .page[data-page="index.html"] .h-vnot{font-size:clamp(17px,1.4vw,19px);line-height:1.4;color:#3e4656;margin:0}
@@ -226,8 +226,8 @@
 @media (max-width:760px){.h-vnext{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:761px){.h-axis .h-l1{display:flex;flex-direction:column-reverse}.h-axis .h-l1 b{margin:5px 0 0}}
 /* a phone with its browser bars showing: tighter copy, so the robot still stands in full on the first screen */
-@media (max-width:760px) and (max-height:760px){.h-copy{padding-top:0}.h-h1{font-size:46px}.h-lede{font-size:16px;margin-top:6px}.h-box{margin-top:10px}.h-ask{margin-bottom:6px;font-size:16px}.h-res{--nf:28px;margin-top:10px;gap:5px 10px}.h-acts{margin-top:0}}
+@media (max-width:760px) and (max-height:760px){.h-copy{padding-top:0}.h-h1{font-size:46px}.h-lede{font-size:16px;margin-top:6px}.h-box{margin-top:10px}.h-ask{margin-bottom:6px;font-size:16px}.h-res{--nf:36px;margin-top:8px}.h-acts{margin-top:0}}
 /* a short laptop screen: tighter copy, so the links stay above the line the robot stands on */
-@media (min-width:761px) and (max-height:800px){.h-copy{padding-top:6px}.h-h1{font-size:min(7vw,10vh)}.h-lede{font-size:18px;margin-top:8px}.h-box{margin-top:14px}.h-ask{font-size:16px;margin-bottom:8px}.page[data-page="index.html"] .h-sel select{height:46px}.h-res{--nf:min(3vw,4.8vh);margin-top:12px;gap:6px 14px}.h-res span{font-size:15px}.h-acts{margin-top:0}.h-acts a{min-height:40px}}
+@media (min-width:761px) and (max-height:800px){.h-copy{padding-top:6px}.h-h1{font-size:min(7vw,10vh)}.h-lede{font-size:18px;margin-top:8px}.h-box{margin-top:14px}.h-ask{font-size:16px;margin-bottom:8px}.page[data-page="index.html"] .h-sel select{height:46px}.h-res{--nf:min(3.4vw,5.6vh);margin-top:12px}.h-res span{font-size:15px}.h-acts{margin-top:0}.h-acts a{min-height:44px}}
 /* a tablet: three across, two rows */
 @media (min-width:681px) and (max-width:1060px){.h-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:36px}}

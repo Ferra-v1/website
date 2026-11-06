@@ -14,7 +14,7 @@
       if (to === undefined) return; ev.preventDefault(); show(to, true); });
   }
 
-  // the loan as a field of dots. Each dot is $100,000 at that moment of the loan. Dark: what a sale at the middle auction share would pay. Bright: what that sale would leave unpaid. Pale: the rest of the value in our model.
+  // the loan as a field of dots. Each dot is $100,000 at that moment of the loan. Darkest: what a sale at the middle auction share of the arms alone would pay. Dark: the same share of everything installed. Bright: what that sale would leave unpaid. Pale: the rest of the value in our model.
   // The page's scroll walks the months: the field stays pinned with position sticky, and dots take their colours as the line passes them. With less motion asked for it is a finished chart that reads any month on hover.
   const dc = document.querySelector('[data-dc]');
   if (dc) {
@@ -22,28 +22,29 @@
     const run = dc.closest('.l-run'), tag = dc.querySelector('.l-mtag'), note = dc.querySelector('.l-cross');
     const live = !matchMedia('(prefers-reduced-motion: reduce)').matches, TAU = 6.2832, DEEP = '#1e339b', GAP = '#0394e0', PALE = '#c8d4f5', LATER = '#eaeff9', INK = '#0e1626';
     const money = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
-    const words = m => { const [v, l, a] = R[m]; if (m === D.term) return `At month ${D.term}, the last payment is made and nothing is owed. The robots are worth about <b>${money(v)}</b> in our model.`;
-      return `${m === 0 ? 'On the first day, ' : `At month ${m}, `}<b>${money(l)}</b> is ${m === 0 ? '' : 'still '}owed. The robots are worth about <b>${money(v)}</b> in our model. ` + (a < l ? `A sale at ${D.pct}% would bring <b>${money(a)}</b> and leave the lender <b>${money(l - a)}</b> short.` : `A sale at ${D.pct}% would bring <b>${money(a)}</b>, enough to pay what is left.`); };
-    const at = t => { const i = Math.min(D.term - 1, Math.floor(t)), f = t - i; return [0, 1, 2].map(k => R[i][k] + (R[i + 1][k] - R[i][k]) * f); };
+    const rough = v => '$' + (Math.round(v / 10000) * 10000).toLocaleString('en-US');
+    const words = m => { const [v, l, a, s] = R[m]; if (m === D.term) return `At month ${D.term}, the last payment is made and nothing is owed. The robots are worth about <b>${money(v)}</b> in our model.`;
+      return `${m === 0 ? `On the first day, <b>${money(l)}</b> is owed` : `At month ${m}, <b>${money(l)}</b> is still owed`} and the robots are worth about <b>${money(v)}</b> in our model. A ${D.pct}% sale would bring <b>${money(a)}</b> counting everything installed, or about <b>${rough(s)}</b> for the arms alone.`; };
+    const at = t => { const i = Math.min(D.term - 1, Math.floor(t)), f = t - i; return [0, 1, 2, 3].map(k => R[i][k] + (R[i + 1][k] - R[i][k]) * f); };
     let S = null, month = live ? 0 : D.open, raf = 0, top0 = 0, span = 1, dct = 16;
     const yOf = v => S.H - (v / D.dot) * S.p;
     function size() {
       if (live) { run.classList.add('l-live'); cv.style.height = '0px'; }
       const W = plot.clientWidth, wide = W >= 640, dpr = Math.min(2, devicePixelRatio || 1);
       // the field takes the height the pinned stage leaves, so the sentence, the axis and the labels all stay on screen
-      const room = live ? Math.max(180, innerHeight - dc.offsetHeight - 28) : 1e4;
+      const room = live ? Math.max(180, innerHeight - dc.offsetHeight - (innerWidth < 821 ? 28 : 92)) : 1e4;
       let p = Math.min(W < 640 ? W / 64 : W < 1000 ? W / 100 : W / 132, room / D.top);
       const cols = Math.round(W / p), H = D.top * p;
       cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       const col = [];
       for (let j = 0; j < cols; j++) {
-        const x = (j + .5) * p, [v, l, a] = at(j / (cols - 1) * D.term), n = Math.round(v / D.dot), c = { x, d: [], g: [], p: [] };
-        for (let i = 0; i < n; i++) { const y = H - (i + .5) * p, $ = (i + .5) * D.dot; ($ < Math.min(a, l) ? c.d : $ < l ? c.g : c.p).push(y); }
+        const x = (j + .5) * p, [v, l, a, s] = at(j / (cols - 1) * D.term), n = Math.round(v / D.dot), c = { x, s: [], d: [], g: [], p: [] };
+        for (let i = 0; i < n; i++) { const y = H - (i + .5) * p, $ = (i + .5) * D.dot; ($ < Math.min(s, l) ? c.s : $ < Math.min(a, l) ? c.d : $ < l ? c.g : c.p).push(y); }
         col.push(c);
       }
       S = { W, H, dpr, p, col };
       if (live) {
-        const h = dc.offsetHeight; dct = Math.max(12, (innerHeight - h) / 2);
+        const h = dc.offsetHeight; dct = Math.max(innerWidth < 821 ? 12 : 76, (innerHeight - h) / 2);
         run.style.setProperty('--dch', h + 'px'); run.style.setProperty('--dct', dct + 'px');
         top0 = run.getBoundingClientRect().top + scrollY - dct; span = Math.max(1, run.offsetHeight - h);
       }
@@ -51,9 +52,9 @@
     function draw() {
       raf = 0; if (!S) return; const { W, H, dpr, p, col } = S, r = p * .39, lineX = (month / D.term) * W;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      const lists = { later: [], p: [], g: [], d: [] };
-      for (const c of col) { if (live && c.x > lineX + p * .5) { for (const k of ['d', 'g', 'p']) for (const y of c[k]) lists.later.push(c.x, y); } else for (const k of ['d', 'g', 'p']) for (const y of c[k]) lists[k].push(c.x, y); }
-      for (const [k, fill] of [['later', LATER], ['p', PALE], ['g', GAP], ['d', DEEP]]) { const L = lists[k]; ctx.fillStyle = fill; ctx.beginPath(); for (let i = 0; i < L.length; i += 2) { ctx.moveTo(L[i] + r, L[i + 1]); ctx.arc(L[i], L[i + 1], r, 0, TAU); } ctx.fill(); }
+      const lists = { later: [], p: [], g: [], d: [], s: [] };
+      for (const c of col) { if (live && c.x > lineX + p * .5) { for (const k of ['s', 'd', 'g', 'p']) for (const y of c[k]) lists.later.push(c.x, y); } else for (const k of ['s', 'd', 'g', 'p']) for (const y of c[k]) lists[k].push(c.x, y); }
+      for (const [k, fill] of [['later', LATER], ['p', PALE], ['g', GAP], ['d', DEEP], ['s', INK]]) { const L = lists[k]; ctx.fillStyle = fill; ctx.beginPath(); for (let i = 0; i < L.length; i += 2) { ctx.moveTo(L[i] + r, L[i + 1]); ctx.arc(L[i], L[i + 1], r, 0, TAU); } ctx.fill(); }
       // the line a lender would draw himself: what a sale at the middle auction share brings, up to the month being read
       const upto = live ? month : D.term;
       ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.setLineDash([6, 5]); ctx.beginPath();
@@ -71,6 +72,8 @@
         ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, ly); ctx.lineTo(cx, cy - 7); ctx.stroke();
         ctx.lineWidth = 2; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, TAU); ctx.fill(); ctx.stroke();
       }
+      // the same spot for the arms alone
+      if ((!live || month >= D.cross2) && big) { const cx = (D.cross2 / D.term) * W, cy = yOf(R[D.cross2][3]); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, TAU); ctx.fill(); ctx.stroke(); }
     }
     const paint = () => { if (!raf) raf = requestAnimationFrame(draw); };
     const go = m => { m = Math.max(0, Math.min(D.term, m)); if (m === month) return; month = m; inp.value = m; now.innerHTML = words(m); paint(); };

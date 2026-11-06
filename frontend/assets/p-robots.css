@@ -147,6 +147,8 @@
 .r-next-h{margin:0;font:700 var(--t-h3,clamp(21px,1.67vw,24px))/1.2 var(--serif);letter-spacing:-.025em;color:var(--ink)}
 .r-next-n{margin:4px 0 12px;font-size:15px;line-height:1.4;color:var(--muted)}
 .r-next .tlink{margin-top:10px}
+.r-next>a:not(.tlink) .r-next-p{font-size:16px;font-weight:500;color:var(--ink);text-align:right;line-height:1.25}
+.r-next-p small{display:block;font-size:15px;font-weight:400;color:var(--muted)}
 
 /* ------------------------------------------------------------------ the shelf: robots drawn at the size of their evidence, all standing on lines */
 .r-shelf{position:relative;color:#fff;padding-bottom:clamp(8px,2vw,32px);overflow:clip}

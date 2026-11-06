@@ -157,7 +157,7 @@
       // one sentence for each state, counting only the listings that back the price when those are few
       const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1);
       const nf = P.filter(q => q.fit && Math.abs(q.whole - sel) <= 1).length, F = D.fit;
-      root.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' backs' : 's back'} this, ${nf === 0 ? 'none this age. Our guess from other ages.' : nf === F ? (F === 1 ? 'near this age.' : F === 2 ? 'both near this age.' : 'all near this age.') : NW[nf] + ' near this age.'}` : `Most ask ${money(c[0])} to ${money(c[2])}.`;
+      root.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' backs' : 's back'} this, ${nf === 0 ? 'none this age. Our guess from other ages.' : nf === F ? (F === 1 ? 'near this age.' : F === 2 ? 'both near this age.' : 'all near this age.') : NW[nf] + ' near this age.'}` : `${D.tier === 'mid' ? `${F} listings back this price. ` : ''}Most ask ${money(c[0])} to ${money(c[2])}.`;
       root.querySelector('.r-rn').textContent = thin ? '' : near ? `${near} listing${near === 1 ? '' : 's'} within a year of this age.` : 'No listings this age yet. Our guess from other ages.';
       const ask = Math.round(c[1] / 100) * 100, go = document.querySelector('.r-rl'); if (go) go.href = `price.html#r=${D.id}&y=${y}&p=${ask}&m=${Math.round(ask * .036 / 10) * 10}`;   // the tool opens on this price with a rent that fits it
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);

@@ -1,12 +1,14 @@
-/* Lenders page (l-). The film, the loan (white), what if a loan goes bad (the page's one gradient band), auctions (paper), documents (mist), contact (paper). */
+/* Lenders page (l-). The film, the loan and the forced-sale sum (white), what if a loan goes bad (the page's one gradient band), auctions (paper), documents (mist), contact (paper). */
 [data-page="lenders.html"] .h2{max-width:20ch;margin-bottom:20px}
+[data-page="lenders.html"] .sec{padding-block:clamp(64px,7vw,100px)}
+.l-lede{max-width:72ch!important}
 [data-page="lenders.html"] .lead-1{max-width:60ch}
 [data-page="lenders.html"] .l-loan .h2{max-width:27ch}
 [data-page="lenders.html"] .notes a{text-decoration:none}
 [data-page="lenders.html"] .fl{font-size:15px}
 
 /* hero: the film of one real job, the words low on the floor at the left */
-.l-hero{position:relative;display:flex;flex-direction:column;min-height:min(calc(100svh - 40px),900px);background:#04060c;color:#fff;overflow:hidden}
+.l-hero{position:relative;display:flex;flex-direction:column;min-height:min(calc(100svh - 40px),760px);background:#04060c;color:#fff;overflow:hidden}
 .l-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:18% 50%}
 .l-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,12,.5) 0,rgba(4,6,12,0) 24%,rgba(4,6,12,0) 46%,rgba(4,6,12,.72) 100%);pointer-events:none}
 .l-hero .nav{z-index:3}
@@ -18,11 +20,11 @@
 .l-hero .tlink.w{margin-top:0}
 
 /* what if a loan goes bad: the robot of 1,000 dots with 52 on the floor is the big thing. The figure stays the size its evidence allows, with its admission right under it */
-.l-bad{color:#fff;padding-block:clamp(72px,9vw,128px);overflow-x:clip}
-.l-bg{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:clamp(40px,5vw,72px);align-items:end}
+.l-bad{color:#fff;padding-block:clamp(64px,7vw,100px);overflow-x:clip}
+.l-bg{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(40px,5vw,72px);align-items:end}
 .l-say{font:700 clamp(34px,4vw,54px)/1.05 var(--serif);letter-spacing:-.025em;margin:0;text-wrap:balance;max-width:14ch}
 .l-bp{margin:18px 0 0;font-size:clamp(18px,1.5vw,21px);line-height:1.45;max-width:36ch;color:rgba(255,255,255,.92);text-wrap:pretty}
-.l-five{display:block;margin:clamp(32px,3.6vw,48px) 0 0 -.02em;font:700 clamp(72px,6.8vw,96px)/1 var(--serif);letter-spacing:-.04em}
+.l-five{display:block;margin:clamp(24px,2.8vw,36px) 0 0 -.02em;font:700 clamp(64px,5.6vw,80px)/1 var(--serif);letter-spacing:-.04em}
 .l-adm{margin:12px 0 0;font-size:clamp(18px,1.5vw,21px);line-height:1.4;font-weight:600;max-width:32ch;color:#fff;text-wrap:pretty}
 .l-fl{margin:14px 0 0;font-size:clamp(17px,1.25vw,18px);line-height:1.5;max-width:40ch;color:rgba(255,255,255,.92);text-wrap:pretty}
 .l-ft{margin:12px 0 0;font-size:15px;line-height:1.5;max-width:44ch;color:rgba(255,255,255,.88);text-wrap:pretty}
@@ -37,10 +39,10 @@
 
 /* the loan as a field of dots. The page's scroll walks the months across it: the bands take their colours as the line passes, and the sentence reads the month. Labels sit in a gutter at the height of their band, on the page itself. */
 .l-run{margin:clamp(24px,3vw,40px) 0 0}
-.l-run.l-live{height:calc(var(--dch,700px) + 170vh)}
+.l-run.l-live{height:calc(var(--dch,700px) + 60vh)}
 .l-dc{margin:0}
 .l-live .l-dc{position:sticky;top:var(--dct,16px)}
-.l-now{margin:0 0 clamp(20px,2.4vw,32px);max-width:48ch;min-height:4.1em;font:500 clamp(21px,2vw,28px)/1.32 var(--serif);letter-spacing:-.018em;color:#5b6474;text-wrap:pretty}
+.l-now{margin:0 0 clamp(20px,2.4vw,32px);max-width:66ch;min-height:4.1em;font:500 clamp(20px,1.75vw,25px)/1.32 var(--serif);letter-spacing:-.018em;color:#5b6474;text-wrap:pretty}
 .l-now b{font-weight:700;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 .l-fw{display:grid;grid-template-columns:clamp(150px,15vw,196px) minmax(0,1fr);gap:0 clamp(16px,2vw,28px)}
 .l-col{min-width:0}
@@ -60,29 +62,40 @@
 .l-key{display:none;list-style:none;margin:8px 0 0;padding:0}
 .l-key li{position:relative;padding:0 0 6px 22px;font-size:15px;line-height:1.3;font-weight:500;color:var(--ink)}
 .l-key li::before{content:"";position:absolute;left:1px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--kc)}
-.l-k-a{--kc:#c8d4f5}.l-k-b{--kc:#0394e0}.l-k-c{--kc:#1e339b}
-.l-key .l-k-d{padding-left:0}.l-key .l-k-d::before{display:none}
-.l-cap{margin:clamp(20px,2.4vw,32px) 0 0;max-width:74ch;font-size:15px;line-height:1.5;color:var(--muted)}
+.l-k-a{--kc:#c8d4f5}.l-k-b{--kc:#0394e0}.l-k-c{--kc:#1e339b}.l-k-d{--kc:#0e1626}
+.l-key .l-k-n{padding-left:0}.l-key .l-k-n::before{display:none}
+
+/* the forced-sale sum, directly under the chart: one question, two figures of the same size, each drawn in the chart's own dots against what is owed. Nothing here is bigger than its evidence. */
+.l-hs{margin-top:clamp(44px,5vw,72px)}
+.l-hh{font:700 clamp(30px,3.2vw,46px)/1.08 var(--serif);letter-spacing:-.028em;margin:0 0 clamp(28px,3.4vw,48px);max-width:26ch;text-wrap:balance}
+.l-hrs{display:grid;gap:clamp(24px,2.6vw,36px)}
+.l-hr{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px clamp(32px,5vw,72px);align-items:center}
+.l-hn b{display:block;font:700 clamp(44px,4.6vw,66px)/1 var(--serif);letter-spacing:-.035em;font-variant-numeric:lining-nums tabular-nums}
+.l-hn p{margin:10px 0 0;font-size:clamp(16px,1.25vw,18px);line-height:1.42;color:#3e4656;max-width:40ch;text-wrap:pretty}
+.l-hd{display:grid;grid-template-columns:repeat(22,minmax(0,1fr));gap:clamp(3px,.5vw,7px)}
+.l-hd i{display:block;aspect-ratio:1;border-radius:50%;transition:background-color .35s ease calc(var(--i) * 18ms)}
+.l-hd .p{background:var(--deep)}.l-hd .u{background:#0394e0}
+.rv:not(.in-view) .l-hd i{background:#eaeff9}
+.no-js .rv:not(.in-view) .l-hd .p{background:var(--deep)}.no-js .rv:not(.in-view) .l-hd .u{background:#0394e0}
+.l-hk{margin:clamp(18px,2vw,26px) 0 0;font-size:15px;line-height:1.4;color:var(--muted)}
+.l-hx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px clamp(32px,5vw,72px);margin-top:clamp(24px,3vw,40px)}
+.l-hx p{margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656;max-width:52ch;text-wrap:pretty}
+.l-hx b{font-weight:600;color:var(--ink)}
+.l-hx a{color:var(--c);font-weight:500;display:inline-block;padding-block:11px;margin-block:-11px}
+.l-cap{margin:clamp(14px,1.6vw,20px) 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
 .l-cap a{color:var(--c);font-weight:500;display:inline-block;padding-block:11px;margin-block:-11px}
-.l-terms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px clamp(20px,3vw,40px);margin:clamp(40px,5vw,64px) 0 0}
-.l-terms dt{font-size:15px;line-height:1.3;font-weight:600;color:var(--ink);margin-bottom:6px}
-.l-terms dd{margin:0 0 8px;font:700 clamp(25px,2.5vw,34px)/1.05 var(--serif);letter-spacing:-.025em;white-space:nowrap}
-.l-terms p{margin:0;font-size:15px;line-height:1.45;color:#4a5262;max-width:26ch}
 
 /* auctions: the giant share, then every sale behind it as a dot you can touch */
-.l-rh{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 clamp(12px,1.4vw,20px);margin:clamp(24px,3vw,40px) 0 0;font:600 clamp(22px,2.1vw,30px)/1.15 var(--serif);letter-spacing:-.02em;color:var(--ink)}
-.l-big{font:700 clamp(92px,10vw,144px)/1 var(--serif);letter-spacing:-.045em;color:var(--c);margin-left:-.02em}
-.l-big2{font:700 clamp(58px,6.2vw,90px)/1 var(--serif);letter-spacing:-.04em;color:var(--c)}
-.l-rx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,4vw,64px);margin-top:clamp(20px,2.4vw,32px)}
-.l-rx p{margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656;max-width:48ch;text-wrap:pretty}
-.l-ledw{margin-top:clamp(40px,5vw,64px)}
+.l-rh{margin:clamp(14px,1.8vw,24px) 0 0;max-width:62ch;font-size:clamp(18px,1.5vw,21px);line-height:1.5;color:#3e4656;text-wrap:pretty}
+.l-rh b{font-weight:600;color:var(--ink)}
+.l-ledw{margin-top:clamp(28px,3.2vw,44px)}
 .l-led{width:100%;border-collapse:collapse;font-size:16px;line-height:1.35;font-variant-numeric:lining-nums tabular-nums}
 .l-led thead th{font-size:15px;font-weight:600;color:var(--muted);text-align:left;padding:0 20px 10px 0;vertical-align:bottom}
 .l-led thead .l-st{text-align:right;padding-right:0}
-.l-sg th{padding:26px 0 8px;font-size:15px;line-height:1.45;font-weight:600;color:var(--ink);text-align:left;border-bottom:2px solid var(--ink)}
+.l-sg th{padding:20px 0 8px;font-size:15px;line-height:1.45;font-weight:600;color:var(--ink);text-align:left;border-bottom:2px solid var(--ink)}
 .l-sg th span{font-weight:400;color:#3e4656}
-.l-led tbody tr:not(.l-sg) > *{padding:0 20px 0 0;height:52px;border-bottom:1px solid var(--line);font-weight:400;text-align:left}
-.l-led th a{display:inline-block;padding-block:12px;font-weight:500;color:var(--ink)}
+.l-led tbody tr:not(.l-sg) > *{padding:0 20px 0 0;height:44px;border-bottom:1px solid var(--line);font-weight:400;text-align:left}
+.l-led th a{display:inline-block;padding-block:11px;font-weight:500;color:var(--ink)}
 .l-led th a span[aria-hidden]{display:inline-block;color:var(--c);transition:transform .15s ease}
 .l-led th a:hover{color:var(--c)}.l-led th a:hover span[aria-hidden]{transform:translateX(3px)}
 .l-led .l-sp{font-weight:600;white-space:nowrap}
@@ -96,15 +109,13 @@ td.l-st b{display:inline-block;width:82px;text-align:right;font-weight:600;verti
 .l-tk::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#c9d1de}
 .l-tk i{position:absolute;top:0;left:calc(var(--r) - 6px);width:12px;height:12px;border-radius:50%;background:var(--c);transition:left 1.2s cubic-bezier(.2,.7,.2,1) .2s}
 .rv:not(.in-view) .l-tk i{left:calc(100% - 12px)}
-.l-try{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:clamp(40px,5vw,64px)}
-.l-try p{flex:1 1 100%;margin:0 0 4px;font:700 clamp(25px,2.6vw,36px)/1.15 var(--serif);letter-spacing:-.025em;max-width:30ch;text-wrap:balance}
+.l-rn{margin:clamp(24px,3vw,36px) 0 0;color:#3e4656;font-size:16px;line-height:1.55;max-width:74ch;text-wrap:pretty}
+.l-try{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:clamp(20px,2.4vw,28px)}
 .l-try .tlink{margin-top:0;padding-block:12px}
-.l-rn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,4vw,64px);margin-top:clamp(32px,4vw,48px)}
-.l-rn p{margin:0;color:#3e4656;font-size:17px;line-height:1.55;max-width:50ch}
 
 /* what a lender would get: tabs in plain type beside one sheet of paper. The stacked sheets lean a little, so the section clips them at the page edge. */
 .l-recv{overflow-x:clip}
-.l-rg{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:start}
+.l-rg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,560px);gap:clamp(32px,5vw,72px);align-items:start}
 .l-rs{position:sticky;top:112px}
 .l-tabs{display:flex;flex-direction:column;align-items:flex-start;margin-top:clamp(24px,3vw,40px)}
 .l-tab{appearance:none;background:none;border:0;padding:6px 0;min-height:44px;cursor:pointer;font:700 clamp(28px,2.8vw,40px)/1.15 var(--serif);letter-spacing:-.025em;color:#7b8496;text-align:left;transition:color .2s ease}
@@ -115,17 +126,18 @@ td.l-st b{display:inline-block;width:82px;text-align:right;font-weight:600;verti
 .l-pages.l-tabbed{display:grid;gap:0}
 .l-tabbed .l-page-w{grid-area:1 / 1;transition:opacity .2s ease}
 .l-tabbed .l-off{opacity:0;visibility:hidden}
-.l-page{display:flex;flex-direction:column;aspect-ratio:8.5 / 11;min-width:0;padding:clamp(24px,4.4vw,60px) clamp(20px,4.4vw,60px) clamp(20px,2.6vw,34px)}
+.l-page{display:flex;flex-direction:column;height:100%;min-width:0;padding:clamp(24px,4.4vw,60px) clamp(20px,4.4vw,60px) clamp(20px,2.6vw,34px)}
 .l-page-w:focus-visible{outline:2px solid var(--c);outline-offset:6px}
-.l-page .sh-t{font-size:clamp(25px,2.4vw,31px);margin:clamp(22px,2.6vw,34px) 0 10px}
+.l-page .sh-t{font-size:clamp(25px,2.4vw,31px);margin:clamp(20px,2vw,28px) 0 8px}
 .l-page .sh-f{margin-top:auto;padding-top:24px;font-size:15px}
 .l-page .sh-h span{font-size:15px}
 .l-pi{margin:0 0 22px;color:#3e4656;font-size:16px;line-height:1.5}
 .l-pn{margin:20px 0 0;color:#3e4656;font-size:15px;line-height:1.5}
-.l-pn a{color:var(--c);text-decoration:none}
+.l-pn a{color:var(--c);text-decoration:none;display:inline-block;padding-block:12px;margin-block:-12px}
+.l-inner .sh-f{font-size:15px}
 .l-pn a:hover{text-decoration:underline;text-underline-offset:4px}
 .l-dl{margin:0}
-.l-dl > div{display:grid;grid-template-columns:minmax(0,132px) minmax(0,1fr);gap:4px 16px;padding:8px 0}
+.l-dl > div{display:grid;grid-template-columns:minmax(0,120px) minmax(0,1fr);gap:4px 16px;padding:6px 0}
 .l-dl dt{font-weight:600;color:var(--ink)}
 .l-dl dd{margin:0;color:#2f3747}
 .l-page .stmt{font-size:16px;margin-bottom:24px}
@@ -143,6 +155,7 @@ td.l-st b{display:inline-block;width:82px;text-align:right;font-weight:600;verti
 
 @media (max-width:1060px){
  .l-cg,.l-rg,.l-bg{grid-template-columns:minmax(0,1fr)}
+ .l-ff{max-width:560px}
  .l-rs{position:static}
  .l-tabs{flex-direction:row;flex-wrap:wrap;gap:0 24px;margin-top:20px}
  .l-tab{font-size:clamp(21px,3vw,28px)}
@@ -154,33 +167,35 @@ td.l-st b{display:inline-block;width:82px;text-align:right;font-weight:600;verti
  .l-fw{display:block}
  .l-gut,.l-cross,.l-mtag{display:none}
  .l-key{display:block}
+ .l-key .l-k-n{display:none}
  .l-per{margin-top:0}
  .l-film{object-position:84% 50%}
  .l-hero{min-height:calc(100svh - 32px)}
  [data-page="lenders.html"] .l-hero .h1{font-size:clamp(52px,15vw,88px);max-width:8ch}
- .l-terms{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:760px){
- .l-rx{grid-template-columns:minmax(0,1fr)}
+ .l-hr,.l-hx{grid-template-columns:minmax(0,1fr)}
  .l-led thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
  .l-led,.l-led tbody,.l-led tr,.l-led th,.l-led td{display:block}
  .l-sg th{padding-top:24px}
- .l-led tbody tr:not(.l-sg){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 12px;padding:8px 0 12px;border-bottom:1px solid var(--line)}
+ .l-led tbody tr:not(.l-sg){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 12px;padding:2px 0 8px;border-bottom:1px solid var(--line)}
  .l-led tbody tr:not(.l-sg) > *{height:auto;padding:0;border:0}
  .l-led th[scope="row"]{grid-column:1}
  .l-led td.l-sp{grid-column:2;grid-row:1;align-self:center}
- .l-led td.l-sw{grid-column:1 / -1;font-size:15px;white-space:normal}
- .l-led td.l-st{grid-column:1 / -1;width:auto;margin-top:8px}
- .l-rn{grid-template-columns:minmax(0,1fr)}
+ .l-led td.l-sw{grid-column:1;font-size:15px;white-space:normal}
+ .l-led td.l-st{grid-column:2;width:auto;text-align:right}
+ .l-tk{display:none}
+ td.l-st b{width:auto}
+ .l-led tbody tr:not(.l-sg) > td.l-st,.l-led tbody tr:not(.l-sg) > td.l-sp{text-align:right}
+ .l-led td.l-sp{white-space:normal}
 }
 @media (max-width:680px){
- .l-page{aspect-ratio:auto}
  .l-pages.l-tabbed{display:block}
  .l-tabbed .l-off{display:none}
  .l-dl > div{grid-template-columns:minmax(0,1fr);gap:1px}
  .l-page .stmt{font-size:15px}
 }
-@media (prefers-reduced-motion:reduce){.l-bot .f{transition:none}.l-cross{transition:none}.l-tabbed .l-page-w{transition:none}.l-tk i{transition:none}.rv:not(.in-view) .l-tk i{left:calc(var(--r) - 6px)}}
+@media (prefers-reduced-motion:reduce){.l-bot .f{transition:none}.l-cross{transition:none}.l-tabbed .l-page-w{transition:none}.l-tk i{transition:none}.rv:not(.in-view) .l-tk i{left:calc(var(--r) - 6px)}.l-hd i{transition:none}}
 
 /* The three documents, each in its own shape */
 .l-page-w{position:relative;min-width:0}
@@ -188,7 +203,7 @@ td.l-st b{display:inline-block;width:82px;text-align:right;font-weight:600;verti
 .l-w-term .sheet{position:relative}.l-staple{position:absolute;z-index:2;left:15px;top:18px;width:30px;height:4px;border-radius:2px;background:linear-gradient(#e7ebf1,#8d96a6 55%,#b9c0cc);transform:rotate(-40deg);box-shadow:0 1px 1px rgba(14,22,38,.3)}
 .l-w-list{display:flex;justify-content:center;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));align-self:start}
 .l-w-list .sheet{width:100%;max-width:500px;box-shadow:none;border-radius:0;aspect-ratio:auto;padding-bottom:46px;clip-path:polygon(0 0,100% 0,100.00% calc(100% - 11px),96.67% calc(100% - 0px),93.33% calc(100% - 11px),90.00% calc(100% - 0px),86.67% calc(100% - 11px),83.33% calc(100% - 0px),80.00% calc(100% - 11px),76.67% calc(100% - 0px),73.33% calc(100% - 11px),70.00% calc(100% - 0px),66.67% calc(100% - 11px),63.33% calc(100% - 0px),60.00% calc(100% - 11px),56.67% calc(100% - 0px),53.33% calc(100% - 11px),50.00% calc(100% - 0px),46.67% calc(100% - 11px),43.33% calc(100% - 0px),40.00% calc(100% - 11px),36.67% calc(100% - 0px),33.33% calc(100% - 11px),30.00% calc(100% - 0px),26.67% calc(100% - 11px),23.33% calc(100% - 0px),20.00% calc(100% - 11px),16.67% calc(100% - 0px),13.33% calc(100% - 11px),10.00% calc(100% - 0px),6.67% calc(100% - 11px),3.33% calc(100% - 0px),0.00% calc(100% - 11px))}
-.l-book{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1fr);aspect-ratio:8.5 / 8.2;position:relative;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));font:400 16px/1.45 var(--doc)}
+.l-book{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1fr);min-height:100%;position:relative;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));font:400 16px/1.45 var(--doc)}
 .l-book::after{content:"";position:absolute;top:6px;bottom:6px;right:-9px;width:9px;background:repeating-linear-gradient(90deg,#fff 0 1px,#cfd6e2 1px 2px)}
 .l-cov{position:relative;background:var(--deep);color:#fff;padding:30px 22px 26px 40px;display:flex;flex-direction:column;min-width:0}.l-cov i{position:absolute;left:0;top:0;bottom:0;width:20px;background:rgba(14,22,38,.42)}
 .l-cov .ilock{display:inline-flex;align-items:center;line-height:1;font-size:16px;font-weight:600;white-space:nowrap}.l-cov .imk{display:inline-flex}.l-cov svg{display:block;width:100%;height:100%}

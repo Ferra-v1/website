@@ -31,7 +31,7 @@
 .pp-lft .lede b{font-weight:600;color:var(--ink)}
 
 /* the machine: one robot for the job picked in the form, standing on its line */
-.pp-bot{grid-column:8 / 13;grid-row:1;margin:0;position:relative;height:270px;--bh:262px}
+.pp-bot{grid-column:8 / 13;grid-row:1;margin:0;position:relative;height:236px;--bh:228px}
 .pp-bs{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;pointer-events:none}
 .pp-bs .rstage{position:absolute;left:0;right:0;bottom:0}
 .pp-bs .rs-bot{height:var(--bh)}
@@ -410,7 +410,7 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 /* narrower windows */
 @media (max-width:1180px){
   .pp-lft{grid-column:1 / 8}
-  .pp-bot{height:280px;--bh:270px}
+  .pp-bot{height:236px;--bh:228px}
   .pp-seg button{padding:0 11px}
 }
 @media (max-width:1000px){
@@ -594,3 +594,25 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 }
 /* a label that crosses a line stays readable */
 .pp-covc svg text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+
+/* the robot shows what it is still worth: the dots above that share of its height stay as a ghost. Set by the page from the tool's own two figures. */
+@property --v{syntax:'<number>';inherits:true;initial-value:1}
+.pp-bot{--v:1;transition:--v .34s linear}
+.pp-bs .rs-bot{-webkit-mask-image:linear-gradient(to top,#000 calc(var(--v) * 100%),rgba(0,0,0,.2) calc(var(--v) * 100% + 2px));mask-image:linear-gradient(to top,#000 calc(var(--v) * 100%),rgba(0,0,0,.2) calc(var(--v) * 100% + 2px))}
+.pp-age{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:0 0 16px;font-size:15px;line-height:1.4;color:#4a5262}
+.pp-agego{appearance:none;border:0;background:none;padding:0;margin:-10px 0;min-height:44px;font:500 15px/1.4 var(--sans);color:var(--c);cursor:pointer}
+.pp-agego:hover{color:var(--ink)}
+.pp-agego[hidden]{display:none}
+.pp-a[data-k="v"]{padding-top:12px}
+/* why the offer can sit above the arm: said in the same breath as the offer */
+.page[data-page="price.html"] .pp-offw{margin:8px 0 0;font-size:15px;line-height:1.45;font-weight:500;color:var(--ink);max-width:52ch}
+.pp-offw[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.pp-bot{transition:none}}
+@media (max-width:600px){
+  .pp-row .pp-f:has(.pp-tail){grid-template-columns:6.2em minmax(0,1fr) auto}
+  .pp-a[data-k="v"]{padding-top:24px}
+  .pp-age{margin-bottom:12px}
+  /* every word in a chart reads at the body size on a phone. The charts draw at the real width of the screen, so these sizes are true pixels. */
+  .pp-scs .ax,.pp-scs .ul text,.pp-scs .lab,.pp-covs .ax,.pp-covs .aft,.pp-covs .bl,.pp-covs .gl2,.pp-hs .yl,.pp-hs .ax,.pp-hs .ov,.pp-caxs em{font-size:15px}
+  .pp-sc svg,.pp-covc svg,.pp-hist svg{overflow:visible}
+}

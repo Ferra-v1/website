@@ -39,7 +39,7 @@ a{color:inherit;text-decoration:none}
 .tlink:hover{text-decoration:underline;text-underline-offset:4px}
 /* nav: at the top of the page in its own flow. Below the first screen it leaves, and comes back as a floating bar when the reader scrolls up (.fbar, site.js) */
 .nav{position:relative;z-index:30}
-.nav .in{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:20px;height:80px}
+.nav .in{display:grid;grid-template-columns:minmax(auto,1fr) auto minmax(auto,1fr);align-items:center;gap:20px;height:80px}
 .nav .btn,.fbar .btn{justify-self:end}
 .brand{display:inline-flex;justify-self:start;text-decoration:none;align-items:center;min-height:44px}
 .brand .ilock{display:inline-flex;align-items:center;line-height:1;white-space:nowrap;font-size:24px}
@@ -65,9 +65,9 @@ a{color:inherit;text-decoration:none}
 .nav:not(.on-dark) .menu,.fbar .menu{color:var(--ink)}
 .on-dark .menu{color:#fff}
 /* the floating bar */
-.fbar{position:fixed;z-index:50;left:50%;top:calc(12px + env(safe-area-inset-top,0px));width:min(960px,calc(100% - 24px));transform:translate(-50%,-160%);visibility:hidden;transition:transform .3s cubic-bezier(.3,.7,.2,1),visibility 0s linear .3s;color:var(--ink)}
+.fbar{position:fixed;z-index:50;left:50%;top:calc(12px + env(safe-area-inset-top,0px));width:min(1080px,calc(100% - 24px));transform:translate(-50%,-160%);visibility:hidden;transition:transform .3s cubic-bezier(.3,.7,.2,1),visibility 0s linear .3s;color:var(--ink)}
 .fbar.on{transform:translate(-50%,0);visibility:visible;transition:transform .34s cubic-bezier(.2,.7,.2,1)}
-.fbar-in{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;height:56px;padding:0 8px 0 22px;border-radius:999px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px);box-shadow:0 0 0 1px rgba(14,22,38,.07),0 14px 34px -18px rgba(14,22,38,.4)}
+.fbar-in{display:grid;grid-template-columns:minmax(auto,1fr) auto minmax(auto,1fr);align-items:center;gap:12px;height:56px;padding:0 8px 0 22px;border-radius:999px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px);box-shadow:0 0 0 1px rgba(14,22,38,.07),0 14px 34px -18px rgba(14,22,38,.4)}
 .fbar .brand .ilock{font-size:22px}
 /* the phone menu */
 .mn{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:var(--deep);color:#fff;overflow-y:auto;overscroll-behavior:contain;padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));animation:mn-in .22s ease both}
@@ -87,10 +87,14 @@ a{color:inherit;text-decoration:none}
 @media (max-height:780px){.mn-bot{display:none}}
 .mn-foot{flex:none;padding:18px 0 24px;margin-top:auto}
 .mn-foot .btn{width:100%;height:56px;font-size:16px}
-@media (max-width:900px){.links{display:none}.nav .in,.fbar-in{grid-template-columns:minmax(0,1fr) auto auto;gap:8px}.menu{display:flex}.fbar-in{padding:0 18px 0 18px}}
-@media (min-width:901px){.mn{display:none}}
+@media (max-width:960px){.links{display:none}.nav .in,.fbar-in{grid-template-columns:minmax(0,1fr) auto auto;gap:8px}.menu{display:flex}.fbar-in{padding:0 18px 0 18px}}
+@media (min-width:961px){.mn{display:none}}
 @media (max-width:360px){.fbar .btn{display:none}}
 @media (max-width:372px){.btn.sm.lng{display:none}}
+/* the longest label: tighter on a phone, and it gives way sooner, in the floating bar first. The same action stays in the phone menu. */
+@media (max-width:430px){.btn.sm.lngr{padding:0 12px}}
+@media (max-width:439px){.fbar .btn.lngr{display:none}}
+@media (max-width:389px){.btn.sm.lngr{display:none}}
 /* hero */
 .hero{color:#fff;overflow:hidden;padding-bottom:clamp(56px,7vw,104px);border-radius:0 0 28px 28px}
 .hero-g{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr);gap:clamp(28px,4vw,64px);align-items:center;padding-top:clamp(28px,5vw,72px)}

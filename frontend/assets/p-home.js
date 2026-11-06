@@ -78,7 +78,7 @@
   const w = document.querySelector('.h-world'), v = w && w.querySelector('.h-wf'); if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const stage = w.querySelector('.h-wv'), line = w.querySelector('.h-ws'); let last = -1, lastL = -1;
   w.classList.add('h-wj');
-  const fade = () => { const t = -w.getBoundingClientRect().top / innerHeight, k = Math.min(1, Math.max(0, t / .2)), l = Math.min(1, Math.max(0, (t - .1) / .16));
+  const fade = () => { const t = -w.getBoundingClientRect().top / innerHeight, k = Math.min(1, Math.max(0, t / .13)), l = Math.min(1, Math.max(0, (t - .06) / .13));
     if (k !== last) { last = k; stage.style.opacity = k.toFixed(3); }
     if (l !== lastL) { lastL = l; line.style.opacity = l.toFixed(3); line.style.transform = l < 1 ? `translateY(${((1 - l) * 16).toFixed(1)}px)` : ''; } };
   fade(); addEventListener('scroll', fade, { passive: true }); addEventListener('resize', fade);
@@ -86,14 +86,6 @@
   const near = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; near.disconnect(); v.preload = 'auto'; }, { rootMargin: '900px' });
   near.observe(v);
   new IntersectionObserver(es => { if (es[0].isIntersecting) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); }, { threshold: .01 }).observe(v);
-})();
-
-// The loading bay behind the form: plays once when the form arrives and holds its last frame. No film on a phone; reduced motion keeps the poster.
-(() => {
-  const v = document.querySelector('.h-df'); if (!v || innerWidth <= 720 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  v.muted = true;
-  const near = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; near.disconnect(); v.preload = 'auto'; }, { rootMargin: '900px' }); near.observe(v);
-  const o = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; o.disconnect(); const p = v.play(); if (p && p.catch) p.catch(() => {}); }, { threshold: .45 }); o.observe(v);
 })();
 
 // The vision statement: every word starts grey and turns ink one after another as the sentence scrolls up the screen, and reverses
@@ -132,44 +124,44 @@
 // The first screen and film. One canvas on one pinned stage, painted as a pure function of how far the page has scrolled, so scrolling back plays it backwards.
 // Order: the moving robot slows to its pose, its fine dots gather into the 433 listing dots on the same silhouette, those dots fly to their true place on a chart
 // of age against asking price, the line of typical prices draws, the field collapses into one dot on the chosen robot's likely sale price, the dot grows into that price,
-// and the price splits into what a company could borrow and the rest. The picker on the first screen sets which price the film ends on.
+// grows again to what one new arm costs, then breaks into 50 dots that open into the 50 robots of the example loan. The running total counts up by one robot's cost as each opens,
+// and down by one robot's cost as each of the 15 the company pays for dims, so the reader leaves on the real size of the loan. The picker on the first screen sets the used price.
 (() => {
   const film = document.querySelector('.h-film'), stick = film && film.querySelector('.h-stick'); if (!film) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const cv = film.querySelector('.h-cv'), ctx = cv.getContext('2d'), probe = film.querySelector('.h-probe');
-  const $ = s => film.querySelector(s), b1 = $('.h-b1'), b2 = $('.h-b2'), b3 = $('.h-b3'), b4 = $('.h-b4'), axis = $('.h-axis'), n0 = $('.h-n0'), n1 = $('.h-n1'), n2 = $('.h-n2'), tipEl = $('.h-tip');
+  const $ = s => film.querySelector(s), b1 = $('.h-b1'), b2 = $('.h-b2'), b3 = $('.h-b3'), b4 = $('.h-b4'), b5 = $('.h-b5'), b6 = $('.h-b6'), axis = $('.h-axis'), n0 = $('.h-n0'), totEl = $('.h-tot'), totV = totEl.querySelector('b'), tagEl = $('.h-tag'), gl0 = $('.h-gl0'), gl1 = $('.h-gl1'), tipEl = $('.h-tip');
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, seg = (s, a, b) => clamp((s - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
-  // the timeline, in screens scrolled
-  const TS = .88, T = { slow: [0, .14], gather: [.14, .56], cam: [.08, .6], b1: [.54, .72, 1.06, 1.16], fly: [1.08, 1.54], axis: [1.22, 1.44], b2: [1.3, 1.44, 1.74, 1.84], curve: [1.42, 1.62],
-    fall: [1.76, 2.04], axisOut: [1.78, 2], grow: [1.96, 2.18], b3: [2.02, 2.16, 2.38, 2.46], split: [2.4, 2.64], b4: [2.46, 2.62, 2.8, 2.9], end: [2.84, 3.08], dim: [2.8, 3.08] };
-  const RESTS = [[.34, 0], [1.1, .94], [1.8, 1.68], [2.42, 2.28], [99, 2.72]];
-  for (const k in T) T[k] = T[k].map(v => v * TS); RESTS.forEach((r, i) => { if (i < 4) r[0] *= TS; r[1] *= TS; });
+  // the timeline, in screens scrolled. The film's height in p-home.css is the end of this plus the 125 the next section overlaps it by.
+  const T = { slow: [0, .12], gather: [.12, .42], cam: [.07, .44], b1: [.45, .546, .787, .865], fly: [.807, 1.115], axis: [.922, 1.038], b2: [.961, 1.057, 1.25, 1.327], curve: [1.038, 1.173],
+    fall: [1.27, 1.462], axisOut: [1.289, 1.443], grow: [1.405, 1.559], b3: [1.443, 1.539, 1.694, 1.752], cost: [1.713, 1.867], b4: [1.752, 1.848, 1.964, 2.022], burst: [1.944, 2.176], open: [2.06, 2.311], b5: [2.022, 2.118, 2.311, 2.369],
+    loan: [2.33, 2.523], b6: [2.349, 2.446, 2.716, 2.793], end: [2.716, 2.87], dim: [2.716, 2.87] };
+  const RESTS = [[.498, 0], [.98, .73], [1.366, 1.173], [1.732, 1.617], [1.983, 1.906], [2.349, 2.272], [99, 2.6]];
   const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
   let autoOK = true, W = 0, H = 0, FH = 0, dpr = 1, phone = false, frames = null, nF = 96, fps = 12, t0 = 0, D = null, R = null, dirty = true, vis = true, pose = 84;
-  let hero = { p: 6, r: 1000, a: 1 }, beat = { p: 6, r: 1000 }, floorY = 800, C = { l: 0, r: 1000, t: 0, b: 800 }, disc = {}, age = 10, ask = 14700, sale = 6100, loan = 4300, rest = 1800;
+  let hero = { p: 6, r: 1000, a: 1 }, beat = { p: 6, r: 1000 }, floorY = 800, C = { l: 0, r: 1000, t: 0, b: 800 }, disc = {}, age = 12, ask = 13500, sale = 5600, loan = 3900, grid = null;
   const X = a => C.l + a / 30 * (C.r - C.l), Y = u => C.t + (Math.log(HI) - Math.log(u)) / (Math.log(HI) - Math.log(LO)) * (C.b - C.t);
 
   // ---------------------------------------------------------------- the price box: the only numbers baked into the page
   const tab = JSON.parse(document.getElementById('h-prices').textContent), rSel = document.getElementById('h-r'), ySel = document.getElementById('h-y'), tool = document.getElementById('h-tool');
-  const outs = ['h-av', 'h-pv', 'h-lv'].map(id => document.getElementById(id)), whyEl = document.getElementById('h-why'), noteEl = document.getElementById('h-note');
+  const saleEl = document.getElementById('h-pv'), loanEl = document.getElementById('h-lv'), whyEl = document.getElementById('h-why');
   const fmt = n => '$' + Math.round(n).toLocaleString('en-US'), r100 = v => Math.round(v / 100) * 100;
   let shown = null, tw = 0;
   const putAll = (sel, v) => film.querySelectorAll(sel).forEach(s => s.textContent = v);
   const setBox = () => {
     const f = tab.fam[rSel.value], y = +ySel.value; age = clamp(tab.now - y, 0, 30);
     const a = f.c[age], k = tab.sk[age < 10 ? 0 : 1];   // the price tool's Expected sale rule
-    ask = r100(a); sale = r100(a * k); loan = r100(a * k * tab.share); rest = sale - loan;
+    ask = r100(a); sale = r100(a * k); loan = r100(a * k * tab.share);
     tool.href = `price.html#r=${f.t}&y=${y}&p=${ask}&m=${Math.round(ask * .036 / 10) * 10}`;   // every link into the tool carries a rent, 3.6% of the price a month, or the tool warns about one the reader never typed
     const say = f.s.charAt(0).toUpperCase() + f.s.slice(1);
-    putAll('[data-say]', say); putAll('[data-yr]', y); putAll('[data-a]', fmt(ask)); putAll('[data-p]', fmt(sale)); putAll('[data-l]', fmt(loan)); putAll('[data-e]', fmt(rest));
-    const want = [ask, sale, loan];
-    const old = age < 10 ? 0 : 1;
-    whyEl.textContent = age < f.g[0] || age > f.g[1] ? 'Our estimate of a real sale. We have no listings of this robot at this age, so it only follows the trend.' : `Our estimate of a real sale. At auction, arms like this bring about ${fmt(r100(ask * tab.ar[old]))}, going by ${tab.an[old]} sales.`;
-    noteEl.hidden = age < 8 || age > 11;
-    if (shown === null || reduce) { shown = want; outs.forEach((o, i) => o.textContent = fmt(want[i])); } else {
-      const from = shown.slice(), st = performance.now(); cancelAnimationFrame(tw);
-      const step = t => { const q = out3(clamp((t - st) / 320)); shown = from.map((v, i) => lerp(v, want[i], q)); outs.forEach((o, i) => o.textContent = fmt(q < 1 ? r100(shown[i]) : want[i])); if (q < 1) tw = requestAnimationFrame(step); };
+    putAll('[data-say]', say); putAll('[data-yr]', y); putAll('[data-a]', fmt(ask)); putAll('[data-p]', fmt(sale));
+    loanEl.textContent = fmt(loan);
+    // the one line under the price: what it is, and either of the two honest warnings when it applies
+    whyEl.textContent = tab.sale + (age < f.g[0] || age > f.g[1] ? ' We have no listings of this robot at this age, so it only follows the trend.' : '') + (age === 9 || age === 10 ? ' ' + tab.step : '');
+    if (shown === null || reduce) { shown = sale; saleEl.textContent = fmt(sale); } else {
+      const from = shown, st = performance.now(); cancelAnimationFrame(tw);
+      const step = t => { const q = out3(clamp((t - st) / 320)); shown = lerp(from, sale, q); saleEl.textContent = fmt(q < 1 ? r100(shown) : sale); if (q < 1) tw = requestAnimationFrame(step); };
       tw = requestAnimationFrame(step);
     }
     if (W) layout();
@@ -203,11 +195,18 @@
   // ---------------------------------------------------------------- layout
   const docTop = el => el.getBoundingClientRect().top + scrollY, docBot = el => el.getBoundingClientRect().bottom + scrollY;
   const place = (el, x, y, z = 1) => { el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%) scale(${z.toFixed(3)})`; };
+  // the small robot, the very one the 50 robots further down the page are drawn with: drawn once by dotbot.js at the size of a cell, its dots lifted to full white as that section's filter does
+  let spr = null, sprCell = 0, sprOK = false;
+  const robotImage = cw => { if (sprCell === cw && sprOK) return spr; const c = stick.querySelector('.h-sprite'); if (!c || !window.FerraDots) return null;
+    if (sprCell !== cw) { sprCell = cw; sprOK = false; c.style.width = cw * .94 + 'px'; window.FerraDots.draw(c); }
+    if (!c.width || !c.height) return null;
+    const x = c.getContext('2d').getImageData(0, Math.floor(c.height / 2), c.width, 1).data; let any = false; for (let i = 3; i < x.length; i += 4) if (x[i]) { any = true; break; } if (!any) return null;
+    spr = document.createElement('canvas'); spr.width = c.width; spr.height = c.height; const o = spr.getContext('2d'); o.drawImage(c, 0, 0); o.globalCompositeOperation = 'lighter'; o.drawImage(c, 0, 0); sprOK = true; return spr; };
   function layout() {
     W = stick.clientWidth; FH = stick.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 760;
     cv.width = Math.round(W * dpr); cv.height = Math.round(FH * dpr);
     const narrow = W <= 1060, cols = BX1 - BX0, rows = BY1 - BY0 + 1, stageTop = docTop(film);
-    floorY = phone ? H - (H < 720 ? 40 : 46) : narrow ? H - 84 : Math.round(H * .925);
+    floorY = phone ? H - (H < 720 ? 54 : 62) : narrow ? H - 84 : Math.round(H * .885);
     const wrap = Math.min(W, 1200), mar = (W - wrap) / 2 + (phone ? 16 : 24);
     // the robot on the first screen stands on the floor line, beside the copy on desktop and under it on a phone
     if (W <= 900) {
@@ -221,7 +220,7 @@
       const tb = b1.querySelector('.h-bt').getBoundingClientRect(), bottom = tb.height + 28 + 12, q = Math.min((W - 20) / cols, (floorY - bottom) / rows);
       beat = { p: q, r: W - (W - cols * q) / 2 };
     } else beat = { p: hero.p, r: hero.r };
-    const copyEnd = (docBot(document.querySelector('.h-copy')) - stageTop) / H, b1Top = b1.querySelector('.h-bt').offsetTop / H; T.b1[0] = Math.max(.54 * TS, copyEnd - b1Top - .02); T.b1[1] = T.b1[0] + .14; RESTS[0][0] = Math.max(.7 * TS, copyEnd - b1Top - .04);
+    const copyEnd = (docBot(document.querySelector('.h-copy')) - stageTop) / H, b1Top = b1.querySelector('.h-bt').offsetTop / H; T.b1[0] = Math.max(.45, copyEnd - b1Top - .02); T.b1[1] = T.b1[0] + .1; RESTS[0][0] = Math.max(.6, copyEnd - b1Top - .04);
     autoOK = !narrow || !D || (floorY - (BY1 - D.rows[D.demo][7]) * beat.p - 130 > b1.querySelector('.h-bt').getBoundingClientRect().height + 28);
     // the chart stands on the same line: its bottom edge is the floor the robot stood on
     const bt = b2.querySelector('.h-bt').getBoundingClientRect();
@@ -233,19 +232,32 @@
       l0.style.transform = `translate(${(C.l - l0.offsetWidth - (phone ? 6 : 14)).toFixed(1)}px,${(Y(D.curve[0]) - l0.offsetHeight / 2).toFixed(1)}px)`;
       l1.style.transform = phone ? `translate(${(X(30) - l1.offsetWidth).toFixed(1)}px,${(Y(620) - l1.offsetHeight / 2).toFixed(1)}px)` : `translate(${(X(30) + 14).toFixed(1)}px,${(Y(D.curve[30]) - l1.offsetHeight + 15).toFixed(1)}px)`;
       const a = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m); al.style.transform = `translate(${clamp(X(a[5]) - al.offsetWidth / 2, 8, W - al.offsetWidth - 8).toFixed(1)}px,${(Y(a[1]) + 9).toFixed(1)}px)`; }
-    // discs
-    const left = phone || narrow;
+    // the robot's own price, under the line it stands on
+    tagEl.style.transform = `translate(${(W <= 900 ? mar : Math.max(mar, hero.r - cols * hero.p)).toFixed(1)}px,${(floorY + (phone ? 7 : 11)).toFixed(1)}px)`;
+    // the disc: its area follows the price, up to one new arm's cost; the smallest stays wide enough to hold its number
+    const left = phone || narrow, unit = +totEl.dataset.unit, count = +totEl.dataset.robots;
     const bb = (e, top) => e.querySelector('.h-bt').getBoundingClientRect().height + top;
-    if (left) { const t3 = bb(b3, 28) + 14, t4 = bb(b4, 28) + 12, Rm = Math.min((W - 28) / 2, (floorY + 60 - t3) / 2);
-      let r1 = Math.min(Rm * Math.sqrt(.7), (W - 24) * .4, (H - 14 - t4) / 2), r2, c1x, c1y, c2x, c2y;
-      for (let i = 0; i < 12; i++) { r2 = r1 * Math.sqrt(.3 / .7); c1x = 12 + r1; c1y = t4 + r1; c2x = W - 12 - r2; const dx = c2x - c1x, dist = r1 + r2 + 6; c2y = c1y + Math.sqrt(Math.max(0, dist * dist - dx * dx)); if (c2y + r2 <= H - 14) break; r1 *= .95; }
-      disc = { x: W / 2, y: t3 + Rm, R: Rm, r1, r2, c1x, c1y, c2x, c2y };
-    } else { const rightX = Math.min(W - 28, W / 2 + 840), area = rightX - (mar + Math.min(460, W * .3) + 24), Rm = Math.min(H * .4, area / 2), r1 = Math.min(H * .36, (area - 8) / (2 * (1 + Math.sqrt(.3 / .7)))), r2 = r1 * Math.sqrt(.3 / .7), cy = H * .5;
-      const base = cy + r1, c2x = rightX - r2, c1x = c2x - r2 - r1 - 8;
-      disc = { x: rightX - area / 2, y: cy, R: Rm, r1, r2, c1x, c1y: base - r1, c2x, c2y: base - r2 }; }
-    n0.querySelector('b').style.fontSize = (disc.R * .4).toFixed(1) + 'px';
-    n1.querySelector('b').style.fontSize = (disc.r1 * .4).toFixed(1) + 'px'; n2.querySelector('b').style.fontSize = (disc.r2 * .4).toFixed(1) + 'px';
-    n1.style.width = (disc.r1 * 1.7) + 'px'; n2.style.width = (disc.r2 * 1.7) + 'px';
+    const leftW = left ? W - 2 * mar : Math.min(460, W * .3);
+    let top3, rightX, area;
+    if (left) { rightX = W - 12; area = W - 24; top3 = Math.max(bb(b3, 28), bb(b4, 28)) + 14; const Rm = Math.min(area / 2, (H - 18 - top3) / 2); disc = { x: W / 2, y: top3 + Math.min(Rm, area / 2), R: Rm, rmin: 58 }; }
+    else { rightX = Math.min(W - 28, W / 2 + 840); area = rightX - (mar + leftW + 24); const Rm = Math.min(H * .4, area / 2); disc = { x: rightX - area / 2, y: H * .5, R: Rm, rmin: 74 }; }
+    disc.r0 = Math.max(disc.rmin, disc.R * Math.sqrt(sale / unit));
+    n0.querySelector('b').style.fontSize = (disc.R * .36).toFixed(1) + 'px';
+    // the running total: as wide as its column allows
+    totV.style.fontSize = '100px'; totV.textContent = '$6,250,000'; const tf = Math.min(left ? 76 : 96, leftW / (totV.offsetWidth / 100) * .99); totV.style.fontSize = tf.toFixed(1) + 'px';
+    // the 50 robots: seven columns are the loan, three are what the company pays, in the same order as the section further down
+    const ASPECT = 1.13, textBot = left ? 22 + tf * 1.12 + Math.max(bb(b5, 8), bb(b6, 8)) : 0, labH = phone ? 46 : 34;
+    const partK = .36, cw = Math.min(area / (10 + partK), (left ? H - 18 - labH - textBot : H - 150) / (5 * ASPECT)), ch = cw * ASPECT, gw = cw * (10 + partK), gh = ch * 5;
+    const gx = left ? (W - gw) / 2 : rightX - gw, gy = left ? H - 14 - labH - gh : (H - gh) / 2 - labH / 2;
+    const tt = left ? 22 : Math.max(28, gy - 6);
+    stick.style.setProperty('--tt', tt.toFixed(1) + 'px'); stick.style.setProperty('--th', (tf * 1.08).toFixed(1) + 'px');
+    const pack = []; for (let i = 0; i < count; i++) { const rr = Math.sqrt((i + .5) / count), th = i * 2.39996; pack.push([rr * Math.cos(th) * .9, rr * Math.sin(th) * .9]); }
+    pack.sort((a, b) => a[0] - b[0]);
+    const cells = [];   // the dots keep their left to right, top to bottom order on the way to the robots, so none cross
+    for (let c = 0; c < 10; c++) { const col = pack.slice(c * 5, c * 5 + 5).sort((a, b) => a[1] - b[1]); for (let r = 0; r < 5; r++) cells.push({ c, r, px: col[r][0], py: col[r][1], x: gx + cw * (c + .5), y: gy + ch * (r + .5), o: ((c * 5 + r) * 2654435761 >>> 0) % 1000 / 1000 }); }
+    grid = { cw, ch, part: cw * partK, cells, rd: Math.max(1.8, cw * .05), rp: disc.R * Math.sqrt(.46 / count), gx, gy, gw, gh };
+    gl0.style.transform = `translate(${gx.toFixed(1)}px,${(gy + gh + 8).toFixed(1)}px)`; gl0.style.width = (cw * 7).toFixed(1) + 'px';
+    gl1.style.transform = `translate(${(gx + cw * (7 + partK)).toFixed(1)}px,${(gy + gh + 8).toFixed(1)}px)`; gl1.style.width = (cw * 3).toFixed(1) + 'px';
     if (R) { const base = beat.p;
       for (let j = 0; j < R.n; j++) { const q = D.rows[j], f = rad(q[2]); R.x0[j] = beat.r - (q[6] - BX0) * beat.p; R.y0[j] = floorY - (BY1 - q[7]) * beat.p;
         R.r0[j] = base * .94 * f; R.x1[j] = X(q[5]); R.y1[j] = Y(q[2]); R.r1[j] = (phone ? 2.8 : 4.8) * Math.pow(f, .8); }
@@ -259,7 +271,7 @@
   const scroll = () => { let s = (scrollY - docTop(film)) / (H || 1); if (s < 0) s = 0; if (reduce) { for (const r of RESTS) if (s < r[0]) { s = r[1]; break; } } return s; };
   const show = (el, a, dy) => { const v = a > .002; if (el._v !== v) { el._v = v; el.style.visibility = v ? 'visible' : 'hidden'; } el.style.opacity = a.toFixed(3); if (dy !== undefined) el.style.transform = dy ? `translateY(${dy.toFixed(1)}px)` : ''; };
   const beatA = (s, t) => { const i = seg(s, t[0], t[1]), o = seg(s, t[2], t[3]); return { a: i * (1 - o), dy: (1 - out3(i)) * 18 - in2(o) * 18 }; };
-  let ptr = null; const axLate = [axis.querySelector('.h-l0'), axis.querySelector('.h-l1'), axis.querySelector('.h-al')];
+  let nNow = '', ptr = null; const n0Val = n0.querySelector('b'), axLate = [axis.querySelector('.h-l0'), axis.querySelector('.h-l1'), axis.querySelector('.h-al')];
   function paintFine(s, now, g, k, cam) {
     if (!frames) return;
     const el = reduce ? 0 : (now - t0) / 1000 * fps, dd = (el % nF + nF * 1.5) % nF - nF / 2, idx = reduce ? pose : ((Math.round(pose + dd * (1 - g)) % nF) + nF) % nF;
@@ -285,7 +297,7 @@
     const s = sv; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, FH);
     const g = seg(s, ...T.slow), k = seg(s, ...T.gather), camK = io3(seg(s, ...T.cam));
     const cam = { p: lerp(hero.p, beat.p, camK), r: lerp(hero.r, beat.r, camK), a: lerp(hero.a, 1, seg(s, 0, .3)) };
-    const fly = seg(s, ...T.fly), fall = seg(s, ...T.fall), grow = seg(s, ...T.grow), split = seg(s, ...T.split);
+    const fly = seg(s, ...T.fly), fall = seg(s, ...T.fall), grow = seg(s, ...T.grow);
     // the one line: the robot stands on it, then it is the chart's axis. It goes when the chart goes.
     const lineA = 1 - seg(s, ...T.axisOut);
     if (lineA > 0) { ctx.fillStyle = `rgba(255,255,255,${(.55 * lineA).toFixed(3)})`; ctx.fillRect(0, floorY, W, 1); }
@@ -322,24 +334,37 @@
       if (hl >= 0 && R.r[hl] > 0) { ctx.fillStyle = 'rgb(150,232,255)'; ctx.beginPath(); ctx.arc(R.x[hl], R.y[hl], Math.max(R.r[hl] * 1.25, phone ? 5 : 6), 0, 6.2832); ctx.fill(); }
       if (fall > 0 && grow === 0) { const m = Math.sqrt(arrived / n) * (phone ? 16 : 26) + 3; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(mx, my, m, 0, 6.2832); ctx.fill(); }
     }
-    // one dot, one price, then two. Each number is glued to its disc and scales with it, so a disc is never blank.
+    // one dot, one price, one new arm's cost, then 50 robots. The number is glued to its disc and scales with it, so the disc is never blank.
+    const cost = io3(seg(s, ...T.cost)), burst = seg(s, ...T.burst), open = seg(s, ...T.open), loanK = seg(s, ...T.loan);
+    const m0 = (phone ? 16 : 26) + 3, ge = io3(grow), dcx = lerp(mx, disc.x, ge), dcy = lerp(my, disc.y, ge), dr = lerp(m0, lerp(disc.r0, disc.R, cost), ge), gone = seg(burst, 0, .12);
+    if (grow > 0 && gone < 1) { ctx.fillStyle = `rgba(255,255,255,${(1 - gone).toFixed(3)})`; ctx.beginPath(); ctx.arc(dcx, dcy, dr, 0, 6.2832); ctx.fill(); }
+    let opened = 0, dimmed = 0;
+    if (burst > 0 && grid) { const { cells, part, rd, rp, cw } = grid, im = robotImage(cw), iw = im ? im.width / dpr : 0, ih = im ? im.height / dpr : 0; let late = 0;
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < 50; i++) { const q = cells[i], de = .04 + q.o * .3, t = io3(seg(burst, de, de + .62)), hx = disc.x + q.px * disc.R, hy = disc.y + q.py * disc.R;
+        // the last three columns are the 15 robots the company pays for: they dim one at a time, each taking one robot's cost off the total, and move aside together
+        let al = 1, off = 0; if (q.c >= 7) { const d = seg(loanK, late / 15 * .72, late / 15 * .72 + .22); late++; if (d > .5) dimmed++; al = lerp(1, .3, d); off = part * io3(seg(loanK, .6, 1)); }
+        const tx = q.x + off, ty = q.y, u = 1 - t, bx = (hx + tx) / 2 + (hy - ty) * .16, by = (hy + ty) / 2 + (tx - hx) * .1, x = u * u * hx + 2 * u * t * bx + t * t * tx, y = u * u * hy + 2 * u * t * by + t * t * ty;
+        const sd = (q.c + q.r) / 13 * .5, o = im ? out3(seg(open, sd, sd + .5)) : 0; if (seg(open, sd, sd + .5) > .3) opened++;
+        if (o < 1) { const rr = lerp(rp, rd * 2.2, t) * (1 - o); ctx.globalAlpha = al; ctx.beginPath(); ctx.arc(x, y, rr, 0, 6.2832); ctx.fill(); }
+        if (o > 0) { const z = .5 + .5 * o; ctx.globalAlpha = al * o; ctx.drawImage(im, x - iw * z / 2, y - ih * z / 2, iw * z, ih * z); } }
+      ctx.globalAlpha = 1; }
+    // the running total, one robot's cost at a time
+    const totA = seg(s, T.b5[0], T.b5[1]) * (1 - seg(s, T.b6[2], T.b6[3]));
+    if (totA > 0) { const v = fmt(+totEl.dataset.unit * (Math.max(1, opened) - dimmed)); if (totV.textContent !== v) totV.textContent = v; }
+    show(totEl, totA);
+    const glA = seg(loanK, .5, .9) * (1 - seg(s, T.b6[2], T.b6[3])); show(gl0, glA); show(gl1, glA);
+    // the film closes on black, so the next section's picture comes up out of it with no edge
     const dark = seg(s, ...T.dim); if (dark > 0) { ctx.fillStyle = `rgba(4,6,12,${dark.toFixed(3)})`; ctx.fillRect(0, 0, W, FH); }
-    let G = null;
-    if (grow > 0) { const m0 = (phone ? 16 : 26) + 3, e = io3(grow), cx = lerp(mx, disc.x, e), cy = lerp(my, disc.y, e), rr = lerp(m0, disc.R, e), sp = io3(split), fin = io3(seg(s, ...T.end));
-      // the end of the film: both discs close to nothing while the stage goes dark, so the next section's picture comes up out of black with no edge
-      const r1 = lerp(rr, disc.r1, sp) * (1 - fin), r2 = disc.r2 * out3(split) * (1 - fin), x1 = lerp(cx, disc.c1x, sp), y1 = lerp(cy, disc.c1y, sp), x2 = lerp(lerp(cx, disc.c2x, sp), x1, fin), y2 = lerp(lerp(cy, disc.c2y, sp), y1, fin);
-      if (sp > 0) { ctx.fillStyle = '#1e339b'; ctx.beginPath(); ctx.arc(x2, y2, r2, 0, 6.2832); ctx.fill(); }
-      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x1, y1, r1, 0, 6.2832); ctx.fill(); G = { x1, y1, r1, x2, y2, r2 }; }
+    show(tagEl, reduce ? (s < .3 ? 1 : 0) : 1 - seg(s, 0, .14));
     // page text
-    const a1 = beatA(s, T.b1), a2 = beatA(s, T.b2), a3 = beatA(s, T.b3), a4 = beatA(s, T.b4);
-    show(b1, a1.a, a1.dy); show(b2, a2.a, a2.dy); show(b3, a3.a, a3.dy); show(b4, a4.a, a4.dy);
+    const a1 = beatA(s, T.b1), a2 = beatA(s, T.b2), a3 = beatA(s, T.b3), a4 = beatA(s, T.b4), a5 = beatA(s, T.b5), a6 = beatA(s, T.b6);
+    show(b1, a1.a, a1.dy); show(b2, a2.a, a2.dy); show(b3, a3.a, a3.dy); show(b4, a4.a, a4.dy); show(b5, a5.a, a5.dy); show(b6, a6.a, a6.dy);
     show(axis, seg(s, ...T.axis) * (1 - seg(s, ...T.axisOut)));
     const cu2 = seg(s, T.curve[1] - .15, T.curve[1]); axLate.forEach(e => e.style.opacity = cu2);
-    const fin = io3(seg(s, ...T.end)), go = 1 - seg(fin, .45, .8), split2 = seg(split, .1, .4);
-    const nv = seg(grow, .04, .3) * (1 - seg(split, 0, .32)) * go; if (nv > 0 && G) place(n0, G.x1, G.y1, G.r1 / disc.R); show(n0, nv);
-    const na = split2 * go, nb = seg(split, .6, .85) * go;
-    if (G) { if (na > 0) place(n1, G.x1, G.y1, G.r1 / disc.r1); if (nb > 0) place(n2, G.x2, G.y2, G.r2 / disc.r2); }
-    show(n1, G ? na : 0); show(n2, G ? nb : 0);
+    const nv = seg(grow, .04, .3) * (1 - gone);
+    if (nv > 0) { const k2 = lerp(1.32, 1, cost), ds = dr / disc.R * k2; place(n0, dcx, dcy, ds); const v = cost > 0 ? fmt(cost >= 1 ? +totEl.dataset.unit : r100(Math.exp(lerp(Math.log(sale), Math.log(+totEl.dataset.unit), cost)))) : fmt(sale); if (nNow !== v) { nNow = v; n0Val.textContent = v; } }
+    show(n0, nv);
     hit = hitOK; autoTip(s); placeTip();
   }
 

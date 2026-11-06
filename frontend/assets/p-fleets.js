@@ -86,7 +86,7 @@
   // once the request is in, the fields are gone, so their message line goes too
   const done = form && form.querySelector('.ldone');
   if (done && msg) new MutationObserver(() => { if (!done.hidden) msg.hidden = true; }).observe(done, { attributes: true, attributeFilter: ['hidden'] });
-  // every "Get a quote" link on this page returns to the form and puts the cursor in the robot type field
+  // every "Ask what you could borrow" link on this page returns to the form and puts the cursor in the robot type field
   // wide screens: the whole hero (fields and preview) fits, so return to its top; phones: to the first field
   const toForm = smooth => { const wide = matchMedia('(min-width: 901px)').matches, el = wide ? document.querySelector('.f-hero') : (form || ty), nav = document.querySelector('.nav'), nh = nav ? nav.getBoundingClientRect().height : 0, top = Math.max(0, el.getBoundingClientRect().top + scrollY - (wide ? nh - 24 : nh + 24)); scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); ty.focus({ preventScroll: true }); };
   document.querySelectorAll('a[href="#quote"]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); history.replaceState(null, '', '#quote'); toForm(!matchMedia('(prefers-reduced-motion: reduce)').matches); }));
@@ -100,25 +100,12 @@
   const fitAll = () => { fitReady = true; [ty, wh].forEach(s => s && fitSel(s)); [n, p].forEach(fitNum); };
   [ty, wh].forEach(s => s && s.addEventListener('change', () => { fitSel(s); fitNum(p); }));
   fitAll(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll); addEventListener('resize', fitAll);
-  // the second half of the form: "Get a quote" opens email and company and turns into Send
+  // the second half of the form: "Ask what you could borrow" opens email and company and turns into Send
   const open = document.getElementById('f-open'), send = document.getElementById('f-send'), who = document.getElementById('f-who');
   const reveal = () => { if (!who || !who.hidden) return; who.hidden = false; open.hidden = true; send.hidden = false; const em = who.querySelector('input[type=email]'); if (em) em.focus({ preventScroll: true }); };
   if (open) open.addEventListener('click', reveal);
   // each robot in the row picks itself in the form on the way back up
   document.querySelectorAll('[data-pick]').forEach(a => a.addEventListener('click', () => { if ([...ty.options].some(o => o.value === a.dataset.pick)) { ty.value = a.dataset.pick; ty.dispatchEvent(new Event('change')); } }));
-  // from hello to money: the robot on the line follows the page, stopping over each step
-  const tw = document.querySelector('.f-tlw'), run = tw && tw.querySelector('.f-runner');
-  if (run) {
-    const stops = 4, ease = t => t * t * (3 - 2 * t);
-    const place = () => { const r = tw.getBoundingClientRect(), vh = innerHeight; if (r.bottom < -100 || r.top > vh + 100) return;
-      const p = Math.min(1, Math.max(0, (vh * .86 - r.top) / (vh * .62))), wide = matchMedia('(min-width: 821px)').matches;
-      const span = wide ? tw.clientWidth * (stops - 1) / stops + 6 : tw.clientWidth - run.offsetWidth;
-      // on wide screens it rests over each of the four steps in turn; on a phone it just crosses the line
-      const seg = p * (stops - 1), i = Math.min(stops - 2, Math.floor(seg)), f = seg - i, at = wide ? (i + ease(Math.min(1, f * 1.25))) / (stops - 1) : p;
-      run.style.transform = `translate3d(${(at * span).toFixed(1)}px,0,0)`; };
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) run.style.transform = 'translate3d(' + (tw.clientWidth - run.offsetWidth) + 'px,0,0)';
-    else { addEventListener('scroll', place, { passive: true }); addEventListener('resize', place); place(); }
-  }
   // one robot earning its price back: as the page scrolls, one month of rent at a time, the dots fill from the base up. Each dot is an equal share of the robot's price.
   const pb = document.querySelector('.f-pay-bot'), pbSec = pb && pb.closest('.f-why');
   const pbData = pb && (window.FERRA_DOTS || {})[pb.dataset.bot];
@@ -140,6 +127,26 @@
       pbSec.classList.add('f-why-live'); size();
       const onScroll = () => { const r = run.getBoundingClientRect(), span = r.height - innerHeight, p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0; show(Math.round(Math.min(1, p / .86) * months)); };
       addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', () => { size(); onScroll(); }); onScroll();
+    }
+  }
+  // one month: one small robot for each of the 50. When the section arrives each robot's rent comes in, left to right, then the two groups part. Drawn once from one sprite; with reduced motion they stand finished.
+  const mg = document.querySelector('.f-mg'), mc = mg ? [...mg.querySelectorAll('.f-mbots')] : [], arm = (window.FERRA_DOTS || {})['arm-s'];
+  if (mc.length && arm) {
+    const cells = arm.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .35 + .65 * L / 100) }; });   // every second row and column below, so at this size the dots stay dots
+    const y0 = Math.min(...cells.map(q => q.cy)), rows = Math.max(...cells.map(q => q.cy)) - y0 + 1, TOTAL = mc.reduce((a, c) => a + +c.dataset.n, 0);
+    const sprite = cw => { const d = Math.min(2, devicePixelRatio || 1), P = cw * .92 / arm.w, S = document.createElement('canvas'); S.width = Math.ceil(cw * d); S.height = Math.ceil(P * rows * d); const g = S.getContext('2d'); g.scale(d, d); g.fillStyle = '#fff'; g.beginPath(); for (const q of cells) { if (q.cx % 2 || q.cy % 2) continue; const r = Math.max(.6, P * .92 * Math.max(.5, q.s)), X = (q.cx + .5) * P + cw * .04, Y = (q.cy - y0 + .5) * P; g.moveTo(X + r, Y); g.arc(X, Y, r, 0, 6.2832); } g.fill(); return { S, cw, h: P * rows + cw * .1 }; };
+    let spr = null;
+    const layout = () => { const cw = mc[0].clientWidth / +mc[0].dataset.cols; spr = sprite(cw); mc.forEach(c => { const n = +c.dataset.n, R = Math.ceil(n / +c.dataset.cols), useCols = +c.dataset.cols, d = Math.min(2, devicePixelRatio || 1), H = Math.ceil(R * spr.h); c.style.height = H + 'px'; c.width = Math.round(c.clientWidth * d); c.height = Math.round(H * d); c._R = R; c._C = useCols; c._cw = c.clientWidth / useCols; }); };
+    // k runs 0 to 1: how far the rent has come in; part runs 0 to 1: how far the two groups have turned into bright and pale
+    const draw = (k, part) => { const d = Math.min(2, devicePixelRatio || 1); mc.forEach((c, gi) => { const x = c.getContext('2d'), n = +c.dataset.n, from = +c.dataset.from; x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, c.clientWidth, c.clientHeight);
+      for (let i = 0; i < n; i++) { const a = Math.min(1, Math.max(0, (k * (TOTAL + 6) - (from + i)) / 6)), target = gi ? 1 - .62 * part : 1; x.globalAlpha = (.14 + .86 * a) * target; x.drawImage(spr.S, (i % c._C) * c._cw + (c._cw - spr.cw) / 2, Math.floor(i / c._C) * spr.h, spr.cw, spr.S.height / d); } x.globalAlpha = 1; }); };
+    layout();
+    if (still) { draw(1, 1); addEventListener('resize', () => { layout(); draw(1, 1); }); }
+    else {
+      let done = false, raf = 0; draw(0, 0);
+      const run = () => { const t0 = performance.now(), tick = t => { const e = t - t0, k = Math.min(1, e / 1000), p = Math.min(1, Math.max(0, (e - 1050) / 500)); draw(k, p * p * (3 - 2 * p)); if (p < 1) raf = requestAnimationFrame(tick); else done = true; }; raf = requestAnimationFrame(tick); };
+      new IntersectionObserver((es, io) => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); run(); } }), { threshold: .3 }).observe(mg);
+      addEventListener('resize', () => { layout(); if (done) draw(1, 1); else draw(0, 0); });
     }
   }
 })();

@@ -15,7 +15,9 @@
   const A = D.auc.map(a => ({ age: a[0], usd: a[1], t: a[2], when: a[3], src: a[4], url: a[5], sold: true, a: 0 }));
   // the axis starts just under the lowest ordinary price; a rare listing far below it sits on the floor with its real price printed beside it
   const lo = Math.min(...P.map(q => q.usd).filter(v => v >= 1000), ...A.map(q => q.usd)) * .82, hi = Math.max(...P.map(q => q.usd)) * 1.12;
-  let step = reduce ? N - 1 : 0, g = {}, hover = null, band = 0, line = 0, fams = 0, seen = reduce, born = 0, raf = 0;
+  // the listing and the sale the line joins
+  const LI = P[D.link.li], SA = A[D.link.au];
+  let step = reduce ? N - 1 : 0, g = {}, hover = null, band = 0, line = 0, fams = 0, link = 0, seen = reduce, born = 0, raf = 0;
 
   function layout() {
     const W = chart.clientWidth, H = chart.clientHeight, phone = W < 560;
@@ -48,20 +50,25 @@
     if (rt || lf) s += `<g class="lg" data-s="4"><text class="lb" x="${low.x + (rt ? 12 : -12)}" y="${low.y + 5}" text-anchor="${rt ? 'start' : 'end'}">${say}</text></g>`;
     else { const i = say.indexOf(' landed'), x = Math.min(low.x - w * .31, R - w * .62), y = low.y + 40 < base - 6 ? low.y + 22 : low.y - 30; s += `<g class="lg" data-s="4"><text class="lb" x="${x}" y="${y}">${say.slice(0, i)}<tspan x="${x}" dy="18">${say.slice(i + 1)}</tspan></text></g>`; }
     // on a phone the chart is too short for this note beside the last step's label, and the last step is about something else
-    s += phone ? `<g class="lg" data-s="0 1 2 3">${lowest(P, lo)}</g>` : lowest(P, lo);
+    s += `<g class="lg" data-s="${phone ? '0 1 2 3' : '0 1 2 3 4'}">${lowest(P, lo)}</g>`;
+    // the two prices the line joins, on the side of each dot away from the line. A dot with no room on that side takes its words under it.
+    const up = LI.y <= SA.y, tall = reduce ? 24 : phone ? 28 : 38, gapx = phone ? 13 : 18;
+    const say2 = (q, big, small, top) => { const room = q.x + gapx + big.length * tall * .6 < R, side = q.x > (L + R) / 2 ? (q.x - gapx - big.length * tall * .6 > L ? -1 : 1) : (room ? 1 : -1), x = q.x + side * gapx, a = side > 0 ? 'start' : 'end', y = top ? q.y - 2 : q.y + tall * .72 + 2; return `<text class="bn" x="${x}" y="${y}" text-anchor="${a}">${big}</text><text class="bs" x="${x}" y="${y + 21}" text-anchor="${a}">${small}</text>`; };
+    s += `<g class="lg" data-s="5">${say2(LI, usd(LI.usd), 'asking today', up)}${say2(SA, usd(SA.usd), 'sold at auction', !up)}</g>`;
     ax.setAttribute('viewBox', `0 0 ${W} ${H}`); ax.innerHTML = s;
     marks();
   }
-  function marks() { ax.querySelectorAll('.lg').forEach(n => { n.classList.toggle('on', seen && (reduce ? n.dataset.s.includes('4') || n.dataset.s === '1 2' : n.dataset.s.split(' ').includes(String(step)))); }); }
+  function marks() { ax.querySelectorAll('.lg').forEach(n => { n.classList.toggle('on', seen && (reduce ? n.dataset.s.includes('4') || n.dataset.s === '1 2' || n.dataset.s === '5' : n.dataset.s.split(' ').includes(String(step)))); }); }
 
   function target(q) {
     // [alpha, colour mix toward cyan, extra size]
-    if (reduce) return [.9, 0, 0];
+    if (reduce) return q === LI ? [1, 0, 2.4] : [.5, 0, 0];
     switch (step) {
       case 0: return [.92, 0, 0];
       case 1: return [.6, 0, 0];
       case 2: return Math.abs(q.whole - 10) <= 1 ? [1, 0, 1] : [.22, 0, 0];
       case 3: return q.fam === D.hi.id ? [1, 0, 1] : q.fam === D.lo.id ? [1, 1, 1] : [.14, 0, 0];
+      case 5: return q === LI ? [1, 0, 2.4] : [.13, 0, 0];
       default: return [.5, 0, 0];
     }
   }
@@ -71,7 +78,8 @@
     const to = (v, t, k = .12) => { const n = v + (t - v) * k; if (Math.abs(t - n) > .004) moving = true; return Math.abs(t - n) > .004 ? n : t; };
     const on = seen ? 1 : 0;
     band = to(band, on * (reduce || step === 2 || step === 4 ? 1 : 0));
-    line = to(line, on * (reduce || step === 1 || step === 2 || step === 4 ? 1 : step === 3 ? .35 : 0), .1);
+    line = to(line, on * (reduce || step === 1 || step === 2 || step === 4 ? 1 : step === 3 ? .35 : step === 5 ? .2 : 0), .1);
+    link = to(link, on * (reduce || step === 5 ? 1 : 0), .07);
     fams = to(fams, on * (!reduce && step === 3 ? 1 : 0));
     if (band > .01) { c.fillStyle = `rgba(255,255,255,${.16 * band})`; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][2])); for (let a = 30; a >= 0; a--) c.lineTo(X(a), Y(D.curve[a][0])); c.closePath(); c.fill(); }
     if (fams > .01) { const pl = (cu, col) => { c.strokeStyle = `rgba(${col},${fams})`; c.lineWidth = 2.5; c.beginPath(); cu.forEach((v, a) => c.lineTo(X(a), Y(v))); c.stroke(); }; pl(D.hi.curve, '255,255,255'); pl(D.lo.curve, CY.join(',')); }
@@ -87,8 +95,9 @@
       c.beginPath(); c.arc(q.x, q.y, (g.r + q.gr * .7 + (q === hover ? 1.4 : 0)) * (.4 + .6 * app), 0, 6.2832); c.fill();
     }
     if (line > .01) { c.setLineDash([]); c.strokeStyle = `rgba(255,255,255,${line})`; c.lineWidth = 2.5; c.lineJoin = 'round'; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][1])); c.stroke(); }
-    const au = seen && (reduce || step === 4) ? 1 : 0;
-    A.forEach((q, i) => { q.a = to(q.a, au, .1); if (q.a < .01) return; c.fillStyle = `rgba(14,22,38,${q.a})`; c.beginPath(); c.arc(q.x, q.y, (g.r + 1.4 + (q === hover ? 1.2 : 0)) * (.5 + .5 * q.a), 0, 6.2832); c.fill(); if (q === hover) { c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } });
+    A.forEach(q => { const au = !seen ? 0 : reduce || step === 4 ? 1 : step === 5 ? (q === SA ? 1 : .16) : 0, big = q === SA ? link * 3 : 0, ring = q === hover || big > .5; q.a = to(q.a, au, .1); if (q.a < .01) return; c.fillStyle = `rgba(14,22,38,${q.a})`; c.beginPath(); c.arc(q.x, q.y, (g.r + 1.4 + big + (q === hover ? 1.2 : 0)) * (.5 + .5 * q.a), 0, 6.2832); c.fill(); if (ring) { c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } });
+    // the line that joins them draws from the asking price down to the sale, and stops at the rim of each dot
+    if (link > .01) { const k = ease(link), x = LI.x + (SA.x - LI.x) * k, y = LI.y + (SA.y - LI.y) * k; c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.lineCap = 'round'; c.beginPath(); c.moveTo(LI.x, LI.y); c.lineTo(x, y); c.stroke(); c.lineCap = 'butt'; c.fillStyle = '#fff'; c.beginPath(); c.arc(LI.x, LI.y, g.r + 2.4, 0, 6.2832); c.fill(); if (k > .97) { c.fillStyle = 'rgb(14,22,38)'; c.beginPath(); c.arc(SA.x, SA.y, g.r + 4.4, 0, 6.2832); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } }
     return moving;
   }
   function frame(now) { raf = 0; if (draw(now)) kick(); }
@@ -107,7 +116,7 @@
     if (!seen && r.top < innerHeight * .55) { seen = true; born = performance.now(); marks(); kick(); }
   }
   // dots you can read
-  const live = () => (reduce || step === 4 ? A.concat(P) : P).filter(q => q.sold || q.a > .1);
+  const live = () => (reduce || step >= 4 ? A.concat(P) : P).filter(q => q.sold || q.a > .1);
   const nearest = (x, y, reach) => { let best = null, bd = reach * reach; for (const q of live()) { const v = (q.x - x) ** 2 + (q.y - y) ** 2; if (v < bd) { bd = v; best = q; } } return best; };
   function showTip(q) {
     hover = q;
@@ -128,13 +137,13 @@
   steps[step].classList.add('on');
   new ResizeObserver(layout).observe(chart);
   layout(); onScroll();
-  if (reduce) { P.forEach(q => { q.a = .9; }); A.forEach(q => { q.a = 1; }); band = 1; line = 1; marks(); kick(); }
+  if (reduce) { P.forEach(q => { q.a = .5; }); A.forEach(q => { q.a = 1; }); band = 1; line = 1; marks(); kick(); }
 
-  // the first screen: the arm is the ruler, its height is the ask. On arrival the paint drains down to each lower price in turn, and each line appears as the paint reaches it.
+  // the first screen: the arm is the ruler, its height is the ask. The three prices are there at once, and the paint drains down the arm to the lowest of them.
   const hb = document.querySelector('.pr-hbot'), lad = document.querySelector('.pr-lad');
   const G = hb && F.ghost && F.ghost('arm');
   if (G) {
-    const rows = G.y1 - G.y0 + 1, cols = G.x1 - G.x0 + 1, [mid, low] = lad.dataset.h.split(' ').map(Number), rungs = lad.querySelectorAll('.pr-r');
+    const rows = G.y1 - G.y0 + 1, cols = G.x1 - G.x0 + 1, [mid, low] = lad.dataset.h.split(' ').map(Number);
     lad.style.setProperty('--ar', `${cols}/${rows}`);
     const pts = G.pts.map(([x, y, s]) => ({ x: x - G.x0 + .5, y: y - G.y0 + .5, s, h: (rows - (y - G.y0 + .5)) / rows }));
     const paint = L => {
@@ -149,10 +158,8 @@
     new ResizeObserver(now).observe(hb);
     if (reduce) now();
     else {
-      lad.classList.add('live'); rungs[0].classList.add('lit');
-      const seg = (from, to, ms, done) => { const t0 = performance.now(), tick = t => { const k = clamp((t - t0) / ms); level = from + (to - from) * ease(k); now(); if (k < 1) requestAnimationFrame(tick); else done && done(); }; requestAnimationFrame(tick); };
-      level = 1; now();
-      setTimeout(() => seg(1, mid, 1000, () => { rungs[1].classList.add('lit'); setTimeout(() => seg(mid, low, 800, () => rungs[2].classList.add('lit')), 260); }), 500);
+      const t0 = performance.now() + 120, tick = t => { const k = clamp((t - t0) / 1100); level = 1 + (low - 1) * ease(k); now(); if (k < 1) requestAnimationFrame(tick); };
+      level = 1; now(); requestAnimationFrame(tick);
     }
   }
 })();

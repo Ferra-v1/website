@@ -116,7 +116,9 @@
   let FF = null, fc = null, fraf = 0, flast = 0, inp = null, arrived = false, heap = null;
   const FD = box ? JSON.parse(box.dataset.fail) : null, fg = box && box.querySelector('.hw-fgrid');
   const out = n => box.querySelector(`[data-fo="${n}"]`);
-  const LIVE = 'rgb(150,232,255)', LOST = 'rgba(255,255,255,.36)', FALL_MS = 760;
+  const LIVE = 'rgb(150,232,255)', ARMS = '#fff', LOST = 'rgba(255,255,255,.3)', FALL_MS = 760;
+  const rough = v => '$' + (Math.round(v / 10000) * 10000).toLocaleString('en-US');
+  let armShare = 0;
   // the heap's places, in the order they fill: from the floor up, the middle first, so at any count it reads as a rounded mound under the arm
   function heapSlots() {
     const low = bot.pts.filter(d => d.y > bot.rows * .72), edge = Math.max(...low.map(d => d.x)) + 1.5, mid = (edge + bot.w) / 2, half = (bot.w - edge) / 2, list = [];
@@ -137,22 +139,23 @@
     bot.pts.forEach(d => { if (!seen.has(d)) order.push(d); });
     order.forEach((d, i) => { d.fr = i / order.length; d.fi = order.length - 1 - i; });
   }
-  function fsize() { if (!box) return; FF = fit(fg, box.clientWidth, phone() ? 300 : Math.min(440, innerHeight * .46)); }
+  function fsize() { if (!box) return; FF = fit(fg, box.clientWidth, phone() ? 240 : Math.min(360, innerHeight * .34)); }
   function fpaint() {
     if (!FF) return;
-    const p = FF.pitch, r = p * .41, up = [], down = [];
+    const p = FF.pitch, r = p * .41, arms = [], up = [], down = [];
     fc.setTransform(FF.dpr, 0, 0, FF.dpr, 0, 0); fc.clearRect(0, 0, FF.w, FF.h);
     for (const d of bot.pts) {
       const h = d.h, x = d.x + (h.x - d.x) * d.k, y = d.y + (h.y - d.y) * d.k * d.k;   // gravity: slow at the top of the fall, fast at the floor
-      (d.to === 0 ? up : down).push([(x + .5) * p, (y + .5) * p, r]);
+      (d.to !== 0 ? down : d.fr < armShare ? arms : up).push([(x + .5) * p, (y + .5) * p, r]);
     }
-    dots(fc, down, LOST); dots(fc, up, LIVE);
+    dots(fc, down, LOST); dots(fc, up, LIVE); dots(fc, arms, ARMS);
   }
   function sale(pc) {
     const each = FD.val / FD.n * pc, total = each * FD.n;
     if (total >= FD.debt) return { sold: Math.ceil(FD.debt / each - 1e-9), back: FD.debt, left: total - FD.debt, short: 0, share: 1.02 };
     return { sold: FD.n, back: total, left: 0, short: FD.debt - total, share: total / FD.debt };
   }
+  const armsSale = pc => { const total = FD.arm * FD.n * pc; return { back: Math.min(total, FD.debt), short: Math.max(0, FD.debt - total) }; };
   function ftick(now) {
     fraf = 0; const dt = Math.min(48, now - (flast || now)); flast = now; let busy = false;
     for (const d of bot.pts) {
@@ -172,12 +175,15 @@
     if (!fraf) fraf = requestAnimationFrame(ftick);
   }
   function apply() {
-    const pc = +inp.value / 100, s = sale(pc);
+    const pc = +inp.value / 100, s = sale(pc), a = armsSale(pc);
+    armShare = a.back / FD.debt;
     out('pct').textContent = inp.value + '%';
     out('back').textContent = money(s.back);
-    out('bl').textContent = s.short > 0 ? 'The lender loses' : 'Left for the company';
-    out('b').textContent = money(s.short > 0 ? s.short : s.left);
-    out('say').textContent = s.short > 0 ? `All ${FD.n} robots are sold and it comes up ${money(s.short)} short. The lender takes that loss.` : `It takes ${s.sold === FD.n ? 'all ' + FD.n + ' robots' : s.sold + ' of the ' + FD.n + ' robots'} to pay back the lender. The rest of the money goes to the company.`;
+    out('lost').textContent = money(s.short);
+    out('aback').textContent = rough(a.back);
+    out('alost').textContent = rough(a.short);
+    out('say').textContent = s.short > 0 ? `Counting everything, all ${FD.n} robots are sold and it still falls short. For the arms alone it falls further short. The lender takes that loss.` : `Counting everything, it takes ${s.sold === FD.n ? 'all ' + FD.n + ' robots' : s.sold + ' of the ' + FD.n + ' robots'} to pay the lender, and the rest goes to the company. For the arms alone, the lender still takes a loss.`;
+    if (!arrived) fpaint(); else if (!fraf) fraf = requestAnimationFrame(ftick);
     inp.style.setProperty('--f', ((+inp.value - +inp.min) / (+inp.max - +inp.min) * 100) + '%');
     inp.setAttribute('aria-valuetext', inp.value + ' percent');
     if (arrived) settle(s.share);

@@ -67,5 +67,5 @@
     const set = o => { mn.hidden = !o; document.documentElement.classList.toggle('mn-open', o); if (pg) pg.inert = o; if (fbar) fbar.inert = o; btns.forEach(b => b.setAttribute('aria-expanded', o));
       if (o) { back = document.activeElement; mn.querySelector('.mn-x').focus({ preventScroll: true }); } else if (back && back.focus) back.focus({ preventScroll: true }); };
     btns.forEach(b => b.addEventListener('click', () => set(true))); mn.querySelector('.mn-x').addEventListener('click', () => set(false)); mn.querySelectorAll('a').forEach(a => a.addEventListener('click', () => set(false)));
-    addEventListener('keydown', ev => { if (ev.key === 'Escape' && !mn.hidden) set(false); }); matchMedia('(min-width: 901px)').addEventListener('change', ev => { if (ev.matches && !mn.hidden) set(false); }); }
+    addEventListener('keydown', ev => { if (ev.key === 'Escape' && !mn.hidden) set(false); }); matchMedia('(min-width: 961px)').addEventListener('change', ev => { if (ev.matches && !mn.hidden) set(false); }); }
 })();
