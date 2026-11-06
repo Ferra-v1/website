@@ -1,109 +1,71 @@
-/* Company page (c-). The headline and the big moving robot, a letter on paper, a screen of dots that thins out check by check, the few real sales, what you will not find here, get in touch. */
-.c-hb{font:700 clamp(34px,4.4vw,64px)/1.04 var(--serif);letter-spacing:-.033em;margin:0;text-wrap:balance;color:var(--ink)}
-.c-hb.w{color:#fff}
+/* Company page (c-). A letter on white, a wall of real listings that sorts itself check by check, the few real sales, what you will not find here, how to reach us. Sizes come from site.css. */
 
-.c-hero{color:#fff}
-/* the line runs the whole width of the page; the robot stands under it on the edge of the paper, its reach coming up beside the words */
-.c-heg{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1fr);column-gap:clamp(16px,2vw,32px);padding-top:clamp(20px,3vw,44px);min-height:min(calc(100svh - 110px),860px);grid-template-rows:auto 1fr}
-.c-h1{grid-column:1 / -1;font:700 clamp(46px,min(7.4vw,108px),108px)/1 var(--serif);letter-spacing:-.046em;color:#fff;margin:0;white-space:nowrap}
-.page[data-page="company.html"] .c-heg h1.c-h1{font-size:clamp(46px,min(7.4vw,108px),108px)!important;line-height:1;letter-spacing:-.046em!important}
-.c-lede{grid-column:1;align-self:end;margin:clamp(20px,2.2vw,32px) 0 clamp(40px,5vw,72px);max-width:24em;font-size:clamp(19px,1.6vw,23px);line-height:1.4;color:#fff;text-wrap:pretty}
-.c-pic{grid-column:2;min-width:0;align-self:end;margin-right:calc(-1 * min(48px,max(0px,(100vw - 1200px) / 2)))}
-.c-bot .rs-bot{height:clamp(280px,min(36vw,calc(100svh - 430px)),620px);display:flex;align-items:flex-end;justify-content:center}
-.c-bot .rs-bot canvas{display:block}
-
-/* the letter: paper, so it gets a box, in the document face */
-.c-paper{display:flow-root;background:var(--paper);padding-block:clamp(56px,6vw,96px)}
-.c-sheet{position:relative;margin:0 auto;max-width:780px;background:#fff;border-radius:var(--r-doc);box-shadow:0 1px 2px rgba(14,22,38,.05),0 10px 28px rgba(14,22,38,.05);padding:clamp(32px,6vw,84px) clamp(24px,6.4vw,92px)}
-.c-sheet p{margin:0 0 1.05em;font:400 clamp(19px,1.55vw,22px)/1.5 var(--doc);color:var(--ink)}
-.c-sheet .c-we{margin-bottom:clamp(20px,2.4vw,32px);font:700 clamp(27px,3.6vw,50px)/1.08 var(--serif);letter-spacing:-.03em}
-/* the point of the letter comes first and reads first */
-.c-sheet .c-first{margin-bottom:clamp(24px,3vw,40px);font:400 clamp(25px,2.6vw,36px)/1.28 var(--doc);letter-spacing:-.012em;text-wrap:balance}
-.c-we span{display:block}
-.c-sheet a{color:var(--c);font-weight:600}
-.c-sheet p:last-child{margin-bottom:0}
+/* the letter: its first lines stand at title size, the rest is a document */
+.c-top{padding-bottom:clamp(72px,9vw,128px)}
+.c-h1{padding-top:clamp(24px,4vw,64px);color:var(--ink)}
+.c-sheet{max-width:680px;margin:clamp(32px,4vw,56px) 0 0 auto;font:400 var(--t-lead)/1.55 var(--doc);color:var(--ink)}
+.c-sheet p{margin:0 0 1.1em}
+.c-sheet a{color:var(--c);font-weight:600;display:inline-block;padding:8px 2px;margin:-8px -2px}
+.c-sign{font-weight:600;margin:1.6em 0 0!important}
 
 /* one field of dots. Every dot is a listing; a pale dot stopped at one of the checks. Without motion: the finished wall and the four counts under it */
-.c-field{padding-top:clamp(40px,5vw,72px)}
-.c-count{margin:clamp(10px,1.2vw,16px) 0 0;max-width:38em;font-size:var(--t-lead);line-height:1.4;color:var(--ink)}
+.c-field{padding-top:0}
+.c-count{margin:12px 0 0;color:var(--ink)}
 .c-tap{display:none}
 @media (hover:none){.c-hov{display:none}.c-tap{display:inline}}
-.c-one{appearance:none;background:none;border:0;padding:0 0 0 .25em;margin:0;font:600 1em/1 var(--sans);color:var(--c);cursor:pointer;min-height:44px;vertical-align:baseline}
-.c-one:hover{opacity:.75}
+.c-one{appearance:none;background:none;border:0;padding:0 0 0 .25em;cursor:pointer;vertical-align:baseline}
 .c-read{display:none}
-.c-wall{position:relative;width:calc(100% - 48px);max-width:1200px;height:min(72svh,640px);margin:clamp(24px,3vw,44px) auto 0}
+.c-wall{position:relative;width:calc(100% - 48px);max-width:1152px;height:min(72svh,640px);margin:clamp(24px,3vw,44px) auto 0}
 .c-dots{display:block;width:100%;height:100%;cursor:pointer;touch-action:pan-y}
-/* a listing's own card: paper, so it gets a box. Above the dots, inside the wall */
-.c-tip{position:absolute;left:0;top:0;z-index:4;width:min(292px,calc(100vw - 48px));background:#fff;color:var(--ink);border-radius:12px;padding:14px 16px 6px;box-shadow:0 10px 30px rgba(14,22,38,.22);font-size:15px;line-height:1.36}
+/* a listing's own card: above the dots, inside the wall */
+.c-tip{position:absolute;left:0;top:0;z-index:4;width:min(292px,calc(100vw - 48px));background:#fff;color:var(--ink);border-radius:12px;padding:14px 16px 6px;box-shadow:0 0 0 1px rgba(14,22,38,.07),0 10px 30px rgba(14,22,38,.2);font:400 var(--t-small)/1.4 var(--sans)}
 .c-tip[hidden]{display:none}
 .c-tip b{display:block;font-weight:600;overflow-wrap:anywhere}
 .c-tip span{display:block;margin-top:5px;color:#3e4656}
 .c-tip a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--c)}
-.c-tip a:hover{opacity:.75}
 .c-keys{list-style:none;margin:clamp(24px,2.8vw,40px) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px clamp(24px,3vw,48px)}
-.c-k b{display:block;font:700 clamp(32px,3.4vw,50px)/1.08 var(--serif);letter-spacing:-.03em;color:var(--ink)}
+.c-k b{display:block;color:var(--ink)}
 .c-k-s b{color:var(--c)}
-.c-k span{display:block;margin-top:6px;font-size:17px;line-height:1.4;color:#3e4656;max-width:22ch}
+.c-k span{display:block;margin-top:6px;color:#3e4656;max-width:22ch}
 /* with motion: the field fills the screen and holds still while the checks run. The list stays for screen readers, and the number on screen says the same thing */
-.c-live .c-run{height:200vh}
+.c-live .c-run{height:220vh}
 .c-live .c-pin{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;padding-block:clamp(28px,5svh,56px) clamp(20px,3.5svh,32px)}
 .c-live .c-fh{width:100%;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:end;flex:none}
 .c-live .c-read{display:block;margin:0}
-.c-read b{display:block;font:700 clamp(68px,8.4vw,120px)/.92 var(--serif);letter-spacing:-.045em;color:var(--c);font-variant-numeric:lining-nums tabular-nums}
-.c-read span{display:block;margin-top:clamp(8px,1vw,14px);min-height:1.4em;font-size:var(--t-lead);line-height:1.3;color:var(--ink)}
-.c-live .c-wall{flex:1 1 0;min-height:0;height:0;width:calc(100% - 48px);max-width:none;margin:clamp(16px,2.6svh,28px) 24px 0}
+.c-read b{display:block;color:var(--c)}
+.c-read span{display:block;margin-top:8px;min-height:1.4em;color:var(--ink)}
+.c-live .c-wall{flex:1 1 0;min-height:0;height:0;max-width:1152px;margin:clamp(16px,2.6svh,28px) auto 0}
 .c-live .c-keys{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
-.c-live .c-more{margin-top:clamp(40px,5vw,64px)}
-/* the count's last step: the same size as the number on the wall, in ink, with one large ink dot for each sale. The cobalt above is what sellers ask; ink is what buyers paid */
-.c-more{margin-top:clamp(32px,4vw,56px)}
+/* the count's last step: in ink, with one ink dot for each sale. The cobalt above is what sellers ask; ink is what buyers paid */
+.c-more{margin-top:clamp(40px,5vw,72px)}
 .c-real{margin:0;color:var(--ink)}
-.c-real b{display:block;font:700 clamp(68px,8.4vw,120px)/.92 var(--serif);letter-spacing:-.045em;font-variant-numeric:lining-nums tabular-nums}
-.c-real span{display:block;margin-top:clamp(8px,1vw,14px);font-size:var(--t-lead);line-height:1.3}
-.c-aucw{position:relative;margin-top:clamp(24px,3vw,44px)}
+.c-real b,.c-real span{display:block}
+.c-real span{margin-top:8px}
+.c-aucw{position:relative;margin-top:clamp(20px,2.4vw,32px)}
 .c-aucs{display:block;width:100%;cursor:pointer}
-.c-from{margin:clamp(24px,3vw,40px) 0 0;font-size:17px;line-height:1.5;color:#3e4656}
+.c-from{margin:clamp(20px,2.4vw,32px) 0 0;color:#3e4656}
 
-/* the page's best idea, as big as a headline. What is on the list stays at reading size */
-.c-nots{background:var(--deep);color:#fff;padding-block:clamp(80px,10vw,144px)}
-.c-nots h2{font:700 clamp(52px,8vw,124px)/.98 var(--serif);letter-spacing:-.04em;color:#fff;margin:0;max-width:9em;text-wrap:balance}
-.c-nots ul{list-style:none;margin:clamp(44px,5vw,80px) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px clamp(24px,3vw,48px)}
-.c-nots h3{font:700 clamp(24px,2vw,28px)/1.14 var(--serif);letter-spacing:-.022em;color:#fff;margin:0;text-wrap:balance}
-.c-nots p{margin:10px 0 0;font-size:17px;line-height:1.45;color:#fff}
-/* the one thing you can do right now, after all that you cannot */
-.c-go{display:inline-flex;align-items:center;min-height:44px;margin-top:clamp(36px,4vw,60px);font:700 clamp(24px,2vw,28px)/1.14 var(--serif);letter-spacing:-.022em;color:#fff}
-.c-go:hover{opacity:.8}
+/* what you will not find */
+.c-nots ul{list-style:none;margin:clamp(32px,4vw,56px) 0 clamp(20px,2.6vw,36px);padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px clamp(24px,3vw,48px)}
+.c-nots p{margin:10px 0 0;color:#3e4656}
 
 /* get in touch */
 .c-cg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(40px,6vw,96px);align-items:start}
+.c-cl{margin:16px 0 0;max-width:30em;color:#3e4656}
 .c-form{margin-top:clamp(24px,3vw,36px)}
 .c-contact .lf{grid-template-columns:minmax(0,1fr)}
-[data-page="company.html"] .fl{font-size:15px}
 .c-auds{display:flex;flex-direction:column;gap:clamp(32px,4vw,52px);padding-top:clamp(8px,1vw,14px)}
-.c-aud h3{font:700 clamp(24px,2.2vw,32px)/1.12 var(--serif);letter-spacing:-.025em;margin:0 0 8px}
-.c-aud p{margin:0 0 4px;font-size:17px;line-height:1.45;color:#3e4656;max-width:30em}
-.c-aud a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--c)}
-.c-aud a:hover{opacity:.75}
+.c-aud p{margin:8px 0 4px;color:#3e4656;max-width:30em}
 
 @media (max-width:900px){
- .c-heg{grid-template-columns:minmax(0,1fr);grid-template-rows:none;min-height:0;gap:8px}
- .c-h1{white-space:normal;letter-spacing:-.04em;text-wrap:balance}
- .page[data-page="company.html"] .c-heg h1.c-h1{font-size:clamp(46px,13.6vw,96px)!important;line-height:1;letter-spacing:-.04em!important}
- .c-h1 br{display:none}
- /* a phone's wall gets the room: the words above it stay small */
- .c-live .c-count{font-size:17px;margin-top:2px}
- .c-read b{font-size:58px}
- .c-read span{font-size:17px;margin-top:2px}
+ .c-sheet{margin-left:0}
  .c-live .c-pin{padding-block:16px 12px}
- .c-live .c-wall{margin-top:10px}
- .c-lede{grid-column:1;margin:12px 0 0}
- .c-pic{grid-column:1;margin:0}
- .c-bot .rs-bot{height:min(66vw,420px)}
+ .c-live .c-wall{margin-top:10px;width:calc(100% - 32px)}
+ .c-wall{width:calc(100% - 32px)}
  .c-cg{grid-template-columns:minmax(0,1fr)}
- .c-real b{font-size:58px}
- .c-real span{font-size:17px;margin-top:2px}
- .c-nots ul{grid-template-columns:repeat(2,minmax(0,1fr))}
- .c-keys{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .c-nots ul,.c-keys{grid-template-columns:repeat(2,minmax(0,1fr))}
  .c-live .c-fh{grid-template-columns:minmax(0,1fr);gap:clamp(12px,2svh,20px)}
+ .c-live .c-count{margin-top:2px}
+ .c-read span{margin-top:2px}
 }
 @media (max-width:560px){.c-nots ul{grid-template-columns:minmax(0,1fr)}}
-.c-contact .ldone span{font-size:15px}

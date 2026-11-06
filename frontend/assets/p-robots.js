@@ -1,5 +1,5 @@
-// Robots we price. FerraPlot holds what the robot pages and the price report share. The stage: a robot drawn with its own listings falls, as you scroll,
-// into the chart of price by age. The shelf: every robot lights up one listing at a time when it comes into view.
+// Robots we price. FerraPlot holds what the robot pages and the price report share. A robot is built from its own listings, one bright dot at a time, on the shelf and on its own page.
+// A robot's page then has one short chart: every listing by age and asking price, and one age to read.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -9,9 +9,10 @@
   const fit = cv => { const r = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight; if (cv.width !== Math.round(w * r) || cv.height !== Math.round(h * r)) { cv.width = Math.round(w * r); cv.height = Math.round(h * r); } const c = cv.getContext('2d'); c.setTransform(r, 0, 0, r, 0, 0); c.clearRect(0, 0, w, h); return { c, w, h }; };
   // the robot as faint halftone, shaded the way dotbot.js shades it. Its bounds and one painted bitmap per size.
   const ghost = name => { const g = (window.FERRA_DOTS || {})[name + '-l']; if (!g) return null; if (!g.g2) { const pts = g.d.split(';').filter(Boolean).map(s => { const [x, y, L, A, , ed] = s.split(',').map(Number); return [x, y, (A / 100) * Math.min(1, .28 + .72 * Math.pow(L / 100, .9) + (ed / 100) * .35)]; }); let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (const p of pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; } g.g2 = { pts, x0, x1, y0, y1 }; } return g.g2; };
-  const ghostBitmap = (G, cell, alpha, rgb = '255,255,255') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.55 + .45 * s)})`; c.beginPath(); c.arc((x - G.x0 + .5) * cell, (y - G.y0 + .5) * cell, Math.max(.3, cell * .44 * s), 0, 6.2832); c.fill(); } return b; };
+  // on a big robot each grid square holds a little block of very small dots, so the machine reads as a fine print and nothing reads as a cartoon
+  const ghostBitmap = (G, cell, alpha, rgb = '255,255,255') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); const sub = cell >= 4.4 ? 3 : cell >= 2.6 ? 2 : 1, st = cell / sub; for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.3 + .7 * s)})`; c.beginPath(); const q = Math.max(.32, st * .34 * (.5 + .5 * s)); for (let i = 0; i < sub; i++) for (let j = 0; j < sub; j++) { const px = (x - G.x0 + (i + .5) / sub) * cell, py = (y - G.y0 + (j + .5) / sub) * cell; c.moveTo(px + q, py); c.arc(px, py, q, 0, 6.2832); } c.fill(); } return b; };
   // the robot's body stays quiet, so each bright dot reads as one listing at a glance
-  const BODY = .3, THIN_DOTS = 20;
+  const BODY = .56, THIN_DOTS = 20;
   // nice dollar ticks inside a range
   const TICKS = [300, 1000, 3000, 10000, 30000, 100000, 300000];
   // a tooltip that stays inside its parent
@@ -34,57 +35,32 @@
   const lowest = (ps, lo) => { const low = ps.filter(q => q.usd < lo); if (!low.length) return ''; const m = low.reduce((a, q) => q.usd < a.usd ? q : a); return low.map(q => { const x = (q.x ?? q.cx) - 10, y = (q.y ?? q.cy) + 5; return q === m ? `<text x="${x}" y="${y - 17}" text-anchor="end">Lowest ask: ${usd(q.usd)},<tspan x="${x}" dy="17">left on the chart so you can see it.</tspan></text>` : `<text x="${x}" y="${y}" text-anchor="end">${usd(q.usd)}</text>`; }).join(''); };
   window.FerraPlot = { clamp, money, usd, ease, fit, TICKS, placeTip, reduce, clearLabel, lowest, ghost, ghostBitmap };
 
-  // ---------------------------------------------------------------- one robot's page
-  const root = document.querySelector('[data-stage]');
-  if (root) stage(root);
-  function stage(root) {
-    const D = JSON.parse(root.querySelector('.r-data').textContent);
-    const pin = root.querySelector('.r-pin'), plot = root.querySelector('.r-plot'), cv = root.querySelector('.r-cv'), ax = root.querySelector('.r-ax'), intro = root.querySelector('.r-intro'), read = root.querySelector('.r-read');
-    const age = root.querySelector('.r-age'), range = age.querySelector('input'), th = root.querySelector('.r-th'), tip = root.querySelector('.r-tip');
+  // ---------------------------------------------------------------- one robot's page: one short chart
+  const page = document.querySelector('[data-robot]'), plot = document.querySelector('.r-plot');
+  if (page && plot) chart(JSON.parse(page.querySelector('.r-data').textContent), plot);
+  function chart(D, plot) {
+    const cv = plot.querySelector('.r-cv'), ax = plot.querySelector('.r-ax'), age = plot.querySelector('.r-age'), range = age.querySelector('input'), th = plot.querySelector('.r-th'), tip = plot.querySelector('.r-tip');
     const [tb, ts, ta] = [tip.querySelector('b'), tip.querySelector('span'), tip.querySelector('a')];
-    const G = ghost(D.bot);
-    const live = !reduce;
-    root.classList.add(live ? 'live' : 'still');
-    const P = D.pts.map((p, i) => ({ age: p[0], usd: p[1], t: p[2], year: p[3], src: p[4], url: p[5], gx: p[6], gy: p[7], whole: p[8], fit: p[9], d: (i * 7919 % 101) / 101, a: 10 + (i * 131 % 37), hi: 0 }));
+    const read = document.querySelector('.r-read');
+    const P = D.pts.map(p => ({ age: p[0], usd: p[1], t: p[2], year: p[3], src: p[4], url: p[5], whole: p[8], fit: p[9], hi: 0 }));
     const A = D.auc.map(a => ({ age: a[0], usd: a[1], t: a[2], when: a[3], src: a[4], url: a[5], sold: true, hi: 0 }));
-    let sel = D.age, p = live ? 0 : 1, g = {}, born = live ? performance.now() : -1e6, hover = null, dirty = true, shown = -1;
+    let sel = D.age, g = {}, hover = null, shown = -1, born = reduce ? -1e6 : 0, seen = reduce;
     // the axis starts just under the lowest ordinary price. A rare listing far below it sits on the floor of the chart with its real price printed beside it.
     const lo = Math.min(...P.map(q => q.usd).filter(v => v >= 1000), ...A.map(q => q.usd), D.curve[30][0]) * .82, hi = Math.max(...P.map(q => q.usd), D.curve[0][2]) * 1.16;
-
+    const few = P.length < THIN_DOTS;
     function layout() {
-      const W = plot.clientWidth, H = plot.clientHeight, phone = W < 760;
-      const L = Math.max(24, (W - 1152) / 2), R = W - L;
-      // whatever sits above the stage at the top of the page pushes its bottom edge under the fold, so the line the robot stands on rises by that much
-      const off = clamp(root.offsetTop, 0, 64); intro.style.setProperty('--off', off + 'px');
-      const base = H - (phone ? 88 : 84) - off;
-      const rb = read.getBoundingClientRect(), pb = plot.getBoundingClientRect();
-      const top = (rb.bottom - pb.top) + (phone ? 30 : 14);
-      const gut = phone ? 62 : 58, X = a => L + gut + a / 30 * (R - L - gut);
-      const Y = v => base - 18 - (Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (base - 18 - top);
-      // the robot stands on the same line that becomes the axis
-      let ib = 0;
-      if (live) { const kids = [...intro.children].filter(k => !k.matches('.r-what,.r-still') && getComputedStyle(k).position !== 'absolute'); ib = Math.max(...kids.map(k => k.getBoundingClientRect().bottom)) - pin.getBoundingClientRect().top + (scrollOffset()); }
-      const wide = W >= 1060, maxW = wide ? W * .47 : W - 32;
-      const rows = G ? G.y1 - G.y0 + 1 : 80, cols = G ? G.x1 - G.x0 + 1 : 70;
-      let rh = wide ? Math.min(base - 96, 660) : Math.max(110, Math.min(base - ib - 10, W * .96));
-      let cell = rh / rows;
-      if (cell * cols > maxW) cell = maxW / cols;
-      const rx = (wide ? R : W - 16) - cell * cols, ry = base - cell * rows;
-      g = { W, H, phone, L, R, base, top, X, Y, rx, ry, cell, rDot: phone ? 3.3 : 4.2, rBot: clamp(cell * .72, 2.4, 3.8) + (P.length < THIN_DOTS ? 1.2 : 0) };
-      P.forEach(q => { q.cx = X(q.age); q.cy = Y(q.usd); q.rx = rx + (q.gx - (G ? G.x0 : 0) + .5) * cell; q.ry = ry + (q.gy - (G ? G.y0 : 0) + .5) * cell; });
-      A.forEach(q => { q.cx = X(q.age); q.cy = Y(q.usd); });
+      const W = plot.clientWidth, H = plot.clientHeight, phone = W < 560, top = 10, base = H - 46, gut = phone ? 52 : 58;
+      const X = a => gut + a / 30 * (W - gut - (phone ? 8 : 2)), Y = v => base - 14 - (Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (base - 14 - top);
+      g = { W, H, phone, base, top, X, Y, r: few ? (phone ? 4 : 4.6) : (phone ? 2.1 : 2.7) };
+      P.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); }); A.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); });
       age.style.cssText = `left:${X(0) - 22}px;width:${X(30) - X(0) + 44}px;top:${base - 22}px`;
-      th.style.top = base - 15 + 'px';
-      // axes
-      const ty = TICKS.filter(t => t > lo * 1.06 && t < hi);
-      let s = `<line class="ax" x1="${L}" x2="${R}" y1="${base + .5}" y2="${base + .5}"/>`;
-      ty.forEach(t => { s += `<text x="${L}" y="${Y(t) + 5}">${usd(t)}</text>`; });
-      [5, 10, 15, 20, 25, 30].forEach(a => { s += `<text x="${X(a)}" y="${base + (phone ? 38 : 40)}" text-anchor="${a === 30 ? 'end' : 'middle'}">${a === 30 && !phone ? '30 years old' : a}</text>`; });
-      if (phone) s += `<text x="${L}" y="${base + 38}">Age</text>`;
+      th.style.top = base - 13 + 'px';
+      let s = `<line class="ax" x1="0" x2="${W}" y1="${base + .5}" y2="${base + .5}"/>`;
+      TICKS.filter(t => t > lo * 1.06 && t < hi).forEach(t => { s += `<text x="0" y="${Y(t) + 5}">${usd(t)}</text>`; });
+      [5, 10, 15, 20, 25, 30].forEach(a => { s += `<text x="${X(a)}" y="${base + 36}" text-anchor="${a === 30 ? 'end' : 'middle'}">${a === 30 && !phone ? '30 years old' : a}</text>`; });
+      if (phone) s += `<text x="0" y="${base + 36}">Age</text>`;
       // labels go where the chart is empty, each with a short line to what it names
-      const dots = P.map(q => ({ x: q.cx, y: q.cy })).concat(A.map(q => ({ x: q.cx, y: q.cy })));
-      const box = { l: X(0) + 4, r: R, t: top, b: base - 6 }, used = [], agesR = [28, 26, 24, 22, 20, 18, 16, 14, 12, 8, 6, 4];
-      const onLine = [], onBand = [];
+      const dots = P.concat(A).map(q => ({ x: q.x, y: q.y })), box = { l: X(0) + 4, r: W, t: top, b: base - 6 }, used = [], agesR = [28, 26, 24, 22, 20, 18, 16, 14, 12, 8, 6, 4], onLine = [], onBand = [];
       agesR.forEach(a => { const y = Y(D.curve[a][1]), up = Y(D.curve[a][2]), dn = Y(D.curve[a][0]); [up - 18, up - 44, y - 26, y + 26].forEach(v => onLine.push({ x: X(a), y: v, tx: X(a), ty: y })); [dn + 20, dn + 46].forEach(v => onBand.push({ x: X(a), y: v, tx: X(a), ty: dn })); });
       s += clearLabel('Typical asking price', onLine, dots, box, used);
       s += clearLabel(D.tier === 'thin' ? 'Our rough range' : '8 in 10 ask inside this band', onBand, dots, box, used, 'pl');
@@ -92,142 +68,91 @@
       if (A.length) {
         const under = A.filter(q => q.usd < D.curve[clamp(Math.round(q.age), 0, 30)][0]).length, n = A.length;
         const say = n === 1 ? `This sale landed ${under ? 'under' : 'inside'} the band` : under === n ? 'Every sale here landed under the band' : under ? `${under} of these ${n} sales landed under the band` : 'These sales landed inside the band';
-        const low = A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]), w = say.length * 8, right = low.cx + 12 + w < R, left = low.cx - 12 - w > L;
-        if (right || left) s += `<text class="lb" x="${low.cx + (right ? 12 : -12)}" y="${low.cy + 5}" text-anchor="${right ? 'start' : 'end'}">${say}</text>`;
-        else { const i = say.indexOf(' landed'), x = clamp(low.cx - w * .31, L, R - w * .62), y = low.cy + 40 < base - 16 ? low.cy + 22 : low.cy - 30; s += `<text class="lb" x="${x}" y="${y}">${say.slice(0, i)}<tspan x="${x}" dy="18">${say.slice(i + 1)}</tspan></text>`; }
+        const low = A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]), w = say.length * 8, right = low.x + 12 + w < W, left = low.x - 12 - w > gut;
+        if (right || left) s += `<text class="lb" x="${low.x + (right ? 12 : -12)}" y="${low.y + 5}" text-anchor="${right ? 'start' : 'end'}">${say}</text>`;
+        else { const i = say.indexOf(' landed'), x = clamp(low.x - w * .31, gut, W - w * .62), y = low.y + 40 < base - 16 ? low.y + 22 : low.y - 30; s += `<text class="lb" x="${x}" y="${y}">${say.slice(0, i)}<tspan x="${x}" dy="18">${say.slice(i + 1)}</tspan></text>`; }
       }
       s += lowest(P, lo);
       ax.setAttribute('viewBox', `0 0 ${W} ${H}`); ax.innerHTML = s;
-      dirty = true;
-    }
-    const scrollOffset = () => 0;
-
-    function dotAt(q) {
-      if (q.sold) return { x: q.cx, y: q.cy, r: g.rDot + .8 };
-      const t = ease(clamp((p - q.d * .4) / .6));
-      return { x: q.rx + (q.cx - q.rx) * t, y: q.ry + (q.cy - q.ry) * t - Math.sin(Math.PI * t) * q.a, r: g.rBot + (g.rDot - g.rBot) * t };
+      place();
     }
     function draw(now) {
-      const { c, w, h } = fit(cv);
-      const rev = clamp((p - .66) / .34);
-      // the robot behind its listings
-      const gh = clamp(1 - p * 2.6);
-      if (G && gh > 0) {
-        if (!g.bm || g.bmc !== g.cell) { g.bm = ghostBitmap(G, g.cell, g.cell < 3 ? BODY + .12 : BODY); g.bmc = g.cell; }
-        c.globalAlpha = gh * (live ? clamp((now - born) / 500) : 1); c.drawImage(g.bm, g.rx, g.ry, (G.x1 - G.x0 + 1) * g.cell, (G.y1 - G.y0 + 1) * g.cell); c.globalAlpha = 1;
-      }
-      if (rev > 0) {
-        c.save(); c.beginPath(); c.rect(0, 0, g.X(0) + ease(rev) * (g.X(30) - g.X(0)), h); c.clip();
-        const a0 = clamp(D.range[0] - 1, 0, 30), a1 = clamp(D.range[1] + 1, 0, 30);
-        const fade = c.createLinearGradient(g.X(0), 0, g.X(30), 0), stop = (a, al) => fade.addColorStop(clamp(a / 30), `rgba(255,255,255,${al})`);
-        stop(a0 - 2, .06); stop(a0, .17); stop(a1, .17); stop(a1 + 2, .06); stop(0, a0 > 1 ? .06 : .17); stop(30, a1 < 29 ? .06 : .17);
-        c.fillStyle = fade; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(g.X(a), g.Y(D.curve[a][2])); for (let a = 30; a >= 0; a--) c.lineTo(g.X(a), g.Y(D.curve[a][0])); c.closePath(); c.fill();
-        const line = (from, to, dash) => { if (to <= from) return; c.setLineDash(dash); c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.lineJoin = 'round'; c.beginPath(); for (let a = from; a <= to; a++) c.lineTo(g.X(a), g.Y(D.curve[a][1])); c.stroke(); };
-        line(0, a0, [2, 7]); line(a0, a1, []); line(a1, 30, [2, 7]); c.setLineDash([]);
-        c.restore();
-      }
+      const { c } = fit(cv), { X, Y, base } = g, ink = 'rgb(14,22,38)', C = '40,71,206';
+      const rev = reduce ? 1 : seen ? ease(clamp((now - born) / 1100)) : 0; let moving = seen && rev < 1;
+      c.save(); c.beginPath(); c.rect(0, 0, X(0) + rev * (X(30) - X(0)) + 8, g.H); c.clip();
+      // the band and the typical price: solid where this robot has listings, quieter and dotted where they are worked out from other ages
+      const a0 = clamp(D.range[0] - 1, 0, 30), a1 = clamp(D.range[1] + 1, 0, 30);
+      const fade = c.createLinearGradient(X(0), 0, X(30), 0), stop = (a, al) => fade.addColorStop(clamp(a / 30), `rgba(${C},${al})`);
+      stop(0, a0 > 1 ? .03 : .09); stop(a0 - 2, .03); stop(a0, .09); stop(a1, .09); stop(a1 + 2, .03); stop(30, a1 < 29 ? .03 : .09);
+      c.fillStyle = fade; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][2])); for (let a = 30; a >= 0; a--) c.lineTo(X(a), Y(D.curve[a][0])); c.closePath(); c.fill();
+      const line = (from, to, dash) => { if (to <= from) return; c.setLineDash(dash); c.strokeStyle = `rgb(${C})`; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath(); for (let a = from; a <= to; a++) c.lineTo(X(a), Y(D.curve[a][1])); c.stroke(); };
+      line(0, a0, [2, 6]); line(a0, a1, []); line(a1, 30, [2, 6]); c.setLineDash([]);
+      c.restore();
       // the age being read
-      const cu = clamp((p - .86) / .14);
-      if (cu > 0) { const x = g.X(sel), y = g.Y(D.curve[sel][1]); c.strokeStyle = `rgba(255,255,255,${.7 * cu})`; c.lineWidth = 1; c.beginPath(); c.moveTo(x + .5, y); c.lineTo(x + .5, g.base); c.stroke(); }
-      let moving = false;
-      const tNow = now - born;
-      const n = P.length;
-      for (let i = 0; i < n; i++) {
-        const q = P[i], d = dotAt(q);
-        const target = cu > 0 && Math.abs(q.whole - sel) <= 1 ? 1 : 0;
-        q.hi += (target - q.hi) * .2; if (Math.abs(target - q.hi) > .01) moving = true;
-        const app = clamp((tNow - 200 - (i / Math.max(n, 12)) * 1000) / 160); if (app < 1) moving = true;
-        if (app <= 0) continue;
-        const dim = cu > 0 ? .72 + .28 * q.hi : 1;
-        c.fillStyle = q === hover ? 'rgb(150,232,255)' : `rgba(255,255,255,${dim * app})`;
-        c.beginPath(); c.arc(d.x, d.y, (d.r + q.hi * 1 * cu + (q === hover ? 1.4 : 0)) * (.4 + .6 * app), 0, 6.2832); c.fill();
+      const sx = X(sel), sy = Y(D.curve[sel][1]);
+      c.strokeStyle = 'rgba(14,22,38,.34)'; c.lineWidth = 1; c.beginPath(); c.moveTo(sx + .5, sy); c.lineTo(sx + .5, base); c.stroke();
+      for (const q of P) {
+        const t = Math.abs(q.whole - sel) <= 1 ? 1 : 0; q.hi += (t - q.hi) * .2; if (Math.abs(t - q.hi) > .01) moving = true;
+        const app = reduce ? 1 : clamp((X(0) + rev * (X(30) - X(0)) - q.x + 6) / 40); if (app <= 0) continue;
+        c.fillStyle = q === hover ? ink : `rgba(${C},${(few ? .8 + .2 * q.hi : .5 + .5 * q.hi) * app})`;
+        c.beginPath(); c.arc(q.x, q.y, g.r + q.hi * .5 + (q === hover ? 1.6 : 0), 0, 6.2832); c.fill();
       }
-      const au = clamp((p - .8) / .2);
-      if (au > 0) A.forEach(q => { const d = dotAt(q); c.fillStyle = `rgba(14,22,38,${au})`; c.beginPath(); c.arc(d.x, d.y, d.r + (q === hover ? 1.4 : 0), 0, 6.2832); c.fill(); if (q === hover) { c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } });
-      if (cu > 0) { const x = g.X(sel), y = g.Y(D.curve[sel][1]); c.fillStyle = '#fff'; c.beginPath(); c.arc(x, y, 7, 0, 6.2832); c.fill(); c.fillStyle = 'rgb(40,71,206)'; c.beginPath(); c.arc(x, y, 3, 0, 6.2832); c.fill(); }
+      if (rev > .6) A.forEach(q => { c.fillStyle = ink; c.globalAlpha = clamp((rev - .6) / .4); c.beginPath(); c.arc(q.x, q.y, Math.max(g.r, 3.4) + .6 + (q === hover ? 1.4 : 0), 0, 6.2832); c.fill(); c.globalAlpha = 1; });
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(sx, sy, 6, 0, 6.2832); c.fill(); c.strokeStyle = `rgb(${C})`; c.lineWidth = 2.5; c.stroke();
+      ax.style.opacity = reduce ? 1 : clamp(rev * 2);
       return moving;
     }
     function reading() {
       if (sel === shown) return; shown = sel;
-      const c = D.curve[sel], y = D.now - sel, near = P.filter(q => Math.abs(q.whole - sel) <= 1).length;
-      root.querySelector('.r-ra').textContent = sel === 1 ? '1 year old' : sel + ' years old';
-      document.querySelectorAll('.r-ry').forEach(s => s.textContent = y);
-      const thin = D.tier === 'thin';
-      root.querySelector('.r-rv').textContent = thin ? `${money(c[0])} to ${money(c[2])}` : money(c[1]);
+      const c = D.curve[sel], y = D.now - sel, near = P.filter(q => Math.abs(q.whole - sel) <= 1).length, thin = D.tier === 'thin';
+      read.querySelector('.r-ra').textContent = sel === 1 ? '1 year old' : sel + ' years old';
+      read.querySelector('.r-ry').textContent = y;
+      read.querySelector('.r-rv').textContent = thin ? `${money(c[0])} to ${money(c[2])}` : money(c[1]);
       // one sentence for each state, counting only the listings that back the price when those are few
       const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1);
       const nf = P.filter(q => q.fit && Math.abs(q.whole - sel) <= 1).length, F = D.fit;
-      root.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this, ${nf === 0 ? 'none this age. Our guess from other ages.' : nf === F ? (F === 1 ? 'near this age.' : F === 2 ? 'both near this age.' : 'all near this age.') : NW[nf] + ' near this age.'}` : `${D.tier === 'mid' ? `${F} listings back this price. ` : ''}Most ask ${money(c[0])} to ${money(c[2])}.`;
-      root.querySelector('.r-rn').textContent = thin ? '' : near ? '' : 'No listings this age yet. Our guess from other ages.';
-      const go = document.querySelector('.r-rl'); if (go) go.href = `price.html#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
+      read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this, ${nf === 0 ? 'none this age. Our guess from other ages.' : nf === F ? (F === 1 ? 'near this age.' : F === 2 ? 'both near this age.' : 'all near this age.') : NW[nf] + ' near this age.'}` : `Most ask ${money(c[0])} to ${money(c[2])}. ${near ? `${near} listing${near === 1 ? '' : 's'} near this age.` : 'No listings this age yet. Our guess from other ages.'}`;
+      read.querySelector('.r-rl').href = `price.html#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
       place();
     }
-    function place() { const w = th.offsetWidth; th.style.transform = `translateX(${clamp(g.X(sel) - w / 2, 8, g.W - w - 8)}px)`; }
-    function chrome() {
-      if (!live) { ax.style.opacity = 1; return; }
-      const o = clamp(1 - p * 2.4);
-      intro.style.opacity = o; intro.style.transform = `translateY(${-p * 40}px)`; intro.style.visibility = o <= 0 ? 'hidden' : 'visible';
-      const f = clamp((p - .62) / .3);
-      read.style.opacity = f; read.style.transform = `translateY(${(1 - f) * 12}px)`; read.style.pointerEvents = f > .9 ? '' : 'none';
-      const t = clamp((p - .55) / .35);
-      ax.querySelectorAll('text,.ld').forEach(n => { n.style.opacity = t; });
-      age.style.opacity = 0; age.style.pointerEvents = f > .9 ? 'auto' : 'none'; th.style.opacity = f;
-    }
+    function place() { if (!g.X) return; const w = th.offsetWidth; th.style.transform = `translateX(${clamp(g.X(sel) - w / 2, 0, g.W - w)}px)`; }
     let raf = 0;
     const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-    function frame(now) { raf = 0; chrome(); const mv = draw(now); if (mv) kick(); }
-    function onScroll() {
-      if (!live) return;
-      const r = root.getBoundingClientRect(), span = root.offsetHeight - pin.offsetHeight;
-      const s = clamp(-r.top / span);
-      const np = clamp(s / .74);
-      if (np !== p) { p = np; if (p > .02) born = -1e6; hideTip(); kick(); }
-    }
+    function frame(now) { raf = 0; if (draw(now)) kick(); }
     // pointer: rest on a dot to read its listing; move along the chart to change the age
-    const ALL = () => A.length && p > .85 ? A.concat(P) : P;
-    function nearest(x, y, reach) { let best = null, bd = reach * reach; for (const q of ALL()) { const d = dotAt(q), v = (d.x - x) ** 2 + (d.y - y) ** 2; if (v < bd) { bd = v; best = q; } } return best; }
+    const ALL = () => A.concat(P);
+    function nearest(x, y, reach) { let best = null, bd = reach * reach; for (const q of ALL()) { const v = (q.x - x) ** 2 + (q.y - y) ** 2; if (v < bd) { bd = v; best = q; } } return best; }
     function showTip(q) {
-      hover = q; const d = dotAt(q);
-      tb.textContent = q.t;
+      hover = q; tb.textContent = q.t;
       ts.textContent = q.sold ? `Sold at auction for ${usd(q.usd)} a robot on ${q.when} at ${q.src}.` : `Built ${q.year}. Asking ${usd(q.usd)} on ${q.src}.`;
-      ta.textContent = (q.sold ? 'See the result' : 'See the listing') + ' →'; ta.href = q.url;
-      placeTip(tip, plot, d.x, d.y); kick();
+      ta.textContent = (q.sold ? 'See the result' : 'See the listing') + ' \u2192'; ta.href = q.url;
+      placeTip(tip, plot, q.x, q.y); kick();
     }
     function hideTip() { if (hover || !tip.hidden) { hover = null; tip.hidden = true; kick(); } }
     const rel = ev => { const b = cv.getBoundingClientRect(); return [ev.clientX - b.left, ev.clientY - b.top]; };
-    let wait = 0;
+    const ageAt = x => clamp(Math.round((x - g.X(0)) / (g.X(30) - g.X(0)) * 30), 0, 30);
+    let wait = 0, down = null;
     cv.addEventListener('pointermove', ev => {
       if (ev.pointerType === 'touch') return;
-      const [x, y] = rel(ev);
-      if (p > .9 && y > g.top - 10 && y < g.base + 50 && x > g.L && x < g.R) { const a = clamp(Math.round((x - g.X(0)) / (g.X(30) - g.X(0)) * 30), 0, 30); if (a !== sel) { sel = a; reading(); kick(); } }
-      clearTimeout(wait); wait = setTimeout(() => { const q = nearest(x, y, 18); if (q) showTip(q); else if (hover) hideTip(); }, 70);
+      const [x, y] = rel(ev), a = ageAt(x);
+      if (x > g.X(0) && a !== sel) { sel = a; reading(); kick(); }
+      clearTimeout(wait); wait = setTimeout(() => { const q = nearest(x, y, 16); if (q) showTip(q); else if (hover) hideTip(); }, 70);
     });
-    let down = null;
-    cv.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY]; const [x, y] = rel(ev); if (ev.pointerType !== 'touch') { const q = nearest(x, y, 24); if (q) showTip(q); } });
+    cv.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY]; const [x, y] = rel(ev); if (ev.pointerType !== 'touch') { const q = nearest(x, y, 22); if (q) showTip(q); } });
     cv.addEventListener('pointerup', ev => {
       if (ev.pointerType !== 'touch' || !down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 8) return;
-      const [x, y] = rel(ev), q = nearest(x, y, 26);
-      if (q) showTip(q); else { hideTip(); if (p > .9 && y < g.base + 40) { sel = clamp(Math.round((x - g.X(0)) / (g.X(30) - g.X(0)) * 30), 0, 30); reading(); kick(); } }
+      const [x, y] = rel(ev), q = nearest(x, y, 24);
+      if (q) showTip(q); else { hideTip(); sel = ageAt(x); reading(); kick(); }
     });
     document.addEventListener('pointerdown', ev => { if (!tip.contains(ev.target) && ev.target !== cv) hideTip(); });
     document.addEventListener('keydown', ev => { if (ev.key === 'Escape') hideTip(); });
     range.addEventListener('input', () => { sel = +range.value; hideTip(); reading(); kick(); });
-    addEventListener('scroll', onScroll, { passive: true });
-    new ResizeObserver(() => { layout(); place(); onScroll(); kick(); }).observe(plot);
-    layout(); reading(); onScroll(); kick();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); place(); kick(); });
-    // the finished still draws the robot once, beside the words
-    if (!live) { const s = root.querySelector('.r-still'); if (s && G) { s.style.aspectRatio = `${G.x1 - G.x0 + 1}/${G.y1 - G.y0 + 1}`; requestAnimationFrame(() => { if (!s.clientWidth) return; const { c, w, h } = fit(s); const cell = w / (G.x1 - G.x0 + 1); c.drawImage(ghostBitmap(G, cell, BODY), 0, 0, w, h); c.fillStyle = '#fff'; c.beginPath(); P.forEach(q => { const X_ = (q.gx - G.x0 + .5) * cell, Y_ = (q.gy - G.y0 + .5) * cell; c.moveTo(X_ + 3, Y_); c.arc(X_, Y_, clamp(cell * .72, 2, 3.4), 0, 6.2832); }); c.fill(); }); } }
-    // the arms at each age: all stand at the first arm's height, then settle to their own price, drawn to scale on one floor
-    const ags = document.querySelector('.r-ags');
-    if (ags && G) {
-      const cvs = [...ags.querySelectorAll('canvas')], cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1;
-      const put = () => cvs.forEach(cv => { const { c, w, h } = fit(cv), cell = Math.min(w / cols, h / rows); if (!cell) return; const faint = cv.closest('.e0') ? .24 : cv.closest('.e1') ? .55 : .9; c.drawImage(ghostBitmap(G, cell, faint, '40,71,206'), 0, h - rows * cell, cols * cell, rows * cell); });
-      new ResizeObserver(put).observe(ags);
-      if (live) { ags.classList.add('wait'); const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); setTimeout(() => ags.classList.remove('wait'), 150); } }), { threshold: .4 }); io.observe(ags); }
-    }
+    new ResizeObserver(() => { layout(); kick(); }).observe(plot);
+    if (!reduce) { const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); seen = true; born = performance.now(); kick(); } }), { threshold: .25 }); io.observe(plot); ax.style.opacity = 0; }
+    layout(); reading(); kick();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); kick(); });
     // the long lists start short
     const mds = document.querySelector('.r-mds');
     if (mds) { const links = [...mds.children], keep = matchMedia('(max-width:760px)').matches ? 6 : 12; if (links.length > keep + 3) { links.slice(keep).forEach(a => { a.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${links.length} models \u2192`; mds.after(b); b.addEventListener('click', () => { links.forEach(a => { a.hidden = false; }); b.remove(); }); } }
@@ -253,22 +178,26 @@
     });
   }
 
-  // ---------------------------------------------------------------- the shelf
-  const shelf = document.querySelector('[data-shelf]');
+  // ---------------------------------------------------------------- a robot built from its listings: every robot on the shelf, and the one on a robot's page
+  const shelf = document.querySelector('[data-shelf],[data-robot]');
   if (shelf) {
-    const DOTS = JSON.parse(shelf.querySelector('.r-dots').textContent);
-    const tip = shelf.querySelector('.r-tip'), [tb, ts, ta] = [tip.querySelector('b'), tip.querySelector('span'), tip.querySelector('a')];
-    // the robot stands at the left of its box, on the line, at the height its listings earn
-    const geo = cv => { const G = ghost(cv.dataset.b), w = cv.clientWidth, h = cv.clientHeight, cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, h / rows); return { G, cell, ox: 0, oy: h - rows * cell, cols, rows }; };
+    const own = shelf.querySelector('.r-data');
+    let DOTS;
+    if (own) { const D = JSON.parse(own.textContent); DOTS = { [D.id]: D.pts.map(p => [p[6], p[7], p[1], p[3], p[4], p[5], p[2], p[8]]) }; }
+    else DOTS = JSON.parse(shelf.querySelector('.r-dots').textContent);
+    const tip = shelf.querySelector(':scope > .r-tip'), [tb, ts, ta] = [tip.querySelector('b'), tip.querySelector('span'), tip.querySelector('a')];
+    // the robot stands on the line at the height its listings earn, at the left of its box, or the right of it when the page asks
+    const geo = cv => { const G = ghost(cv.dataset.b), w = cv.clientWidth, h = cv.clientHeight, cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, (h - 2) / rows); return { G, cell, ox: cv.dataset.at === 'r' ? w - cols * cell : 0, oy: h - 2 - rows * cell, cols, rows }; };
     const dotXY = (g, d) => [g.ox + (d[0] - g.G.x0 + .5) * g.cell, g.oy + (d[1] - g.G.y0 + .5) * g.cell];
     // until the reader moves the age, every dot is bright. After that, only the dots near that age are.
     const NEAR = 2; let sel = null;
     const paint = (cv, t, hot) => {
       if (!ghost(cv.dataset.b)) return;
       const { c } = fit(cv), g = geo(cv), list = DOTS[cv.dataset.f] || [];
-      if (cv._cell !== g.cell) { cv._cell = g.cell; cv._bm = ghostBitmap(g.G, g.cell, g.cell < 2.4 ? BODY + .04 : BODY); }
+      if (cv._cell !== g.cell) { cv._cell = g.cell; cv._bm = ghostBitmap(g.G, g.cell, g.cell < 2.4 ? BODY + .1 : BODY); }
       c.drawImage(cv._bm, g.ox, g.oy, g.cols * g.cell, g.rows * g.cell);
-      const lit = Math.round(list.length * t), r = clamp(g.cell * .62, list.length < 30 ? 2.6 : 1.9, 3.3);
+      // fine bright dots; a robot with very few listings keeps them a touch bigger, so each one can still be found and tapped
+      const lit = Math.round(list.length * t), r = clamp(g.cell * .32, list.length < THIN_DOTS ? 2.4 : 1.2, list.length < THIN_DOTS ? 3 : 1.9);
       const far = [];
       c.fillStyle = '#fff'; c.beginPath();
       for (let i = 0; i < lit; i++) { const k = list[(i * 7919) % list.length]; if (sel !== null && Math.abs(k[7] - sel) > NEAR) { far.push(k); continue; } const [x, y] = dotXY(g, k); c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); }
@@ -298,7 +227,7 @@
       cv.addEventListener('pointerleave', () => { clearTimeout(wait); setTimeout(() => { if (hot && !tip.matches(':hover') && hotCv === cv && !cv.matches(':hover')) hide(); }, 220); });
       cv.addEventListener('pointerdown', ev => { if (ev.pointerType === 'touch') lastTouch = performance.now(); });
       // a tap on a dot reads that listing; a tap anywhere else on the robot opens its page
-      cv.closest('a').addEventListener('click', ev => { if (performance.now() - lastTouch > 900 || ev.target !== cv) return; const d = find(cv, ev, 18); if (d) { ev.preventDefault(); show(cv, d); } });
+      (cv.closest('a') || cv).addEventListener('click', ev => { if (performance.now() - lastTouch > 900 || ev.target !== cv) return; const d = find(cv, ev, 18); if (d) { ev.preventDefault(); show(cv, d); } });
     });
     tip.addEventListener('pointerleave', hide);
     document.addEventListener('pointerdown', ev => { if (hot && !tip.contains(ev.target) && !(ev.target.matches && ev.target.matches('canvas[data-b]'))) hide(); });
@@ -308,7 +237,7 @@
     if (dial) {
       const CUR = JSON.parse(shelf.querySelector('.r-cur').textContent), inp = dial.querySelector('input'), out = dial.querySelector('output'), cells = [...shelf.querySelectorAll('.r-cell')];
       const yrs = a => a === 1 ? '1 year' : `${a} years`, dots = n => `${n} dot${n === 1 ? '' : 's'}`;
-      dial.hidden = false; shelf.querySelector('.r-s-age').hidden = false; shelf.classList.add('aged');
+      dial.hidden = false; const sa = shelf.querySelector('.r-s-age'); if (sa) sa.hidden = false; shelf.classList.add('aged');
       inp.addEventListener('input', () => {
         const a = sel = +inp.value;
         out.textContent = yrs(a); inp.setAttribute('aria-valuetext', `${yrs(a)} old`);

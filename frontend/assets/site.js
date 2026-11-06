@@ -1,6 +1,8 @@
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+  // reduced motion gets a finished still: no video plays on its own
+  if (reduce) document.querySelectorAll('video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
   // hero sequence starts once the hero image has loaded
   const hero = document.querySelector('.hero');
   if (hero) { const imgs = [...hero.querySelectorAll('.bot img')]; let done = false; const go = () => { if (!done) { done = true; requestAnimationFrame(() => hero.classList.add('ready')); } };

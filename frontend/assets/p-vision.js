@@ -1,150 +1,65 @@
-// Vision page: the films play only while on screen; the robots drive past as the page scrolls and end standing in one line; one robot's dots follow the story.
-// A dot here is always a piece of this one robot: dark, lit once it has a price, the share a loan pays for, then lifted off. Nothing twinkles and no dot is lit at random.
-// Native scrolling throughout: sections pin with position sticky and this file only reads scroll position. With reduced motion everything sits finished and in order.
+// Vision page: one timeline for the film. Every [data-o] inside it fades on four points of the page's scroll through the film. Scenes with a video load and play only while they show, and pause when they do not.
+// The field and the pieces are drawn from the page's own cut-outs. With reduced motion everything stands finished, on one still screen each, and nothing plays.
 (() => {
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-  const smooth = (v, a, b) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
-  const lerp = (a, b, k) => a + (b - a) * k;
-  const root = document.querySelector('[data-page="vision.html"]'); if (!root) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, root = document.documentElement;
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)), smooth = (v, a, b) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); }, lerp = (a, b, t) => a + (b - a) * t;
+  const run = document.querySelector('.v-run'), wish = document.querySelector('.v-wish'), sun = document.querySelector('.v-sun');
+  if (!reduce) root.classList.add('v-live');
+  const load = src => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+  // a smaller copy for each size the picture is drawn at, so small robots stay sharp
+  const mips = img => { const out = [img]; let c = img; while (c.height > 90) { const n = document.createElement('canvas'); n.width = Math.ceil(c.width / 2); n.height = Math.ceil(c.height / 2); const g = n.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(c, 0, 0, n.width, n.height); out.push(n); c = n; } return out; };
+  const mip = (set, px) => { for (let i = set.length - 1; i >= 0; i--) if (set[i].height >= px) return set[i]; return set[0]; };
+  const fit = cv => { const d = Math.min(2, devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight; if (cv.width !== Math.round(W * d) || cv.height !== Math.round(H * d)) { cv.width = Math.round(W * d); cv.height = Math.round(H * d); } const x = cv.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H); return [x, W, H, d]; };
 
-  // films
-  document.querySelectorAll('video[data-film]').forEach(v => {
-    if (reduce) { v.preload = 'none'; v.removeAttribute('autoplay'); return; }
-    new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { const p = v.play(); if (p) p.catch(() => {}); } else v.pause(); })).observe(v);
-  });
-  // the street plays once and holds with the robot in front of you; it starts again only after it has left the screen
-  document.querySelectorAll('video[data-once]').forEach(v => {
-    if (reduce) return;
-    new IntersectionObserver(es => es.forEach(en => {
-      if (en.intersectionRatio >= .45) { const p = v.play(); if (p) p.catch(() => {}); }
-      else if (!en.isIntersecting) { v.pause(); if (v.ended) v.currentTime = 0; }
-    }), { threshold: [0, .45] }).observe(v);
-  });
-  if (reduce) { drawFinal(); return; }
-  root.classList.add('v-live');
+  // ---- the field: one robot alone, then rows and rows as the camera pulls back and rises. Drones cross above once there is a crowd to fly over
+  const field = document.querySelector('.v-field'), people = [], drones = [];
+  let seed = 20261106; const rnd = () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  for (let r = 0; r < 22; r++) { const Z = -1.5 + r * .62, off = r % 2 ? .38 : 0; for (let c = -30; c <= 30; c++) { const X = (c + off) * .76 + (rnd() - .5) * .3; if (Math.abs(X) < .62 && Z < 1.3) continue; people.push({ X, Z: Z + (rnd() - .5) * .16, flip: rnd() > .5, delay: rnd() }); } }
+  people.push({ X: 0, Z: 1, flip: false, delay: 0, one: true }); people.sort((a, b) => b.Z - a.Z);
+  // where each drone ends up is the right of the sky, clear of the words
+  [[1.16, .15, .17, 1], [1.44, .05, .085, 1], [1.2, .32, .095, .86], [1.0, .06, .05, .7], [1.58, .27, .06, 1.1]].forEach((d, i) => drones.push({ x: d[0], y: d[1], h: d[2], v: d[3], ph: i * 1.7 }));
+  let hum = null, dro = null;
+  const paintField = (t, now) => { if (!hum) return; const [x, W, H] = fit(field), phone = W < 720, f = H * (phone ? .62 : .72), up = smooth(t, 0, .5), cam = lerp(0, 3.1, t), hy = H * lerp(.02, phone ? .54 : .44, up), camH = (H * (phone ? .9 : .93) - H * .02) / f;
+    const asp = hum[0].width / hum[0].height, crowd = smooth(t, .4, .92), shade = [];
+    // the floor: lighter toward the viewer, gone at the horizon, so the far rows sink into the dark
+    if (t > .02) { const g = x.createLinearGradient(0, hy, 0, H); g.addColorStop(0, 'rgba(38,54,92,0)'); g.addColorStop(.5, 'rgba(38,54,92,.36)'); g.addColorStop(1, 'rgba(38,54,92,.62)'); x.globalAlpha = smooth(t, .05, .5); x.fillStyle = g; x.fillRect(0, hy, W, H - hy); }
+    for (const q of people) { const d = q.Z + cam; if (d < .45) continue; const s = f / d, footY = hy + camH * s, h = s, w = h * asp, cx = W / 2 + q.X * s * (phone ? .72 : 1); if (cx + w < 0 || cx - w > W || footY - h > H) continue;
+      const fog = Math.pow(clamp(1.06 - d / 11.5), 1.4), a = q.one || q.Z < 1.3 ? fog * smooth(d, .45, .6) : fog * smooth(crowd, q.delay * .86, q.delay * .86 + .1);   // the rows behind come on one robot at a time; the rows in front walk in from the edges
+      if (a < .012) continue;
+      x.globalAlpha = a * .55; x.fillStyle = '#080d18'; x.beginPath(); x.ellipse(cx, footY - h * .004, w * .62, h * .022, 0, 0, 6.2832); x.fill();
+      x.globalAlpha = a; const im = mip(hum, h * 2); if (q.flip) { x.save(); x.translate(cx, 0); x.scale(-1, 1); x.drawImage(im, -w / 2, footY - h, w, h); x.restore(); } else x.drawImage(im, cx - w / 2, footY - h, w, h); }
+    if (dro) { const k = smooth(t, .45, .85), asp2 = dro[0].width / dro[0].height; for (const q of drones) { const h = H * q.h * (phone ? .55 : 1), w = h * asp2, X = W * (q.x - lerp(0, .52 * q.v, t)), bob = reduce ? 0 : Math.sin(now / 1100 + q.ph) * H * .004, sky = phone ? lerp(.3, .46, q.y / .32) : q.y + .03; x.globalAlpha = k * clamp(.4 + q.h * 3.6); const im = mip(dro, h * 2); x.drawImage(im, X - w / 2, H * sky + bob, w, h); } }
+    x.globalAlpha = 1; };
 
-  const progress = el => { const r = el.getBoundingClientRect(), h = r.height - innerHeight; return h > 0 ? clamp(-r.top / h) : 0; };
+  // ---- the pieces: the robot cut into squares, which drift apart until they stand in even rows
+  const pieces = document.querySelector('.v-pieces'); let body = null, cells = [];
+  if (pieces) { const C = +pieces.dataset.cols, R = +pieces.dataset.rows, m = pieces.dataset.mask; for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (m[r * C + c] === '1') cells.push({ c, r, wait: rnd() }); }
+  const paintPieces = p => { if (!body) return; const [x, W, H] = fit(pieces), phone = W < 900, C = +pieces.dataset.cols, R = +pieces.dataset.rows, n = cells.length, s = smooth(p, .14, .8);
+    const box = phone ? { x: W * .05, y: H * .1, w: W * .9, h: H * .36 } : { x: W * .46, y: H * .1, w: W * .5, h: H * .8 }, bh = phone ? H * .42 : H * .84, T = bh / R, cx = phone ? W * .5 : W * .71, top = phone ? H * .08 : H * .08, sw = body.width / C, sh = body.height / R;
+    let tc = Math.max(1, Math.round(Math.sqrt(n * box.w / box.h))), tr = Math.ceil(n / tc); while (tc * tr < n) tc++; const pitch = Math.min(box.w / tc, box.h / tr), tt = Math.min(T, pitch * .86), gx = box.x + (box.w - tc * pitch) / 2, gy = box.y + (box.h - tr * pitch) / 2;
+    cells.forEach((q, i) => { const k = smooth(s, q.wait * .4, q.wait * .4 + .6), hx = cx + (q.c - C / 2) * T, hy = top + q.r * T, rowN = Math.floor(q.goal / tc) === tr - 1 ? n - tc * (tr - 1) : tc, tx = gx + (tc - rowN) * pitch / 2 + (q.goal % tc) * pitch + (pitch - tt) / 2, ty = gy + Math.floor(q.goal / tc) * pitch + (pitch - tt) / 2, S = lerp(T, tt, k), X = lerp(hx, tx, k), Y = lerp(hy, ty, k);
+      if (k > .001) { x.globalAlpha = k * .14; x.fillStyle = '#fff'; x.beginPath(); x.roundRect(X, Y, S, S, S * .1); x.fill(); x.globalAlpha = 1; }
+      x.drawImage(body, q.c * sw, q.r * sh, sw, sh, X, Y, S + .4, S + .4); }); };
 
-  // the road: each robot stops so its caption can be read; then the camera pulls back until all five stand together across the page, each at one height
-  const work = root.querySelector('.v-work'), slots = [...root.querySelectorAll('[data-slot]')], caps = slots.map(s => s.querySelector('figcaption')), world = root.querySelector('[data-world]'), crowd = root.querySelector('.v-crowd'), track = root.querySelector('.v-track'), roadEl = root.querySelector('.v-road');
-  const N = slots.length, asp = slots.map(s => +s.dataset.a), sumA = asp.reduce((a, b) => a + b, 0);
-  let roadP = null, L = null;
-  const roadLayout = () => {
-    const vw = document.documentElement.clientWidth, wide = vw > 820, sw = slots[0].offsetWidth, R = slots[0].querySelector('.rs-bot').offsetHeight;
-    const cw = Math.min(1680, vw - 48), gap = 18, h = (cw - gap * (N - 1)) / sumA, left = (vw - cw) / 2;
-    let x = left; const cx = asp.map(a => { const w = a * h, c = x + w / 2; x += w + gap; return c; });
-    L = { vw, wide, sw, R, h, cx, s: h / R };
-    if (crowd && wide) { crowd.style.left = left + 'px'; crowd.style.gap = gap + 'px'; [...crowd.children].forEach((c, i) => { c.style.width = asp[i] * h + 'px'; c.querySelector('.rs-bot').style.height = h + 'px'; }); if (work.classList.contains('v-crowded') && window.FerraDots) crowd.querySelectorAll('canvas').forEach(c => FerraDots.draw(c)); }
-  };
-  const road = () => {
-    if (!work || !N) return;
-    const r = work.getBoundingClientRect(); if (r.bottom < -80 || r.top > innerHeight + 80) return;
-    if (!L) roadLayout();
-    const want = progress(work); roadP = roadP === null ? want : roadP + (want - roadP) * .16;
-    const p = roadP, u = clamp(p / .62) * (N - 1), i0 = Math.min(N - 2, Math.floor(u)), pos = i0 + smooth(u - i0, .3, .9);   // a stop at each robot
-    const zoom = L.wide ? smooth(p, .66, .86) : 0, last = L.wide ? 0 : smooth(p, .72, .8);
-    if (roadEl) roadEl.style.transform = L.wide ? `translate3d(0,${(-zoom * innerHeight * .19).toFixed(1)}px,0)` : '';   // the line rises from 72% of the screen to 53% (--gy and --gy2)
-    slots.forEach((s, i) => {
-      const d = clamp(Math.abs(i - pos)), base = 1 - .68 * d, X = lerp(L.vw / 2 + (i - pos) * L.sw, L.wide ? L.cx[i] : 0, zoom), S = lerp(1, L.s, zoom);
-      s.style.transform = `translate3d(${(X - L.sw / 2).toFixed(1)}px,0,0) scale(${S.toFixed(4)})`;
-      s.style.opacity = lerp(base, 1, zoom).toFixed(3);
-      if (caps[i]) caps[i].style.opacity = (clamp(1 - d * 2.6) * (1 - clamp(zoom * 5)) * (i === N - 1 ? 1 - last : 1)).toFixed(3);
-    });
-    if (world) world.style.opacity = smooth(p, L.wide ? .76 : .7, L.wide ? .88 : .84).toFixed(3);
-    if (crowd) {
-      const fade = L.wide ? smooth(p, .84, .87) : 0;
-      if (L.wide && p > .78 && !work.classList.contains('v-crowded')) { work.classList.add('v-crowded'); if (window.FerraDots) crowd.querySelectorAll('canvas').forEach(c => FerraDots.draw(c)); }
-      else if (!(L.wide && p > .78)) work.classList.remove('v-crowded');
-      work.classList.toggle('v-settled', L.wide && fade > .995);
-      crowd.style.opacity = fade.toFixed(3); if (track) track.style.opacity = (1 - fade).toFixed(3);
-    }
-  };
+  const wanted = el => { if (!el) return false; const b = el.getBoundingClientRect(); return b.bottom > -innerHeight * 1.5 && b.top < innerHeight * 2.5; };
+  let asked = false; const ask = () => { if (asked) return; asked = true; load('media/robots/humanoid.webp').then(i => { if (i) { hum = mips(i); body = i; if (pieces) { const n = cells.length, g = cells.map((_, k) => k); for (let k = n - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [g[k], g[j]] = [g[j], g[k]]; } cells.forEach((q, k) => { q.goal = g[k]; }); } dirty = true; finish(); } }); load('media/robots/drone.webp').then(i => { if (i) { dro = mips(i); dirty = true; finish(); } }); };
+  let dirty = true;
+  const finish = () => { if (reduce) { paintField(1, 0); paintPieces(1); } };
+  if (reduce) { ask(); addEventListener('resize', finish); return; }
 
-  // the big robot. Every choice below comes from a fixed seed, so the same dots mean the same thing on every visit
-  const own = root.querySelector('.v-own'), pin = root.querySelector('.v-own-pin'), cv = root.querySelector('.v-bot'), box = root.querySelector('.v-botbox'), b3 = root.querySelector('.v-b3');
-  const beats = [...root.querySelectorAll('[data-beat]')];
-  const mid = root.querySelector('.v-sky-mid'), day = root.querySelector('.v-sky-day'), paper = root.querySelector('.v-sky-paper');
-  const bot = (window.FERRA_DOTS || {})['arm-l'];
-  const rng = (a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(20261106);
-  let pts = null, W = 0, H = 0, pitch = 0, x = null, y0 = 0, y1 = 0, dpr = 1, tNow = null, lastT = -1, armX = 0, armY = 0, armDx = 0;
-  const shuffled = n => { const a = Array.from({ length: n }, (_, i) => i); for (let i = n - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const parse = () => {
-    if (!bot || pts) return;
-    pts = bot.d.split(';').filter(Boolean).map(s => { const [cx, cy, L, A, acc, ed] = s.split(',').map(Number); const l = L / 100, a = A / 100;
-      return { cx, cy, s: a * Math.min(1, .3 + .7 * Math.pow(l, .9) + (ed / 100) * .35), lr: 0, r: rng(), q: rng(), hx: 0, hy: 0, tx: 0, ty: 0 }; });
-    y0 = Math.min(...pts.map(p => p.cy)); y1 = Math.max(...pts.map(p => p.cy));
-    // rank every dot from the base up, so "70%" lights exactly 70% of the dots
-    [...pts].sort((a, b) => b.cy - a.cy || a.cx - b.cx).forEach((p, i, l) => { p.lr = i / l.length; });
+  // ---- the timeline
+  const items = [...run.querySelectorAll('[data-o]')].map(el => ({ el, o: el.dataset.o.split(' ').map(Number), v: -1, inner: !el.classList.contains('v-layer') }));
+  const films = [...run.querySelectorAll('.v-layer')].map(l => ({ l, v: l.querySelector('video'), on: l.classList.contains('v-street'), asked: l.classList.contains('v-street') })).filter(f => f.v);
+  const many = run.querySelector('.v-many');
+  const tick = now => { requestAnimationFrame(tick); const r = run.getBoundingClientRect(), span = r.height - innerHeight, seen = r.bottom > 0 && r.top < innerHeight;
+    if (seen) { const p = clamp(-r.top / span);
+      for (const it of items) { const [a, b, c, d] = it.o, v = smooth(p, a, b) * (1 - smooth(p, c, d)); if (Math.abs(v - it.v) > .002) { it.v = v; it.el.style.opacity = v.toFixed(3); it.el.style.visibility = v < .004 ? 'hidden' : 'visible'; } }
+      for (const f of films) { const o = +f.l.style.opacity, on = f.l.classList.contains('v-street') ? p < .17 : o > .01, soon = o > 0 || (p > (+f.l.dataset.o.split(' ')[0]) - .06 && p < (+f.l.dataset.o.split(' ')[3]));
+        if (soon && !f.asked) { f.asked = true; f.v.preload = 'auto'; f.v.load(); }
+        if (on !== f.on) { f.on = on; if (on) { if (f.v.ended) f.v.currentTime = 0; const q = f.v.play(); if (q) q.catch(() => {}); } else f.v.pause(); } }
+      if (+many.style.opacity > .004) paintField(clamp((p - .375) / .25), now); }
+    if (wish) { const w = wish.getBoundingClientRect(), h = innerHeight; if (w.bottom > 0 && w.top < h) { const k = clamp(1 - w.top / h); sun.style.transform = `translateY(${(-k * k * 66.67).toFixed(2)}%)`; paintPieces(clamp(-w.top / (w.height - h))); } }
   };
-  const size = () => {
-    if (!cv || !box || !bot || !pin) return; parse();
-    const pr = pin.getBoundingClientRect(), br = box.getBoundingClientRect(), rows = y1 - y0 + 1;
-    W = pr.width; H = pr.height; pitch = Math.min(br.width / bot.w, br.height / rows); dpr = Math.min(2, devicePixelRatio || 1);
-    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    const ox = br.left - pr.left + (br.width - pitch * bot.w) / 2, oy = br.top - pr.top + (br.height - pitch * rows) / 2;
-    pts.forEach(p => { p.hx = ox + (p.cx + .5) * pitch; p.hy = oy + (p.cy - y0 + .5) * pitch; });
-    // on a wide screen the robot starts in the middle, larger, behind the sentence that turns the story
-    armX = ox + pitch * bot.w / 2; armY = oy + pitch * rows / 2; armDx = W > 820 ? W / 2 - armX : 0;
-    // where the pieces go: an even lattice over the whole sky, leaving the words clear. Even, so it reads as one thing shared out and never as weather
-    const hole = [...(b3 ? b3.children : [])].map(c => c.getBoundingClientRect()).reduce((a, c) => c.width ? { l: Math.min(a.l, c.left), r: Math.max(a.r, c.right), t: Math.min(a.t, c.top), b: Math.max(a.b, c.bottom) } : a, { l: 1e9, r: -1e9, t: 1e9, b: -1e9 });
-    // a soft-cornered clearing around the words: wide enough that the text's corners stay clear, with no straight edge to read as a box
-    const m = W > 820 ? 30 : 12, hcx = (hole.l + hole.r) / 2 - pr.left, hcy = (hole.t + hole.b) / 2 - pr.top, ha = Math.max(1, (hole.r - hole.l) / 2 * 1.1 + m), hb = Math.max(1, (hole.b - hole.t) / 2 * 1.1 + m);
-    const inHole = (xx, yy, roll) => { const u = Math.abs(xx - hcx) / ha, v = Math.abs(yy - hcy) / hb, d = Math.pow(Math.pow(u, 8) + Math.pow(v, 8), .125); return d < 1 || (d < 1.22 && roll > (d - 1) / .22); };   // the field thins out toward the words, so it has no edge to read as a shape
-    const free = Math.max(W * H * .2, W * H - 5 * ha * hb);
-    let g = Math.sqrt(free / pts.length) * 1.02, cells = [];
-    for (let tries = 0; tries < 16; tries++) { cells = []; for (let yy = g / 2; yy < H; yy += g) for (let xx = g / 2; xx < W; xx += g) { if (inHole(xx, yy, rng())) continue; cells.push([xx, yy]); } if (cells.length >= pts.length) break; g *= .97; }
-    const order = shuffled(cells.length); pts.forEach((p, i) => { const c = cells[order[i % cells.length]]; p.tx = c[0]; p.ty = c[1]; });
-    x = cv.getContext('2d'); lastT = -1;
-  };
-  // t runs 0 to 5.6 through the pinned section: the robot in the dark, lit whole once it has a price, the loan's share staying bright, every dot lifting off into the sky, then coming home from the top down, white turning to cobalt as the sky turns to paper, until the robot stands whole beside the ask
-  const STEPS = 7, paths = () => Array.from({ length: STEPS }, () => new Path2D());
-  const paint = t => {
-    if (!x) return; x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
-    const home = armDx ? smooth(t, .62, 1.05) : 1, sc = 1 + .24 * (1 - home), dx = armDx * (1 - home), base = lerp(.17, .34, home);
-    const lightUp = smooth(t, .98, 1.6) * 1.2, cut = lerp(1.02, .7, smooth(t, 2.02, 2.7)), all = smooth(t, 3, 3.25), out = smooth(t, 3.05, 3.55), back = smooth(t, 4.32, 5.12);
-    const buckets = paths(), R0 = pitch * .5 * sc;
-    for (const p of pts) {
-      const lit = clamp((lightUp - p.lr) * 7) * clamp((cut - p.lr) * 60), on = Math.max(lit, all);
-      const a = base + (1 - base) * on, rad = Math.max(.5, R0 * Math.max(.34, p.s));
-      const k0 = clamp(out * 1.35 - p.r * .35), k1 = clamp(back * 1.9 - (1 - p.lr) * .9), k = k0 * (1 - k1), f = k * k * (3 - 2 * k);
-      const ax = p.hx + (p.hx - armX) * (sc - 1) + dx, ay = p.hy + (p.hy - armY) * (sc - 1);
-      const px = lerp(ax, p.tx, f), py = lerp(ay, p.ty, f), rr = lerp(rad, W > 820 ? 2.6 : 1.7, f);
-      const q = Math.min(STEPS - 1, Math.round(a * (STEPS - 1))), path = buckets[q];
-      path.moveTo(px + rr, py); path.arc(px, py, rr, 0, 6.2832);
-    }
-    const ink = smooth(t, 4.5, 4.9);   // white on the sky, cobalt on the paper
-    x.fillStyle = `rgb(${Math.round(lerp(255, 40, ink))},${Math.round(lerp(255, 71, ink))},${Math.round(lerp(255, 206, ink))})`;
-    buckets.forEach((path, i) => { x.globalAlpha = i / (STEPS - 1); x.fill(path); }); x.globalAlpha = 1;
-  };
-  // the steps in order. Nothing is written while the dots lift off or come home, so words and flying dots never share the screen: the ask appears only once the robot is whole
-  const MARKS = [[0, 0], [.98, 1], [2, 2], [3, -1], [3.4, 3], [4.28, -1], [5.14, 4]], LEN = 5.6;
-  const story = () => {
-    if (!own || !cv || !pts) return;
-    const r = own.getBoundingClientRect(); if (r.bottom < -40 || r.top > innerHeight + 40) return;
-    const want = progress(own) * LEN;
-    tNow = tNow === null ? want : tNow + (want - tNow) * .12;
-    const t = tNow; let b = 0; MARKS.forEach(m => { if (t >= m[0]) b = m[1]; });
-    beats.forEach((el, i) => el.classList.toggle('on', i === b));
-    if (mid) mid.style.opacity = smooth(t, .4, 1.7).toFixed(3);
-    if (day) day.style.opacity = smooth(t, 2.5, 3.2).toFixed(3);
-    if (paper) paper.style.opacity = smooth(t, 4.4, 5).toFixed(3);
-    if (Math.abs(t - lastT) > .0006) { paint(t); lastT = t; }
-  };
-  // a keyboard reader who tabs to a link in a step that is not showing is taken to that step
-  beats.forEach((el, i) => el.addEventListener('focusin', () => { if (el.classList.contains('on') || !own) return; const r = own.getBoundingClientRect(), h = r.height - innerHeight; scrollTo(0, scrollY + r.top + h * (MARKS.find(m => m[1] === i)[0] + .2) / LEN); }));
-  const frame = () => { road(); story(); requestAnimationFrame(frame); };
-  addEventListener('resize', () => { L = null; size(); });
-  size();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { L = null; size(); });
-  requestAnimationFrame(frame);
-
-  // reduced motion: the robot finished, every dot lit, drawn once
-  function drawFinal() {
-    const cv = root.querySelector('.v-bot'), b = (window.FERRA_DOTS || {})['arm-l']; if (!cv || !b) return;
-    const box = cv.parentElement, list = b.d.split(';').filter(Boolean).map(s => s.split(',').map(Number)), ys = list.map(p => p[1]), y0 = Math.min(...ys), rows = Math.max(...ys) - y0 + 1;
-    const pitch = Math.min(box.clientWidth || 340, 560) / b.w, d = Math.min(2, devicePixelRatio || 1); cv.width = pitch * b.w * d; cv.height = pitch * rows * d; cv.style.width = pitch * b.w + 'px'; cv.style.height = pitch * rows + 'px';
-    const g = cv.getContext('2d'); g.scale(d, d); g.fillStyle = '#fff';
-    for (const [cx, cy, L, A] of list) { g.beginPath(); g.arc((cx + .5) * pitch, (cy - y0 + .5) * pitch, Math.max(.5, pitch * .5 * (A / 100) * Math.min(1, .35 + .65 * L / 100)), 0, 6.2832); g.fill(); }
-  }
+  new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) ask(); }), { rootMargin: '2000px' }).observe(run);
+  ask(); requestAnimationFrame(tick);
 })();

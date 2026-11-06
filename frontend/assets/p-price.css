@@ -1,190 +1,158 @@
-/* Price a robot (price.html). The tool sits directly on the page: no window, no cards. Results are large figures and
-   printed statements (.stmt). Only the term sheets are paper (.sheet). Dots mark real listings; every other mark is solid.
-   New classes start with pp-; shared classes are only positioned here, never restyled globally. */
-.page[data-page="price.html"]{--cy:rgb(150,232,255);--cyl:#0394e0;--soft:rgba(40,71,206,.32);--field:#8a93a4}
-.page[data-page="price.html"] .h2{margin-bottom:0}
-.page[data-page="price.html"] .body{margin:0}
-.page[data-page="price.html"] .big-num{font-family:var(--serif);font-weight:700;line-height:1;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums}
-.page[data-page="price.html"] .cap{font-size:15px;line-height:1.45;color:var(--muted)}
-.page[data-page="price.html"] .lead-1{font-size:19px;line-height:1.5;color:#3e4656;max-width:58ch;margin:16px 0 0}
-.page[data-page="price.html"] .pp-risk .lead-1{color:rgba(255,255,255,.74)}
+/* Price a robot (price.html). The tool itself: inputs on the left, the answer on the right, on white. Results are large figures and printed statements (.stmt).
+   Only the term sheets are paper (.sheet). Dots mark real listings. Sizes come from the shared tokens in site.css; new classes start with pp-. */
+.page[data-page="price.html"]{--cy:rgb(150,232,255);--cyl:#0394e0;--soft:rgba(40,71,206,.32);--txt:#3e4656}
 .pp-hero,.pp-sec,.pp-risk,#method{scroll-margin-top:72px}
 .pp-nwr{white-space:nowrap}
+.page[data-page="price.html"] section a:not(.btn,.tlink){text-decoration:none}
+.page[data-page="price.html"] section a:not(.btn,.tlink):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 
-/* Model marker: every engine figure links to the method. Plain text, the size of the label it sits beside */
-.pp-mk{display:inline-flex;align-items:center;min-height:44px;min-width:44px;justify-content:center;margin:-13px 0 -13px 4px;padding:0 4px;color:var(--c);font:500 15px/18px var(--sans);text-decoration:none;white-space:nowrap}
-/* the rest of a section's markers: still there, still links, and easy to read past */
-.pp-a[data-k="o"] .pp-mk,.pp-rfolds .pp-mk,#pp-s1 .pp-mk,#pp-s0 .dr:has(.pp-mk) ~ .dr .pp-mk{color:var(--muted);font:400 14px/18px var(--sans)}
-.pp-rfolds .pp-mk.dk{color:rgba(255,255,255,.6)}
-.pp-mk:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-.page[data-page="price.html"] section a:not(.btn){text-decoration:none}
-.page[data-page="price.html"] section a:not(.btn):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-.pp-mk.dk{color:var(--cy)}
+/* every section */
+.pp-sec{padding-block:clamp(72px,8vw,112px)}
+.pp-sh{margin-bottom:clamp(32px,3.6vw,48px)}
+.pp-sh h2{margin:0}
+.pp-sh .t-lead{margin:16px 0 0;max-width:62ch;color:var(--txt)}
+.pp-grad .pp-sh .t-lead{color:#fff}
+
+/* the Model marker: every engine figure links to the method. Plain text the size of the label beside it */
+.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;margin:-13px 0 -13px 2px;padding:0 4px;color:var(--c);font:500 var(--t-small)/18px var(--sans);text-decoration:none;white-space:nowrap}
 .pp-flag{font-weight:600;color:var(--ink)}
 
-/* 1. the first screen: a sentence on the left, the machine and its number on the right */
-.pp-hero{padding-top:clamp(16px,2vw,32px);padding-bottom:clamp(56px,6vw,88px);position:relative}
-.pp-tool{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto auto auto 1fr;column-gap:24px;align-items:start}
-.pp-lft{grid-column:1 / 8;grid-row:1 / 5;min-width:0;position:relative;z-index:2}
-.pp-lft .h1{font-size:clamp(46px,5.6vw,84px);line-height:1;letter-spacing:-.035em;margin:0}
-.pp-lft .lede{max-width:52ch;margin:16px 0 0;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656}
-.pp-lft .lede b{font-weight:600;color:var(--ink)}
+/* the first screen: the title and its one sentence, then inputs beside the answer */
+.pp-hero{padding-block:clamp(12px,1.6vw,24px) clamp(48px,5vw,72px);position:relative}
+.pp-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px clamp(40px,5vw,72px);align-items:end}
+.pp-head h1{margin:0}
+.pp-lede{margin:0 0 6px;color:var(--txt);text-wrap:pretty}
+.pp-tool{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px clamp(40px,5vw,72px);align-items:start;margin-top:clamp(32px,3.4vw,48px)}
+.pp-lft{min-width:0}
 
-/* the machine: one robot for the job picked in the form, standing on its line */
-.pp-bot{grid-column:8 / 13;grid-row:1;margin:0;position:relative;height:236px;--bh:228px}
-.pp-bs{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;pointer-events:none}
-.pp-bs .rstage{position:absolute;left:0;right:0;bottom:0}
-.pp-bs .rs-bot{height:var(--bh)}
-.pp-bs.b-arm{opacity:1}
-.pp-hero:has(.pp-seg4 [data-v="AMR"][aria-checked="true"]) .b-amr,.pp-hero:has(.pp-seg4 [data-v="CLEAN"][aria-checked="true"]) .b-clean{opacity:1}
-.pp-hero:has(.pp-seg4 [data-v="AMR"][aria-checked="true"]) .b-arm,.pp-hero:has(.pp-seg4 [data-v="CLEAN"][aria-checked="true"]) .b-arm{opacity:0}
-
-/* the sentence */
-.pp-in{margin-top:clamp(20px,2.4vw,32px);display:flex;flex-direction:column;gap:12px}
-.pp-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;font-size:clamp(24px,2.2vw,31px);line-height:1.2;font-weight:500;letter-spacing:-.015em;color:var(--ink)}
-.pp-row .pp-f{display:flex;flex-direction:row;align-items:center;gap:12px;min-width:0}
-.pp-row label{font:inherit;letter-spacing:inherit;color:inherit}
-.pp-tail{white-space:nowrap}
-.pp-row input,.pp-row select{font:500 1em var(--sans);letter-spacing:-.015em;color:var(--c);font-variant-numeric:lining-nums tabular-nums}
+/* the inputs: one pill field each, with its name above it */
+.pp-in{display:flex;flex-direction:column;gap:14px}
+.pp-flds{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 16px}
+.pp-f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pp-f > label,.pp-lab{font:500 var(--t-small)/1.4 var(--sans);color:var(--txt)}
+.pp-in .pf{width:100%;font-weight:500;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);outline-offset:2px}
+.pp-in .pf:hover{background:#dfeefb}
 .pp-cb{position:relative;min-width:0}
-.pp-cb input{display:block;field-sizing:content;width:9.2em;min-width:7.5em;max-width:100%;height:1.9em;padding:0 1.5em 0 .5em;border:0;border-radius:12px;background:var(--mist);outline:none;text-overflow:ellipsis}
-@supports (field-sizing:content){.pp-cb input{width:auto}}
-.pp-cb::after{content:"";position:absolute;right:.6em;top:calc(50% - .32em);width:.34em;height:.34em;border-right:2px solid var(--c);border-bottom:2px solid var(--c);transform:rotate(45deg);pointer-events:none}
-.pp-cb input:hover,.pp-money:hover,.pp-yr:hover{background:#dfeefb}
-.pp-cb input:focus,.pp-money:focus-within,.pp-yr:focus-within{outline:2px solid var(--c);outline-offset:1px}
-.pp-cbn{display:block;margin-top:0;font-size:15px;line-height:1.35;color:var(--muted)}
-.pp-cbn span:first-child:not(:last-child)::after{content:", "}
-.pp-lb{position:absolute;left:0;top:calc(100% + 6px);z-index:30;width:min(440px,calc(100vw - 48px));max-height:330px;overflow:auto;margin:0;padding:6px;list-style:none;background:#fff;border-radius:10px;box-shadow:0 0 0 1px var(--line),0 24px 48px -20px rgba(10,20,60,.35);font-weight:400;letter-spacing:0;color:var(--ink)}
-.pp-lb li{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:15px;line-height:1.35}
-.pp-lb li small{color:var(--muted);font-size:15px}
-.pp-lb li em{font-style:normal;font-size:15px;color:var(--muted);text-align:right}
+.pp-cb .pf{display:block;padding-right:40px;text-overflow:ellipsis}
+.pp-cb::after{content:"";position:absolute;right:20px;top:18px;width:7px;height:7px;border-right:1.6px solid var(--c);border-bottom:1.6px solid var(--c);transform:rotate(45deg);pointer-events:none}
+.pp-cbn{display:none}
+.pp-lb{position:absolute;left:0;top:calc(100% + 6px);z-index:30;width:min(440px,calc(100vw - 48px));max-height:330px;overflow:auto;margin:0;padding:6px;list-style:none;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--line),0 24px 48px -20px rgba(10,20,60,.35);font-weight:400}
+.pp-lb li{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:var(--t-small);line-height:1.35}
+.pp-lb li small{color:var(--muted);font-size:var(--t-small)}
+.pp-lb li em{font-style:normal;font-size:var(--t-small);color:var(--muted);text-align:right}
 .pp-lb li[aria-selected="true"]{background:var(--mist)}
 .pp-lb li[aria-selected="true"] em{color:var(--deep)}
 .pp-lb .pp-none{cursor:default;color:var(--muted)}
-.pp-yr{display:flex;align-items:center;height:1.9em;padding:0 2px;border-radius:12px;background:var(--mist)}
-.pp-yr select{width:2.9em;border:0;background:transparent;text-align:center;text-align-last:center;appearance:none;-webkit-appearance:none;outline:none;cursor:pointer;height:100%}
-.pp-st{flex:none;width:36px;height:100%;border:0;background:none;padding:0;font:500 20px var(--sans);color:var(--c);cursor:pointer;text-align:center}
+/* the year: one pill, a minus and a plus inside its ends */
+.pp-yr{position:relative}
+.page .pp-yr select.pf{display:block;padding:0 48px;text-align:center;text-align-last:center;-webkit-appearance:none;appearance:none;cursor:pointer}
+.pp-st{position:absolute;top:1px;width:44px;height:44px;border:0;border-radius:50%;background:none;padding:0;font:500 var(--t-sub)/1 var(--sans);color:var(--c);cursor:pointer;text-align:center}
+.pp-st[data-d="-1"]{left:2px}.pp-st[data-d="1"]{right:2px}
 .pp-st:hover{color:var(--ink)}
-.pp-money{display:flex;align-items:center;height:1.9em;padding:0 .5em;border-radius:12px;background:var(--mist);gap:2px}
-.pp-money > span{color:var(--c)}
-.pp-money input{field-sizing:content;width:4.4em;min-width:2.6em;border:0;outline:none;background:transparent;height:100%;padding:0}
-@supports (field-sizing:content){.pp-money input{width:auto}}
-.pp-uc{display:block;font-size:15px;line-height:1.4;color:var(--muted)}
-.pp-uc[hidden]{display:none}
-.pp-hint{font-size:15px;line-height:1.4;color:#9a3412}
+/* money: the dollar sign sits in the pill */
+.pp-money{position:relative}
+.pp-money > span{position:absolute;left:20px;top:0;line-height:46px;font:500 var(--t-body)/46px var(--sans);color:var(--muted);pointer-events:none}
+.pp-money:has(> span) .pf{padding-left:32px}
+.pp-cnt{max-width:200px}
+.pp-cnt em{position:absolute;right:20px;top:0;font:400 var(--t-small)/46px var(--sans);font-style:normal;color:var(--muted);pointer-events:none}
+.pp-uc{display:block;font-size:var(--t-small);line-height:1.45;color:var(--muted)}
+.pp-hint{font-size:var(--t-small);line-height:1.45;color:#9a3412}
 
 /* its job, and the options nobody needs first */
-.pp-row2{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 28px;margin-top:6px}
-.pp-f{display:flex;flex-direction:column;gap:6px;min-width:0}
-.pp-use{flex:1 1 100%;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 12px}
-.pp-f > label,.pp-lab{font-size:15px;font-weight:500;color:var(--muted)}
-.pp-row .pp-f > label{font-size:inherit;font-weight:inherit;color:inherit}
-.pp-seg{display:flex;gap:4px}
-.pp-seg button{min-height:44px;border:0;border-radius:999px;background:none;padding:0 14px;font:500 15px var(--sans);line-height:1.2;color:#4a5262;cursor:pointer;white-space:nowrap;transition:color .15s ease,background .15s ease}
+.pp-row2{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.pp-use{flex-direction:column;gap:8px}
+.pp-seg{display:flex;flex-wrap:wrap;gap:4px}
+.pp-seg button{min-height:44px;border:0;border-radius:999px;background:none;padding:0 14px;font:500 var(--t-small)/1.2 var(--sans);color:#4a5262;cursor:pointer;white-space:nowrap;transition:color .15s ease,background .15s ease}
 .pp-seg button:hover{color:var(--ink);background:var(--mist)}
 .pp-seg button[aria-checked="true"],.pp-seg button[aria-checked="true"]:hover{color:#fff;background:var(--c)}
 .pp-seg button:focus-visible,.pp-pre:focus-visible,.pp-copy:focus-visible,.pp-rb:focus-visible,.pp-st:focus-visible{outline:2px solid var(--c);outline-offset:2px}
-.pp-more{flex:1 1 100%;min-width:0}
-.pp-more summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font-size:15px;font-weight:500;list-style:none;white-space:nowrap}
+.pp-more{min-width:0}
+.pp-more summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font:500 var(--t-small)/1.4 var(--sans);color:var(--ink);list-style:none;white-space:nowrap}
 .pp-more summary::-webkit-details-marker{display:none}
-.pp-more summary::after{order:3;color:var(--c)}
 .pp-more summary span{font-weight:400;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .pp-more[open] summary span{display:none}
-.pp-mg{display:flex;flex-wrap:wrap;gap:14px 36px;margin-top:6px}
-.pp-mg .pp-seg{flex-wrap:wrap}
-.pp-cnt{max-width:180px;height:44px;font:500 16px var(--sans)}
-.pp-cnt input{font:500 16px var(--sans);color:var(--ink);width:4em}
-.pp-cnt em{font-style:normal;font-size:15px;color:var(--muted);white-space:nowrap}
+.pp-mg{display:flex;flex-wrap:wrap;gap:14px 32px;margin:6px 0 8px}
 
-/* the answers: under the robot, what it is worth and what a lender could offer. Nothing else on the first screen */
-.pp-ans{display:contents}
+/* the answer: one huge figure, the sentences that keep it honest, then the offer */
+.pp-ans{min-width:0}
 .pp-a{min-width:0;display:flex;flex-direction:column}
-.pp-a[data-k="v"]{grid-column:8 / 13;grid-row:2;padding-top:18px;position:relative;z-index:1}
-.pp-a[data-k="o"]{grid-column:8 / 13;grid-row:3;margin-top:24px}
-.pp-al{font-size:15px;font-weight:500;color:#4a5262;min-height:22px}
-.pp-av{display:block;font-size:clamp(40px,3.9vw,56px);margin:6px 0 8px;white-space:nowrap;min-height:1em}
-.pp-a[data-k="v"] .pp-av{font-size:clamp(56px,5.4vw,78px);letter-spacing:-.04em;color:var(--c);margin:6px 0 10px}
-.pp-arml{margin:0 0 4px;font-size:17px;line-height:1.4;font-weight:500;color:var(--ink)}
-.pp-arml[hidden]{display:none}
+.pp-a[data-k="o"]{margin-top:24px;padding-top:24px;border-top:1px solid var(--line)}
+.pp-al{font:500 var(--t-small)/1.4 var(--sans);color:var(--txt);min-height:20px}
+.pp-av{display:block;margin:6px 0 10px;white-space:nowrap;min-height:1em}
+.pp-a[data-k="v"] .pp-av{color:var(--c)}
+.pp-ac{display:block;font-size:var(--t-small);line-height:1.45;color:var(--muted)}
+.pp-ac b{color:var(--muted);font-weight:400}
+.pp-arml{margin:12px 0 0;font:500 var(--t-body)/1.45 var(--sans);color:var(--ink)}
 .pp-arml b{font-weight:600}
-.pp-arml a{display:inline-flex;align-items:center;min-height:44px;margin:-10px 0;color:var(--c);font-weight:500}
+.pp-arml a{display:inline-flex;align-items:center;min-height:44px;margin:-13px 0;color:var(--c);font-weight:500}
+.pp-age{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:6px 0 0;font-size:var(--t-small);line-height:1.45;color:var(--muted)}
+.pp-agego{appearance:none;border:0;background:none;padding:0;margin:-10px 0;min-height:44px;font:500 var(--t-small)/1.4 var(--sans);color:var(--c);cursor:pointer}
+.pp-agego:hover{color:var(--ink)}
+.pp-offw{margin:10px 0 0;font-size:var(--t-small);line-height:1.45;color:var(--txt);max-width:52ch}
 .pp-av .v0{color:var(--ink)}.pp-av .v1{color:var(--cyl)}
 .pp-av i{font-style:normal;font-size:.5em;color:#9aa3b3;margin:0 .22em;position:relative;top:-.14em}
-.page[data-page="price.html"] .pp-ac{font-size:15px;line-height:1.4;color:#4a5262;display:block}
-.pp-ac b{color:#4a5262;font-weight:400}
 .pp-lt{font-size:.62em;position:relative;top:-.12em;margin-right:.04em}
-.pp-elo{display:block;margin-top:4px;font-size:15px;line-height:1.35;color:var(--muted)}
+.pp-elo{display:block;margin-top:4px;font-size:var(--t-small);line-height:1.35;color:var(--muted)}
 .pp-a.busy .pp-av,.pp-a.busy .pp-ac{color:transparent!important;background:linear-gradient(90deg,#eef1f6 0%,#f8f9fc 40%,#eef1f6 80%) 0 0/300% 100%;animation:pp-sh 1.1s linear infinite}
 .pp-a.busy .pp-av *{visibility:hidden}
 @keyframes pp-sh{to{background-position:-300% 0}}
-/* while the risk engine recomputes, the figures it does not draw stay put and the others shimmer; they land together */
 .pp-a .pp-av,.pp-a .pp-ac{transition:opacity .18s ease}
 .pp-stale .pp-a,.pp-stale .pp-sec,.pp-stale .pp-risk{opacity:.38;filter:grayscale(1);transition:opacity .2s ease}
 
 /* other robots to try, and what the figure rests on */
-.pp-bar{display:flex;align-items:center;justify-content:space-between;gap:0 24px;flex-wrap:wrap;margin:clamp(20px,2.2vw,28px) 0 0}
-.pp-lft .pp-pres{margin-top:2px}
-.pp-bar .pp-pres{display:none}
-.pp-pres{display:flex;flex-wrap:wrap;align-items:center;gap:0 20px;min-width:0}
-.pp-pres > span{font-size:15px;color:var(--muted)}
-.pp-pre,.pp-copy{min-height:44px;border:0;background:none;padding:0;font:500 15px var(--sans);color:var(--c);cursor:pointer;position:relative;text-decoration:none}
+.pp-pres{display:flex;flex-wrap:wrap;align-items:center;gap:0 18px;min-width:0;margin-top:4px}
+.pp-pres > span{font-size:var(--t-small);color:var(--muted)}
+.pp-pre,.pp-copy{min-height:44px;border:0;background:none;padding:0;font:500 var(--t-small)/1.3 var(--sans);color:var(--c);cursor:pointer;text-decoration:none}
 .pp-pre:hover,.pp-copy:hover,.pp-copy.done{color:var(--ink)}
 .pp-pre[aria-pressed="true"],.pp-pre[aria-pressed="true"]:hover{color:var(--ink);font-weight:600}
 .pp-copy{white-space:nowrap}
-.page[data-page="price.html"] .pp-dl{margin:0;font-size:15px;line-height:1.5;color:var(--muted);max-width:90ch}
+.pp-bar{display:flex;align-items:center;justify-content:space-between;gap:0 24px;flex-wrap:wrap;margin:clamp(20px,2.4vw,32px) 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.pp-bar .pp-pres{display:none}
+.pp-dl{margin:0;font-size:var(--t-small);line-height:1.5;color:var(--muted);max-width:90ch}
 .pp-dl b{color:var(--ink);font-weight:500}
 .pp-dl a:not(.pp-mk){color:var(--c);font-weight:500;display:inline-block;padding:12px 0;margin:-12px 0}
 
-/* drawn by the tool's script, unseen on this page */
+/* drawn by the tool's script, unseen on this page: the longer failure story lives on Lenders */
 .pp-vh{position:absolute;left:0;right:0;height:0;overflow:hidden;visibility:hidden}
 
-/* section heads: the heading, and under it the sentence that sets it up */
-.pp-sh{margin-bottom:clamp(32px,3.6vw,48px)}
-.pp-sh .h2{max-width:16ch}
-.page[data-page="price.html"] .pp-sh .lead-1{margin:18px 0 0;font-size:19px;max-width:58ch}
-.page[data-page="price.html"] .pp-sh .pp-onote2{margin-top:8px}
-.pp-why{margin-top:10px}
-.pp-why summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:500 15px var(--sans);color:var(--c)}
-.pp-why summary::-webkit-details-marker{display:none}
+/* the folds: quiet text with a small chevron */
+.pp-why{margin-top:6px}
+.pp-why summary,.pp-rest summary,.pp-all summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:500 var(--t-small)/1.4 var(--sans);color:var(--c)}
+.pp-why summary::-webkit-details-marker,.pp-rest summary::-webkit-details-marker,.pp-all summary::-webkit-details-marker{display:none}
+.pp-why summary::after,.pp-rest summary::after,.pp-all summary::after,.pp-more summary::after{content:"";flex:none;width:7px;height:7px;margin:-3px 2px 0 2px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);transition:transform .2s ease}
+.pp-why[open] > summary::after,.pp-rest[open] > summary::after,.pp-all[open] > summary::after,.pp-more[open] > summary::after{transform:translateY(4px) rotate(225deg)}
+.pp-more summary::after{color:var(--c)}
 .pp-whyb{columns:2;column-gap:56px;max-width:1000px;padding:6px 0 4px}
-.pp-whyb p{margin:0 0 12px;font-size:15px;line-height:1.6;color:#4a5262;break-inside:avoid}
+.pp-whyb p{margin:0 0 12px;font-size:var(--t-small);line-height:1.6;color:#4a5262;break-inside:avoid}
 .pp-whyb b{color:var(--ink);font-weight:600}
-.pp-why.dk summary{color:var(--cy)}
-.pp-risk .pp-whyb p{color:rgba(255,255,255,.76)}
-.pp-risk .pp-whyb b{color:#fff}
 
-/* 3. resale, on the brand gradient. Three prices at one size, high to low, because none has been tested against real sales. */
-.pp-grad{padding-block:clamp(72px,9vw,128px);color:#fff;background-size:130% 130%;background-position:0 100%;scroll-margin-top:72px}
-.page[data-page="price.html"] .pp-grad .lead-1{color:#fff}
-.pp-lad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px clamp(24px,3.4vw,48px);margin-bottom:clamp(40px,5vw,72px)}
-.pp-ladh{grid-column:1 / -1;display:block;font-size:17px;font-weight:600;margin-bottom:12px}
+/* the three prices and the dots, on the page's one gradient. Three prices at one size, high to low, because none has been tested against real sales */
+.pp-grad{padding-block:clamp(72px,8vw,112px);scroll-margin-top:72px}
+.pp-lad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px clamp(24px,3.4vw,48px);margin-bottom:clamp(40px,5vw,64px)}
+.pp-ladh{grid-column:1 / -1;display:block;font:600 var(--t-smallh)/1.35 var(--serif);margin-bottom:12px}
 .pp-rung{min-width:0}
-.pp-rung > span:first-child{display:block;font-size:17px;font-weight:600;color:#fff}
-.pp-rung > b{display:block;font:700 clamp(44px,5.4vw,78px)/1 var(--serif);letter-spacing:-.04em;margin:10px 0 12px;font-variant-numeric:lining-nums tabular-nums;color:#fff}
-.pp-rung.hi > b{color:#fff}
-.pp-rung p{margin:0;font-size:16px;line-height:1.45;color:#fff;max-width:30ch}
+.pp-rung > span:first-child{display:block;font:600 var(--t-smallh)/1.35 var(--serif);color:#fff}
+.pp-rung > b{display:block;font:700 var(--t-statement)/1 var(--serif);letter-spacing:-.03em;margin:10px 0 12px;font-variant-numeric:lining-nums tabular-nums;color:#fff}
+.pp-rung p{margin:0;font-size:var(--t-body);line-height:1.5;color:#fff;max-width:34ch}
+.pp-rung .pp-dr{display:none}
 .pp-dr{display:block;height:4px;background:#eceff4}
 .pp-dr i{display:block;height:100%}
 .pp-dr i.l{background:var(--soft)}.pp-dr i.c{background:var(--c)}.pp-dr i.a{background:var(--deep)}
-.pp-thin{grid-column:1 / -1;margin:16px 0 0;font-size:16px;line-height:1.5;color:#fff}
+.pp-thin,.pp-acc{grid-column:1 / -1;margin:16px 0 0;font-size:var(--t-body);line-height:1.5;color:#fff}
 .pp-thin b{color:#fff;font-weight:600}
-.pp-acc{grid-column:1 / -1;margin:16px 0 0;font-size:16px;line-height:1.5;color:#fff}
-.pp-scw{position:relative;margin:0}
+.pp-scw{position:relative;margin:0;scroll-margin-top:32px}
 .pp-tb{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
-.pp-segs{border-bottom:0}
 .pp-grad .pp-seg button{color:#fff}
 .pp-grad .pp-seg button:hover{background:rgba(255,255,255,.14);color:#fff}
 .pp-grad .pp-seg button[aria-checked="true"],.pp-grad .pp-seg button[aria-checked="true"]:hover{background:#fff;color:var(--c)}
 .pp-grad .pp-seg button:focus-visible{outline-color:#fff}
-.pp-log{position:relative;display:flex;align-items:center;gap:8px;font-size:15px;color:#fff;cursor:pointer;min-height:44px}
+.pp-log{position:relative;display:flex;align-items:center;gap:8px;font-size:var(--t-small);color:#fff;cursor:pointer;min-height:44px}
 .pp-log input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
 .pp-log::before{content:"";flex:none;width:16px;height:16px;border-radius:4px;box-shadow:inset 0 0 0 1.5px #fff;background:center/10px 8px no-repeat}
 .pp-log:has(input:checked)::before{box-shadow:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath d='M1 4l3 3 5-6' fill='none' stroke='%232847ce' stroke-width='1.6'/%3E%3C/svg%3E")}
 .pp-log:has(input:focus-visible){outline:2px solid #fff;outline-offset:2px;border-radius:6px}
 .pp-sc{position:relative;width:100%;touch-action:manipulation}
 .pp-sc svg{display:block;width:100%;height:auto;overflow:visible}
-.pp-covs .gl{stroke:#e8ecf2}
-.pp-covs .ax{font:12px var(--sans);fill:#6b7383}
 .pp-scs .gl{stroke:rgba(255,255,255,.2)}
 .pp-scs .ax{font:13px var(--sans);fill:#fff}
 .pp-scs .band{fill:rgba(255,255,255,.13)}
@@ -206,77 +174,78 @@
 .pp-scs .hl{fill:none;stroke:#fff;stroke-width:2;pointer-events:none}
 .pp-scs .lab{font:500 14px var(--sans);fill:#fff;paint-order:stroke;stroke:rgba(38,72,206,.86);stroke-width:4px;stroke-linejoin:round}
 .pp-scs .lab.ttl{fill:#fff;stroke:none}
-.pp-scs .lab.au{fill:#fff;font-weight:600}
-.pp-scs .lab.mc{fill:#fff;font-weight:600}
-.pp-empty{position:absolute;right:4%;top:6%;width:min(360px,62%);margin:0;padding:6px 0;font-size:16px;color:#fff}
+.pp-scs .lab.au,.pp-scs .lab.mc{fill:#fff;font-weight:600}
+.pp-empty{position:absolute;right:4%;top:6%;width:min(360px,62%);margin:0;padding:6px 0;font-size:var(--t-body);color:#fff}
 .pp-empty b{color:#fff}
+.pp-lk{display:inline-flex;align-items:center;min-height:44px;border:0;background:none;padding:0;color:var(--c);font:600 var(--t-body)/1.25 var(--sans);cursor:pointer;text-decoration:none}
 .pp-empty .pp-lk{color:#fff}
-.pp-lk{display:inline-flex;align-items:center;min-height:44px;border:0;background:none;padding:0;color:var(--c);font:500 15px var(--sans);cursor:pointer;text-decoration:none}
-.pp-lk:hover{text-decoration:underline;text-underline-offset:3px}
-.pp-tip{position:absolute;z-index:10;width:280px;padding:12px 14px 6px;background:#fff;border-radius:10px;box-shadow:0 0 0 1px var(--line),0 18px 40px -16px rgba(10,20,60,.35);font-size:15px;line-height:1.45;display:flex;flex-direction:column;gap:2px;color:#4a5262}
-.pp-tip b{font-weight:600;font-size:15px;color:var(--ink);padding-right:18px}
-.pp-tip strong{font:700 17px var(--serif);color:var(--ink)}
-.pp-tip em{font-style:normal;font-size:15px;color:var(--muted)}
+.pp-tip{position:absolute;z-index:10;width:280px;padding:12px 14px 6px;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--line),0 18px 40px -16px rgba(10,20,60,.35);font-size:var(--t-small);line-height:1.45;display:flex;flex-direction:column;gap:2px;color:#4a5262}
+.pp-tip b{font-weight:600;color:var(--ink);padding-right:18px}
+.pp-tip strong{font:700 var(--t-smallh) var(--serif);color:var(--ink)}
+.pp-tip em{font-style:normal;color:var(--muted)}
 .pp-tip a{color:var(--c);font-weight:500;text-decoration:none;padding:9px 0;margin-top:2px}
 .pp-tx{position:absolute;right:2px;top:2px;width:36px;height:36px;border:0;background:none;font-size:20px;color:var(--muted);cursor:pointer}
-.pp-cut{margin:6px 0 0;font-size:15px;color:#fff}
+.pp-cut{margin:6px 0 0;font-size:var(--t-small);color:#fff}
 .pp-cut:empty{display:none}
-/* the listings and sales sit behind one fold on the gradient. Open, they are a sheet of paper: tables are for paper. */
+.pp-grad .pp-why summary{color:#fff}
+.pp-grad summary:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
+.pp-grad .pp-whyb p,.pp-grad .pp-whyb b{color:#fff}
+
+/* the listings and sales sit behind one fold on the gradient. Open, they are a sheet of white */
 .pp-bh{margin-top:0}
-.pp-bhb{margin-top:10px;padding:clamp(20px,3vw,40px);background:#fff;border-radius:14px;color:var(--ink)}
-.pp-bhb .h3{color:var(--ink)}
-.pp-tabs{display:flex;flex-direction:column;gap:48px}
+.pp-bhb{margin-top:10px;padding:clamp(20px,3vw,40px);background:#fff;border-radius:16px;color:var(--ink)}
+.pp-bhb h3{margin:0;color:var(--ink)}
+.pp-grad .pp-bhb summary{color:var(--c)}
+.pp-grad .pp-bhb summary:focus-visible{outline-color:var(--c)}
+.pp-tabs{display:flex;flex-direction:column;gap:clamp(28px,3vw,40px)}
+.pp-rest{margin-top:4px}
 .pp-tw:has(.pp-rest:not([open])) tbody tr:nth-child(n+4){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.pp-rest summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;color:var(--c);font-weight:500;font-size:15px;list-style:none}
-.pp-rest summary::-webkit-details-marker{display:none}
 .pp-rest .b,.pp-rest[open] .a{display:none}
 .pp-rest[open] .b{display:inline}
 .pp-tw:has(.pp-tnone) .pp-rest{display:none}
 .pp-tw{min-width:0}
-.pp-tw .h3,.pp-cmpw .h3{margin:0}
-.pp-tn{margin:4px 0 16px;font-size:15px;line-height:1.45;color:var(--muted);max-width:80ch}
+.pp-tn{margin:4px 0 16px;font-size:var(--t-small);line-height:1.45;color:var(--muted);max-width:80ch}
 .pp-ts{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .pp-t th,.pp-t td{white-space:nowrap;vertical-align:top}
 .pp-t .wr{white-space:normal;min-width:180px}
 .pp-t a{color:var(--c);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;margin:-13px 0}
-.pp-t a:hover{text-decoration:underline;text-underline-offset:3px}
-.page[data-page="price.html"] .stmt.pp-t thead th,.page[data-page="price.html"] .stmt.pp-cmpt thead th{border-top:0;padding-top:0;font-size:15px}
+.stmt.pp-t thead th,.stmt.pp-cmpt thead th{border-top:0;padding-top:0}
 .pp-t tbody tr:last-child td{border-bottom:0}
 .pp-t .pp-trb{position:sticky;left:0;z-index:1;background:#fff}
 .pp-t .pp-tmp{white-space:nowrap;padding-left:16px}
 .pp-t .pp-tln{width:1%;text-align:right}
 .pp-t .nw{white-space:nowrap}
 .pp-t .lc{color:#4a5262}
-.pp-om{display:block;margin-top:3px;font-size:15px;line-height:1.3;color:var(--muted);font-weight:400}
+.pp-om{display:block;margin-top:3px;font-size:var(--t-small);line-height:1.3;color:var(--muted);font-weight:400}
 .pp-tnone{color:var(--muted);white-space:normal!important}
 .pp-ts.fade{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}
 .pp-ts.moved .pp-t .pp-trb{box-shadow:1px 0 0 var(--line)}
 .pp-all{margin-top:20px}
-.pp-all summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;color:var(--c);font-weight:500;font-size:15px;list-style:none}
-.pp-all summary::-webkit-details-marker{display:none}
 .pp-tall{max-height:480px;overflow:auto;margin-top:6px}
 .pp-tall thead th{position:sticky;top:0;background:#fff;z-index:2}
 .pp-tall thead th.pp-trb{z-index:3}
 
-/* 4. value: one rate beside the sentences that set it up, then the two lines that matter: what the robot is worth and what is still owed */
-.pp-vtop{margin-bottom:clamp(44px,5.4vw,80px)}
-.page[data-page="price.html"] .pp-vtop .h2{max-width:none;margin:0 0 clamp(24px,2.6vw,36px)}
+/* how fast it loses value: one rate, then the two lines that matter, what the robot is worth and what is still owed */
+.pp-vtop{margin-bottom:clamp(44px,5vw,72px)}
+.pp-vtop h2{margin:0 0 clamp(24px,2.6vw,36px)}
 .pp-vfig{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px 36px;align-items:end}
-.page[data-page="price.html"] .pp-vfig .lead-1{margin:0 0 4px;font-size:19px}
-.pp-vtop .pp-av{font-size:clamp(60px,6vw,88px);letter-spacing:-.04em;line-height:.95}
-.page[data-page="price.html"] .pp-vtxt .lead-1{margin:0 0 12px;font-size:19px}
+.pp-vfig .t-lead{margin:0 0 4px;color:var(--txt)}
+.pp-a[data-k="d"] .pp-av{color:var(--ink)}
 .pp-cov{margin:0}
-.pp-covh{display:flex;align-items:baseline;flex-wrap:wrap;row-gap:6px;margin-bottom:12px;font-size:16px}
+.pp-covn{margin:0 0 10px;font-size:var(--t-body);line-height:1.5;color:#4a5262;max-width:68ch}
+.pp-covn b{display:block;max-width:46ch;text-wrap:balance;font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink);margin-bottom:8px}
+.pp-covw{margin:0 0 clamp(28px,3vw,40px);font-size:var(--t-body);line-height:1.5;color:#4a5262;max-width:68ch}
+.pp-covh{display:flex;align-items:baseline;flex-wrap:wrap;row-gap:6px;margin-bottom:12px;font-size:var(--t-body)}
 .pp-covh b{font-weight:600}
-.pp-covk{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font:500 14px var(--sans);color:var(--muted)}
-.pp-covk[hidden]{display:none}
+.pp-covk{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font:500 var(--t-small) var(--sans);color:var(--muted)}
 .pp-covk i{display:block;width:24px;border-top:1px dashed #9aa3b2}
 .pp-covc svg{display:block;width:100%;height:auto;overflow:visible}
-.pp-covs .bar{opacity:0;transform:translateY(5px);transition:opacity .35s ease var(--d),transform .45s cubic-bezier(.2,.7,.2,1) var(--d)}
-.pp-covc.on .pp-covs .bar{opacity:1;transform:none}
-/* each year's range is a thin bar from its low case to its high case. The script draws wide columns, so these narrow them and hold them on their year. */
-.pp-covs .bar{width:4px;--bx:9px;transform:translate(var(--bx),5px)}
-.pp-covc.on .pp-covs .bar{transform:translate(var(--bx),0)}
+.pp-covc svg text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.pp-covs .gl{stroke:#e8ecf2}
+.pp-covs .ax{font:12px var(--sans);fill:#6b7383}
+/* each year's range is a thin bar from its low case to its high case. The script draws wide columns, so these narrow them and hold them on their year */
+.pp-covs .bar{opacity:0;width:4px;--bx:9px;transform:translate(var(--bx),5px);transition:opacity .35s ease var(--d),transform .45s cubic-bezier(.2,.7,.2,1) var(--d)}
+.pp-covc.on .pp-covs .bar{opacity:1;transform:translate(var(--bx),0)}
 .pp-covs .c{display:none}.pp-covs .c2,.pp-covs .gr{fill:#c6d0f3}
 .pp-covs .c2.bad,.pp-covs .gr.bad{fill:#c2410c}
 .pp-covs .cush{fill:rgba(40,71,206,.1)}
@@ -285,23 +254,19 @@
 .pp-covs .p50{fill:none;stroke:var(--c);stroke-width:3;stroke-linejoin:round}
 .pp-covs .bal{fill:none;stroke:var(--ink);stroke-width:3;stroke-linejoin:round}
 .pp-covs .arm{fill:none;stroke:#9aa3b2;stroke-width:1;stroke-dasharray:4 4;stroke-linecap:butt}
-.pp-covs .bl{font:600 14px var(--sans);fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.pp-covs .bl{font:600 14px var(--sans);fill:var(--ink)}
 .pp-covs .bl.rs{fill:var(--c)}
 .pp-covs .bl.cu{fill:var(--deep);font-weight:500}
 .pp-covs .bl.al{fill:#7a8396;font-weight:500}
 .pp-covs .gl2{font-size:14px;fill:#5b6474}
-.pp-covn{margin:0 0 10px;font-size:15px;line-height:1.5;color:#4a5262;max-width:68ch}
-.pp-covw{margin:0 0 clamp(28px,3vw,40px);font-size:15px;line-height:1.5;color:#4a5262;max-width:68ch}
 .pp-vfolds{margin-top:8px}
-.pp-covn b{display:block;max-width:46ch;text-wrap:balance;font:600 clamp(24px,2.3vw,32px)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink);margin-bottom:8px}
-.pp-cmpw{margin-top:0}
 .pp-cmpb{padding-top:6px}
-.pp-cmpt small{display:block;font-size:15px;font-weight:400;color:var(--muted);margin-top:2px}
+.pp-cmpt small{display:block;font-size:var(--t-small);font-weight:400;color:var(--muted);margin-top:2px}
 .pp-cmpt tbody th{white-space:normal;width:40%}
 .pp-cmpt tr.hl small{color:var(--muted)}
 .pp-cmpt tbody th,.pp-cmpt tbody td{vertical-align:middle;background:transparent}
 .pp-crv{font-weight:600}
-.page[data-page="price.html"] .stmt.pp-cmpt tr.pp-cax td{border:0;padding:6px 0 0}
+.stmt.pp-cmpt tr.pp-cax td{border:0;padding:6px 0 0}
 .pp-cb2{display:block;position:relative;height:18px}
 .pp-cb2::before{content:"";position:absolute;left:0;right:0;top:8.5px;height:1px;background:var(--line)}
 .pp-ci{position:absolute;top:5px;height:8px;background:rgba(40,71,206,.22)}
@@ -309,180 +274,129 @@
 .pp-caxs{display:block;position:relative;height:18px}
 .pp-caxs em{position:absolute;top:0;transform:translateX(-50%);font-style:normal;font-size:12px;color:#6b7383}
 
-/* 5. risk: the page's one ink band. One question, one number, one switch */
-.pp-risk{background:var(--ink)}
-.pp-rk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px 72px;align-items:start}
-.pp-rh .h2{max-width:12ch;margin:0}
-.page[data-page="price.html"] .pp-rp{margin:20px 0 0;max-width:40ch;font-size:19px;color:rgba(255,255,255,.76)}
-.pp-rdef{margin:14px 0 0;max-width:40ch;font-size:19px;line-height:1.5;color:#fff}
+/* what if a loan goes bad: one short passage, one number, one switch and a link. The full story is on Lenders */
+.pp-risk{padding-block:clamp(64px,7vw,96px)}
+.pp-rk{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px clamp(40px,5vw,72px);align-items:start}
+.pp-rh h2{margin:0}
+.pp-rh .t-lead{margin:16px 0 0;max-width:46ch;color:var(--txt)}
+.pp-rdef{margin:14px 0 8px;max-width:52ch;font-size:var(--t-body);line-height:1.55;color:var(--txt)}
 .pp-rbig{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
-.pp-rl{display:block;font-size:15px;color:rgba(255,255,255,.78)}
-.pp-rv{display:block;font:700 clamp(64px,7vw,100px)/.92 var(--serif);letter-spacing:-.045em;color:#fff;margin:14px 0 26px -.03em;font-variant-numeric:lining-nums tabular-nums;transition:color .6s ease;white-space:nowrap}
-.pp-rk.bk .pp-rv{color:var(--cy)}
-.pp-rsw{display:flex;flex-wrap:wrap;gap:4px;max-width:100%}
-.pp-rb{display:flex;align-items:baseline;gap:10px;min-height:44px;padding:12px 16px;border:0;border-radius:999px;background:none;color:#fff;cursor:pointer;font-family:var(--sans)}
-.pp-rb span{font-size:15px;font-weight:500;color:rgba(255,255,255,.66);white-space:nowrap}
-.pp-rb b{font:600 15px var(--sans);color:rgba(255,255,255,.66);font-variant-numeric:lining-nums tabular-nums}
-.pp-rb:hover span{color:#fff}
+.pp-rl{display:block;font:500 var(--t-small)/1.4 var(--sans);color:var(--txt)}
+.pp-rv{display:block;color:var(--ink);margin:6px 0 20px;white-space:nowrap;transition:color .6s ease}
+.pp-rk.bk .pp-rv{color:var(--c)}
+.pp-rsw{display:flex;flex-direction:column;align-items:stretch;gap:2px;width:100%;max-width:360px}
+.pp-rb{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:none;color:var(--ink);cursor:pointer;font-family:var(--sans)}
+.pp-rb span{font-size:var(--t-small);font-weight:500;color:#4a5262;white-space:nowrap}
+.pp-rb b{font:600 var(--t-small) var(--sans);color:#4a5262;font-variant-numeric:lining-nums tabular-nums}
+.pp-rb:hover span{color:var(--ink)}
 .pp-rb[aria-checked="true"]{background:#fff}
-.pp-rb[aria-checked="true"] span,.pp-rb[aria-checked="true"] b,.pp-rb[aria-checked="true"]:hover span{color:var(--ink)}
+.pp-rb[aria-checked="true"] span,.pp-rb[aria-checked="true"] b{color:var(--ink)}
 .pp-rb[data-v="1"][aria-checked="true"] b{color:var(--c)}
-.pp-rcap{margin:16px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.78);max-width:46ch}
-.pp-rnote{margin:10px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.78);max-width:46ch}
-/* the harsher sale gets the plain sentence the big figure sits on */
-.pp-rlow{margin:14px 0 0;font-size:17px;line-height:1.45;font-weight:500;color:#fff;max-width:40ch}
-.pp-rlow .pp-mk{margin-left:8px}
-/* the fuller picture stays folded away; it stays in the layout so the tool's script can measure and draw it */
-.pp-rfolds{margin-top:clamp(32px,4vw,56px)}
-.pp-rfolds .pp-why{margin-top:0}
-.pp-hx{margin-top:0}
-.pp-histw{margin:18px 0 0;min-width:0;display:flex;flex-direction:column;gap:clamp(32px,4vw,48px)}
-.pp-histf{margin:0;min-width:0;max-width:760px}
-.pp-hx:not([open]) + .pp-histw{height:0;margin:0;overflow:hidden;visibility:hidden}
-.pp-dkh{display:flex;align-items:baseline;margin-bottom:8px;color:#fff;font-size:16px}
-.pp-dkh b{font-weight:600}
-.pp-hist svg{display:block;width:100%;height:auto}
-.pp-hs rect{transform-box:fill-box;transform-origin:50% 100%;transition:transform .45s cubic-bezier(.2,.7,.2,1),fill .24s ease}
-.pp-hs .f{fill:var(--cy)}.pp-hs .z{fill:rgba(150,232,255,.4)}
-.pp-hs .yg{stroke:rgba(255,255,255,.14)}.pp-hs .yg.b{stroke:rgba(255,255,255,.4)}
-.pp-hs .yl{font:12px var(--sans);fill:rgba(255,255,255,.62)}
-.pp-hs .ov{font:600 14px var(--sans);fill:var(--cy)}
-.pp-hs .ax{font:12px var(--sans);fill:rgba(255,255,255,.62)}
-.pp-dkn{margin:10px 0 0;font-size:15px;line-height:1.5;color:rgba(255,255,255,.72)}
-.pp-dkn b{color:#fff;font-weight:600}
-.pp-drw{margin:0;padding-top:8px}
-.pp-drwf{max-width:none;min-width:0}
-.pp-drd{display:flex;gap:2px;height:14px}
-.pp-drd i{display:block;min-width:0;transition:background .35s ease,box-shadow .35s ease}
-.pp-drd i.op{background:var(--cy)}.pp-drd i.cu{background:#fff}.pp-drd i.re{background:#7d93ff}
-.pp-drd.off i.op{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(150,232,255,.35)}
-.pp-dls{position:relative;height:58px;margin-top:12px}
-.pp-dlb{position:absolute;top:0;display:flex;flex-direction:column;gap:2px;font-size:15px;color:rgba(255,255,255,.72);white-space:nowrap}
-.pp-dlb b{font:700 24px/1.1 var(--serif);color:#fff;letter-spacing:-.01em}
-.pp-dlb.op b{color:var(--cy)}.pp-dlb.re b{color:#9fb0ff}.pp-dlb.cu b{color:#fff}
-.pp-dls.off .pp-dlb.op{color:rgba(255,255,255,.45)}
-.pp-dls.off .pp-dlb.op b{color:rgba(150,232,255,.45)}
-.pp-dlg{position:absolute;right:0;top:0;display:flex;gap:28px}
-.pp-dlg .pp-dlb{position:static;align-items:flex-end;text-align:right}
-.pp-dls.two{height:112px}
-.pp-dlg.r2{top:56px}
-.pp-rf{display:flex;align-items:baseline;flex-wrap:wrap;row-gap:6px;margin:22px 0 0;font-size:15px;color:rgba(255,255,255,.66)}
+.pp-rcap,.pp-rnote{margin:12px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--txt);max-width:52ch}
 
-/* 6. offer: the term sheets are real documents, so they stay paper */
+/* the loan: the term sheets are real documents, so they stay paper */
 .pp-og{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:stretch}
 .pp-sheet{display:flex;flex-direction:column;padding:28px 30px 20px}
 .pp-sheet > :last-child{margin-top:auto}
 .pp-sheet .dr{align-items:baseline;flex-wrap:wrap;padding:10px 8px;row-gap:2px}
 .pp-sheet .dr span{min-width:0}
-.pp-sheet .dr small{flex:1 0 100%;font-size:15px;color:#5b6474;line-height:1.35}
+.pp-sheet .dr small{flex:1 0 100%;font-size:14px;color:#5b6474;line-height:1.35}
 .pp-sheet .dr b{text-align:right;margin-left:auto;display:flex;align-items:baseline;justify-content:flex-end;flex-wrap:wrap;gap:2px}
 .pp-sheet .dr.big b{font:600 26px/1.1 var(--doc);color:var(--c)}
 .pp-sheet .dr.hl{background:var(--mist)}
 .pp-sheet .dr.hl span{color:#3e4656}.pp-sheet .dr.hl b{color:var(--ink)}.pp-sheet .dr.hl.big b{color:var(--c)}
-.pp-sheet .sh-f{margin-top:14px;padding-top:0;font-size:15px;line-height:1.4}
+.pp-sheet .sh-f{margin-top:14px;padding-top:0;font-size:14px;line-height:1.4}
 .pp-sb .sh-t{color:var(--deep)}
-.pp-sheet .sh-h span{font-size:15px}
+.pp-sheet .sh-h span{font-size:14px}
+.pp-sheet .sh-t{margin-bottom:8px}
 .pp-warn{color:#9a3412;font-weight:600}
-.pp-cta{display:flex;align-items:center;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;margin-top:40px}
-.pp-cta .h3{margin:0}
-.pp-ctap{margin:8px 0 0;font-size:17px;line-height:1.45;color:#3e4656}
-.pp-ctab{display:flex;align-items:center;gap:8px 22px;flex-wrap:wrap}
+/* three terms on each sheet until the reader asks for the rest. The other rows keep their place in the page with no height */
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)){flex:none;height:0;min-height:0;padding:0;margin:0;border:0;overflow:hidden;order:9}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)) .pp-mk{display:none}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.hl{background:none}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big{order:1;display:block;padding:6px 8px 18px;border:0}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big span{display:block;font-size:14px;color:#5b6474}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big b{display:block;margin:6px 0 8px;text-align:left;font-size:clamp(40px,4vw,56px);line-height:1;letter-spacing:-.025em}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big small{display:none}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(3){order:2}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(6){order:3}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(9){order:4}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .sh-f{order:10}
+.pp-oup{margin:24px 0 0;max-width:72ch;font-size:var(--t-small);line-height:1.5;color:var(--txt)}
+.pp-fullt summary .b,.pp-fullt[open] summary .a{display:none}
+.pp-fullt[open] summary .b{display:inline}
+.pp-fullb{columns:1;max-width:72ch}
+.pp-cta{display:flex;align-items:center;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;margin-top:clamp(40px,4vw,56px)}
+.pp-cta h3{margin:0}
+.pp-cta p{margin:6px 0 0;color:var(--txt)}
+.pp-ctab{display:flex;align-items:center;gap:8px 24px;flex-wrap:wrap}
 
-/* 7. method */
-.pp-full{margin-top:2px}
-.pp-msec{padding-top:56px;padding-bottom:64px}
-.pp-how{scroll-margin-top:84px}
-.pp-how summary{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 16px;min-height:72px;padding:22px 0;cursor:pointer;list-style:none;scroll-margin-top:80px}
+/* how this works: the method the Model markers link to */
+.pp-msec{padding-block:0 clamp(64px,7vw,96px)}
+.pp-how{scroll-margin-top:84px;border-top:1px solid var(--line)}
+.pp-how summary{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 16px;padding:22px 0;cursor:pointer;list-style:none;scroll-margin-top:80px}
 .pp-how summary::-webkit-details-marker{display:none}
-.pp-how summary .h3{margin:0;font-size:clamp(26px,2.4vw,32px)}
-.pp-how summary .h3::after{content:"";display:inline-block;width:.34em;height:.34em;margin:0 .1em .16em .42em;border-right:2.5px solid var(--c);border-bottom:2.5px solid var(--c);transform:rotate(45deg);transition:transform .2s ease}
-.pp-how[open] summary .h3::after{transform:translateY(.12em) rotate(225deg)}
-.pp-how summary em{font-style:normal;color:var(--muted);font-size:15px}
-.pp-hg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;padding-top:28px}
-.pp-hc h3{font:700 22px/1.2 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
-.pp-hc p{font-size:15px;line-height:1.6;color:#4a5262;margin:0 0 14px}
+.pp-how summary h2{margin:0}
+.pp-how summary h2::after{content:"";display:inline-block;width:.34em;height:.34em;margin:0 .1em .16em .42em;border-right:2px solid var(--c);border-bottom:2px solid var(--c);transform:rotate(45deg);transition:transform .2s ease}
+.pp-how[open] summary h2::after{transform:translateY(.12em) rotate(225deg)}
+.pp-how summary span{color:var(--muted);font-size:var(--t-small)}
+.pp-hg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;padding:12px 0 20px}
+.pp-hc h3{font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
+.pp-hc p{font-size:var(--t-small);line-height:1.6;color:#4a5262;margin:0 0 14px}
 .pp-hc p b{color:var(--ink);font-weight:600}
 .pp-srcs,.pp-as,.pp-tagl{list-style:none;margin:0 0 16px;padding:0}
-.pp-srcs li{display:grid;grid-template-columns:128px minmax(0,1fr) 36px;align-items:center;gap:10px;padding:5px 0;font-size:15px}
+.pp-srcs li{display:grid;grid-template-columns:128px minmax(0,1fr) 36px;align-items:center;gap:10px;padding:5px 0;font-size:var(--t-small)}
 .pp-srcs li b{text-align:right;font-weight:500}
-.pp-as li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:15px;color:#4a5262}
+.pp-as li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:var(--t-small);color:#4a5262}
 .pp-as li b{color:var(--ink);font-weight:600;white-space:nowrap}
 .pp-tagb{display:flex;gap:2px;height:10px;margin-bottom:10px}
 .pp-tagb i{flex:1 1 0;min-width:0}
 .pp-tagl i{flex:none;width:11px;height:11px}
-.pp-tagl li{display:flex;align-items:center;gap:8px;font-size:15px;color:#4a5262;padding:3px 0}
+.pp-tagl li{display:flex;align-items:center;gap:8px;font-size:var(--t-small);color:#4a5262;padding:3px 0}
 i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#9fb2ea}i.assumption{background:#dfe5ef}
-.pp-built{font-size:15px!important;color:var(--muted)!important}
+.pp-built{font-size:var(--t-small)!important;color:var(--muted)!important}
+
+/* the last screen: what a price you can look up is for */
+.pp-close{padding-block:clamp(88px,10vw,144px)}
+.pp-close h2{margin:0;color:#fff;max-width:18ch}
+.pp-close .t-lead{margin:24px 0 16px;max-width:60ch;color:rgba(255,255,255,.86)}
 
 /* narrower windows */
-@media (max-width:1180px){
-  .pp-lft{grid-column:1 / 8}
-  .pp-bot{height:236px;--bh:228px}
-  .pp-seg button{padding:0 11px}
-}
 @media (max-width:1000px){
-  .pp-lft,.pp-bot,.pp-a[data-k="v"],.pp-a[data-k="o"]{grid-row:auto}
-  .pp-lft{grid-column:1 / -1}
-  .pp-bot{position:absolute;right:24px;top:clamp(16px,2vw,32px);width:240px;height:190px;--bh:180px;grid-column:auto}
-  .pp-lft .h1{max-width:7ch}
-  .pp-lft .lede{max-width:58%;margin-top:28px}
-  .pp-a[data-k="v"]{grid-column:1 / -1;padding-top:28px}
-  .pp-a[data-k="o"]{grid-column:1 / -1;margin-top:24px}
-  .pp-rk{grid-template-columns:minmax(0,1fr);gap:36px}
-  .pp-sh{grid-template-columns:minmax(0,1fr)}
-  .pp-sh .h2{max-width:none}
+  .pp-head,.pp-tool,.pp-rk{grid-template-columns:minmax(0,1fr)}
   .pp-hg{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .pp-lft .pp-pres{display:none}
+  .pp-bar .pp-pres{display:flex}
 }
 @media (max-width:860px){
   .pp-og,.pp-hg{grid-template-columns:minmax(0,1fr)}
   .pp-whyb{columns:1}
 }
 
-/* phones: the sentence stacks into lines, each still reading in order */
+/* phones: fields stack, the answer lands on the first screen */
 @media (max-width:600px){
-  .pp-hero{padding-top:8px}
-  .pp-bot{right:24px;top:4px;width:146px;height:112px;--bh:108px}
-  .pp-lft .h1{font-size:46px}
-  .pp-lft .lede{max-width:none;font-size:17px;margin-top:18px}
-  .pp-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;font-size:21px}
-  .pp-row .pp-f{display:grid;grid-template-columns:6.2em minmax(0,1fr);gap:6px;align-items:center}
-  .pp-row .pp-f:last-child{grid-template-columns:6.2em minmax(0,1fr) auto}
-  .pp-row label{display:flex;align-items:center;min-height:44px;font-size:18px;color:#3e4656;white-space:nowrap}
-  .pp-covk{font-size:15px}
-  .pp-tail{font-size:18px;color:#3e4656}
-  .pp-cb input,.pp-money,.pp-yr{height:46px;width:100%;min-width:0}
-  .pp-money input{width:100%;field-sizing:fixed}
-  .pp-cb input{field-sizing:fixed;width:100%}
-  .pp-yr{justify-content:space-between}
-  .pp-st{width:48px}
-  .pp-lb{width:calc(100vw - 48px);left:calc(-6.2em - 6px);max-height:300px}
+  .pp-hero{padding-top:0}
+  .pp-tool{margin-top:24px;gap:28px}
+  .pp-robot,.pp-year{grid-column:1 / -1}
+  .pp-lb{width:calc(100vw - 48px);max-height:300px}
   .pp-lb li{flex-wrap:wrap;gap:0 12px;padding:8px 10px}
   .pp-lb li em{text-align:left}
-  .pp-use{gap:4px}
-  .pp-use .pp-lab{flex:1 1 100%}
-  .pp-seg{flex-wrap:wrap}
   .pp-seg4,.pp-mg .pp-seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;width:100%}
-  .pp-seg button{min-height:44px;white-space:normal;padding:0 8px}
-  .pp-seg4 button{background:var(--mist)}
+  .pp-seg button{white-space:normal;padding:0 8px;background:var(--mist)}
+  .pp-grad .pp-seg button{background:none}
   .pp-more summary span{display:none}
-  .pp-a[data-k="v"] .pp-av{font-size:58px}
-  .pp-av{font-size:36px;margin:4px 0 6px}
-  .pp-a[data-k="o"]{margin-top:20px}
-  .pp-pres{gap:0 18px}
   .pp-pres > span{flex:1 1 100%;margin-bottom:-6px}
-  .pp-pre,.pp-copy{min-height:44px;text-align:left}
+  .pp-pre,.pp-copy{text-align:left}
   .pp-copy{width:100%}
-  .page[data-page="price.html"] .lead-1{font-size:17px}
   .pp-lad{grid-template-columns:minmax(0,1fr);gap:24px}
   .pp-ladh{margin-bottom:0}
   .pp-scs .ul text:not(.uv){display:none}
-  .pp-rung > b{font-size:52px;margin:6px 0 8px}
   .pp-rung p{max-width:none}
   .pp-thin,.pp-acc{margin-top:0}
   .pp-empty{position:static;width:auto;margin-top:10px}
   .pp-tip{width:min(270px,calc(100% - 16px))}
   .pp-tabs{gap:40px}
-  .pp-t{font-size:15px}
+  .pp-t{font-size:var(--t-small)}
   .stmt.pp-t tbody td,.stmt.pp-t thead th{padding:10px 8px 10px 0}
   .pp-t td{white-space:normal}
   .pp-t td.num,.pp-t td.r{white-space:nowrap}
@@ -496,26 +410,17 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
   .pp-t td.pp-tln a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;margin:-10px 0}
   .pp-covk{margin-left:0;flex-basis:100%}
   .pp-cmpt tbody th{width:46%}
-  .pp-rv{font-size:68px}
-  .pp-rsw{flex-direction:column;align-items:stretch;gap:0;width:100%}
-  .pp-rb{justify-content:space-between;width:100%}
-  .pp-dls,.pp-dls.two{height:auto;display:flex;flex-direction:column;gap:10px}
-  .pp-dls > .pp-dlb,.pp-dlg,.pp-dlg.r2,.pp-dlg .pp-dlb{position:static}
-  .pp-dlg,.pp-dlg.r2{display:flex;flex-direction:column;gap:10px}
-  .pp-dlb,.pp-dlg .pp-dlb{flex-direction:row;align-items:baseline;gap:10px;text-align:left}
-  .pp-dls .pp-dlb b{min-width:52px}
-  .pp-rf{display:block;line-height:1.6}
+  .pp-rsw{max-width:none}
   .pp-sheet{padding:20px 16px 14px}
   .pp-sheet .dr{padding:10px 4px}
   .pp-cta{flex-direction:column;align-items:flex-start}
-  .pp-mk,.pp-a[data-k="o"] .pp-mk,.pp-rfolds .pp-mk,#pp-s1 .pp-mk,#pp-s0 .dr:has(.pp-mk) ~ .dr .pp-mk{font-size:15px}
-  /* long labels wrap on a phone, and the marker starts its own line flush with them */
-  .pp-a[data-k="v"] .pp-mk,.pp-covh .pp-mk{margin-left:0;padding-left:0;justify-content:flex-start}
-  .pp-vtop{grid-template-columns:minmax(0,1fr)}
-  .pp-vtop .pp-av{font-size:64px}
-  /* the coverage chart draws 12px columns on a phone */
+  .pp-covh .pp-mk{margin-left:0;padding-left:0;justify-content:flex-start}
+  .pp-vfig{grid-template-columns:minmax(0,1fr);gap:14px}
   .pp-covs .bar{width:3px;--bx:4.5px}
-  /* auction rows: the lot on its own line, then price, date and venue under it. Five columns crushed the titles into one-word lines. */
+  /* every word in a chart reads at the body size on a phone. The charts draw at the real width of the screen, so these sizes are true pixels */
+  .pp-scs .ax,.pp-scs .ul text,.pp-scs .lab,.pp-covs .ax,.pp-covs .aft,.pp-covs .bl,.pp-covs .gl2,.pp-caxs em{font-size:15px}
+  .pp-sc svg,.pp-covc svg{overflow:visible}
+  /* auction rows: the lot on its own line, then price, date and venue under it */
   #pp-auc,#pp-auc tbody{display:block}
   #pp-auc thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
   #pp-auc tr{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:2px 14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
@@ -530,105 +435,5 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 @media (prefers-reduced-motion:reduce){
   .pp-a.busy .pp-av,.pp-a.busy .pp-ac{animation:none}
   .pp-covs .bar,.pp-covc.on .pp-covs .bar{opacity:1;transform:translate(var(--bx),0);transition:none}
-  .pp-hs rect,.pp-rv{transition:none}
+  .pp-rv{transition:none}
 }
-
-.page[data-page="price.html"] .fine-w{font-size:15px;line-height:1.5}
-.pp-rung .pp-dr{display:none}
-
-/* every fold: quiet text with a small chevron, the same mark the robot picker uses */
-.pp-why summary::after,.pp-rest summary::after,.pp-all summary::after,.pp-more summary::after{content:"";flex:none;width:7px;height:7px;margin:-3px 2px 0 2px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);transition:transform .2s ease}
-.pp-why[open] > summary::after,.pp-rest[open] > summary::after,.pp-all[open] > summary::after,.pp-more[open] > summary::after{transform:translateY(4px) rotate(225deg)}
-.pp-more summary::after{color:var(--c)}
-.pp-why.dk summary{color:#fff}
-.pp-grad .pp-why summary{color:#fff}
-.pp-grad summary:focus-visible,.pp-risk summary:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
-.pp-grad .pp-whyb p{color:#fff}
-.pp-grad .pp-whyb b{color:#fff}
-
-/* round 4 */
-/* the first screen keeps one line about the listings behind the number; the count under the sentence said the same thing again */
-.pp-cbn{display:none}
-
-/* the risk band: the machine goes dark when the company behind it fails, and comes back with a backup partner */
-.pp-rk{grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3fr);gap:40px clamp(28px,3.4vw,56px)}
-.pp-rbot{align-self:end;min-width:0;opacity:.24;transition:opacity .6s ease}
-.pp-rbot .rstage{margin:0}
-.pp-rk.bk .pp-rbot{opacity:1}
-.pp-rdef{font-size:17px;color:rgba(255,255,255,.76)}
-.pp-rsw{flex-direction:column;align-items:stretch;gap:2px;width:100%;max-width:360px}
-.pp-rb{justify-content:space-between}
-
-/* the loan: paper with the loan on top and two terms under it. The other rows keep their place in the page with no height until the reader opens them */
-.pp-offer .pp-sheet .sh-t{margin-bottom:8px}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)){flex:none;height:0;min-height:0;padding:0;margin:0;border:0;overflow:hidden;order:9}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)) .pp-mk{display:none}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.hl{background:none}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big{order:1;display:block;padding:6px 8px 18px;border:0}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big span{display:block;font-size:15px;color:#5b6474}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big b{display:block;margin:6px 0 8px;text-align:left;font-size:clamp(40px,4vw,56px);line-height:1;letter-spacing:-.025em}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big small{display:none}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(3){order:2}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(6){order:3}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(9){order:4}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .sh-f{order:10}
-.pp-oup{margin:24px 0 0;max-width:72ch;font-size:15px;line-height:1.5;color:#3e4656}
-.pp-fullt{margin-top:6px}
-.pp-fullt summary .b,.pp-fullt[open] summary .a{display:none}
-.pp-fullt[open] summary .b{display:inline}
-.pp-fullb{columns:1;max-width:72ch}
-
-@media (max-width:1180px){
-  .pp-rk{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-  .pp-rbot{display:none}
-}
-@media (max-width:1000px){
-  .pp-rk{grid-template-columns:minmax(0,1fr)}
-  /* the machine sits just over the number and the switch, so it stays in view when the switch is flipped */
-  .pp-rbot{display:block;order:1;max-width:220px;margin-bottom:-12px}
-  .pp-rbot .rstage{--h:240px!important}
-  .pp-rbig{order:2}
-  .pp-rsw{max-width:none}
-}
-@media (max-width:1000px){
-  .pp-lft .pp-pres{display:none}
-  .pp-bar .pp-pres{display:flex}
-}
-@media (prefers-reduced-motion:reduce){.pp-rbot{transition:none}}
-@media (max-width:600px){
-  .pp-vfig{grid-template-columns:minmax(0,1fr);gap:14px}
-  /* the marker keeps its place on the label's line, with a space before it */
-  .pp-a[data-k="v"] .pp-mk{margin-left:8px}
-}
-/* a label that crosses a line stays readable */
-.pp-covc svg text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
-
-/* the robot shows what it is still worth: the dots above that share of its height stay as a ghost. Set by the page from the tool's own two figures. */
-@property --v{syntax:'<number>';inherits:true;initial-value:1}
-.pp-bot{--v:1;transition:--v .34s linear}
-.pp-bs .rs-bot{-webkit-mask-image:linear-gradient(to top,#000 calc(var(--v) * 100%),rgba(0,0,0,.2) calc(var(--v) * 100% + 2px));mask-image:linear-gradient(to top,#000 calc(var(--v) * 100%),rgba(0,0,0,.2) calc(var(--v) * 100% + 2px))}
-.pp-age{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:0 0 16px;font-size:15px;line-height:1.4;color:#4a5262}
-.pp-agego{appearance:none;border:0;background:none;padding:0;margin:-10px 0;min-height:44px;font:500 15px/1.4 var(--sans);color:var(--c);cursor:pointer}
-.pp-agego:hover{color:var(--ink)}
-.pp-agego[hidden]{display:none}
-.pp-a[data-k="v"]{padding-top:12px}
-/* why the offer can sit above the arm: said in the same breath as the offer */
-.page[data-page="price.html"] .pp-offw{margin:8px 0 0;font-size:15px;line-height:1.45;font-weight:500;color:var(--ink);max-width:52ch}
-.pp-offw[hidden]{display:none}
-@media (prefers-reduced-motion:reduce){.pp-bot{transition:none}}
-@media (max-width:600px){
-  .pp-row .pp-f:has(.pp-tail){grid-template-columns:6.2em minmax(0,1fr) auto}
-  .pp-a[data-k="v"]{padding-top:24px}
-  .pp-age{margin-bottom:12px}
-  /* every word in a chart reads at the body size on a phone. The charts draw at the real width of the screen, so these sizes are true pixels. */
-  .pp-scs .ax,.pp-scs .ul text,.pp-scs .lab,.pp-covs .ax,.pp-covs .aft,.pp-covs .bl,.pp-covs .gl2,.pp-hs .yl,.pp-hs .ax,.pp-hs .ov,.pp-caxs em{font-size:15px}
-  .pp-sc svg,.pp-covc svg,.pp-hist svg{overflow:visible}
-}
-
-/* round 6: inside the sheet the fold's own links go back to the link colour */
-.pp-grad .pp-bhb summary{color:var(--c)}
-.pp-grad .pp-bhb summary:focus-visible{outline-color:var(--c)}
-.pp-grad .pp-bhb .pp-rest{margin-top:4px}
-.pp-grad .pp-bhb .pp-tabs{gap:clamp(28px,3vw,40px)}
-/* See every listing lands on the dots, with room above the controls */
-.pp-scw{scroll-margin-top:32px}

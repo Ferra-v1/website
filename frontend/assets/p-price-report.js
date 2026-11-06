@@ -1,5 +1,6 @@
-// Price report. One chart tells the report as you scroll: the dots, then the line, the spread at one age, two kinds of robot, and the real sales. Native scrolling, position sticky.
-// Hover or tap a dot to read the listing or sale it stands for, with its link. Readers who ask for less motion get the finished chart with all the words beside it.
+// Price report. One chart tells the report as you scroll: the dots, then the line, the spread at one age, two kinds of robot, the real sales, two arms, and the three prices the page opened on.
+// The ground darkens as it arrives, and the next section rises over it as it leaves. Native scrolling, position sticky. Hover or tap a dot to read the listing or sale it stands for, with its link.
+// Readers who ask for less motion get the finished chart with all the words beside it.
 (() => {
   const root = document.querySelector('[data-pr-stage]'), F = window.FerraPlot;
   if (!root || !F) return;
@@ -9,21 +10,21 @@
   const [tb, ts, ta] = [tip.querySelector('b'), tip.querySelector('span'), tip.querySelector('a')];
   const steps = [...root.querySelectorAll('.pr-step')], N = steps.length;
   root.classList.add(reduce ? 'still' : 'live');
-  const CY = [150, 232, 255];
+  const CY = [92, 196, 255];
+  const veil = root.querySelector('.pr-veil'), hero = document.querySelector('.pr-hero'); let dusk = -1;
   const P = D.pts.map((p, i) => ({ age: p[0], usd: p[1], t: p[2], year: p[3], src: p[4], url: p[5], whole: p[6], fam: p[7], a: 0, k: 0, gr: 0, d: i * 7919 % 433 / 433 }));
-  const parentHi = id => id === D.hi.id, parentLo = id => id === D.lo.id;
   const A = D.auc.map(a => ({ age: a[0], usd: a[1], t: a[2], when: a[3], src: a[4], url: a[5], sold: true, a: 0 }));
   // the axis starts just under the lowest ordinary price; a rare listing far below it sits on the floor with its real price printed beside it
   const lo = Math.min(...P.map(q => q.usd).filter(v => v >= 1000), ...A.map(q => q.usd)) * .82, hi = Math.max(...P.map(q => q.usd)) * 1.12;
   // the listing and the sale the line joins
   const LI = P[D.link.li], SA = A[D.link.au];
-  let step = reduce ? N - 1 : 0, g = {}, hover = null, band = 0, line = 0, fams = 0, link = 0, seen = reduce, born = 0, raf = 0;
+  let step = reduce ? N - 1 : 0, g = {}, hover = null, band = 0, three = 0, line = 0, fams = 0, link = 0, seen = reduce, born = 0, raf = 0;
 
   function layout() {
     const W = chart.clientWidth, H = chart.clientHeight, phone = W < 560;
     const L = 60, R = W - 4, base = H - (phone ? 30 : 40), top = phone ? 10 : 8;
     const X = a => L + a / 32 * (R - L), Y = v => base - 8 - (Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (base - 8 - top);
-    g = { W, H, phone, L, R, base, top, X, Y, r: phone ? 2.7 : 3.6 };
+    g = { W, H, phone, L, R, base, top, X, Y, r: phone ? 2 : 2.6 };
     P.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); });
     A.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); });
     labels(); kick();
@@ -52,9 +53,12 @@
     // on a phone the chart is too short for this note beside the last step's label, and the last step is about something else
     s += `<g class="lg" data-s="${phone ? '0 1 2 3' : '0 1 2 3 4'}">${lowest(P, lo)}</g>`;
     // the two prices the line joins, on the side of each dot away from the line. A dot with no room on that side takes its words under it.
-    const up = LI.y <= SA.y, tall = reduce ? 24 : phone ? 28 : 38, gapx = phone ? 13 : 18;
+    const up = LI.y <= SA.y, tall = phone ? 22 : 24, gapx = phone ? 13 : 18;
     const say2 = (q, big, small, top) => { const bw = big.length * tall * .6, room = q.x + gapx + bw < R, side = q.x > (L + R) / 2 ? (q.x - gapx - bw > L ? -1 : 1) : (room ? 1 : -1), x = q.x + side * gapx, a = side > 0 ? 'start' : 'end', y = top ? q.y - 2 : q.y + tall * .72 + 2, hw = Math.max(bw, small.length * 8); return `<a href="${q.url}" target="_blank" rel="noopener" tabindex="-1"><rect class="hit" x="${side > 0 ? x - 6 : x - hw - 6}" y="${y - tall}" width="${hw + 12}" height="${tall + 30}"/><text class="bn" x="${x}" y="${y}" text-anchor="${a}">${big}</text><text class="bs" x="${x}" y="${y + 21}" text-anchor="${a}">${small} \u2192</text></a>`; };
     s += `<g class="lg" data-s="5">${say2(LI, usd(LI.usd), 'asking today', up)}${say2(SA, usd(SA.usd), 'sold at auction', !up)}</g>`;
+    // the same three prices the page opened on, standing on the age of 10
+    const tx = X(10), lbl = ['Sellers ask', 'Likely sale', 'Auctions paid'];
+    s += `<g class="lg" data-s="6"><line class="ax" x1="${tx + .5}" x2="${tx + .5}" y1="${g.top}" y2="${base}"/>` + D.three.map((v, i) => `<text class="bn" x="${tx + 20}" y="${Y(v) + (phone ? 4 : 8)}">${money(v)}</text><text class="bs" x="${tx + 20}" y="${Y(v) + (phone ? 24 : 32)}">${lbl[i]}</text>`).join('') + '</g>';
     ax.setAttribute('viewBox', `0 0 ${W} ${H}`); ax.innerHTML = s;
     marks();
   }
@@ -65,10 +69,11 @@
     if (reduce) return q === LI ? [1, 0, 2.4] : [.5, 0, 0];
     switch (step) {
       case 0: return [.92, 0, 0];
-      case 1: return [.6, 0, 0];
+      case 1: return [.55, 0, 0];
       case 2: return Math.abs(q.whole - 10) <= 1 ? [1, 0, 1] : [.22, 0, 0];
       case 3: return q.fam === D.hi.id ? [1, 0, 1] : q.fam === D.lo.id ? [1, 1, 1] : [.14, 0, 0];
       case 5: return q === LI ? [1, 0, 2.4] : [.13, 0, 0];
+      case 6: return Math.abs(q.whole - 10) <= 1 ? [.8, 0, 0] : [.1, 0, 0];
       default: return [.5, 0, 0];
     }
   }
@@ -78,11 +83,12 @@
     const to = (v, t, k = .12) => { const n = v + (t - v) * k; if (Math.abs(t - n) > .004) moving = true; return Math.abs(t - n) > .004 ? n : t; };
     const on = seen ? 1 : 0;
     band = to(band, on * (reduce || step === 2 || step === 4 ? 1 : 0));
+    three = to(three, on * (!reduce && step === 6 ? 1 : 0));
     line = to(line, on * (reduce || step === 1 || step === 2 || step === 4 ? 1 : step === 3 ? .35 : step === 5 ? .2 : 0), .1);
     link = to(link, on * (reduce || step === 5 ? 1 : 0), .07);
     fams = to(fams, on * (!reduce && step === 3 ? 1 : 0));
-    if (band > .01) { c.fillStyle = `rgba(255,255,255,${.16 * band})`; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][2])); for (let a = 30; a >= 0; a--) c.lineTo(X(a), Y(D.curve[a][0])); c.closePath(); c.fill(); }
-    if (fams > .01) { const pl = (cu, col) => { c.strokeStyle = `rgba(${col},${fams})`; c.lineWidth = 2.5; c.beginPath(); cu.forEach((v, a) => c.lineTo(X(a), Y(v))); c.stroke(); }; pl(D.hi.curve, '255,255,255'); pl(D.lo.curve, CY.join(',')); }
+    if (band > .01) { c.fillStyle = `rgba(255,255,255,${.1 * band})`; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][2])); for (let a = 30; a >= 0; a--) c.lineTo(X(a), Y(D.curve[a][0])); c.closePath(); c.fill(); }
+    if (fams > .01) { const pl = (cu, col) => { c.strokeStyle = `rgba(${col},${fams})`; c.lineWidth = 2; c.beginPath(); cu.forEach((v, a) => c.lineTo(X(a), Y(v))); c.stroke(); }; pl(D.hi.curve, '255,255,255'); pl(D.lo.curve, CY.join(',')); }
     const tElapsed = now - born;
     for (const q of P) {
       const [ta_, tk, tg] = seen ? target(q) : [0, 0, 0];
@@ -94,10 +100,12 @@
       c.fillStyle = `rgba(${255 + (CY[0] - 255) * m | 0},${255 + (CY[1] - 255) * m | 0},${255 + (CY[2] - 255) * m | 0},${q === hover ? 1 : al})`;
       c.beginPath(); c.arc(q.x, q.y, (g.r + q.gr * .7 + (q === hover ? 1.4 : 0)) * (.4 + .6 * app), 0, 6.2832); c.fill();
     }
-    if (line > .01) { c.setLineDash([]); c.strokeStyle = `rgba(255,255,255,${line})`; c.lineWidth = 2.5; c.lineJoin = 'round'; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][1])); c.stroke(); }
-    A.forEach(q => { const au = !seen ? 0 : reduce || step === 4 ? 1 : step === 5 ? (q === SA ? 1 : .16) : 0, big = q === SA ? link * 3 : 0, ring = q === hover || big > .5; q.a = to(q.a, au, .1); if (q.a < .01) return; c.fillStyle = `rgba(14,22,38,${q.a})`; c.beginPath(); c.arc(q.x, q.y, (g.r + 1.4 + big + (q === hover ? 1.2 : 0)) * (.5 + .5 * q.a), 0, 6.2832); c.fill(); if (ring) { c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } });
+    if (line > .01) { c.setLineDash([]); c.strokeStyle = `rgba(255,255,255,${line})`; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][1])); c.stroke(); }
+    A.forEach(q => { const au = !seen ? 0 : reduce || step === 4 ? 1 : step === 5 ? (q === SA ? 1 : .16) : 0, big = q === SA ? link * 3 : 0, ring = q === hover || big > .5; q.a = to(q.a, au, .1); if (q.a < .01) return; c.fillStyle = `rgba(${CY.join(',')},${q.a})`; c.beginPath(); c.arc(q.x, q.y, (g.r + 1.2 + big + (q === hover ? 1.2 : 0)) * (.5 + .5 * q.a), 0, 6.2832); c.fill(); if (ring) { c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } });
     // the line that joins them draws from the asking price down to the sale, and stops at the rim of each dot
-    if (link > .01) { const k = ease(link), x = LI.x + (SA.x - LI.x) * k, y = LI.y + (SA.y - LI.y) * k; c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.lineCap = 'round'; c.beginPath(); c.moveTo(LI.x, LI.y); c.lineTo(x, y); c.stroke(); c.lineCap = 'butt'; c.fillStyle = '#fff'; c.beginPath(); c.arc(LI.x, LI.y, g.r + 2.4, 0, 6.2832); c.fill(); if (k > .97) { c.fillStyle = 'rgb(14,22,38)'; c.beginPath(); c.arc(SA.x, SA.y, g.r + 4.4, 0, 6.2832); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } }
+    if (link > .01) { const k = ease(link), x = LI.x + (SA.x - LI.x) * k, y = LI.y + (SA.y - LI.y) * k; c.strokeStyle = '#fff'; c.lineWidth = 2; c.lineCap = 'round'; c.beginPath(); c.moveTo(LI.x, LI.y); c.lineTo(x, y); c.stroke(); c.lineCap = 'butt'; c.fillStyle = '#fff'; c.beginPath(); c.arc(LI.x, LI.y, g.r + 2.4, 0, 6.2832); c.fill(); if (k > .97) { c.fillStyle = `rgb(${CY.join(',')})`; c.beginPath(); c.arc(SA.x, SA.y, g.r + 3, 0, 6.2832); c.fill(); } }
+    // the three prices land on the age of 10
+    if (three > .01) D.three.forEach(v => { c.fillStyle = `rgba(255,255,255,${three})`; c.beginPath(); c.arc(X(10), Y(v), 5.5 * three, 0, 6.2832); c.fill(); });
     return moving;
   }
   function frame(now) { raf = 0; if (draw(now)) kick(); }
@@ -112,11 +120,16 @@
     if (reduce) return;
     const r = root.getBoundingClientRect(), span = root.offsetHeight - pin.offsetHeight;
     const s = clamp(-r.top / span);
-    setStep(clamp(Math.floor(s * N), 0, N - 1));
-    if (!seen && r.top < innerHeight * .55) { seen = true; born = performance.now(); marks(); kick(); }
+    // the last screen of the pin is kept for the next section, which rises over the chart. The steps share what is left.
+    const end = (root.offsetHeight - 2 * pin.offsetHeight) / span;
+    setStep(clamp(Math.floor(s / end * N), 0, N - 1));
+    // night falls over the three numbers as the chart arrives: the first screen and this one darken together, so no edge shows between them
+    const a = Math.min(innerHeight * .62, root.offsetTop - 160), k = clamp((a - r.top) / (a * .6));
+    if (k !== dusk) { dusk = k; hero.classList.toggle('dusk', k > 0); hero.style.setProperty('--d', k.toFixed(3)); veil.style.opacity = 1 - k; }
+    if (!seen && k > .5) { seen = true; born = performance.now(); marks(); kick(); }
   }
   // dots you can read
-  const live = () => (reduce || step >= 4 ? A.concat(P) : P).filter(q => q.sold || q.a > .1);
+  const live = () => (reduce || step === 4 || step === 5 ? A.concat(P) : P).filter(q => q.sold || q.a > .1);
   const nearest = (x, y, reach) => { let best = null, bd = reach * reach; for (const q of live()) { const v = (q.x - x) ** 2 + (q.y - y) ** 2; if (v < bd) { bd = v; best = q; } } return best; };
   function showTip(q) {
     hover = q;
@@ -163,27 +176,4 @@
     document.addEventListener('keydown', ev => { if (ev.key === 'Escape') off(); });
   }
 
-  // the first screen: the arm is the ruler, its height is the ask. The three prices are there at once, and the paint drains down the arm to the lowest of them.
-  const hb = document.querySelector('.pr-hbot'), lad = document.querySelector('.pr-lad');
-  const G = hb && F.ghost && F.ghost('arm');
-  if (G) {
-    const rows = G.y1 - G.y0 + 1, cols = G.x1 - G.x0 + 1, [mid, low] = lad.dataset.h.split(' ').map(Number);
-    lad.style.setProperty('--ar', `${cols}/${rows}`);
-    const pts = G.pts.map(([x, y, s]) => ({ x: x - G.x0 + .5, y: y - G.y0 + .5, s, h: (rows - (y - G.y0 + .5)) / rows }));
-    const paint = L => {
-      const { c, w, h } = fit(hb), cell = Math.min(w / cols, h / rows), ox = w - cols * cell, oy = h - rows * cell;
-      // solid up to the level, half under the estimate, faint above it
-      const tiers = [[], [], []];
-      for (const p of pts) tiers[p.h <= L ? 0 : p.h <= mid ? 1 : 2].push(p);
-      [1, .62, .3].forEach((al, i) => { c.fillStyle = `rgba(40,71,206,${al})`; c.beginPath(); for (const p of tiers[i]) { const x = ox + p.x * cell, y = oy + p.y * cell, r = Math.max(.35, cell * (i ? .4 : .46) * (.55 + .45 * p.s)); c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); } c.fill(); });
-    };
-    let level = low;
-    const now = () => paint(level);
-    new ResizeObserver(now).observe(hb);
-    if (reduce) now();
-    else {
-      const t0 = performance.now() + 120, tick = t => { const k = clamp((t - t0) / 1100); level = 1 + (low - 1) * ease(k); now(); if (k < 1) requestAnimationFrame(tick); };
-      level = 1; now(); requestAnimationFrame(tick);
-    }
-  }
 })();
