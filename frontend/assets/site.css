@@ -281,11 +281,11 @@ a{color:inherit}
 /* notes and document pages */
 .fn{font:500 .62em/0 var(--sans);vertical-align:super;margin-left:1px}
 .fn a{color:inherit;text-decoration:none;opacity:.75;display:inline-block;padding:10px 7px;margin:-10px -6px;line-height:1;position:relative}.fn a::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}.fn a:hover{opacity:1;text-decoration:underline}
-.notes{background:var(--paper);border-top:var(--hair);padding-block:40px 48px}
+.notes{background:var(--paper);padding-block:40px 48px}
 .notes .nh{font:600 13px/1 var(--sans);letter-spacing:.02em;color:var(--ink);margin:0 0 16px}
-.notes ol{margin:0;padding-left:18px;font-size:12.5px;line-height:1.5;color:#4a5262}
-@media (min-width:900px){.notes ol{columns:2;column-gap:48px}}
-.notes li{break-inside:avoid;padding-left:4px}
+.notes ul{margin:0;padding:0;list-style:none;font-size:13px;line-height:1.5;color:#4a5262}
+@media (min-width:900px){.notes ul{columns:2;column-gap:48px}}
+.notes li{break-inside:avoid}
 .notes li{margin-bottom:6px;scroll-margin-top:100px}.notes li:target{color:var(--ink)}
 .notes a{color:var(--c);display:inline-block;padding:12px 2px;margin:-12px -2px}
 .doc{max-width:760px}

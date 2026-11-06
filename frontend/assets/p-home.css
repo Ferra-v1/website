@@ -3,36 +3,9 @@
 .page[data-page="index.html"] > .sec{padding-top:clamp(72px,8vw,112px);padding-bottom:clamp(72px,8vw,112px)}
 .page[data-page="index.html"] > .band{padding-top:clamp(72px,8vw,112px);padding-bottom:clamp(72px,8vw,112px)}
 .page[data-page="index.html"] .h2 + .lead-1{margin-bottom:0}
-
 /* site.css has an older two-column grid called .two; a two-tone heading (.h2.two) must stay one block of running text */
 .page[data-page="index.html"] .h2.two{display:block}
-.page[data-page="index.html"] .h-trio .rs-bot canvas,.page[data-page="index.html"] .h-bst .rs-bot canvas{max-width:none}
-
-/* H1 hero: dot robots on the quiet isometric floor, a scan line, text-only price pins, a hairline ledger */
-.h-stage{position:relative}
-.h-stage .floor .sweep{opacity:.1}
-.h-bot{position:absolute;z-index:1;left:var(--x);top:var(--y);width:var(--bw)}
-.h-bot canvas{display:block;width:100%;height:auto;aspect-ratio:var(--ar);position:relative;z-index:1}
-.h-mover{z-index:2}
-.h-scan{position:absolute;left:-4%;right:-4%;top:0;height:1px;z-index:3;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85) 18%,#fff 50%,rgba(255,255,255,.85) 82%,transparent)}
-.page[data-page="index.html"] .h-hero .pin{z-index:4}
-.page[data-page="index.html"] .h-hero .pin i{box-shadow:0 0 0 1px rgba(255,255,255,.5);inset:5px}
-.page[data-page="index.html"] .h-hero .pin::after{animation:none!important;opacity:.6;inset:-2px;transform:none;border-width:1px}
-.page[data-page="index.html"] .exnote{margin-top:14px}
-.page[data-page="index.html"] .h-hero .lt em{font-size:14px;color:rgba(255,255,255,.95)}
-.page[data-page="index.html"] .h-hero .lt small{font-size:13px;color:rgba(255,255,255,.88)}
-.h-hero .lt .h-sh{display:none}
-/* the ledger: no box, a hairline on top, three columns split by hairlines */
-.page[data-page="index.html"] .h-ledger{display:grid;grid-template-columns:1fr 1.18fr .82fr;gap:0;margin-top:18px;padding:18px 0 0;border:0;border-top:1px solid rgba(255,255,255,.32);border-radius:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-.page[data-page="index.html"] .h-ledger > div{padding:0 22px;border-left:1px solid rgba(255,255,255,.32);gap:6px}
-.page[data-page="index.html"] .h-ledger > div:first-child{padding-left:0;border-left:0}
-.page[data-page="index.html"] .h-ledger .k{font-size:14px;color:rgba(255,255,255,.72)}
-.page[data-page="index.html"] .h-ledger .n{font:600 30px/1.05 var(--serif);letter-spacing:-.015em;color:#fff;font-variant-numeric:lining-nums tabular-nums}
-.page[data-page="index.html"] .h-ledger .hl .n{font-size:34px}
-.page[data-page="index.html"] .h-ledger .st .n{color:var(--cy)}
-
-/* H2 sources strip: four figures, one link over the whole strip */
-
+.page[data-page="index.html"] .h-trio .rs-bot canvas{max-width:none}
 /* H3 vision: the home vision line in display type, then twelve priced robots on one hairline (four groups of three) */
 .page[data-page="index.html"] .vis{font-family:var(--serif);font-weight:700;font-size:clamp(30px,3.5vw,50px);line-height:1.12;letter-spacing:-.02em;color:var(--ink);max-width:1120px;margin:0;text-wrap:balance}
 .page[data-page="index.html"] .vis .mute{color:#8b93a4}
@@ -46,7 +19,7 @@
 .h-vt .rs-bot{height:92px}
 .h-vs canvas{display:block;max-width:100%}
 .h-defs{position:absolute;width:0;height:0;overflow:hidden}
-.h-vs canvas,.h-bst canvas,.h-trio canvas{filter:url(#h-ink)}
+.h-vs canvas,.h-trio canvas{filter:url(#h-ink)}
 .h-vl{grid-column:1 / -1;position:relative;display:block;height:1px;background:var(--line)}
 .h-vl i{position:absolute;inset:0;background:var(--c);transform:scaleX(0);transform-origin:left}
 .h-vcap{margin:14px 0 0}
@@ -54,42 +27,6 @@
 .h-vrow.h-go .h-vp,.h-vrow.h-go .h-vk{opacity:1;transform:none;transition:opacity .3s ease calc(var(--k) * 120ms + 300ms),transform .3s ease calc(var(--k) * 120ms + 300ms)}
 .h-vrow.h-go .h-vl i{transform:none;transition:transform .425s linear calc(var(--g) * .425s)}
 .h-vrow.h-done .h-vl i{transform:none}
-
-/* H4 product window: a two-tone heading, then the window running 96px past the content's right edge (clipped by the section) */
-
-/* H4 every dot is a real listing */
-.h-lst-h .lead-1{margin-top:20px}
-.h-tp{display:none}
-@media (hover:none),(max-width:720px){.h-hv{display:none}.h-tp{display:inline}}
-.h-lst-h .btn{margin-top:24px}
-.h-lcard{position:relative;margin:48px 0 0}
-.h-plot{position:relative}
-.h-sc{display:block;width:100%;height:auto;overflow:visible;font-family:var(--sans);-webkit-tap-highlight-color:transparent}
-.h-sc-m{display:none}
-.h-gr rect{fill:#eef1f6}
-.h-gr text{fill:#7a8396;font-size:12px}
-.h-band circle{fill:var(--ink);opacity:.3}
-.h-mid circle{fill:var(--ink);opacity:.85}
-.h-pts circle{fill:var(--c);opacity:.5;transition:opacity .2s ease}
-.h-pts circle.on{opacity:1}
-.h-auc rect{fill:var(--cyl)}
-.h-lm,.h-la{font-size:13px;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
-.h-lm{fill:var(--ink);font-weight:500}
-.h-la{fill:var(--cyl);font-weight:600}
-.h-plot.h-hov .h-pts circle{cursor:pointer}
-/* fall in by age, once, left to right */
-.h-lcard:not(.in-view) .h-pts circle,.h-lcard:not(.in-view) .h-auc rect{opacity:0;transform:translateY(-8px)}
-.h-lcard:not(.in-view) .h-band,.h-lcard:not(.in-view) .h-mid,.h-lcard:not(.in-view) .h-lm,.h-lcard:not(.in-view) .h-la{opacity:0}
-.h-lcard.in-view .h-pts circle,.h-lcard.in-view .h-auc rect{transition:opacity .45s ease var(--d),transform .5s cubic-bezier(.2,.8,.2,1) var(--d)}
-.h-band,.h-mid,.h-lm,.h-la{transition:opacity .6s ease 1.3s}
-.h-lcard.h-done .h-pts circle{transition:opacity .2s ease}
-.h-lcard figcaption{margin-top:16px;display:flex;flex-direction:column;gap:2px}
-.h-tip{position:absolute;z-index:5;width:260px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--sh-doc,0 1px 0 rgba(10,20,60,.04),0 18px 40px -24px rgba(10,20,60,.28));font-size:14px;line-height:1.4;pointer-events:auto}
-.h-tip b{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
-.h-tip span{display:block;color:var(--muted);font-size:13px}
-.h-tip a{display:inline-flex;align-items:center;min-height:36px;font-weight:600;font-size:14px;color:var(--c);text-decoration:none}
-.h-tip a:hover{text-decoration:underline;text-underline-offset:3px}
-
 /* H5 how a fleet loan works */
 .page[data-page="index.html"] .h-howg{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:72px;align-items:stretch}
 .h-how .h2{margin-bottom:40px}
@@ -106,45 +43,6 @@
 .h-man .step.on .h-prog i{animation:none;transform:none}
 @keyframes h-fill{to{transform:none}}
 .h-how-r{display:flex;justify-content:flex-end;align-items:flex-start}
-
-/* H6 both sides of the loan: two names as type-only tabs on the left, the matching visual in a 440px box on the right.
-   Grid lines: column 1 holds tab, text, tab, text; column 2 holds the visuals. Without JavaScript (.h-js absent) each panel
-   sits beside its own name; with it, both visuals share one box and crossfade. */
-/* the name stack is centred against the 440px visual box, so neither column leaves a band of empty space under it */
-/* robot companies: two fields, a message line, then the small live preview (core.fleet_preview, small) */
-.h-msg{height:20px;margin:0;font-size:12px;line-height:20px;color:var(--deep);opacity:0;transition:opacity .2s ease}
-.h-msg.on{opacity:1}
-/* the local stand-in for core.fleet_preview, used only until the shared group lands it */
-/* lenders: one paper edge, then the loan-to-value bar */
-.h-edge{width:360px;max-width:100%;height:64px;box-sizing:border-box;background:#fff;border-radius:16px;box-shadow:0 0 0 1px var(--line),var(--sh-doc);display:flex;justify-content:space-between;align-items:center;padding:0 22px}
-.h-edge span{font:600 21px/1 var(--serif);letter-spacing:-.01em;color:var(--ink)}
-.h-edge em{font-style:normal;font-size:13px;color:var(--muted)}
-.h-lcap{margin:12px 0 0}
-
-/* H7 price board: robots at the 72 column density on hairlines, three columns of figures */
-.h-board-h{display:flex;justify-content:space-between;align-items:baseline;gap:24px;margin-bottom:40px}
-.h-board-h .h2{margin:0}
-.h-board-h .tlink{margin:0;white-space:nowrap}
-.h-bd{border-top:2px solid var(--ink)}
-.h-bh,.h-br{display:grid;grid-template-columns:200px minmax(0,1fr) 170px 170px;column-gap:24px;align-items:center;padding:0}
-.h-bh{height:48px;border-bottom:1px solid var(--ink);font-size:14px;font-weight:600;color:var(--ink)}
-.h-bh span:nth-child(3),.h-bh span:nth-child(4){text-align:right}
-.h-br{height:140px;text-decoration:none;color:inherit;border-top:1px solid var(--line);transition:background .25s ease}
-.h-bh + .h-br{border-top:0}
-.h-br:hover .h-bn b,.h-br:focus-visible .h-bn b{color:var(--c)}
-.h-br:focus-visible{outline:2px solid var(--c);outline-offset:-2px}
-.h-bb{height:140px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px}
-.h-bst{width:100%}
-.page[data-page="index.html"] .h-bst .rs-base{width:calc(var(--rw,152px) + 24px);margin:0 auto}
-.page[data-page="index.html"] .h-bst .rs-bot{justify-content:center}
-.page[data-page="index.html"] .h-bst .rs-base{background:#cfd6e3;max-width:100%}
-.h-bn{display:flex;flex-direction:column;gap:4px;min-width:0}
-.h-bn b{font:600 24px/1.15 var(--serif);letter-spacing:-.01em}
-.h-bn em{font-style:normal;font-size:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.h-bv{text-align:right;font:600 26px/1 var(--serif);letter-spacing:-.01em;font-variant-numeric:lining-nums tabular-nums}
-.h-b2{color:var(--c)}
-.h-bp{display:none}
-
 /* H9 how lenders are protected (ink band): the right column's heading lines up with the first row of arms; both columns end on one line */
 .h-ink{background:var(--ink);overflow-x:clip}
 .h-ink .h3{color:#fff}
@@ -176,15 +74,7 @@
 .h-lr em{font-style:normal;font-size:15px;color:rgba(255,255,255,.72);margin-top:12px}
 .page[data-page="index.html"] .h-each{margin:auto 0 0;padding:16px 0 0;border-top:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.6)}
 .h-ink .fn a{color:inherit}
-
 /* H9 questions */
-.h-faq .h2{margin-bottom:32px}
-.h-faq-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,4vw,56px);align-items:start}
-.page[data-page="index.html"] .h-faq .faq details{padding:20px 0}
-.page[data-page="index.html"] .h-faq .faq summary{font-size:21px;min-height:44px}
-.page[data-page="index.html"] .h-faq .faq details p{font-size:16px}
-
-/* H10 closing: the form left; right, three dot robots on one hairline, then the next steps as plain lines */
 .h-close-g{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(32px,5vw,96px);align-items:center}
 .h-close-l .h2{margin-bottom:18px}
 .h-close-l .body{margin-bottom:28px}
@@ -194,14 +84,12 @@
 .h-tb{display:flex;align-items:flex-end;flex:none;height:var(--th)}
 .h-tb canvas{display:block;height:100%}
 .page[data-page="index.html"] .h-nl{margin-top:32px}
-
 /* reduced motion */
 @media (prefers-reduced-motion:reduce){.h-scan{display:none}
  .h-fb,.h-dots i,.h-lcard .h-pts circle,.h-lcard .h-auc rect,.h-ltv i,.h-ltv i em,.h-vp,.h-vk,.h-vl i{transform:none!important;transition:none!important;animation:none!important}
  .h-fb,.h-dots i,.h-lcard .h-auc rect,.h-lcard .h-band,.h-lcard .h-mid,.h-lcard .h-lm,.h-lcard .h-la,.h-ltv i em,.h-vp,.h-vk{opacity:1!important}
  .h-lcard .h-pts circle{opacity:.5!important}.h-lcard .h-pts circle.on{opacity:1!important}
  .step.on .h-prog i{animation:none;transform:none}}
-
 /* tablet */
 @media (max-width:1060px){
  .page[data-page="index.html"] .h-howg{grid-template-columns:minmax(0,1fr);gap:40px}
@@ -220,7 +108,6 @@
  .page[data-page="index.html"] .h-hero .hero-copy{display:contents}
  .page[data-page="index.html"] .h-hero .hero-copy .h1{order:1}
  .page[data-page="index.html"] .h-hero .lede{order:2;margin:14px 0 0;font-size:16px;line-height:1.5}
- .page[data-page="index.html"] .h-hero #quote{order:3;margin-top:24px}
  .page[data-page="index.html"] .h-hero .hlinks{order:4;flex-direction:column;gap:0;margin-top:8px}
  .page[data-page="index.html"] .h-hero .scene{order:5;margin:20px 0 14px}
  .page[data-page="index.html"] .h-hero .stage{margin:0 auto;width:100%}
@@ -255,7 +142,6 @@
  .page[data-page="index.html"] .h-each{margin-top:28px}
  .h-edge{width:100%}
  /* H7 */
- .h-board-h{flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:24px}
  .h-bh{display:none}
  .h-br{grid-template-columns:80px minmax(0,1fr);grid-template-rows:auto auto;column-gap:14px;row-gap:4px;height:auto;min-height:104px;padding:12px 0;align-content:center}
  .h-bb{grid-row:1 / 3;height:auto;align-self:center;padding-bottom:0}
@@ -267,8 +153,6 @@
  /* H8 */
  .h-fgrid{gap:5px 3px}
  .h-dots{--ds:8px;gap:4px}
- .h-faq-g{grid-template-columns:minmax(0,1fr)}
- .h-faq-g .faq + .faq details:first-child{border-top:0}
  /* H10 */
  .page[data-page="index.html"] .h-trio .rs-bot{gap:28px}
  .h-tb{height:calc(var(--th) * .8)}
@@ -283,47 +167,15 @@
  .h-vrow.h-go .h-vl i{transition-duration:.85s;transition-delay:calc(var(--g) * .85s)}
 }
 /* the fallback table for screen readers stays inside the card at every width */
-.h-lcard .sr{left:0;top:0}
-.h-lcard .sr table{table-layout:fixed;width:200px;font-size:1px;line-height:1}
-.h-lcard .sr td,.h-lcard .sr th,.h-lcard .sr caption{overflow:hidden}
 /* the robots' hairline already separates them from the steps, so the first step line drops its own top rule */
 .page[data-page="index.html"] .h-nl li:first-child{border-top:0;padding-top:0}
-
-/* the footnote marker's 44px hit area at the right edge of the preview must not widen the page on phones */
-
-/* H7 tabs: no second cover chart or unit grid on home (the product window above has them); the founder outcome and the loss figures take their place */
-
-/* the fleet picture */
-.h-pic .h2{max-width:20ch;margin-bottom:44px}
-.h-pic-c{margin:14px 0 0}
-/* the real listings: the band a flat tint, the typical price one solid line, only listings are dots */
-.h-band polygon{fill:rgba(40,71,206,.07)}
-.h-mid path{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-/* the loan sentence */
-.page[data-page="index.html"] > .h-loan{overflow-x:clip}
-.h-sent{margin:0;max-width:1120px;font:700 clamp(32px,4.5vw,64px)/1.16 var(--serif);letter-spacing:-.03em;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
-.h-in{display:inline-block;white-space:nowrap}
-.h-in input{font:inherit;letter-spacing:inherit;color:var(--c);background:none;border:0;border-bottom:3px solid rgba(40,71,206,.28);border-radius:0;padding:0;margin:0;outline:none;font-variant-numeric:inherit;min-width:1ch;transition:border-color .15s ease}
-.h-in input:hover,.h-in input:focus{border-bottom-color:var(--c)}
-.h-in > span[aria-hidden]{color:var(--c)}
-.h-bor{display:block}
-.h-bor output{color:var(--c)}
-.h-msg{min-height:22px;margin:10px 0 0;font-size:14px;color:var(--muted);opacity:0;transition:opacity .2s ease}.h-msg.on{opacity:1}
-.h-row{margin-top:30px;position:relative}
-.h-row canvas{display:block;max-width:100%}
-.h-more{display:block;margin-top:2px;font-size:14px;color:var(--muted)}
-.h-links{display:flex;flex-wrap:wrap;gap:6px 28px;margin:26px 0 0}
-/* hero polish: the floor fades out above the ledger, so its lines never crowd the figures or double the ledger's rule */
-.h-stage .floor{-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent 96%);mask-image:linear-gradient(180deg,#000 72%,transparent 96%)}
-@media (max-width:720px){.h-sent{font-size:clamp(30px,8.4vw,44px)}.h-row{margin-top:18px}.h-links .tlink{display:inline-flex;align-items:center;min-height:44px}}
-
 /* How a fleet loan works: the example loan as a ticket. The stub holds the loan and tears off once it closes. */
 .h-tk{display:flex;width:100%;max-width:620px;position:sticky;top:120px;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));font:400 16px/1.4 var(--doc);font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
 .h-tk-m{flex:1;min-width:0;background:#fff;padding:30px 30px 18px;-webkit-mask-image:radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);-webkit-mask-composite:source-in;mask-composite:intersect}
 .h-tk .sh-t{margin:18px 0 8px}
 .h-tk-s{flex:none;width:206px;box-sizing:border-box;background:var(--c);color:#fff;padding:24px 22px;display:flex;flex-direction:column;justify-content:center;gap:18px;position:relative;transition:transform .6s cubic-bezier(.25,.9,.3,1);-webkit-mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px);-webkit-mask-composite:source-in;mask-composite:intersect}
 .h-tk-s::before{content:"";position:absolute;left:0;top:18px;bottom:18px;border-left:2px dashed rgba(255,255,255,.65)}
-.h-tk-s .dr{display:block;padding:0;border:0}.h-tk-s .dr span,.h-tk-s .dr.hl span{display:block;color:rgba(255,255,255,.85);font-size:14px}.h-tk-s .dr b,.h-tk-s .dr.hl b{color:#fff;display:block;text-align:left}
+.h-tk-s .dr{display:block;padding:0;border:0}.h-tk-s .dr span{display:block;color:rgba(255,255,255,.85);font-size:14px}.h-tk-s .dr b{color:#fff;display:block;text-align:left}
 .h-tk-s .h-tk-l{font:700 27px/1.1 var(--serif);letter-spacing:-.03em}
 .h-tk .h-lend b{color:var(--cyl)}
 .h-tk .h-lend,.h-tk .h-upd{opacity:.32;transition:opacity .35s ease}.h-tk .h-upd{border-bottom:0}
@@ -336,3 +188,68 @@
  .h-tk-s::before{left:18px;right:18px;top:0;bottom:auto;border-left:0;border-top:2px dashed rgba(255,255,255,.65)}
  .h-tk[data-step="2"] .h-tk-s,.h-tk[data-step="3"] .h-tk-s{transform:translate(5px,20px) rotate(3deg)}}
 @media (prefers-reduced-motion:reduce){.h-tk-s{transition:none}}
+/* H1 first screen and film: one stage pinned from the top of the page. The copy floats over it and scrolls away; the stage's canvas draws the robot, the chart and the discs. */
+.h-hero{position:absolute;left:0;right:0;z-index:3;color:#fff;pointer-events:none}
+.h-hero .nav,.h-hero a,.h-hero select,.h-hero label{pointer-events:auto}
+.h-copy{max-width:min(600px,47vw);padding-top:clamp(12px,3.4vh,44px)}
+.h-h1{font:700 clamp(52px,min(7.6vw,12vh),116px)/.98 var(--serif);letter-spacing:-.035em;margin:0;color:#fff;text-wrap:balance}
+.h-lede{font-size:clamp(19px,min(1.75vw,2.9vh),26px);line-height:1.3;letter-spacing:-.01em;color:#fff;margin:clamp(12px,2.2vh,22px) 0 0;max-width:24em;text-wrap:balance}
+.h-box{margin-top:clamp(22px,5vh,52px)}
+.h-ask{font-weight:600;font-size:17px;line-height:1.3;margin:0 0 12px;color:#fff}
+.h-ctrls{display:flex;gap:8px;flex-wrap:wrap}
+.h-sel{display:block;flex:0 1 auto;min-width:0}
+.page[data-page="index.html"] .h-sel select{display:block;width:100%;height:52px;border:0;border-radius:999px;background-color:#fff;color:var(--ink);font:600 16px/1 var(--sans);padding:0 42px 0 22px;cursor:pointer;background-position:right 19px center;text-overflow:ellipsis}
+.page[data-page="index.html"] .h-sel select:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
+.h-res{display:flex;gap:clamp(24px,3.4vw,52px);margin-top:clamp(16px,3vh,28px)}
+.h-res>div{min-width:0;flex:0 1 230px}
+.h-res b{display:block;font:700 clamp(40px,min(4.4vw,7.4vh),64px)/1 var(--serif);letter-spacing:-.03em;color:#fff}
+.h-res span{display:block;margin-top:8px;font-size:15px;line-height:1.35;color:rgba(255,255,255,.9);text-wrap:balance}
+.h-acts{display:flex;flex-wrap:wrap;gap:0 26px;align-items:center;margin:clamp(6px,1.6vh,16px) 0 0}
+.h-acts a{display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:#fff;text-decoration:none}
+.h-acts a:hover{text-decoration:underline;text-underline-offset:4px}
+.h-tool{font-weight:600}
+.h-lendl{color:rgba(255,255,255,.88)!important}
+.h-film{position:relative;height:580vh;height:580svh;color:#fff}
+.h-stick{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden}
+.h-probe{position:absolute;top:0;left:0;width:1px;height:100vh;height:100svh;visibility:hidden;pointer-events:none}
+.h-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.h-beat{position:absolute;left:0;right:0;top:0;height:100vh;height:100svh;opacity:0;visibility:hidden;pointer-events:none;z-index:2}
+.h-beat .in{height:100%;display:flex;flex-direction:column;justify-content:center}
+.h-bt{max-width:min(600px,43vw)}
+.h-say{font:700 clamp(40px,min(5.6vw,9.6vh),84px)/1.02 var(--serif);letter-spacing:-.032em;margin:0;color:#fff;text-wrap:balance}
+.h-sub{font-size:clamp(16px,1.3vw,19px);line-height:1.42;color:rgba(255,255,255,.92);margin:clamp(16px,2.6vh,26px) 0 0;max-width:30em}
+.h-hint{margin-top:10px}
+.h-hv{display:none}.h-tp{display:inline}
+@media (hover:hover) and (pointer:fine){.h-hv{display:inline}.h-tp{display:none}}
+.h-b2 .in{justify-content:flex-start;padding-top:clamp(28px,5.4vh,56px)}
+.h-b2 .h-bt{max-width:none}
+.h-b2 .h-say{font-size:clamp(34px,min(4.4vw,7.6vh),66px)}
+.h-b2 .h-say span{display:block}
+.h-b3 .h-say,.h-b4 .h-say{font-size:clamp(36px,min(4.6vw,8.4vh),70px)}
+.h-b3 .h-bt,.h-b4 .h-bt{max-width:min(460px,30vw)}
+.h-to a{color:#fff;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;pointer-events:auto}
+.h-to a:hover{text-decoration:underline;text-underline-offset:4px}
+.h-to{margin-top:6px}
+.h-axis{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:1}
+.h-axis span{position:absolute;left:0;top:0;font-size:14px;line-height:1.2;color:rgba(255,255,255,.92);white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
+.h-axis .h-l0,.h-axis .h-l1 b{display:block;font:700 clamp(22px,2vw,30px)/1 var(--serif);letter-spacing:-.02em;color:#fff}
+.h-axis .h-l1{white-space:normal;width:124px;font-weight:500;color:#fff;line-height:1.25;text-wrap:balance}
+.h-axis .h-l1 b{margin-bottom:5px}
+.h-xl i{font-style:normal}
+.h-axis .h-al{color:var(--cy);font-weight:500}
+.h-num{position:absolute;left:0;top:0;opacity:0;visibility:hidden;text-align:center;pointer-events:none;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;will-change:transform,opacity}
+.h-num b{display:block;font-family:var(--serif);font-weight:700;letter-spacing:-.04em;line-height:1;white-space:nowrap}
+.h-num span{display:block;font-size:clamp(15px,1.25vw,18px);line-height:1.25;margin-top:.7em;max-width:12em;font-weight:500;text-wrap:balance}
+.h-n0 b,.h-n1 b,.h-n1 span{color:var(--c)}
+.h-n2 b,.h-n2 span{color:#fff}
+.h-tip{position:absolute;left:0;top:0;z-index:4;width:252px;background:#fff;color:var(--ink);border-radius:12px;padding:12px 14px 6px;box-shadow:0 10px 30px rgba(14,22,38,.22);font-size:14px;line-height:1.35}
+.h-tip b{display:block;font-weight:600}
+.h-tip span{display:block;margin-top:4px;color:#3e4656}
+.h-tip a{display:inline-flex;align-items:center;min-height:36px;font-weight:600;color:var(--c);text-decoration:none}
+.h-tip a:hover{text-decoration:underline;text-underline-offset:3px}
+@media (max-width:1060px){.h-h1{font-size:clamp(46px,10vw,96px)}.h-copy{max-width:none;padding-top:8px}.h-bt,.h-b3 .h-bt,.h-b4 .h-bt{max-width:none}.h-beat .in{justify-content:flex-start;padding-top:28px}.h-b2 .in{padding-top:28px}.h-say,.h-b2 .h-say,.h-b3 .h-say,.h-b4 .h-say{font-size:clamp(34px,9.6vw,64px)}}
+@media (max-width:760px){.h-h1{font-size:clamp(46px,14.4vw,64px)}.h-lede{font-size:19px;margin-top:10px}.h-box{margin-top:18px}.h-ask{margin-bottom:10px}.h-ctrls{flex-wrap:nowrap}.h-sel-r{flex:1 1 56%}.h-sel-y{flex:1 1 44%}.page[data-page="index.html"] .h-sel select{height:48px;font-size:15px;padding:0 30px 0 15px;background-position:right 12px center}.h-res{gap:16px;margin-top:14px}.h-res>div{flex:1 1 0}.h-res b{font-size:38px}.h-res span{font-size:15px;margin-top:5px}.h-acts{margin-top:2px;gap:0 18px}.h-axis span{font-size:13px}.h-axis .h-ll{font-size:14px}.h-sub{font-size:16px;margin-top:12px}.h-hint{margin-top:6px}.h-tip{font-size:15px}.h-tip a{min-height:44px}.h-xl i{display:none}.h-axis .h-l0,.h-axis .h-l1 b{font-size:15px}.h-axis .h-l1{width:auto;white-space:nowrap;text-align:right;font-size:14px}.h-axis .h-l1 b{margin-bottom:2px}.h-b2 .h-say span{display:inline}}
+/* round 5: the vision paragraph under the question */
+.page[data-page="index.html"] .h-vis .vis{font-size:clamp(46px,min(7vw,12vh),104px);line-height:1;letter-spacing:-.035em;max-width:none}
+.h-vtx{font-size:clamp(19px,1.6vw,23px);line-height:1.5;color:#3e4656;max-width:58ch;margin:24px 0 0}
+.h-vis .h-vrow{margin-top:clamp(40px,5vw,64px)}

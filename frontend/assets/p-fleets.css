@@ -91,3 +91,11 @@
  .f-whys .h2{margin-bottom:32px}
  .f-wn{margin-bottom:18px}
  .f-end{padding-block:88px}}
+
+/* questions, moved here from the home page */
+.f-faq .h2{margin-bottom:32px}
+.f-faq-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,4vw,56px);align-items:start}
+.page[data-page="fleets.html"] .f-faq .faq details{padding:20px 0}
+.page[data-page="fleets.html"] .f-faq .faq summary{font-size:21px;min-height:44px}
+.page[data-page="fleets.html"] .f-faq .faq details p{font-size:16px}
+@media (max-width:900px){.f-faq-g{grid-template-columns:minmax(0,1fr)}.f-faq-g .faq + .faq details:first-child{border-top:0}}
