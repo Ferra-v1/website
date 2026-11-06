@@ -8,13 +8,22 @@
   const pick = n => { const seen = new Set(); while (n && !seen.has(n)) { seen.add(n); if (D[n]) return { name: n, b: D[n] };
     if (n.endsWith('-l')) n = n.slice(0, -2); else n = FALL[n] || (n.endsWith('-s') && FALL[n.slice(0, -2)] ? FALL[n.slice(0, -2)] + '-s' : null); } return null; };
 
-  // ---------------------------------------------------------------- H5 how a fleet loan works
-  // site.js moves the active step; the sheet follows it so the lender row appears from step 2 and the prices line on step 4
-  const live = document.querySelector('.h-live'), steps = [...document.querySelectorAll('.h-steps .step')];
+  // ---------------------------------------------------------------- H5 how it works
+  // The sentences tell themselves in turn, from the first, while the section is on screen; touching one stops that. The ticket follows the sentence being told.
+  // Reduced motion shows the finished ticket with every sentence open.
+  const live = document.querySelector('.h-live'), steps = [...document.querySelectorAll('.h-st')];
   if (live && steps.length) {
-    const sync = () => { const k = steps.findIndex(s => s.classList.contains('on')); live.dataset.step = Math.max(0, k); };
-    const mo = new MutationObserver(sync); steps.forEach(s => mo.observe(s, { attributes: true, attributeFilter: ['class'] })); sync();
-    steps.forEach(s => s.addEventListener('click', () => s.parentElement.classList.add('h-man')));
+    const rows = [...live.querySelectorAll('.dr')];
+    let at = 0, timer = 0, touched = false;
+    const set = k => { at = k; live.dataset.step = k; steps.forEach((s, j) => { s.classList.toggle('on', j === k); j === k ? s.setAttribute('aria-current', 'step') : s.removeAttribute('aria-current'); });
+      const on = (steps[k].dataset.rows || '').split(','); rows.forEach(r => r.classList.toggle('hl', on.includes(r.dataset.row))); };
+    if (reduce) { live.dataset.step = 3; steps.forEach(s => s.classList.add('on')); }
+    else {
+      set(0);
+      const stop = () => { clearInterval(timer); timer = 0; };
+      steps.forEach((s, k) => s.addEventListener('click', () => { touched = true; stop(); set(k); }));
+      new IntersectionObserver(es => { if (es[0].isIntersecting && !touched) { if (!timer) timer = setInterval(() => set((at + 1) % steps.length), 4000); } else stop(); }, { threshold: .4 }).observe(live);
+    }
   }
 
   // ---------------------------------------------------------------- H3 vision: twelve robots assemble in turn, each price rises after its robot
@@ -54,14 +63,16 @@
     box.style.height = Hb.toFixed(2) + 'px'; box.style.marginTop = -(Hb - T).toFixed(2) + 'px';
   });
   fitH();
-  // the closing trio: robots on a hairline sized by height (its canvases sit in plain spans, so dotbot.js does not size them)
-  const settle = () => document.querySelectorAll('.h-tb canvas').forEach(cv => {
-    const g = info(cv.dataset.bot); if (!g) return;
-    const slot = cv.closest('.h-tb') || cv.closest('.rs-bot'); const H = slot.clientHeight; if (!H) return;
-    const avail = (cv.closest('.rstage') || slot).clientWidth || 1e4, wd = Math.min(avail, H * g.w / g.h), pitch = wd / g.w;
-    cv.style.width = wd + 'px'; cv.style.height = g.h * pitch + 'px'; cv.style.marginBottom = -(g.rows * pitch) + 'px';
-  });
-  settle(); let st; addEventListener('resize', () => { clearTimeout(st); st = setTimeout(() => { fitH(); settle(); }, 120); });
+  let st; addEventListener('resize', () => { clearTimeout(st); st = setTimeout(fitH, 120); });
+})();
+
+// The world's work film: fetched when the section is near and played only while it is on screen. Reduced motion keeps the poster.
+(() => {
+  const v = document.querySelector('.h-wf'); if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  v.muted = true;
+  const near = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; near.disconnect(); v.preload = 'auto'; }, { rootMargin: '900px' });
+  near.observe(v);
+  new IntersectionObserver(es => { if (es[0].isIntersecting) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); }, { threshold: .01 }).observe(v);
 })();
 
 // The vision statement: every word starts grey and turns ink one after another as the sentence scrolls up the screen, and reverses
@@ -109,9 +120,9 @@
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, seg = (s, a, b) => clamp((s - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
   // the timeline, in screens scrolled
-  const T = { slow: [0, .16], gather: [.16, .6], cam: [.1, .64], b1: [.54, .72, 1.2, 1.34], fly: [1.26, 2.06], axis: [1.6, 1.9], b2: [1.72, 1.94, 2.7, 2.84], curve: [1.95, 2.4],
-    fall: [2.7, 3.16], axisOut: [2.7, 2.9], grow: [3.1, 3.42], b3: [3.3, 3.44, 3.76, 3.88], split: [3.8, 4.2], b4: [4.0, 4.24, 9, 9], end: 4.8 };
-  const RESTS = [[.34, 0], [1.26, .98], [2.7, 2.5], [3.8, 3.6], [99, 4.8]];
+  const T = { slow: [0, .16], gather: [.16, .6], cam: [.1, .64], b1: [.54, .72, 1.16, 1.3], fly: [1.22, 1.96], axis: [1.5, 1.8], b2: [1.62, 1.84, 2.52, 2.66], curve: [1.85, 2.25],
+    fall: [2.52, 2.98], axisOut: [2.56, 2.84], grow: [2.86, 3.2], b3: [2.94, 3.12, 3.5, 3.6], split: [3.52, 3.88], b4: [3.7, 3.92, 9, 9] };
+  const RESTS = [[.34, 0], [1.2, .98], [2.5, 2.3], [3.5, 3.3], [99, 4.2]];
   const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
   let autoOK = true, W = 0, H = 0, FH = 0, dpr = 1, phone = false, frames = null, nF = 96, fps = 12, t0 = 0, D = null, R = null, dirty = true, vis = true, pose = 84;
   let hero = { p: 6, r: 1000, a: 1 }, beat = { p: 6, r: 1000 }, floorY = 800, C = { l: 0, r: 1000, t: 0, b: 800 }, disc = {}, age = 10, price = 14700, loan = 10300, rest = 4400;
@@ -156,7 +167,7 @@
 
   // ---------------------------------------------------------------- listings
   const rad = u => Math.pow(u / 11000, .35);
-  const prep = () => { const n = D.rows.length; R = { n, x: new Float32Array(n), y: new Float32Array(n), r: new Float32Array(n), x0: new Float32Array(n), y0: new Float32Array(n), r0: new Float32Array(n), x1: new Float32Array(n), y1: new Float32Array(n), r1: new Float32Array(n), d: new Float32Array(n), o: new Float32Array(n) };
+  const prep = () => { const n = D.rows.length; R = { n, x: new Float32Array(n), y: new Float32Array(n), r: new Float32Array(n), x0: new Float32Array(n), y0: new Float32Array(n), r0: new Float32Array(n), x1: new Float32Array(n), y1: new Float32Array(n), r1: new Float32Array(n), d: new Float32Array(n), o: new Float32Array(n), f: new Float32Array(n) };
     let far = 0; for (let j = 0; j < n; j++) { const q = D.rows[j], dx = q[6] - 22, dy = q[7] - 112, m = Math.hypot(dx, dy); R.d[j] = m; if (m > far) far = m; R.o[j] = ((j * 2654435761 >>> 0) % 1000) / 500 - 1; }
     for (let j = 0; j < n; j++) R.d[j] = 1 - R.d[j] / far; };   // the gripper leaves first, the base last
 
@@ -167,18 +178,20 @@
     W = stick.clientWidth; FH = stick.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 760;
     cv.width = Math.round(W * dpr); cv.height = Math.round(FH * dpr);
     const narrow = W <= 1060, cols = BX1 - BX0, rows = BY1 - BY0 + 1, stageTop = docTop(film);
-    floorY = phone ? H - 62 : narrow ? H - 84 : Math.round(H * .925);
+    floorY = phone ? H - (H < 720 ? 44 : 62) : narrow ? H - 84 : Math.round(H * .925);
     const wrap = Math.min(W, 1200), mar = (W - wrap) / 2 + (phone ? 16 : 24);
     // the robot on the first screen stands on the floor line, beside the copy on desktop and under it on a phone
-    if (narrow) {
+    if (W <= 900) {
       const copy = document.querySelector('.h-copy'), room = floorY - (docBot(copy) - stageTop) - 6, p = Math.min((W - 24) / cols, Math.max(150, room) / rows);
       hero = { p, r: W - 12, a: room < 120 ? .22 : 1 };
-      const tb = b1.querySelector('.h-bt').getBoundingClientRect(), bottom = tb.height + 28 + 12, q = Math.min((W - 20) / cols, (floorY - bottom) / rows);
-      beat = { p: q, r: W - (W - cols * q) / 2 };
     } else {
       const p = Math.min((floorY - 84) / rows, W * .47 / cols), r = Math.min(W - 28, Math.max(W / 2 + 672, mar + Math.min(600, W * .43) + 40 + cols * p));
-      hero = { p, r, a: 1 }; beat = { p, r };
+      hero = { p, r, a: 1 };
     }
+    if (narrow) {
+      const tb = b1.querySelector('.h-bt').getBoundingClientRect(), bottom = tb.height + 28 + 12, q = Math.min((W - 20) / cols, (floorY - bottom) / rows);
+      beat = { p: q, r: W - (W - cols * q) / 2 };
+    } else beat = { p: hero.p, r: hero.r };
     const copyEnd = (docBot(document.querySelector('.h-copy')) - stageTop) / H; T.b1[0] = Math.max(.54, copyEnd - .08); T.b1[1] = T.b1[0] + .18; RESTS[0][0] = Math.max(.8, copyEnd + .05);
     autoOK = !narrow || !D || (floorY - (BY1 - D.rows[D.demo][7]) * beat.p - 130 > b1.querySelector('.h-bt').getBoundingClientRect().height + 28);
     // the chart stands on the same line: its bottom edge is the floor the robot stood on
@@ -195,7 +208,7 @@
     const left = phone || narrow;
     const bb = (e, top) => e.querySelector('.h-bt').getBoundingClientRect().height + top;
     if (left) { const t3 = bb(b3, 28) + 14, t4 = bb(b4, 28) + 12, Rm = Math.min((W - 28) / 2, (floorY + 60 - t3) / 2);
-      let r1 = Math.min(Rm * Math.sqrt(.7), (W - 24) * .4), r2, c1x, c1y, c2x, c2y;
+      let r1 = Math.min(Rm * Math.sqrt(.7), (W - 24) * .4, (H - 14 - t4) / 2), r2, c1x, c1y, c2x, c2y;
       for (let i = 0; i < 12; i++) { r2 = r1 * Math.sqrt(.3 / .7); c1x = 12 + r1; c1y = t4 + r1; c2x = W - 12 - r2; const dx = c2x - c1x, dist = r1 + r2 + 6; c2y = c1y + Math.sqrt(Math.max(0, dist * dist - dx * dx)); if (c2y + r2 <= H - 14) break; r1 *= .95; }
       disc = { x: W / 2, y: t3 + Rm, R: Rm, r1, r2, c1x, c1y, c2x, c2y };
     } else { const rightX = Math.min(W - 28, W / 2 + 840), area = rightX - (mar + Math.min(460, W * .3) + 24), Rm = Math.min(H * .4, area / 2), r1 = Math.min(H * .36, (area - 8) / (2 * (1 + Math.sqrt(.3 / .7)))), r2 = r1 * Math.sqrt(.3 / .7), cy = H * .5;
@@ -206,7 +219,10 @@
     place(n1, disc.c1x, disc.c1y); place(n2, disc.c2x, disc.c2y); n1.style.width = (disc.r1 * 1.7) + 'px'; n2.style.width = (disc.r2 * 1.7) + 'px';
     if (R) { const base = beat.p;
       for (let j = 0; j < R.n; j++) { const q = D.rows[j], f = rad(q[2]); R.x0[j] = beat.r - (q[6] - BX0) * beat.p; R.y0[j] = floorY - (BY1 - q[7]) * beat.p;
-        R.r0[j] = base * .94 * f; R.x1[j] = X(q[5]); R.y1[j] = Y(q[2]); R.r1[j] = (phone ? 2.6 : 4.1) * Math.pow(f, .8); } }
+        R.r0[j] = base * .94 * f; R.x1[j] = X(q[5]); R.y1[j] = Y(q[2]); R.r1[j] = (phone ? 2.8 : 4.8) * Math.pow(f, .8); }
+      // the chart drains into the chosen price nearest dots first, at an even rate, so the screen is never empty before the price arrives
+      const by = Array.from({ length: R.n }, (_, j) => j).map(j => [Math.hypot(R.x1[j] - X(age), R.y1[j] - Y(price)), j]).sort((a, b) => a[0] - b[0]);
+      by.forEach((q, i) => { R.f[q[1]] = i / R.n; }); }
     dirty = true;
   }
 
@@ -258,7 +274,7 @@
         if (fly > 0) { const de = R.d[j] * .46, t = io3(seg(fly, de, de + .54)), x1 = R.x1[j], y1 = R.y1[j];
           const cx = (x0 + x1) / 2 + R.o[j] * Math.abs(y1 - y0) * .35, cy = (y0 + y1) / 2 - Math.abs(x1 - x0) * .12 * (1 + R.o[j]) ;
           const u = 1 - t; x = u * u * x0 + 2 * u * t * cx + t * t * x1; y = u * u * y0 + 2 * u * t * cy + t * t * y1; r = lerp(R.r0[j], R.r1[j], t); }
-        if (fall > 0) { const de = clamp(Math.hypot(R.x1[j] - mx, R.y1[j] - my) / Math.max(W, H)) * .55 + .0, t = in2(seg(fall, de, de + .45)); if (t >= 1) { arrived++; R.x[j] = -99; R.r[j] = 0; continue; } x = lerp(x, mx, t); y = lerp(y, my, t); r = lerp(r, 1.4, t); }
+        if (fall > 0) { const de = R.f[j] * .66, t = in2(seg(fall, de, de + .34)); if (t >= 1) { arrived++; R.x[j] = -99; R.r[j] = 0; continue; } x = lerp(x, mx, t); y = lerp(y, my, t); r = lerp(r, 1.4, t); }
         R.x[j] = x; R.y[j] = y; R.r[j] = r;
         ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, 6.2832);
       }
@@ -289,7 +305,6 @@
     const cu2 = seg(s, T.curve[1] - .15, T.curve[1]); axLate.forEach(e => e.style.opacity = cu2);
     const e0 = io3(grow), nv = seg(grow, .55, 1) * (1 - seg(split, 0, .16)); if (nv > 0) { place(n0, lerp(mx, disc.x, e0), lerp(my, disc.y, e0)); } show(n0, nv);
     const nk = seg(split, .3, .72); show(n1, nk); show(n2, nk);
-    stick.style.borderRadius = `0 0 ${(28 * seg(s, T.end - .08, T.end)).toFixed(1)}px ${(28 * seg(s, T.end - .08, T.end)).toFixed(1)}px`;
     hit = hitOK; autoTip(s); placeTip();
   }
 

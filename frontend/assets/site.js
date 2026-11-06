@@ -54,9 +54,13 @@
     try { const r = await fetch(SB, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row) }); if (!r.ok) throw r.status; done(); }
     catch (x) { err.textContent = 'That did not go through. Please try again in a moment.'; err.hidden = false; btn.disabled = false; btn.textContent = label; }
   }));
-  // white pages: the sticky nav turns translucent once the page has moved 8px
-  const navs = [...document.querySelectorAll('.nav:not(.on-dark)')];
-  if (navs.length) { let on = null; const chk = () => { const v = scrollY > 8; if (v !== on) { on = v; navs.forEach(nv => nv.classList.toggle('scrolled', v)); } }; addEventListener('scroll', chk, { passive: true }); chk(); }
+  // the floating bar: out of the way while reading, back as soon as the reader scrolls up, and gone again near the top where the page's own nav sits
+  const fbar = document.querySelector('.fbar');
+  if (fbar) { let last = scrollY, on = false; addEventListener('scroll', () => { const y = scrollY, d = y - last; if (Math.abs(d) < 6) return; last = y; const v = d < 0 && y > 240; if (v !== on) { on = v; fbar.classList.toggle('on', v); } }, { passive: true }); }
+  // one soft pill slides between the nav links under the pointer
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) document.querySelectorAll('.links').forEach(w => { const h = w.querySelector('.lhl'); if (!h) return;
+    w.querySelectorAll('a').forEach(a => a.addEventListener('pointerenter', () => { const first = !h.classList.contains('on'); if (first) h.style.transition = 'none'; h.style.width = a.offsetWidth + 'px'; h.style.transform = `translateX(${a.offsetLeft}px)`; if (first) { h.getBoundingClientRect(); h.style.transition = ''; } h.classList.add('on'); }));
+    w.addEventListener('pointerleave', () => h.classList.remove('on')); });
   // ------------------------------------------------------------------ product: the cover chart, the priced fleet, the live preview
   // keep(m, rid): share of the new price a robot keeps at m months, the risk engine's curve exp(-(m/tau)^beta) for the nearest engine type
   // (engine.js TYPES: arm and cobot PALLET 42/1.2, amr and pallet AMR 38/1.3, delivery SIDEWALK 34/1.3, cleaning CLEAN 40/1.2); mirrors core.KT and core.keep
@@ -254,6 +258,11 @@
   // fonts change label widths, so the charts redraw once they arrive
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { document.querySelectorAll('[data-fp]').forEach(fp => fitFigs(fp)); document.querySelectorAll('svg.cv').forEach(svg => { if (svg.dataset.cvs !== 'go') { const c = JSON.parse(svg.dataset.cv); svg._g = null; cover(svg, c.V, { top: c.top, rid: c.rid }); } }); });
   window.FerraApp = Object.assign(window.FerraApp || {}, { preview, cover, units, fleetRow, growTo, money, keep, fitFigs });
-  // phone menu
-  document.querySelectorAll('.nav').forEach(nv => { const b = nv.querySelector('.menu'), d = nv.querySelector('.drawer'); if (!b) return; b.addEventListener('click', () => { const o = d.hidden; d.hidden = !o; b.setAttribute('aria-expanded', o); }); });
+  // phone menu: full screen, the page behind it inert, Escape or any link closes it, focus goes back where it was
+  const mn = document.getElementById('mn');
+  if (mn) { let back = null; const btns = document.querySelectorAll('.menu'), pg = document.querySelector('.page');
+    const set = o => { mn.hidden = !o; document.documentElement.classList.toggle('mn-open', o); if (pg) pg.inert = o; if (fbar) fbar.inert = o; btns.forEach(b => b.setAttribute('aria-expanded', o));
+      if (o) { back = document.activeElement; mn.querySelector('.mn-x').focus({ preventScroll: true }); } else if (back && back.focus) back.focus({ preventScroll: true }); };
+    btns.forEach(b => b.addEventListener('click', () => set(true))); mn.querySelector('.mn-x').addEventListener('click', () => set(false)); mn.querySelectorAll('a').forEach(a => a.addEventListener('click', () => set(false)));
+    addEventListener('keydown', ev => { if (ev.key === 'Escape' && !mn.hidden) set(false); }); matchMedia('(min-width: 901px)').addEventListener('change', ev => { if (ev.matches && !mn.hidden) set(false); }); }
 })();

@@ -1,39 +1,63 @@
-/* Company page (c-). Three sections: the letter beside the robot (gradient), what we are building (paper), get in touch (white). */
-.c-hero{color:#fff;padding-bottom:clamp(72px,8vw,112px)}
-[data-page="company.html"] .c-hero .h1{font-size:clamp(52px,8vw,116px);line-height:.98;letter-spacing:-.035em;color:#fff;padding-top:clamp(28px,4vw,56px)}
-[data-page="company.html"] .rstage .rs-bot canvas{display:block;max-width:100%}
+/* Company page (c-). The moving robot and the headline, a letter on paper laid over the edge, the dot field, what is real and what is not, the film, get in touch. */
+.c-hb{font:700 clamp(34px,4.4vw,64px)/1.04 var(--serif);letter-spacing:-.033em;margin:0;text-wrap:balance;color:var(--ink)}
+.c-hb.w{color:#fff}
 
-/* the arm beside the letter. Nothing under it; the sky is enough */
-.c-letter{margin-top:clamp(36px,5vw,64px);grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center}
-.c-letter .lh{position:static;display:flex;align-items:center;min-width:0}
-.c-pic{width:100%}
-.c-pic .rs-base{display:none}
-.c-letter .lb p{color:#fff;font-size:clamp(18px,1.45vw,20px);line-height:1.5;margin-bottom:18px}
-.c-letter .lb .c-now{font-weight:600}
-.c-letter .lb .sig{color:#fff;font-weight:600;margin:28px 0 0}
-.c-letter .lb .sig span{color:#fff;font-weight:400}
+.c-hero{color:#fff;padding-bottom:clamp(112px,12vw,176px)}
+.c-heg{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:clamp(24px,4vw,64px);align-items:end;padding-top:clamp(20px,3vw,48px)}
+.c-h1{grid-column:1 / -1;font:700 clamp(46px,6.5vw,96px)/1 var(--serif);letter-spacing:-.038em;color:#fff;margin:0;text-wrap:balance}
+.c-het{align-self:start}
+.c-lede{margin:clamp(8px,1vw,16px) 0 0;max-width:30em;font-size:clamp(19px,1.6vw,23px);line-height:1.4;color:#fff;text-wrap:pretty}
+.c-pic{min-width:0}
+.c-bot .rs-bot{height:clamp(220px,26vw,380px);display:flex;align-items:flex-end;justify-content:center}
 
-/* what we are building: three big lines, each one a link */
-.c-build .h2{margin-bottom:clamp(32px,4vw,56px)}
-.c-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(18px,2vw,28px)}
-.c-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px clamp(24px,5vw,72px);align-items:baseline;min-height:44px;text-decoration:none}
-.c-lt{font:700 clamp(25px,2.7vw,38px)/1.1 var(--serif);letter-spacing:-.03em;color:var(--ink);text-wrap:balance;transition:color .2s ease}
-.c-line:hover .c-lt{color:var(--c)}
-.c-ll{font-weight:600;font-size:16px;color:var(--c);white-space:nowrap}
+/* the letter: paper, so it gets a box, in the document face */
+.c-paper{display:flow-root;background:var(--paper);padding-bottom:clamp(64px,7vw,112px)}
+.c-sheet{position:relative;margin:calc(-1 * clamp(88px,10vw,144px)) auto 0;max-width:780px;background:#fff;border-radius:var(--r-doc);box-shadow:var(--sh-doc);padding:clamp(32px,6vw,84px) clamp(24px,6.4vw,92px)}
+.c-sheet p{margin:0 0 1.05em;font:400 clamp(19px,1.55vw,22px)/1.5 var(--doc);color:var(--ink)}
+.c-sheet .c-open{font-size:clamp(23px,2.1vw,30px);line-height:1.32;letter-spacing:-.008em}
+.c-sheet a{color:var(--c);font-weight:600}
+.c-sheet .c-sig{margin:clamp(28px,3.4vw,44px) 0 0;font-weight:600}
+.c-sig span{display:block;font:400 15px/1.5 var(--sans);color:var(--muted)}
 
-/* get in touch: filled fields, no outlines */
-.c-cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
-.c-contact .h2{margin-bottom:28px}
+/* the dot field: one big thing */
+.c-dots{display:block;width:100%;margin-top:clamp(28px,4vw,56px)}
+.c-count{margin:clamp(20px,2.6vw,32px) 0 0;max-width:40em;font-size:clamp(18px,1.5vw,21px);line-height:1.45;color:#3e4656}
+.c-count b{font-weight:700;color:var(--c)}
+.c-count .c-dk{color:var(--ink)}
+
+/* what is real, what is not: words and space */
+.c-stg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(40px,6vw,96px);align-items:start}
+.c-stg .c-hb{font-size:clamp(30px,3.2vw,46px)}
+.c-list{list-style:none;margin:clamp(24px,3vw,40px) 0 0;padding:0;display:flex;flex-direction:column;gap:clamp(18px,2vw,26px)}
+.c-list b{display:block;font:600 clamp(20px,1.7vw,24px)/1.2 var(--serif);letter-spacing:-.016em;color:var(--ink)}
+.c-list span{display:block;margin-top:5px;font-size:17px;line-height:1.45;color:#3e4656;max-width:32em}
+.c-row{display:block;min-height:44px}
+.c-row b{color:var(--c)}
+.c-row:hover b{opacity:.75}
+
+/* the film */
+.c-film{position:relative;display:flex;align-items:flex-end;min-height:min(86svh,780px);overflow:hidden;background:#04060c}
+.c-film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.c-film::after{content:"";position:absolute;inset:40% 0 0;background:linear-gradient(to top,rgba(4,6,12,.82),rgba(4,6,12,0))}
+.c-filmt{position:relative;z-index:1;width:100%;padding-block:clamp(36px,6vw,72px)}
+.c-filmt .c-hb{font-size:clamp(44px,7vw,104px);line-height:.98;letter-spacing:-.038em;max-width:9em;margin-bottom:clamp(20px,2.4vw,32px)}
+
+/* get in touch */
+.c-cg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(40px,6vw,96px);align-items:start}
+.c-form{margin-top:clamp(24px,3vw,36px)}
 .c-contact .lf{grid-template-columns:minmax(0,1fr)}
 [data-page="company.html"] .fl{font-size:15px}
-[data-page="company.html"] .c-contact .fl input,[data-page="company.html"] .c-contact .fl textarea{border-color:transparent;background:var(--mist)}
-[data-page="company.html"] .c-contact .fl ::placeholder{color:#5b6474}
-.c-auds{display:flex;flex-direction:column;gap:clamp(28px,3vw,40px);padding-top:clamp(0px,1vw,10px)}
-.c-aud .h3{margin-bottom:6px}
-.c-aud p{margin:0;color:#3e4656;font-size:16px;line-height:1.5;max-width:44ch}
+[data-page="company.html"] .fl input,[data-page="company.html"] .fl textarea{background:var(--mist);border-color:transparent;border-radius:14px;padding-left:18px;padding-right:18px}
+[data-page="company.html"] .fl input{height:54px}
+[data-page="company.html"] .fl textarea{padding-top:14px}
+.c-auds{display:flex;flex-direction:column;gap:clamp(32px,4vw,52px);padding-top:clamp(8px,1vw,14px)}
+.c-aud h3{font:700 clamp(24px,2.2vw,32px)/1.12 var(--serif);letter-spacing:-.025em;margin:0 0 8px}
+.c-aud p{margin:0 0 4px;font-size:17px;line-height:1.45;color:#3e4656;max-width:30em}
+.c-aud a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--c)}
+.c-aud a:hover{opacity:.75}
 
-@media (max-width:1060px){.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:440px}.c-letter{gap:32px;grid-template-columns:minmax(0,1fr)}.c-pic .c-bot .rs-bot{height:calc(var(--h) * .7)}}
-@media (max-width:680px){
- .c-line{grid-template-columns:minmax(0,1fr)}
- .c-pic .c-bot .rs-bot{height:calc(var(--h) * .56)}
+@media (max-width:900px){
+ .c-heg{grid-template-columns:minmax(0,1fr)}
+ .c-bot .rs-bot{height:min(64vw,360px)}
+ .c-stg,.c-cg{grid-template-columns:minmax(0,1fr)}
 }

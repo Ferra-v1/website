@@ -1,49 +1,143 @@
-/* Methodology and privacy (d-): title block, sticky contents on the left, reading column on the right */
-.d-hero{padding-bottom:clamp(48px,6vw,80px)}
-.d-hg{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.6fr);gap:clamp(28px,5vw,80px);align-items:end}
-.d-hero .h1{font-size:clamp(52px,7.4vw,108px);line-height:.98;letter-spacing:-.035em}
-.d-hero .lede{margin-bottom:0;max-width:44ch;font-size:clamp(19px,1.7vw,24px);line-height:1.4}
-.d-meta{margin:0;display:flex;flex-direction:column}
-.d-meta div{padding:0 0 18px}
-.d-meta dt{font-size:14px;color:var(--muted);margin-bottom:3px}
-.d-meta dd{margin:0;font:600 19px/1.35 var(--serif)}
-.d-body{padding-top:clamp(48px,6vw,88px)}
-.d-g{display:grid;grid-template-columns:240px minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start}
-.d-toc{position:sticky;top:112px}
-.d-toc b{display:block;font-size:14px;font-weight:600;color:var(--ink);padding-bottom:6px}
-.d-toc ol{list-style:none;margin:0;padding:0}
-.d-toc a{display:flex;align-items:center;padding:10px 0;min-height:44px;box-sizing:border-box;font-size:15px;line-height:1.4;color:#5b6474;text-decoration:none;transition:color .2s ease}
+/* Methodology and privacy (d-). A long read: one column of text, contents beside it, one pinned band where every dot is a real listing. */
+.d-hero{padding-top:clamp(36px,5vw,72px);padding-bottom:clamp(40px,5vw,72px)}
+.d-hg{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr);gap:clamp(28px,5vw,72px);align-items:end}
+.d-hero .h1{font-size:clamp(52px,7.4vw,108px);line-height:.98;letter-spacing:-.035em;max-width:9ch}
+.d-hero .lede{margin:clamp(20px,2vw,28px) 0 0;max-width:40ch;font-size:clamp(19px,1.7vw,24px);line-height:1.4}
+.d-upd{margin:18px 0 0;font-size:15px;color:var(--muted)}
+.d-hbot .rstage{max-width:420px;margin-left:auto}
+
+/* the band: every dot is one real listing. Still by default; p-docs.js adds .pin and walks data-s from 0 to 3 as the reader scrolls */
+.d-flow{background:var(--ink);color:#fff;--cy:rgb(150,232,255)}
+.d-fst{padding-block:clamp(64px,8vw,112px)}
+.d-fg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,72px);align-items:center}
+.d-fh .h2{margin:0;max-width:11ch}
+.d-fh > p{margin:14px 0 0;font-size:19px;line-height:1.45;color:rgba(255,255,255,.72)}
+.d-frs{list-style:none;margin:clamp(24px,3vw,40px) 0 0;padding:0}
+.d-fr{display:grid;grid-template-columns:clamp(116px,12.5vw,184px) minmax(0,1fr);gap:0 16px;align-items:baseline;padding:7px 0;transition:opacity .35s ease}
+.d-fr b{font:700 clamp(36px,4vw,58px)/1.06 var(--serif);letter-spacing:-.035em}
+.d-fr span{font-size:16px;line-height:1.3;color:rgba(255,255,255,.82)}
+.d-fsv{display:block;width:100%;height:auto;fill:none;stroke-linecap:round}
+.d-fsv path{stroke:#fff;stroke-width:8.4;transition:stroke .5s ease,stroke-width .5s ease,opacity .5s ease}
+.d-flow[data-s="1"] .k1,.d-flow[data-s="2"] .k1,.d-flow[data-s="2"] .k2,.d-flow[data-s="3"] .k1,.d-flow[data-s="3"] .k2,.d-flow[data-s="3"] .k3{stroke-width:3.6;opacity:.3}
+.d-flow[data-s="3"] .k4{stroke:var(--cy)}
+.d-flow[data-s="3"] .d-fr:last-child b{color:var(--cy)}
+/* pinned: a tall section with a stage held on screen by position sticky */
+.d-flow.d-pin{height:340vh}
+.d-flow.d-pin .d-fst{position:sticky;top:0;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding-block:32px}
+.d-flow.d-pin .d-fg{width:100%}
+.d-flow.d-pin .d-fr{opacity:.42}
+.d-flow.d-pin[data-s="0"] .d-fr:nth-child(1),.d-flow.d-pin[data-s="1"] .d-fr:nth-child(2),.d-flow.d-pin[data-s="2"] .d-fr:nth-child(3),.d-flow.d-pin[data-s="3"] .d-fr:nth-child(4){opacity:1}
+
+/* the read */
+.d-body{padding-top:clamp(56px,7vw,104px)}
+.d-g{display:grid;grid-template-columns:232px minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start}
+.d-toc{position:sticky;top:96px;grid-row:1 / span 2}
+.d-toc b{display:block;font-size:15px;font-weight:600;color:var(--ink);padding-bottom:6px}
+.d-toc ol,.d-tocx ol{list-style:none;margin:0;padding:0}
+.d-toc a,.d-tocx a{display:flex;align-items:center;padding:6px 0;box-sizing:border-box;font-size:15px;line-height:1.35;color:#5b6474;text-decoration:none;transition:color .2s ease}
 .d-toc a:hover{color:var(--ink)}
 .d-toc a.on{color:var(--c);font-weight:500}
-.d-art{max-width:720px;min-height:calc(100vh - 120px)}
-.d-sec{padding:36px 0 22px;scroll-margin-top:100px}
-.d-sec:first-child{border-top:0;padding-top:0}
-.d-sec .h3{font-size:clamp(26px,2.5vw,36px);margin-bottom:14px}
-.d-sec .h3 .num{display:none}
-.d-sec p{margin:0 0 14px;color:#3e4656;font-size:17px;line-height:1.65}
-.d-sec a{color:var(--c);text-decoration:none;font-weight:500}
-.d-sec a:hover{text-decoration:underline;text-underline-offset:4px}
-[data-page="methodology.html"] .notes a,[data-page="privacy.html"] .notes a{text-decoration:none}
+.d-tocx{display:none}
+.d-art{max-width:720px;min-width:0}
+.d-short{margin:0 0 clamp(16px,2vw,24px);font:500 clamp(23px,2.2vw,30px)/1.32 var(--serif);letter-spacing:-.018em;color:var(--ink)}
+.d-sec{padding:clamp(44px,5vw,68px) 0 0;scroll-margin-top:72px}
+.d-sec .h2{font-size:clamp(30px,3vw,42px);line-height:1.08;margin:0 0 18px;letter-spacing:-.028em}
+.d-sec p{margin:0 0 16px;color:#3e4656;font-size:18px;line-height:1.65}
+.d-sec a{color:var(--c);text-decoration:none;font-weight:500;position:relative}
+.d-sec p a::after,.d-pr a::after{content:"";position:absolute;inset:-12px -2px}
+.d-t a{display:inline-flex;align-items:center;min-height:44px;margin:-13px 0}
+.d-sec a:hover{color:var(--ink)}
 .d-sec b{color:var(--ink);font-weight:600}
-/* the one graphic: a dot for every listing found */
-.d-field{margin:26px 0 8px}
-.d-field svg{display:block;width:100%;height:auto;stroke-linecap:round;stroke-width:8.4;fill:none}
-.d-field .k1{stroke:#dfe4ed}
-.d-field .k2{stroke:#a9b8ea}
-.d-field .k3{stroke:#6c84e0}
-.d-field .k4{stroke:var(--c)}
-.d-keys{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.d-keys li{font-size:15px;line-height:1.35;color:#3e4656}
-.d-keys b{display:block;font:700 clamp(26px,2.6vw,36px)/1.1 var(--serif);letter-spacing:-.025em;margin-bottom:4px}
-.d-keys .k4 b{color:var(--c)}.d-keys .k3 b{color:#4a66d8}.d-keys .k2 b{color:#7f93e0}.d-keys .k1 b{color:#8b95a7}
-/* the curve as one row of a real table */
-.d-yr{margin:22px 0 8px}
-.d-yr thead th{border-top:0}
-.d-yr tbody th,.d-yr tbody td{border-bottom:0;font-weight:600}
-.d-next{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin:44px 0 0}
-.d-next a{display:flex;flex-direction:column;gap:6px;padding:18px 0 4px;min-height:44px;text-decoration:none;color:var(--ink)}
-.d-next a:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
-.d-next b{font:600 21px/1.25 var(--serif);color:var(--c)}
-.d-next span{font-size:14.5px;color:#4a5262}
-@media (max-width:1060px){.d-hg{grid-template-columns:minmax(0,1fr);align-items:start}.d-g{grid-template-columns:minmax(0,1fr)}.d-toc{position:static}.d-toc ol{columns:2;column-gap:24px}.d-toc li{break-inside:avoid}}
-@media (max-width:680px){.d-toc ol{columns:1}.d-next{grid-template-columns:minmax(0,1fr);gap:8px}.d-keys{grid-template-columns:repeat(2,minmax(0,1fr))}.d-yr{font-size:14px;table-layout:fixed}.d-yr th,.d-yr td{padding-right:3px}.d-yr thead th{font-size:13px;white-space:normal;line-height:1.15}.d-yr .r,.d-yr thead th.r{white-space:normal}}
+[data-page="methodology.html"] .notes a,[data-page="privacy.html"] .notes a{text-decoration:none}
+
+/* big numbers sit straight on the page */
+.d-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 28px;margin:clamp(24px,3vw,36px) 0 clamp(24px,3vw,36px)}
+.d-nums div{min-width:0}
+.d-nums dd{margin:0;font:700 clamp(38px,3.7vw,54px)/1 var(--serif);letter-spacing:-.035em;color:var(--ink)}
+.d-nums .hi dd{color:var(--c)}
+.d-nums dt{margin-top:10px;font-size:15px;line-height:1.35;color:#4a5262}
+.d-nums:has(div:nth-child(4)){grid-template-columns:repeat(4,minmax(0,1fr))}
+
+/* a worked example, three steps in order */
+.d-steps{list-style:none;counter-reset:s;margin:22px 0 0;padding:0}
+.d-steps li{counter-increment:s;position:relative;padding:0 0 18px 44px;font-size:18px;line-height:1.6;color:#3e4656}
+.d-steps li::before{content:counter(s);position:absolute;left:0;top:-1px;font:700 26px/1.2 var(--serif);color:var(--c)}
+
+/* tables: real tables keep their rules, and only those */
+.d-tw{overflow-x:auto;margin:24px 0 8px}
+.d-t thead th{border-top:0;border-bottom:1px solid var(--ink);padding-top:0;font-size:15px}
+.d-t tbody th{font-weight:400}
+.d-t tbody tr:last-child th,.d-t tbody tr:last-child td{border-bottom:0}
+.d-last tbody tr:last-child th,.d-last tbody tr:last-child td{font-weight:600;color:var(--c)}
+.d-t a.d-sub{padding-left:16px}
+.d-2t{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:40px;margin-top:8px}
+.d-2t .d-tw{margin-bottom:0}
+.d-yr{margin:24px 0 8px}
+.d-yr tbody th,.d-yr tbody td{font-weight:600}
+
+/* the one sheet of paper on the page */
+.d-sheet{max-width:560px;margin:28px 0 28px;padding:28px 32px 16px}
+.d-sheet .dr:last-child{border-bottom:0}
+
+/* words we use */
+.d-gl{margin:20px 0 0}
+.d-gl div{display:grid;grid-template-columns:168px minmax(0,1fr);gap:4px 20px;padding:9px 0}
+.d-gl dt{font-weight:600;color:var(--ink);font-size:17px;line-height:1.5}
+.d-gl dd{margin:0;font-size:17px;line-height:1.5;color:#3e4656}
+
+/* where to go next: plain links, nothing around them */
+.d-next{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin:clamp(56px,6vw,88px) 0 0}
+.d-next a{display:flex;flex-direction:column;gap:6px;min-height:44px;text-decoration:none;color:var(--c);font:600 21px/1.2 var(--serif);letter-spacing:-.015em}
+.d-next a:hover{color:var(--ink)}
+.d-next span{font:400 15px/1.4 var(--sans);letter-spacing:0;color:#4a5262}
+
+/* privacy: short, one row per question */
+.d-phero .h1{max-width:none}
+.d-phero .lede{max-width:34ch}
+.d-pbody{padding-top:clamp(40px,5vw,72px);padding-bottom:clamp(64px,7vw,104px)}
+.d-pr{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:8px clamp(24px,4vw,56px);padding:0 0 clamp(26px,3vw,40px)}
+.d-pr h2{margin:0;font:600 clamp(21px,1.9vw,26px)/1.25 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.d-pr p{margin:0;font-size:18px;line-height:1.6;color:#3e4656;max-width:60ch}
+.d-pr a{color:var(--c);font-weight:500;text-decoration:none;position:relative}
+.d-pr a:hover{color:var(--ink)}
+
+@media (max-width:1060px){
+  .d-g{grid-template-columns:minmax(0,1fr);gap:0}
+  .d-toc{display:none}
+  .d-tocx{display:block;margin-bottom:28px;border-radius:12px;background:var(--mist);padding:0 16px}
+  .d-tocx summary{display:flex;align-items:center;min-height:48px;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
+  .d-tocx summary::-webkit-details-marker{display:none}
+  .d-tocx summary::after{content:"+";margin-left:auto;font:500 20px/1 var(--sans);color:var(--c);transition:transform .2s ease}
+  .d-tocx[open] summary::after{transform:rotate(45deg)}
+  .d-tocx a{min-height:44px;padding:8px 0}
+  .d-tocx ol{padding-bottom:8px}
+  .d-art{max-width:none}
+  .d-fg{grid-template-columns:minmax(0,1fr);gap:24px}
+  .d-fsv{order:-1}
+  .d-fh .h2{max-width:none}
+}
+@media (max-width:720px){
+  .d-hg{grid-template-columns:minmax(0,1fr)}
+  .d-hbot{display:none}
+  .d-hero .h1{font-size:clamp(52px,14vw,72px)}
+  .d-flow.d-pin .d-fst{padding-block:20px}
+  .d-fr{grid-template-columns:92px minmax(0,1fr);padding:5px 0}
+  .d-fr b{font-size:32px}
+  .d-fr span{font-size:15px}
+  .d-fh > p{font-size:17px}
+  .d-sec p,.d-steps li{font-size:17px}
+  .d-nums,.d-nums:has(div:nth-child(4)){grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .d-nums dd{font-size:38px}
+  .d-2t{grid-template-columns:minmax(0,1fr);gap:8px}
+  .d-gl div{grid-template-columns:minmax(0,1fr)}
+  .d-next{grid-template-columns:minmax(0,1fr);gap:20px}
+  .d-sheet{padding:20px 16px 8px}
+  .d-yr{font-size:15px;table-layout:fixed}
+  .d-yr th,.d-yr td{padding-right:3px}
+  .d-yr th:first-child{display:none}
+  .d-yr thead th{font-size:15px;white-space:normal;line-height:1.15}
+  .d-yr .r,.d-yr thead th.r{white-space:normal}
+  .d-pr{grid-template-columns:minmax(0,1fr)}
+  .d-pr p{font-size:17px}
+}
+@media (prefers-reduced-motion:reduce){.d-fsv path,.d-fr{transition:none}}

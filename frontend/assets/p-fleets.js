@@ -104,7 +104,31 @@
   const toForm = smooth => { const wide = matchMedia('(min-width: 901px)').matches, el = wide ? document.querySelector('.f-hero') : (form || ty), nav = document.querySelector('.nav'), nh = nav ? nav.getBoundingClientRect().height : 0, top = Math.max(0, el.getBoundingClientRect().top + scrollY - (wide ? nh - 24 : nh + 24)); scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); ty.focus({ preventScroll: true }); };
   document.querySelectorAll('a[href="#quote"]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); history.replaceState(null, '', '#quote'); toForm(!matchMedia('(prefers-reduced-motion: reduce)').matches); }));
   if (location.hash === '#quote') addEventListener('load', () => setTimeout(() => toForm(false), 60));
-  // the timeline drive plays once; afterwards hold the final frame as plain styles
+  // each dropdown in the sentence is as wide as the words it shows, so the sentence reads as a sentence
+  const fitSel = sel => { const m = document.createElement('span'), cs = getComputedStyle(sel); m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;text-transform:lowercase;font:' + cs.font + ';letter-spacing:' + cs.letterSpacing; m.textContent = sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : ''; document.body.appendChild(m); sel.style.width = Math.ceil(m.getBoundingClientRect().width + 2) + 'px'; m.remove(); };
+  // the two typed answers follow what is in them too
+  const fitNum = el => { const m = document.createElement('span'), cs = getComputedStyle(el); m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:' + cs.font + ';letter-spacing:' + cs.letterSpacing + ';font-variant-numeric:lining-nums tabular-nums'; m.textContent = el.value || '0'; document.body.appendChild(m); el.style.width = Math.ceil(m.getBoundingClientRect().width + 4) + 'px'; m.remove(); };
+  [n, p].forEach(el => { el.addEventListener('input', () => fitNum(el)); el.addEventListener('blur', () => fitNum(el)); el.addEventListener('focus', () => fitNum(el)); });
+  const fitAll = () => { [ty, wh].forEach(s => s && fitSel(s)); [n, p].forEach(fitNum); };
+  [ty, wh].forEach(s => s && s.addEventListener('change', () => { fitSel(s); fitNum(p); }));
+  fitAll(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll); addEventListener('resize', fitAll);
+  // the second half of the form: "Get a quote" opens email and company and turns into Send
+  const open = document.getElementById('f-open'), send = document.getElementById('f-send'), who = document.getElementById('f-who');
+  const reveal = () => { if (!who || !who.hidden) return; who.hidden = false; open.hidden = true; send.hidden = false; const em = who.querySelector('input[type=email]'); if (em) em.focus({ preventScroll: true }); };
+  if (open) open.addEventListener('click', reveal);
+  // each robot in the row picks itself in the form on the way back up
+  document.querySelectorAll('[data-pick]').forEach(a => a.addEventListener('click', () => { if ([...ty.options].some(o => o.value === a.dataset.pick)) { ty.value = a.dataset.pick; ty.dispatchEvent(new Event('change')); } }));
+  // from hello to money: the robot on the line follows the page, stopping over each step
   const tw = document.querySelector('.f-tlw'), run = tw && tw.querySelector('.f-runner');
-  if (run) run.addEventListener('animationend', () => tw.classList.add('done'));
+  if (run) {
+    const stops = 4, ease = t => t * t * (3 - 2 * t);
+    const place = () => { const r = tw.getBoundingClientRect(), vh = innerHeight; if (r.bottom < -100 || r.top > vh + 100) return;
+      const p = Math.min(1, Math.max(0, (vh * .86 - r.top) / (vh * .62))), wide = matchMedia('(min-width: 821px)').matches;
+      const span = wide ? tw.clientWidth * (stops - 1) / stops + 6 : tw.clientWidth - run.offsetWidth;
+      // on wide screens it rests over each of the four steps in turn; on a phone it just crosses the line
+      const seg = p * (stops - 1), i = Math.min(stops - 2, Math.floor(seg)), f = seg - i, at = wide ? (i + ease(Math.min(1, f * 1.25))) / (stops - 1) : p;
+      run.style.transform = `translate3d(${(at * span).toFixed(1)}px,0,0)`; };
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) run.style.transform = 'translate3d(' + (tw.clientWidth - run.offsetWidth) + 'px,0,0)';
+    else { addEventListener('scroll', place, { passive: true }); addEventListener('resize', place); place(); }
+  }
 })();

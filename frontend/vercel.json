@@ -6,11 +6,6 @@
    "source": "/price-index",
    "destination": "/price-report",
    "permanent": true
-  },
-  {
-   "source": "/how-it-works",
-   "destination": "/#how",
-   "permanent": true
   }
  ],
  "headers": [

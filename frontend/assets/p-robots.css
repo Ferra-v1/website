@@ -1,0 +1,187 @@
+/* Robots we price: the shelf (robots.html) and one page per robot (robots-<id>.html). Classes start with r-. The stage's canvas draws the robot and the chart. */
+[data-page^="robots"] .h2{max-width:24ch}
+[data-page^="robots"] .lead-1{max-width:60ch}
+
+/* ------------------------------------------------------------------ one robot: the pinned first screen. Its first state is the robot; its last is the chart */
+.r-stage{position:relative;background:var(--deep);height:calc(200svh);color:#fff}
+.r-stage>.nav{position:absolute;inset:0 0 auto;z-index:6}
+.r-pin{position:sticky;top:0;height:100svh;overflow:hidden}
+.r-plot{position:absolute;inset:0}
+.r-cv,.r-ax{position:absolute;inset:0;width:100%;height:100%;display:block}
+.r-cv{touch-action:pan-y;cursor:default}
+.r-ax{pointer-events:none;font-family:var(--sans);overflow:visible}
+.r-ax text{fill:rgba(255,255,255,.92);font-size:14px;font-variant-numeric:lining-nums tabular-nums;paint-order:stroke;stroke:rgba(12,84,214,.82);stroke-width:4px;stroke-linejoin:round}
+.r-ax .lb{fill:#fff;font-weight:600;font-size:15px}
+.r-ax .ax{stroke:rgba(255,255,255,.55);stroke-width:1}
+
+.r-intro{position:absolute;left:0;right:0;top:0;bottom:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:flex-start;padding-top:clamp(96px,14vh,136px);will-change:opacity,transform}
+.r-intro a{pointer-events:auto}
+.r-h1{margin:0;font:700 clamp(60px,min(8.2vw,14vh),120px)/.94 var(--serif);letter-spacing:-.04em;max-width:5em;text-wrap:balance}
+.r-h1.r-long{font-size:clamp(44px,min(5.4vw,10vh),80px);line-height:1;max-width:7.2em}
+.r-sub{margin:clamp(18px,3vh,30px) 0 0;font-size:clamp(17px,1.5vw,21px);line-height:1.3;color:rgba(255,255,255,.92)}
+.r-big{display:block;font:700 clamp(56px,min(6.6vw,11vh),96px)/1.02 var(--serif);letter-spacing:-.035em}
+.r-sub2{margin:8px 0 0;max-width:27em;font-size:clamp(15px,1.25vw,17px);line-height:1.45;color:rgba(255,255,255,.88)}
+.r-few{margin:16px 0 0;max-width:27em;font-size:clamp(15px,1.25vw,17px);line-height:1.45;color:#fff}
+.r-few b{font-weight:600}
+.r-act{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:clamp(16px,2.6vh,26px) 0 0}
+.r-act .tlink{margin:0}
+.r-drawn{position:absolute;left:max(24px,calc((100% - 1152px) / 2));right:max(24px,calc((100% - 1152px) / 2));bottom:0;height:84px;display:none;align-items:flex-start;padding-top:12px;margin:0;font-size:15px;line-height:1.35;color:rgba(255,255,255,.92)}
+.r-still{display:none}
+
+/* the chart's reading */
+.r-read{position:absolute;left:0;right:0;top:clamp(24px,4vh,44px);z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:32px;opacity:0;pointer-events:none}
+.r-read a{pointer-events:auto}
+.r-rk{margin:0;font-size:clamp(15px,1.3vw,18px);line-height:1.3;color:rgba(255,255,255,.92)}
+.r-rv{display:block;font:700 clamp(48px,min(6vw,9vh),84px)/1.04 var(--serif);letter-spacing:-.035em}
+.r-rs{margin:4px 0 0;font-size:clamp(15px,1.25vw,17px);line-height:1.4;color:rgba(255,255,255,.92);max-width:46em}
+.r-rl{display:inline-block;line-height:44px;font-weight:600;font-size:15px;color:#fff}
+.r-rl:hover{text-decoration:underline;text-underline-offset:4px}
+.r-rh{margin:6px 0 0;max-width:19em;font-size:15px;line-height:1.45;color:rgba(255,255,255,.86);text-align:right}
+
+/* the age control: the chart's own axis is the track */
+.r-age{position:absolute;z-index:3;height:44px;display:block;opacity:0}
+.r-age input{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:ew-resize}
+.r-age input::-webkit-slider-thumb{-webkit-appearance:none;width:44px;height:44px}
+.r-age input::-moz-range-thumb{width:44px;height:44px;border:0;background:none}
+.r-th{position:absolute;z-index:2;left:0;display:flex;align-items:center;justify-content:center;height:30px;padding:0 13px;border-radius:999px;background:#fff;color:var(--c);font-size:14px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;will-change:transform}
+.r-age:focus-within + .r-th{outline:2px solid #fff;outline-offset:3px}
+
+.r-tip{position:absolute;z-index:5;width:300px;max-width:calc(100% - 32px);background:#fff;color:var(--ink);border-radius:2px;padding:14px 16px 6px;font-size:15px;line-height:1.4;box-shadow:0 16px 32px -16px rgba(14,22,38,.45)}
+.r-tip b{display:block;font-weight:600}
+.r-tip span{display:block;margin-top:4px;color:#3e4656}
+.r-tip a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--c)}
+.r-tip a:hover{text-decoration:underline;text-underline-offset:4px}
+
+/* a finished still for readers who ask for less motion, and the words alone before the script runs */
+.r-stage:not(.live){height:auto}
+.r-stage:not(.live) .r-pin{position:relative;height:auto;overflow:visible;display:flex;flex-direction:column}
+.r-stage:not(.live) .r-intro{position:relative;inset:auto;width:100%;padding-bottom:48px}
+.r-stage:not(.live) .r-plot{position:relative;height:min(92vh,760px);order:2;flex:none}
+.r-stage:not(.live):not(.still) .r-plot{display:none}
+.r-stage.still .r-still{display:block;position:absolute;right:24px;bottom:48px;height:min(60vh,500px);width:auto}
+.r-stage.still .r-read,.r-stage.still .r-th{opacity:1}
+.r-stage.still .r-drawn{display:block;position:static;height:auto;padding:0;margin-top:18px;max-width:27em}
+.r-stage.live .r-drawn{display:flex}
+.r-cell:focus-visible{outline:2px solid #fff;outline-offset:8px}
+
+/* ------------------------------------------------------------------ what sellers ask at each age: the figure shrinks as the price falls */
+.r-lad-g{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,80px);align-items:start}
+.r-lad-t{position:sticky;top:96px}
+.r-steps{display:flex;flex-direction:column;gap:clamp(28px,3.4vw,44px)}
+.r-st b{display:block;font:700 calc(var(--s) * clamp(68px,10.6vw,152px))/1 var(--serif);letter-spacing:-.04em;color:var(--c)}
+.r-st p{margin:10px 0 0;font-size:17px;line-height:1.45;color:#3e4656;max-width:34em}
+.r-st strong{font-weight:600;color:var(--ink)}
+
+/* tables: real tables keep one rule under the head, and rows part with space */
+.r-tbl{width:100%;border-collapse:collapse;margin-top:clamp(32px,4vw,48px);font-size:16px;line-height:1.4;font-variant-numeric:lining-nums tabular-nums}
+.r-tbl thead th{font-size:14px;font-weight:500;color:var(--muted);text-align:left;padding:0 16px 12px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+.r-tbl .r{text-align:right}
+.r-tbl tbody th,.r-tbl tbody td{padding:9px 16px 9px 0;vertical-align:baseline;text-align:left;font-weight:400}
+.r-tbl tbody td.r{text-align:right}
+.r-tbl tbody tr:first-child th,.r-tbl tbody tr:first-child td{padding-top:16px}
+.r-tbl th a{color:var(--c);font-weight:500}
+.r-tbl th a:hover{text-decoration:underline;text-underline-offset:3px}
+.r-tb{white-space:nowrap}
+.r-tbl .r-tp{text-align:right;font-weight:600;white-space:nowrap;padding-right:32px}
+.r-tbl thead th:nth-child(3){padding-right:32px}
+.r-tw{color:#3e4656}
+.r-tw span{display:block;font-size:14px;color:var(--muted)}
+.r-more{display:inline-flex;align-items:center;min-height:44px;margin-top:14px;padding:0;border:0;background:none;color:var(--c);font:600 16px/1 var(--sans);cursor:pointer}
+.r-more:hover{text-decoration:underline;text-underline-offset:4px}
+.r-fine{margin:20px 0 0;max-width:62ch;font-size:15px;line-height:1.5;color:var(--muted)}
+
+.r-au0 .in{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(32px,6vw,88px);align-items:center}
+.r-au-n{font:700 clamp(96px,15vw,216px)/.9 var(--serif);letter-spacing:-.05em;color:var(--c)}
+
+/* how much to trust this */
+.r-tr-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
+.r-tally{display:block;width:100%;max-width:520px;height:auto;margin-top:clamp(24px,3vw,36px);overflow:visible}
+.r-tally path{fill:none;stroke-linecap:round}
+.r-tally .s{stroke:var(--c);stroke-width:8}
+.r-tally .h{stroke:rgba(40,71,206,.42);stroke-width:8}
+.r-tally .f{stroke:rgba(40,71,206,.16);stroke-width:8}
+.r-key{list-style:none;margin:22px 0 0;padding:0;max-width:520px;font-size:16px;line-height:1.45;color:#3e4656}
+.r-key li{margin-top:10px}
+.r-key b{font-weight:700;color:var(--ink)}
+.r-tr-t{padding-top:clamp(0px,1vw,10px)}
+.r-tr-t p{margin:0 0 22px;font-size:19px;line-height:1.5;color:#26303f;max-width:32em}
+.r-tr-t p:last-child{margin-bottom:0}
+
+.r-s-a{margin:16px 0 0}
+/* look up one model */
+.r-mds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:32px;margin-top:clamp(32px,4vw,48px)}
+.r-mds a{display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:9px 0}
+.r-mds b{font-weight:600;font-size:18px;color:var(--ink);transition:color .15s ease}
+.r-mds span{font-size:14px;color:var(--muted);white-space:nowrap}
+.r-mds a:hover b{color:var(--c)}
+
+/* closing */
+.r-cl-g{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
+.r-cl .lead-1{margin-bottom:26px}
+.r-next a:not(.tlink){display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:52px;padding:10px 0}
+.r-next b{font:700 clamp(22px,2.2vw,30px)/1.15 var(--serif);letter-spacing:-.02em;color:var(--ink);transition:color .15s ease}
+.r-next span{font-size:14px;color:var(--muted);white-space:nowrap}
+.r-next a:hover b{color:var(--c)}
+
+/* ------------------------------------------------------------------ the shelf */
+.r-shelf{position:relative;color:#fff;padding-bottom:clamp(64px,8vw,112px)}
+.r-s-h{margin:clamp(24px,4vw,64px) 0 0;font:700 clamp(52px,min(8.4vw,15vh),124px)/.96 var(--serif);letter-spacing:-.04em;max-width:10em;text-wrap:balance}
+.r-s-l{margin:clamp(20px,2.4vw,32px) 0 0;max-width:30em;font-size:clamp(18px,1.7vw,24px);line-height:1.36;color:rgba(255,255,255,.94);text-wrap:pretty}
+.r-cells{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(48px,5vw,72px) 0;margin-top:clamp(40px,5vw,72px)}
+.r-cell{display:flex;flex-direction:column;align-items:flex-start;min-width:0;color:#fff;border-radius:2px}
+.r-c-bot{display:block;width:100%;height:clamp(180px,21vw,300px);border-bottom:1px solid rgba(255,255,255,.55);margin-bottom:16px}
+.r-c-bot canvas{display:block;width:100%;height:100%;transition:transform .35s cubic-bezier(.2,.7,.2,1);transform-origin:50% 100%}
+.r-cell:hover .r-c-bot canvas{transform:scale(1.04)}
+.r-c-nm{font:700 clamp(19px,1.75vw,24px)/1.15 var(--serif);letter-spacing:-.02em;padding-right:20px;text-wrap:balance}
+.r-c-pr{margin-top:12px;font:700 clamp(30px,3vw,42px)/1 var(--serif);letter-spacing:-.03em}
+.r-c-at{margin-top:4px;font-size:15px;line-height:1.3;color:rgba(255,255,255,.92);padding-right:20px}
+.r-c-ct,.r-c-few{margin-top:8px;font-size:15px;line-height:1.3;color:rgba(255,255,255,.92);padding-right:20px}
+.r-c-few{font-weight:600;color:#fff}
+
+.r-src-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
+.r-src-a{margin:18px 0 0}
+.r-srcs{list-style:none;margin:0;padding:0}
+.r-srcs li{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:8px 0}
+.r-srcs span{font:700 clamp(21px,2.2vw,30px)/1.15 var(--serif);letter-spacing:-.02em}
+.r-srcs b{font-weight:500;font-size:clamp(16px,1.4vw,19px);color:#3e4656}
+.r-miss .lead-1{margin-bottom:14px}
+
+/* ------------------------------------------------------------------ narrower */
+@media (max-width:1060px){
+ .r-tr-g,.r-cl-g,.r-src-g,.r-lad-g{grid-template-columns:minmax(0,1fr)}
+ .r-lad-t{position:static}
+ .r-mds{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .r-cells{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .r-rh{display:none}
+ .r-stage.still .r-still{display:none}
+}
+@media (max-width:760px){
+ .r-h1{font-size:clamp(52px,15.5vw,76px);letter-spacing:-.04em}
+ .r-h1.r-long{font-size:clamp(38px,10.4vw,52px)}
+ .r-intro{padding-top:88px}
+ .r-sub{margin-top:14px}
+ .r-big{font-size:clamp(46px,13.4vw,64px)}
+ .r-sub2{margin-top:4px}
+ .r-few{margin-top:10px}
+ .r-act{margin-top:12px;gap:16px}
+ .r-drawn{height:88px;padding-top:9px}
+ .r-read{top:20px}
+ .r-rv{font-size:clamp(44px,12.4vw,60px)}
+ .r-tip{width:calc(100% - 32px)}
+ .r-st b{font-size:calc(var(--s) * 84px)}
+ .r-mds{grid-template-columns:minmax(0,1fr)}
+ .r-au0 .in{grid-template-columns:minmax(0,1fr);gap:20px}
+ /* each listing becomes a small block of its own */
+ .r-tbl,.r-tbl tbody{display:block}
+ .r-tbl thead{display:none}
+ .r-tbl tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;padding:14px 0}
+ .r-tbl tbody th{grid-column:1 / -1;padding:0;font-size:16px}
+ .r-tbl tbody th a{display:inline-flex;align-items:center;min-height:44px}
+ .r-tbl tbody td,.r-tbl tbody td.r,.r-tbl .r-tp,.r-tbl tbody tr:first-child td,.r-tbl tbody tr:first-child th{padding:0;text-align:left;font-size:15px;white-space:normal}
+ .r-tbl td[data-l]::before{content:attr(data-l);display:block;margin-bottom:1px;font-size:14px;font-weight:400;color:var(--muted)}
+ .r-tw span,.r-mds span,.r-next span,.r-tbl td[data-l]::before{font-size:15px}
+ .r-cells{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 0}
+ .r-c-bot{height:clamp(150px,44vw,240px)}
+ .r-c-pr{font-size:28px}
+}
+@media (max-width:760px) and (max-height:700px){.r-stage.live .r-drawn{display:none}}

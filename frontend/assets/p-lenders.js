@@ -1,4 +1,4 @@
-// Lenders page: the three documents as tabs, and the auction sales you can touch.
+// Lenders page: the three documents as tabs, the loss dots you can touch, and the film.
 (() => {
   // documents: without this script all three pages read in sequence
   const list = document.querySelector('.l-tabs');
@@ -14,12 +14,16 @@
       if (to === undefined) return; ev.preventDefault(); show(to, true); });
   }
 
-  // the sales: hover, focus or tap a dot and the line under the plot reads that sale
-  const fig = document.querySelector('[data-sales]');
-  if (!fig) return;
-  const dots = [...fig.querySelectorAll('.l-s')], $ = s => fig.querySelector(s);
-  const read = b => { dots.forEach(d => d.classList.toggle('on', d === b)); const t = b.dataset;
-    $('[data-rl]').textContent = t.l; $('[data-rp]').textContent = t.p; $('[data-rd]').textContent = t.d; $('[data-rv]').textContent = t.v; $('[data-rr]').textContent = t.r; $('[data-ru]').href = t.u; };
-  dots.forEach(b => ['pointerenter', 'focus', 'click'].forEach(ev => b.addEventListener(ev, () => read(b))));
-  const first = dots.find(b => b.getAttribute('aria-label').startsWith($('[data-rl]').textContent)); if (first) first.classList.add('on');
+  // what if a loan goes bad: touch a number and the dots show only that many
+  const nums = [...document.querySelectorAll('.l-nb')], field = document.querySelector('.l-field');
+  nums.forEach(b => b.addEventListener('click', () => {
+    const on = b.getAttribute('aria-pressed') === 'true';
+    nums.forEach(n => n.setAttribute('aria-pressed', n === b && !on ? 'true' : 'false'));
+    b.parentElement.classList.toggle('l-pick', !on);
+    field.classList.toggle('l-only3', !on && b.dataset.lit === '3');
+  }));
+
+  // the film: a reader who asked for less motion gets the still
+  const film = document.querySelector('.l-film');
+  if (film && matchMedia('(prefers-reduced-motion: reduce)').matches) { film.removeAttribute('autoplay'); film.pause(); }
 })();
