@@ -184,12 +184,12 @@
     // the chart stands on the same line: its bottom edge is the floor the robot stood on
     const bt = b2.querySelector('.h-bt').getBoundingClientRect();
     const topY = (phone ? 28 : narrow ? 28 : Math.max(28, Math.min(56, H * .054))) + bt.height + (phone ? 20 : 26);
-    C = { l: mar + (phone ? 60 : 92), r: W - mar - (phone ? 0 : 128), t: topY, b: floorY - (phone ? 6 : 8) };
-    axis.querySelectorAll('.h-xl').forEach(s => { const a = +s.dataset.age, x = X(a); s.style.transform = `translate(${(a === 0 ? x - 4 : a === 30 ? x - s.offsetWidth : x - s.offsetWidth / 2).toFixed(1)}px,${(floorY + 10).toFixed(1)}px)`; });
+    C = { l: mar + (phone ? 60 : 124), r: W - mar - (phone ? 0 : 128), t: topY, b: floorY - (phone ? 6 : 8) };
+    axis.querySelectorAll('.h-xl').forEach(s => { const a = +s.dataset.age, x = X(a); s.style.transform = `translate(${(a === 0 ? x - 4 : a === 30 && phone ? x - s.offsetWidth : x - s.offsetWidth / 2).toFixed(1)}px,${(floorY + 10).toFixed(1)}px)`; });
     axis.querySelectorAll('.h-yl').forEach(s => { s.style.transform = `translate(${(C.l - s.offsetWidth - (phone ? 6 : 14)).toFixed(1)}px,${(Y(+s.dataset.usd) - s.offsetHeight / 2).toFixed(1)}px)`; });
     if (D) { const l0 = axis.querySelector('.h-l0'), l1 = axis.querySelector('.h-l1'), al = axis.querySelector('.h-al');
       l0.style.transform = `translate(${(C.l - l0.offsetWidth - (phone ? 6 : 14)).toFixed(1)}px,${(Y(D.curve[0]) - l0.offsetHeight / 2).toFixed(1)}px)`;
-      l1.style.transform = phone ? `translate(${(X(30) - l1.offsetWidth).toFixed(1)}px,${(Y(620) - l1.offsetHeight / 2).toFixed(1)}px)` : `translate(${(X(30) + 14).toFixed(1)}px,${(Y(D.curve[30]) - 14).toFixed(1)}px)`;
+      l1.style.transform = phone ? `translate(${(X(30) - l1.offsetWidth).toFixed(1)}px,${(Y(620) - l1.offsetHeight / 2).toFixed(1)}px)` : `translate(${(X(30) + 14).toFixed(1)}px,${(Y(D.curve[30]) - l1.offsetHeight + 15).toFixed(1)}px)`;
       const a = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m); al.style.transform = `translate(${clamp(X(a[5]) - al.offsetWidth / 2, 8, W - al.offsetWidth - 8).toFixed(1)}px,${(Y(a[1]) + 9).toFixed(1)}px)`; }
     // discs
     const left = phone || narrow;

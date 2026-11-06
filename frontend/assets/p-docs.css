@@ -1,50 +1,49 @@
 /* Methodology and privacy (d-): title block, sticky contents on the left, reading column on the right */
 .d-hero{padding-bottom:clamp(48px,6vw,80px)}
 .d-hg{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.6fr);gap:clamp(28px,5vw,80px);align-items:end}
-.d-hero .h1{font-size:clamp(44px,5.6vw,76px)}
-.d-hero .lede{margin-bottom:0;max-width:52ch}
+.d-hero .h1{font-size:clamp(52px,7.4vw,108px);line-height:.98;letter-spacing:-.035em}
+.d-hero .lede{margin-bottom:0;max-width:44ch;font-size:clamp(19px,1.7vw,24px);line-height:1.4}
 .d-meta{margin:0;display:flex;flex-direction:column}
-.d-meta div{border-top:1px solid var(--line);padding:14px 0 16px}
-.d-meta div:last-child{border-bottom:1px solid var(--line)}
+.d-meta div{padding:0 0 18px}
 .d-meta dt{font-size:14px;color:var(--muted);margin-bottom:3px}
 .d-meta dd{margin:0;font:600 19px/1.35 var(--serif)}
 .d-body{padding-top:clamp(48px,6vw,88px)}
 .d-g{display:grid;grid-template-columns:240px minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start}
 .d-toc{position:sticky;top:112px}
-.d-toc b{display:block;font-size:14px;font-weight:600;color:var(--ink);padding-bottom:12px;border-bottom:1px solid var(--line)}
+.d-toc b{display:block;font-size:14px;font-weight:600;color:var(--ink);padding-bottom:6px}
 .d-toc ol{list-style:none;margin:0;padding:0}
-.d-toc a{display:flex;align-items:center;padding:10px 0;min-height:44px;box-sizing:border-box;font-size:15px;line-height:1.4;color:#5b6474;text-decoration:none;border-bottom:1px solid var(--line);transition:color .2s ease}
+.d-toc a{display:flex;align-items:center;padding:10px 0;min-height:44px;box-sizing:border-box;font-size:15px;line-height:1.4;color:#5b6474;text-decoration:none;transition:color .2s ease}
 .d-toc a:hover{color:var(--ink)}
 .d-toc a.on{color:var(--c);font-weight:500}
-.d-art{max-width:680px;min-height:calc(100vh - 120px)}
-@media (min-width:1061px){.d-art > .d-sec:last-child{min-height:430px}}
-.d-sec{padding:34px 0 26px;border-top:1px solid var(--line);scroll-margin-top:100px}
+.d-art{max-width:720px;min-height:calc(100vh - 120px)}
+.d-sec{padding:36px 0 22px;scroll-margin-top:100px}
 .d-sec:first-child{border-top:0;padding-top:0}
-.d-sec .h3{display:flex;gap:16px;align-items:baseline;font-size:clamp(25px,2.2vw,30px);margin-bottom:14px}
-.d-sec .h3 .num{font-size:.62em;color:var(--c);min-width:28px}
-.d-sec p{margin:0 0 14px;color:#3e4656;font-size:17px;line-height:1.7;padding-left:44px}
-.d-sec a{color:var(--c)}
+.d-sec .h3{font-size:clamp(26px,2.5vw,36px);margin-bottom:14px}
+.d-sec .h3 .num{display:none}
+.d-sec p{margin:0 0 14px;color:#3e4656;font-size:17px;line-height:1.65}
+.d-sec a{color:var(--c);text-decoration:none;font-weight:500}
+.d-sec a:hover{text-decoration:underline;text-underline-offset:4px}
+[data-page="methodology.html"] .notes a,[data-page="privacy.html"] .notes a{text-decoration:none}
 .d-sec b{color:var(--ink);font-weight:600}
-.d-chart{margin:26px 0 8px 44px}
-.d-c{display:block;width:100%;height:auto;overflow:visible;font-family:var(--sans)}
-.d-cm{display:none}
-.d-ar{fill:rgba(40,71,206,.09)}
-.d-st line{stroke:rgba(40,71,206,.22);stroke-width:1}
-.d-base{stroke:var(--line)}
-.d-ln{fill:none;stroke:var(--c);stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
-.d-mk{fill:var(--c)}
-.d-v text{font-weight:600;fill:var(--ink);font-variant-numeric:lining-nums tabular-nums}
-.d-x text{font-size:.9em;fill:#6b7383;font-variant-numeric:lining-nums tabular-nums}
-.d-ar,.d-st,.d-mk,.d-v{opacity:0}
-.d-chart.in-view .d-ln{stroke-dashoffset:0;transition:stroke-dashoffset 1s cubic-bezier(.3,.6,.2,1) .15s}
-.d-chart.in-view .d-ar,.d-chart.in-view .d-st,.d-chart.in-view .d-mk,.d-chart.in-view .d-v{opacity:1;transition:opacity .4s ease .7s}
-.d-chart figcaption{font-size:14px;line-height:1.5;color:var(--muted);margin-top:14px}
-/* closing links: two plain blocks, each under a hairline (.rule-t); no tint, radius or shadow */
-.d-next{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin:36px 0 0 44px}
+/* the one graphic: a dot for every listing found */
+.d-field{margin:26px 0 8px}
+.d-field svg{display:block;width:100%;height:auto;stroke-linecap:round;stroke-width:8.4;fill:none}
+.d-field .k1{stroke:#dfe4ed}
+.d-field .k2{stroke:#a9b8ea}
+.d-field .k3{stroke:#6c84e0}
+.d-field .k4{stroke:var(--c)}
+.d-keys{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.d-keys li{font-size:15px;line-height:1.35;color:#3e4656}
+.d-keys b{display:block;font:700 clamp(26px,2.6vw,36px)/1.1 var(--serif);letter-spacing:-.025em;margin-bottom:4px}
+.d-keys .k4 b{color:var(--c)}.d-keys .k3 b{color:#4a66d8}.d-keys .k2 b{color:#7f93e0}.d-keys .k1 b{color:#8b95a7}
+/* the curve as one row of a real table */
+.d-yr{margin:22px 0 8px}
+.d-yr thead th{border-top:0}
+.d-yr tbody th,.d-yr tbody td{border-bottom:0;font-weight:600}
+.d-next{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin:44px 0 0}
 .d-next a{display:flex;flex-direction:column;gap:6px;padding:18px 0 4px;min-height:44px;text-decoration:none;color:var(--ink)}
 .d-next a:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
 .d-next b{font:600 21px/1.25 var(--serif);color:var(--c)}
 .d-next span{font-size:14.5px;color:#4a5262}
 @media (max-width:1060px){.d-hg{grid-template-columns:minmax(0,1fr);align-items:start}.d-g{grid-template-columns:minmax(0,1fr)}.d-toc{position:static}.d-toc ol{columns:2;column-gap:24px}.d-toc li{break-inside:avoid}}
-@media (max-width:680px){.d-toc ol{columns:1}.d-sec p{padding-left:0}.d-chart,.d-next{margin-left:0}.d-next{grid-template-columns:minmax(0,1fr);gap:8px}.d-sec .h3{gap:12px}.d-sec .h3 .num{min-width:0}.d-cd{display:none}.d-cm{display:block;max-width:520px}}
-@media (prefers-reduced-motion:reduce){.d-ln{stroke-dashoffset:0}.d-ar,.d-st,.d-mk,.d-v{opacity:1}.d-chart.in-view .d-ln,.d-chart.in-view .d-ar,.d-chart.in-view .d-st,.d-chart.in-view .d-mk,.d-chart.in-view .d-v{transition:none}}
+@media (max-width:680px){.d-toc ol{columns:1}.d-next{grid-template-columns:minmax(0,1fr);gap:8px}.d-keys{grid-template-columns:repeat(2,minmax(0,1fr))}.d-yr{font-size:14px;table-layout:fixed}.d-yr th,.d-yr td{padding-right:3px}.d-yr thead th{font-size:13px;white-space:normal;line-height:1.15}.d-yr .r,.d-yr thead th.r{white-space:normal}}

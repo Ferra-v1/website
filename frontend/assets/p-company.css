@@ -1,38 +1,39 @@
-/* Company page (c-). Three sections: letter (paper), what we are building (white), get in touch (paper). */
-[data-page="company.html"] .c-hero .h1{font-size:clamp(40px,5.4vw,76px);line-height:1.03;max-width:22ch}
-
-/* robots on a hairline; the canvas width is set from the robot's own shape by p-company.js */
+/* Company page (c-). Three sections: the letter beside the robot (gradient), what we are building (paper), get in touch (white). */
+.c-hero{color:#fff;padding-bottom:clamp(72px,8vw,112px)}
+[data-page="company.html"] .c-hero .h1{font-size:clamp(52px,8vw,116px);line-height:.98;letter-spacing:-.035em;color:#fff;padding-top:clamp(28px,4vw,56px)}
 [data-page="company.html"] .rstage .rs-bot canvas{display:block;max-width:100%}
 
-/* letter: the destination across the top, then the collaborative arm in dots beside the letter */
-.c-letter{margin-top:clamp(40px,5vw,72px);grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:stretch}
-/* the arm fills its column and stands on a floor level with the end of the letter, so neither side runs on alone */
-.c-letter .lh{position:static;display:flex;align-items:flex-end;min-width:0}
+/* the arm beside the letter. Nothing under it; the sky is enough */
+.c-letter{margin-top:clamp(36px,5vw,64px);grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center}
+.c-letter .lh{position:static;display:flex;align-items:center;min-width:0}
 .c-pic{width:100%}
-.c-letter .lb .sig{margin-bottom:0}
-.c-pic .rstage .rs-base{background:#cfd6e3}
+.c-pic .rs-base{display:none}
+.c-letter .lb p{color:#fff;font-size:clamp(18px,1.45vw,20px);line-height:1.5;margin-bottom:18px}
+.c-letter .lb .c-now{font-weight:600}
+.c-letter .lb .sig{color:#fff;font-weight:600;margin:28px 0 0}
+.c-letter .lb .sig span{color:#fff;font-weight:400}
 
-/* what we are building: three lines in large type, each with its link */
-.c-build .h2{margin-bottom:clamp(28px,3.4vw,44px)}
-.c-lines{list-style:none;margin:0;padding:0}
-.c-lines li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px clamp(24px,5vw,72px);align-items:baseline;padding:clamp(22px,2.6vw,34px) 0;border-top:1px solid var(--line)}
-.c-lines li:last-child{border-bottom:1px solid var(--line)}
-.c-lines p{margin:0;font:700 clamp(27px,3.4vw,46px)/1.1 var(--serif);letter-spacing:-.025em;color:var(--ink);max-width:24ch;text-wrap:balance}
-.c-lines .tlink{margin:0;white-space:nowrap}
+/* what we are building: three big lines, each one a link */
+.c-build .h2{margin-bottom:clamp(32px,4vw,56px)}
+.c-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(18px,2vw,28px)}
+.c-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px clamp(24px,5vw,72px);align-items:baseline;min-height:44px;text-decoration:none}
+.c-lt{font:700 clamp(25px,2.7vw,38px)/1.1 var(--serif);letter-spacing:-.03em;color:var(--ink);text-wrap:balance;transition:color .2s ease}
+.c-line:hover .c-lt{color:var(--c)}
+.c-ll{font-weight:600;font-size:16px;color:var(--c);white-space:nowrap}
 
-/* get in touch */
+/* get in touch: filled fields, no outlines */
 .c-cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
-.c-contact .h2{margin-bottom:20px}
-.c-contact .lead-1{margin-bottom:28px}
+.c-contact .h2{margin-bottom:28px}
 .c-contact .lf{grid-template-columns:minmax(0,1fr)}
-[data-page="company.html"] .fl{font-size:14px}
-.c-aud{padding:22px 0 16px;border-top:1px solid var(--line)}
-.c-aud:last-child{border-bottom:1px solid var(--line)}
+[data-page="company.html"] .fl{font-size:15px}
+[data-page="company.html"] .c-contact .fl input,[data-page="company.html"] .c-contact .fl textarea{border-color:transparent;background:var(--mist)}
+[data-page="company.html"] .c-contact .fl ::placeholder{color:#5b6474}
+.c-auds{display:flex;flex-direction:column;gap:clamp(28px,3vw,40px);padding-top:clamp(0px,1vw,10px)}
 .c-aud .h3{margin-bottom:6px}
 .c-aud p{margin:0;color:#3e4656;font-size:16px;line-height:1.5;max-width:44ch}
 
-@media (max-width:1060px){.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:420px}.c-letter{gap:36px;grid-template-columns:minmax(0,1fr)}.c-pic .c-bot .rs-bot{height:calc(var(--h) * .8)}}
+@media (max-width:1060px){.c-cg{grid-template-columns:minmax(0,1fr)}.c-pic{max-width:440px}.c-letter{gap:32px;grid-template-columns:minmax(0,1fr)}.c-pic .c-bot .rs-bot{height:calc(var(--h) * .7)}}
 @media (max-width:680px){
- .c-lines li{grid-template-columns:minmax(0,1fr)}
- .c-pic .c-bot .rs-bot{height:calc(var(--h) * .68)}
+ .c-line{grid-template-columns:minmax(0,1fr)}
+ .c-pic .c-bot .rs-bot{height:calc(var(--h) * .56)}
 }

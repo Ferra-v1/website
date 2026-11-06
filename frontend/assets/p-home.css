@@ -253,3 +253,4 @@
 .page[data-page="index.html"] .h-vis .vis{font-size:clamp(46px,min(7vw,12vh),104px);line-height:1;letter-spacing:-.035em;max-width:none}
 .h-vtx{font-size:clamp(19px,1.6vw,23px);line-height:1.5;color:#3e4656;max-width:58ch;margin:24px 0 0}
 .h-vis .h-vrow{margin-top:clamp(40px,5vw,64px)}
+@media (min-width:761px){.h-axis .h-l1{display:flex;flex-direction:column-reverse}.h-axis .h-l1 b{margin:5px 0 0}}

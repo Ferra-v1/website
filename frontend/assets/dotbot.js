@@ -4,15 +4,17 @@
 // dots stay cobalt and the pointer and scan highlight is the brighter cobalt #2847ce). Cyan stays for dark backgrounds.
 // Names: arm, arm2, cobot, amr, pallet, delivery, cleaning, cell, cartons; "-s" coarse (46 columns), plain (72), "-l" fine (112, assets/dots-l.js).
 // A name ending in "-loop" is a moving robot (media/dots/seq.js, played at 12 frames a second); a missing name falls back to the nearest still.
+// hero-cobot-loop, hero-amr-loop, hero-pallet-loop, hero-delivery-loop and hero-cleaning-loop each travel in their own file, one per tone: media/dots/loops/<name>.js is
+// shaded for data-tone="light" and <name>-ink.js for data-tone="ink". The file loads when a canvas naming it comes near the screen, so a page without one pays nothing.
 // Inside .rstage (core.robot_stage) the canvas is sized from its box height and the empty rows under the robot are cut, so the lowest dots touch the hairline;
 // the footer fleet (.ff-bot) cuts them too, so all six robots stand on one line. On the home hero (.h-stage) the stage's scan line (.h-scan)
 // brightens a moving robot's live frame as it passes.
 // Inside an element with data-dot-hover, dots near the pointer grow and take the accent colour (pointer devices only).
 (() => {
-  const D = window.FERRA_DOTS || {}, Q = window.FERRA_SEQ || {}, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const D = window.FERRA_DOTS || {}, Q = window.FERRA_SEQ = window.FERRA_SEQ || {}, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const TONES = { light: { base: [255, 255, 255], acc: [150, 232, 255], hi: [150, 232, 255], floor: .28 }, ink: { base: [30, 51, 155], acc: [30, 51, 155], hi: [40, 71, 206], floor: .46 } };
-  const FALL = { cell: 'arm2', cartons: 'pallet', 'cell-loop': 'cell', 'cobot-loop': 'cobot-l', 'arm2-loop': 'arm2', 'pallet-loop': 'pallet', 'arm-loop': 'arm' };
+  const FALL = { cell: 'arm2', cartons: 'pallet', 'cell-loop': 'cell', 'cobot-loop': 'cobot-l', 'arm2-loop': 'arm2', 'pallet-loop': 'pallet', 'arm-loop': 'arm', 'hero-cobot-loop': 'cobot-l', 'hero-amr-loop': 'amr-l', 'hero-pallet-loop': 'pallet-l', 'hero-delivery-loop': 'delivery-l', 'hero-cleaning-loop': 'cleaning-l' };
   const pick = n => { const seen = new Set(); while (n && !seen.has(n)) { seen.add(n); if (D[n]) return D[n]; if (n.endsWith('-l')) n = n.slice(0, -2); else n = FALL[n] || (n.endsWith('-s') && FALL[n.slice(0, -2)] ? FALL[n.slice(0, -2)] + '-s' : null); } return null; };
   const parse = b => b.pts || (b.pts = b.d.split(';').map(s => { const [x, y, L, A, acc, ed] = s.split(',').map(Number); return { x, y, L: L / 100, A: A / 100, acc, ed: ed / 100, r: Math.random() }; }));
   const ease = t => 1 - Math.pow(1 - t, 3);
@@ -39,6 +41,18 @@
     return s;
   }
 
+  // moving robots in their own file: a plain script tag, which also works from file:// and under the site's same-origin policy
+  const OWN = /^hero-(cobot|amr|pallet|delivery|cleaning)-loop$/, own = {};
+  const ownKey = cv => { const n = cv.dataset.bot || ''; return OWN.test(n) ? n + (cv.dataset.tone === 'light' ? '' : '-ink') : n; };
+  function fetchOwn(key, then) {
+    const o = own[key] || (own[key] = { wait: [], done: false });
+    if (then) o.wait.push(then);
+    if (o.tag || o.done) return;
+    const s = o.tag = document.createElement('script'); s.src = 'media/dots/loops/' + key + '.js';
+    s.onload = s.onerror = () => { o.done = true; o.wait.splice(0).forEach(f => f()); };
+    document.head.appendChild(s);
+  }
+
   // a name this page's dot file does not hold (a script swapped it in): load the full sets once, then draw again, so no canvas stays blank
   let fulls = null; const waiting = new Set();
   function full(cv) { waiting.add(cv); if (fulls) return; fulls = 0;
@@ -52,8 +66,10 @@
   // resume: redraw where it was (back on screen, or woken by the pointer) without assembling again
   function draw(cv, resume) {
     const name = cv.dataset.bot || '', tone = TONES[cv.dataset.tone || 'ink'], light = cv.dataset.tone === 'light';
-    let sq = name.endsWith('-loop') && Q[name] ? loadSeq(name) : null;
-    if (sq && !sq.frames) { if (!sq.wait.includes(cv._redo || (cv._redo = () => draw(cv, resume)))) sq.wait.push(cv._redo); if (Q[name]) return; sq = null; }
+    const key = ownKey(cv);
+    if (OWN.test(name) && !Q[key] && !(own[key] && own[key].done)) { fetchOwn(key, () => { if (ownKey(cv) === key) draw(cv, resume); }); return; }
+    let sq = name.endsWith('-loop') && Q[key] ? loadSeq(key) : null;
+    if (sq && !sq.frames) { if (!sq.wait.includes(cv._redo || (cv._redo = () => draw(cv, resume)))) sq.wait.push(cv._redo); if (Q[key]) return; sq = null; }
     const bot = sq ? { w: sq.w, h: sq.h } : pick(name); if (!bot) { full(cv); return; }
     const pts = sq ? null : parse(bot);
     // standing robots: cut the empty rows under the lowest dot, so the robot's feet sit on the box's bottom edge
@@ -134,7 +150,9 @@
     w.addEventListener('pointermove', ev => cvs().forEach(cv => { const r = cv.getBoundingClientRect(); cv._ptr = { x: ev.clientX - r.left, y: ev.clientY - r.top };
       if (!cv._live && cv._vis !== false) { cv._live = true; draw(cv, true); } }), { passive: true });
     w.addEventListener('pointerleave', () => cvs().forEach(cv => { cv._ptr = null; }), { passive: true }); }); };
-  const start = () => { all().forEach(cv => io.observe(cv)); hover(); };
+  // start the download of an own-file robot a screen or so early, so it is ready when it arrives
+  const early = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; early.unobserve(en.target); fetchOwn(ownKey(en.target)); }), { rootMargin: '1200px' });
+  const start = () => { all().forEach(cv => { io.observe(cv); if (OWN.test(cv.dataset.bot || '')) early.observe(cv); }); hover(); };
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => all().forEach(cv => { if (cv._seen) { cv.dataset.anim = 'static'; draw(cv); } }), 150); });
   window.FerraDots = { draw, start, pick };
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
