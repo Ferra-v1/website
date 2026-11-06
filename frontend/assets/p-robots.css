@@ -76,6 +76,7 @@
 .r-ags{container-type:inline-size;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:clamp(28px,3.4vw,44px);--W:25cqw}
 .r-ag{min-width:0}
 .r-ag-bot{display:flex;align-items:flex-end;height:calc((var(--W) - 28px) * 1.147);border-bottom:1px solid var(--ink)}
+.r-lad{overflow-x:clip}
 .r-ag canvas{display:block;width:calc(100% - 28px);height:calc(var(--u) * 100%);transform-origin:left bottom;transition:transform .95s cubic-bezier(.3,.7,.2,1)}
 .r-ags.wait .r-ag canvas{transform:scale(calc(1 / var(--u)))}
 .r-ag:nth-child(2) canvas{transition-delay:.1s}.r-ag:nth-child(3) canvas{transition-delay:.2s}.r-ag:nth-child(4) canvas{transition-delay:.3s}
