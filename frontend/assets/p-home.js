@@ -23,13 +23,13 @@
 
 })();
 
-// Six moving robots on one line. Each plays from its own sprite, repainted only when its frame changes (twelve a second), as one path per colour, and only while it is on screen.
+// Six moving robots on one line, and the factory arm again beside the form, drawn whole from its first frame. Each plays from its own sprite, repainted only when its frame changes (twelve a second), as one path per colour, and only while it is on screen.
 // A robot assembles when it arrives, its price following. Reduced motion draws each robot's first frame, still. If a sprite fails to load, the nearest still takes its place.
 (() => {
   const figs = [...document.querySelectorAll('.h-bot')]; if (!figs.length) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, COB = '#2847ce', DEEP = '#1e339b';
   const ARM = { x0: 5, x1: 106, y0: 9, y1: 118 };   // the first screen's arm carries empty rows round it; the rest stand on their lowest row
-  const bots = figs.map(fig => ({ fig, cv: fig.querySelector('canvas'), ctx: fig.querySelector('canvas').getContext('2d'), name: fig.querySelector('canvas').dataset.loop, frames: null, on: 0, f: 0, vis: false, cols: 112, rows: +getComputedStyle(fig).getPropertyValue('--r') }));
+  const bots = figs.map(fig => ({ fig, cv: fig.querySelector('canvas'), ctx: fig.querySelector('canvas').getContext('2d'), name: fig.querySelector('canvas').dataset.loop, whole: 'whole' in fig.dataset, frames: null, on: 0, f: 0, vis: false, cols: 112, rows: +getComputedStyle(fig).getPropertyValue('--r') }));
   const size = b => { const w = b.cv.clientWidth, dpr = Math.min(2, devicePixelRatio || 1); if (!w) return; b.p = w / 112; b.dpr = dpr; const W = Math.round(w * dpr), H = Math.round(b.p * b.rows * dpr); if (b.cv.width !== W || b.cv.height !== H) { b.cv.width = W; b.cv.height = H; } b.stale = true; };
   // one sprite to one Float32Array a frame: x, y, size, with the trim's dots after index frame.n
   const decode = (b, m, ok) => { const im = new Image(), ia = new Image(); let got = 0;
@@ -54,7 +54,7 @@
   let run = false;
   const tick = now => { let any = false;
     for (const b of bots) { if (!b.frames || !b.on || !b.vis) continue; if (!b.t0) b.t0 = now; any = true;
-      const el = (now - b.t0) / 1000, k = reduce ? 1 : Math.min(1, el / 1.25), f = reduce ? 0 : k < 1 ? 0 : Math.floor((el - 1.25) * b.fps) % b.n;
+      const el = (now - b.t0) / 1000, k = reduce || b.whole ? 1 : Math.min(1, el / 1.25), f = reduce ? 0 : k < 1 ? 0 : Math.floor((b.whole ? el : el - 1.25) * b.fps) % b.n;
       if (k < 1 || f !== b.f || b.stale) { b.f = f; b.stale = false; paint(b, k, now); } }
     if (any && !reduce) requestAnimationFrame(tick); else { run = false; if (any) bots.forEach(b => { if (b.frames && b.on && b.stale) { b.stale = false; paint(b, 1, now); } }); } };
   const go = () => { if (!run) { run = true; requestAnimationFrame(tick); } };
@@ -63,7 +63,7 @@
   const start = b => { const m = sprite(b); if (!m) return b.tries > 40 ? still(b) : (b.tries = (b.tries || 0) + 1, setTimeout(() => start(b), 250)); decode(b, m, fr => { if (!fr) return still(b); b.frames = fr; b.f = 0; size(b); b.stale = true; go(); }); };
   const fetchAll = () => { bots.forEach((b, i) => { if (b.name === 'hero-arm-loop') return (window.requestIdleCallback || setTimeout)(() => start(b), { timeout: 400 }); const s = document.createElement('script'); s.src = 'media/dots/loops/' + b.name + '-ink.js'; s.onload = () => (window.requestIdleCallback || setTimeout)(() => start(b), { timeout: 400 }); s.onerror = () => still(b); document.head.appendChild(s); }); };
   bots.forEach(size);
-  const near = new IntersectionObserver(es => { if (!es.some(en => en.isIntersecting)) return; near.disconnect(); fetchAll(); }, { rootMargin: '1200px' }); near.observe(figs[0]);
+  const near = new IntersectionObserver(es => { if (!es.some(en => en.isIntersecting)) return; near.disconnect(); fetchAll(); }, { rootMargin: '1200px' }); figs.forEach(f => near.observe(f));
   if (reduce) figs.forEach(f => f.classList.add('h-on')); else figs.forEach(f => f.classList.add('h-wait'));
   const see = new IntersectionObserver(es => es.forEach(en => { const b = bots[figs.indexOf(en.target)]; b.vis = en.isIntersecting;
     if (en.isIntersecting && !b.on) { const cols = innerWidth <= 680 ? 2 : innerWidth <= 1060 ? 3 : 6, k = figs.indexOf(en.target) % cols; setTimeout(() => { b.on = 1; b.t0 = 0; en.target.classList.remove('h-wait'); en.target.classList.add('h-on'); go(); }, reduce ? 0 : k * 130); }
@@ -135,9 +135,9 @@
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
   // the timeline, in screens scrolled. The film's height in p-home.css is the end of this plus the 125 the next section overlaps it by.
   const T = { slow: [0, .12], gather: [.12, .42], cam: [.07, .44], b1: [.45, .546, .787, .865], fly: [.807, 1.115], axis: [.922, 1.038], b2: [.961, 1.057, 1.25, 1.327], curve: [1.038, 1.173],
-    fall: [1.27, 1.462], axisOut: [1.289, 1.443], grow: [1.405, 1.559], b3: [1.443, 1.539, 1.694, 1.752], cost: [1.713, 1.867], b4: [1.752, 1.848, 1.964, 2.022], burst: [1.944, 2.176], open: [2.06, 2.311], b5: [2.022, 2.118, 2.311, 2.369],
-    loan: [2.33, 2.523], b6: [2.349, 2.446, 2.716, 2.793], end: [2.716, 2.87], dim: [2.716, 2.87] };
-  const RESTS = [[.498, 0], [.98, .73], [1.366, 1.173], [1.732, 1.617], [1.983, 1.906], [2.349, 2.272], [99, 2.6]];
+    fall: [1.27, 1.462], axisOut: [1.289, 1.443], grow: [1.405, 1.559], b3: [1.443, 1.539, 1.694, 1.752], cost: [1.713, 1.867], b4: [1.752, 1.848, 2.064, 2.122], burst: [2.044, 2.276], open: [2.16, 2.411], b5: [2.122, 2.218, 2.411, 2.469],
+    loan: [2.43, 2.623], b6: [2.449, 2.546, 2.816, 2.893], end: [2.816, 2.97], dim: [2.816, 2.97] };
+  const RESTS = [[.498, 0], [.98, .73], [1.366, 1.173], [1.732, 1.617], [2.083, 1.95], [2.449, 2.372], [99, 2.7]];
   const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
   let autoOK = true, W = 0, H = 0, FH = 0, dpr = 1, phone = false, frames = null, nF = 96, fps = 12, t0 = 0, D = null, R = null, dirty = true, vis = true, pose = 84;
   let hero = { p: 6, r: 1000, a: 1 }, beat = { p: 6, r: 1000 }, floorY = 800, C = { l: 0, r: 1000, t: 0, b: 800 }, disc = {}, age = 12, ask = 13500, sale = 5600, loan = 3900, grid = null;
@@ -230,7 +230,7 @@
     if (D) { const l0 = axis.querySelector('.h-l0'), l1 = axis.querySelector('.h-l1'), al = axis.querySelector('.h-al');
       l0.style.transform = `translate(${(C.l - l0.offsetWidth - (phone ? 6 : 14)).toFixed(1)}px,${(Y(D.curve[0]) - l0.offsetHeight / 2).toFixed(1)}px)`;
       l1.style.transform = phone ? `translate(${(X(30) - l1.offsetWidth).toFixed(1)}px,${(Y(620) - l1.offsetHeight / 2).toFixed(1)}px)` : `translate(${(X(30) + 14).toFixed(1)}px,${(Y(D.curve[30]) - l1.offsetHeight + 15).toFixed(1)}px)`;
-      const a = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m); al.style.transform = `translate(${clamp(X(a[5]) - al.offsetWidth / 2, 8, W - al.offsetWidth - 8).toFixed(1)}px,${(Y(a[1]) + 9).toFixed(1)}px)`; }
+      const a = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m); al.style.transform = `translate(${clamp(X(a[5]) + 6 - al.offsetWidth, 8, W - al.offsetWidth - 8).toFixed(1)}px,${(Y(a[1]) + 9).toFixed(1)}px)`; }   // ends under the oldest sale, in the clear of the listings to its right
     // the disc: its area follows the price, up to one new arm's cost; the smallest stays wide enough to hold its number
     const left = phone || narrow, unit = +totEl.dataset.unit, count = +totEl.dataset.robots;
     const bb = (e, top) => e.querySelector('.h-bt').getBoundingClientRect().height + top;
@@ -400,12 +400,13 @@
   requestAnimationFrame(loop);
 })();
 
-// What if a loan goes bad: one button shows the same 50 robots at the middle auction sale (2 lit as bare arms, 10 more dim counting everything fitted), and back. The sentence beside it says the same thing without it.
+// What if a loan goes bad: once the robots have parted and the sentence under them is on screen, they drain to what the middle auction sale would bring, and stay there. Reduced motion shows that picture from the start.
 (() => {
-  const b = document.getElementById('h-lowb'), sp = document.getElementById('h-split'); if (!b || !sp) return;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, left = sp.querySelector('.h-sa .h-sl'), base = left.innerHTML, low = left.dataset.low;
-  b.hidden = false;
-  const sayBase = sp.getAttribute('aria-label');
-  b.addEventListener('click', () => { const on = !sp.classList.contains('h-lo'); sp.classList.add('h-tch', 'in-view'); sp.classList.toggle('h-lo', on); left.innerHTML = on ? low : base; sp.setAttribute('aria-label', on ? sp.dataset.sayLow : sayBase); b.textContent = on ? 'Back to our example' : 'Show that on the robots';
-    const top = sp.getBoundingClientRect().top; if (top < 72) scrollBy({ top: top - 84, behavior: reduce ? 'auto' : 'smooth' }); });
+  const sp = document.getElementById('h-split'); if (!sp) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return sp.classList.add('h-dr');
+  const PARTED = 2300; let t0 = 0;
+  const seen = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; seen.disconnect(); t0 = performance.now(); }, { threshold: .18, rootMargin: '0px 0px -40px 0px' });
+  seen.observe(sp);
+  const read = new IntersectionObserver(es => { if (!es[0].isIntersecting) return; read.disconnect(); setTimeout(() => sp.classList.add('h-dr'), t0 ? Math.max(0, t0 + PARTED - performance.now()) : PARTED); }, { threshold: .9 });
+  read.observe(sp.querySelector('.h-sa .h-sl'));
 })();

@@ -5,6 +5,8 @@
   const D = JSON.parse(story.dataset.hw), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const money = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
   const exact = v => '$' + Math.round(v).toLocaleString('en-US');
+  // a figure from our assumed curve reads as rough as it is: to the nearest $50,000, in plain words above a million
+  const mil = (v, step = 50000) => { const r = Math.round(v / step) * step; return r >= 1e6 ? '$' + (+(r / 1e6).toFixed(2)) + ' million' : '$' + r.toLocaleString('en-US'); };
   const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
   const ease = t => t * t * (3 - 2 * t);
   const phone = () => innerWidth <= 900;
@@ -57,6 +59,7 @@
     if (a !== shown) { shown = a; ra.firstChild.textContent = a; rb.firstChild.textContent = b; }
     ra.querySelector('dd').textContent = an; rb.lastChild.textContent = bn;
   }
+  const worthLabel = () => phone() ? 'Worth about' : 'The robots are worth about';
   const OWN = (100 - D.adv) / 100, level = m => OWN + (1 - OWN) * m / D.term;
   function render(G) {
     const i = Math.floor(G), t = G - i;
@@ -67,14 +70,15 @@
     else if (i === 3) { st = { scan: 2, level: OWN * ease(clamp(t * 2.2)) }; read('The loan, ' + D.adv + '%', 'The company pays, ' + D.rest + '%', money(D.l), money(D.v - D.l)); }
     else if (i === 4) { py = 108 - 108 * ease(clamp(t * 2.4)); st = { scan: 2, level: OWN, hollow: ease(clamp(t * 2.6)) }; read(phone() ? 'The loan: no lender yet' : 'The loan, ' + D.adv + '%', 'The company pays, ' + D.rest + '%', money(D.l), money(D.v - D.l)); }
     else if (i === 5) { py = 108 * ease(clamp(t * 3)); st = { scan: 2, level: OWN, hollow: 1, fill: t * 1.3 - .05 }; read('The lender pays', "Ferra's fee, once", money(D.l), exact(D.fee)); }
-    else if (i === 6) { m = t * (D.term - 1); showPay = true; st = { scan: 2, level: level(m) }; const k = Math.round(m), s = D.months[k]; read('Still owed, month ' + k, 'The robots are worth', money(s[1]), money(s[0])); }
-    else { const u = i === 7 ? t : 1; m = D.term; showPay = true; st = { scan: 2, level: level(m - 1) + (1.05 - level(m - 1)) * ease(clamp(u * 3)), wave: u < 1 ? -0.2 + u * 1.7 : undefined }; read('Still owed, month ' + m, 'The robots are worth', '$0', money(D.months[m][0])); }
+    else if (i === 6) { m = t * (D.term - 1); showPay = true; st = { scan: 2, level: level(m) }; const k = Math.round(m), s = D.months[k]; read('Still owed, month ' + k, worthLabel(), money(s[1]), mil(s[0])); }
+    else { const u = i === 7 ? t : 1; m = D.term; showPay = true; st = { scan: 2, level: level(m - 1) + (1.05 - level(m - 1)) * ease(clamp(u * 3)), wave: u < 1 ? -0.2 + u * 1.7 : undefined }; read('Still owed, month ' + m, worthLabel(), '$0', mil(D.months[m][0])); }
     if (!phone()) {
       const a = 1 - py / 108;
       paper.style.opacity = a > .01 ? 1 : 0; paper.style.transform = `translateY(${py}%)`;
     }
     pay.classList.toggle('on', showPay);
     ra.classList.toggle('hw-empty', i === 4);
+    rb.classList.toggle('hw-model', i >= 6);   // a value from our model sits a size below the real sum beside it
     const k = Math.round(m); pays.forEach((d, j) => d.classList.toggle('p', j < k));
     paint(ctx, F, st, intro);
   }
@@ -121,7 +125,6 @@
   const FD = box ? JSON.parse(box.dataset.fail) : null, fg = box && box.querySelector('.hw-fgrid');
   const out = n => box.querySelector(`[data-fo="${n}"]`);
   const LIVE = 'rgb(150,232,255)', ARMS = '#fff', LOST = 'rgba(255,255,255,.3)', FALL_MS = 760;
-  const rough = v => '$' + (Math.round(v / 10000) * 10000).toLocaleString('en-US');
   let armShare = 0;
   // the heap's places, in the order they fill: from the floor up, the middle first, so at any count it reads as a rounded mound under the arm
   function heapSlots() {
@@ -182,11 +185,10 @@
     const pc = +inp.value / 100, s = sale(pc), a = armsSale(pc);
     armShare = a.back / FD.debt;
     out('pct').textContent = inp.value + '%';
-    out('back').textContent = money(s.back);
-    out('lost').textContent = money(s.short);
-    out('aback').textContent = rough(a.back);
-    out('alost').textContent = rough(a.short);
-    out('say').textContent = s.short > 0 ? `Counting everything, all ${FD.n} robots are sold and it still falls short. For the arms alone it falls further short. The lender takes that loss.` : `Counting everything, it takes ${s.sold === FD.n ? 'all ' + FD.n + ' robots' : s.sold + ' of the ' + FD.n + ' robots'} to pay the lender, and the rest goes to the company. For the arms alone, the lender still takes a loss.`;
+    out('lost').textContent = s.short > 0 ? mil(s.short) : '$0';
+    out('ab').hidden = !(s.short > 0);
+    out('alost').textContent = mil(a.short, 10000);
+    out('say').textContent = s.short > 0 ? `All ${FD.n} robots are sold and the lender gets back about ${mil(s.back)}. For the arms alone, about ${mil(a.back, 10000)}. The lender takes the rest as a loss.` : `It takes ${s.sold === FD.n ? 'all ' + FD.n + ' robots' : s.sold + ' of the ' + FD.n + ' robots'} to pay the lender, and the rest goes to the company. For the arms alone, the lender gets back about ${mil(a.back, 10000)} and takes the rest as a loss.`;
     if (!arrived) fpaint(); else if (!fraf) fraf = requestAnimationFrame(ftick);
     inp.style.setProperty('--f', ((+inp.value - +inp.min) / (+inp.max - +inp.min) * 100) + '%');
     inp.setAttribute('aria-valuetext', inp.value + ' percent');

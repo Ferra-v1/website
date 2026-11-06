@@ -567,6 +567,7 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big{order:1;display:block;padding:6px 8px 18px;border:0}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big span{display:block;font-size:15px;color:#5b6474}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big b{display:block;margin:6px 0 8px;text-align:left;font-size:clamp(40px,4vw,56px);line-height:1;letter-spacing:-.025em}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big small{display:none}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(3){order:2}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(6){order:3}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(9){order:4}
@@ -629,3 +630,5 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
 .pp-grad .pp-bhb summary:focus-visible{outline-color:var(--c)}
 .pp-grad .pp-bhb .pp-rest{margin-top:4px}
 .pp-grad .pp-bhb .pp-tabs{gap:clamp(28px,3vw,40px)}
+/* See every listing lands on the dots, with room above the controls */
+.pp-scw{scroll-margin-top:32px}

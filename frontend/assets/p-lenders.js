@@ -22,10 +22,22 @@
     const tag = dc.querySelector('.l-mtag'), gut = dc.querySelector('.l-gut'), htag = dc.querySelector('.l-htag'), covA = dc.querySelector('[data-cov="a"]'), covS = dc.querySelector('[data-cov="s"]');
     const presets = [...document.querySelectorAll('[data-adv]')], back = document.querySelector('.l-back');
     const live = !matchMedia('(prefers-reduced-motion: reduce)').matches, TAU = 6.2832, DEEP = '#1e339b', GAP = '#0394e0', PALE = '#c8d4f5', LATER = '#eaeff9', INK = '#0e1626';
-    const money = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
     const whole = v => '$' + Math.round(v).toLocaleString('en-US');
     const rough = v => '$' + (Math.round(v / 10000) * 10000).toLocaleString('en-US');
-    let adv = D.adv, reading = -1, shown = live ? 0 : 1, S = null, raf = 0, tween = 0, nudged = false, touched = false;
+    const fifty = v => '$' + (Math.round(v / 50000) * 50000).toLocaleString('en-US');   // a value from our assumed curve, to the nearest $50,000
+    // the section's heading follows the handle once the reader moves it, and returns to its own line at the example's share
+    const head = document.querySelector('.l-loan .h2'), headRest = head ? head.textContent : '';
+    function heading() {
+      if (!head || !touched) return;
+      const a = covered(2), s = covered(3), when2 = a === 0 ? 'from day one' : 'at month ' + a;
+      const line = adv === D.adv ? headRest : s === 0 ? `A ${D.pct}% sale covers this loan from day one, even for the arms alone.` : `A ${D.pct}% sale covers this loan ${when2}. The arms alone take until month ${s}.`;
+      if (head.textContent === line) return;
+      const y0 = plot.getBoundingClientRect().top;
+      head.textContent = line; head.classList.toggle('l-moved', adv !== D.adv);
+      // a longer heading must not pull the handle out from under the finger
+      const dy = plot.getBoundingClientRect().top - y0; if (dy && !gliding) scrollBy(0, dy);
+    }
+    let adv = D.adv, reading = -1, shown = live ? 0 : 1, S = null, raf = 0, tween = 0, nudged = false, touched = false, gliding = false;
     const loan = () => D.v * adv / 100, owed = m => loan() * (1 - m / D.term);
     const yOf = v => S.H - (v / D.dot) * S.p;
     // the first month a sale at this column covers what is left
@@ -34,9 +46,9 @@
     const at = t => { const i = Math.min(D.term - 1, Math.floor(t)), f = t - i; return [0, 2, 3].map(k => R[i][k] + (R[i + 1][k] - R[i][k]) * f); };
     function words() {
       const m = reading < 0 ? 0 : reading, [v, , a, s] = R[m], l = owed(m);
-      if (m === D.term) return `At month ${D.term}, the last payment is made and nothing is owed. The robots are worth about <b>${money(v)}</b> in our model.`;
-      const start = m === 0 ? `Lend <b>${adv}%</b> and <b>${whole(l)}</b> is owed on the first day.` : `At month ${m}, <b>${whole(l)}</b> is still owed and the robots are worth about <b>${money(v)}</b> in our model.`;
-      return `${start} A ${D.pct}% sale would bring <b>${money(a)}</b> counting everything installed, or about <b>${rough(s)}</b> for the arms alone.`;
+      if (m === D.term) return `At month ${D.term}, the last payment is made and nothing is owed. The robots are worth about <b>${fifty(v)}</b> in our model.`;
+      const start = m === 0 ? `Lend <b>${adv}%</b> and <b>${whole(l)}</b> is owed on the first day.` : `At month ${m}, <b>${whole(l)}</b> is still owed and the robots are worth about <b>${fifty(v)}</b> in our model.`;
+      return `${start} A ${D.pct}% sale would bring ${m ? 'about ' : ''}<b>${fifty(a)}</b> counting everything installed, or about <b>${rough(s)}</b> for the arms alone.`;
     }
     function size() {
       const W = plot.clientWidth, dpr = Math.min(2, devicePixelRatio || 1);
@@ -96,14 +108,14 @@
       v = Math.max(+inp.min, Math.min(+inp.max, Math.round(v)));
       adv = v; inp.value = v; inp.setAttribute('aria-valuetext', v + ' percent of what the robots cost, ' + whole(loan()));
       covA.textContent = when(covered(2)); covS.textContent = when(covered(3));
-      now.innerHTML = words(); place(); paint();
+      now.innerHTML = words(); heading(); place(); paint();
       if (back) back.hidden = v === D.adv;
       presets.forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.adv === v)));
     }
     function glide(to, ms = 480) {
       cancelAnimationFrame(tween);
       if (!live) { set(to); return; }
-      const from = adv, t0 = performance.now(), step = now => { const u = Math.min(1, (now - t0) / ms), e = u * u * (3 - 2 * u); set(from + (to - from) * e); if (u < 1) tween = requestAnimationFrame(step); };
+      const from = adv, t0 = performance.now(), step = now => { const u = Math.min(1, (now - t0) / ms), e = u * u * (3 - 2 * u); gliding = true; set(from + (to - from) * e); gliding = false; if (u < 1) tween = requestAnimationFrame(step); };
       tween = requestAnimationFrame(step);
     }
     // dragging the handle: the whole rail is the target, and snaps to the two figures printed below
@@ -132,7 +144,7 @@
     } else { shown = 1; paint(); }
   }
 
-  // what if a loan goes bad: the 52 dots wait on the robot and fall when the reader arrives. Without this script, or with less motion asked for, they are already on the floor.
+  // what if a loan goes bad: the dots that fall wait on the robot and fall when the reader arrives. Without this script, or with less motion asked for, they are already on the floor.
   const fig = document.querySelector('.l-ff');
   if (fig && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
     fig.classList.add('l-wait');

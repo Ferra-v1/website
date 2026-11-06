@@ -64,7 +64,7 @@
   // the big robot. Every choice below comes from a fixed seed, so the same dots mean the same thing on every visit
   const own = root.querySelector('.v-own'), pin = root.querySelector('.v-own-pin'), cv = root.querySelector('.v-bot'), box = root.querySelector('.v-botbox'), b3 = root.querySelector('.v-b3');
   const beats = [...root.querySelectorAll('[data-beat]')];
-  const mid = root.querySelector('.v-sky-mid'), day = root.querySelector('.v-sky-day');
+  const mid = root.querySelector('.v-sky-mid'), day = root.querySelector('.v-sky-day'), paper = root.querySelector('.v-sky-paper');
   const bot = (window.FERRA_DOTS || {})['arm-l'];
   const rng = (a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(20261106);
   let pts = null, W = 0, H = 0, pitch = 0, x = null, y0 = 0, y1 = 0, dpr = 1, tNow = null, lastT = -1, armX = 0, armY = 0, armDx = 0;
@@ -97,7 +97,7 @@
     const order = shuffled(cells.length); pts.forEach((p, i) => { const c = cells[order[i % cells.length]]; p.tx = c[0]; p.ty = c[1]; });
     x = cv.getContext('2d'); lastT = -1;
   };
-  // t runs 0 to 5.6 through the pinned section: the robot in the dark, lit whole once it has a price, the loan's share staying bright, every dot lifting off into the sky, then coming home from the top down until the robot stands whole beside the ask
+  // t runs 0 to 5.6 through the pinned section: the robot in the dark, lit whole once it has a price, the loan's share staying bright, every dot lifting off into the sky, then coming home from the top down, white turning to cobalt as the sky turns to paper, until the robot stands whole beside the ask
   const STEPS = 7, paths = () => Array.from({ length: STEPS }, () => new Path2D());
   const paint = t => {
     if (!x) return; x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
@@ -113,7 +113,8 @@
       const q = Math.min(STEPS - 1, Math.round(a * (STEPS - 1))), path = buckets[q];
       path.moveTo(px + rr, py); path.arc(px, py, rr, 0, 6.2832);
     }
-    x.fillStyle = '#fff';
+    const ink = smooth(t, 4.5, 4.9);   // white on the sky, cobalt on the paper
+    x.fillStyle = `rgb(${Math.round(lerp(255, 40, ink))},${Math.round(lerp(255, 71, ink))},${Math.round(lerp(255, 206, ink))})`;
     buckets.forEach((path, i) => { x.globalAlpha = i / (STEPS - 1); x.fill(path); }); x.globalAlpha = 1;
   };
   // the steps in order. Nothing is written while the dots lift off or come home, so words and flying dots never share the screen: the ask appears only once the robot is whole
@@ -127,6 +128,7 @@
     beats.forEach((el, i) => el.classList.toggle('on', i === b));
     if (mid) mid.style.opacity = smooth(t, .4, 1.7).toFixed(3);
     if (day) day.style.opacity = smooth(t, 2.5, 3.2).toFixed(3);
+    if (paper) paper.style.opacity = smooth(t, 4.4, 5).toFixed(3);
     if (Math.abs(t - lastT) > .0006) { paint(t); lastT = t; }
   };
   // a keyboard reader who tabs to a link in a step that is not showing is taken to that step

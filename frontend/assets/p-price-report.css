@@ -32,7 +32,7 @@
 .pr-step.on{opacity:1;visibility:visible;transform:translateY(-50%);transition:opacity .5s ease .08s,transform .6s cubic-bezier(.2,.7,.2,1) .08s}
 .pr-step h3{margin:0;font:700 clamp(38px,4.3vw,62px)/1.02 var(--serif);letter-spacing:-.032em;text-wrap:balance}
 .pr-step p{margin:20px 0 0;font-size:clamp(17px,1.45vw,20px);line-height:1.45;color:rgba(255,255,255,.94);text-wrap:pretty}
-.pr-step p a{color:#fff;font-weight:700}
+.pr-step p a{display:inline-block;padding-block:12px;margin-block:-12px;color:#fff;font-weight:700}
 .pr-step p a:hover{text-decoration:underline;text-underline-offset:4px}
 .pr-chart{position:relative;height:calc(100% - clamp(48px,10vh,96px));min-width:0}
 .pr-cv,.pr-ax{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -171,15 +171,17 @@
  .pr-nm.pr-sub{padding-left:14px}
  .pr-nm a{display:flex;align-items:center;min-height:44px;line-height:1.3}
  .pr-tbl tbody td.pr-ev,.pr-tbl tbody tr:first-child td.pr-ev{grid-column:1 / -1;padding:0 0 6px;margin-top:-7px}
+ /* a thin row's range can push a long name onto two lines, so its dots keep clear of the name */
+ .pr-tbl tbody tr.pr-thin td.pr-ev{margin-top:-3px}
  .pr-sub ~ .pr-ev,.pr-tbl tbody tr:has(.pr-sub) td.pr-ev{padding-left:14px}
- /* on a phone the dots run under the name, and the count follows them in words */
- .pr-ev>div{display:block;line-height:1.35}
- .pr-dots{margin:0 0 3px}
- .pr-n{display:inline;font-weight:400;color:#3e4656;font-size:15px}
+ /* on a phone the dots run under the name, and the count follows them on one line of words */
+ .pr-ev>div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;line-height:1.35}
+ .pr-dots{grid-row:1;grid-column:1 / -1;margin:0 0 3px}
+ .pr-n{grid-row:2;grid-column:1;display:block;min-width:0;text-align:left;font-weight:400;color:#3e4656;font-size:15px}
  .pr-n .sr{display:none}
  .pr-w{display:inline}
- .pr-say{line-height:1.35}
- .pr-say::before{content:", ";font-weight:400;color:#3e4656}
+ .pr-say{grid-row:2;grid-column:2;line-height:1.35}
+ .pr-say::before{content:", ";white-space:pre;font-weight:400;color:#3e4656}
  .pr-all .pr-ev{display:none}
  .pr-left-g{display:block}
  .pr-lst{grid-template-columns:minmax(0,1fr);margin-top:24px}

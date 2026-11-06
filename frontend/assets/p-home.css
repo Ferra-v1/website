@@ -52,7 +52,7 @@
 .h-st.on em{grid-template-rows:1fr;opacity:1;margin-top:6px}
 .h-more{margin-top:clamp(18px,2vw,28px)}
 .h-how-r{display:flex;justify-content:flex-end;align-items:center;padding-right:18px}
-/* H9 what if a loan goes bad: one big thing, the 50 robots. They arrive as one block, then part: 35 cover the loan, 15 are extra. */
+/* H9 what if a loan goes bad: one big thing, the 50 robots. They arrive as one block, part into the loan of 35 and the 15 the company paid, then drain to what the middle auction sale would bring. The drained picture is where it rests. */
 .h-ink{background:var(--ink);overflow-x:clip}
 .h-qh{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:end}
 .h-qh .h-big{text-wrap:wrap}
@@ -64,8 +64,8 @@
 .h-f3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .h-fb{display:block;aspect-ratio:.8852;opacity:0;transform:translateY(6px);transition:opacity .4s ease var(--d),transform .4s ease var(--d)}
 .h-split.in-view .h-fb{opacity:1;transform:none}
-.h-fb canvas{display:block;width:100%;filter:url(#h-lit)}
-.h-fc canvas{transition:filter .6s ease 1.5s}
+.h-fb canvas{display:block;width:100%;filter:url(#h-lit);transition:opacity .7s ease calc(1s - var(--d))}
+.h-fc canvas{transition:filter .6s ease 1.5s,opacity .7s ease calc(1s - var(--d))}
 .h-split.in-view .h-fc canvas{filter:url(#h-lit) brightness(0) invert(88%) sepia(30%) saturate(900%) hue-rotate(160deg) brightness(102%)}
 .h-sb{transform:translateX(calc(var(--g) - var(--part)));transition:transform .9s cubic-bezier(.3,.8,.25,1) 1.3s}
 .h-split.in-view .h-sb{transform:none}
@@ -73,38 +73,35 @@
 .h-split.in-view .h-sl{opacity:1}
 .h-sl b{display:block;font:700 clamp(26px,2.65vw,38px)/1.05 var(--serif);letter-spacing:-.028em;color:#fff;margin-bottom:4px}
 .h-sx b{color:var(--cy)}
-/* the same 50 at the middle auction sale: the sentence always shows, the button lights it on the robots */
-.h-low{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 40px;margin-top:clamp(26px,2.4vw,34px)}
-.h-lowc{flex:1 1 20em;max-width:40em}
+/* the same 50 at the middle auction sale: 2 stay lit, 10 more stay dim, the rest of the loan drains from the far end back towards them. p-home.js adds h-dr once the sentence under them is on screen. */
+.h-split.h-dr .h-f7 .h-fb:nth-child(n+3) canvas{opacity:.46}
+.h-split.h-dr .h-f7 .h-fb:nth-child(n+13) canvas{opacity:.13}
+.h-split.h-dr .h-f3 .h-fb canvas{opacity:.3}
+.h-low{margin-top:clamp(30px,2.8vw,40px)}
 .page[data-page="index.html"] .h-lowt{font:700 clamp(25px,2.4vw,34px)/1.1 var(--serif);letter-spacing:-.028em;color:#fff;margin:0}
-.page[data-page="index.html"] .h-lowd{font-size:clamp(17px,1.3vw,19px);line-height:1.4;color:rgba(255,255,255,.86);margin:8px 0 0;text-wrap:pretty}
-.h-lowb{flex:none}
-.h-lowb[hidden]{display:none}
-.h-split.h-tch .h-fb,.h-split.h-tch .h-sl{transition:opacity .45s ease;transition-delay:0s}
-.h-split.h-lo.in-view .h-f7 .h-fb:nth-child(n+3){opacity:.42}
-.h-split.h-lo.in-view .h-f7 .h-fb:nth-child(n+13),.h-split.h-lo.in-view .h-f3 .h-fb{opacity:.1}
-.h-split.h-lo.in-view .h-sb .h-sl{opacity:0}
+.page[data-page="index.html"] .h-lowd{font-size:clamp(17px,1.3vw,19px);line-height:1.4;color:rgba(255,255,255,.86);margin:8px 0 0;max-width:40em;text-wrap:pretty}
 .h-qfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 32px;margin-top:clamp(14px,1.4vw,20px)}
 .page[data-page="index.html"] .h-icap{margin:0;color:rgba(255,255,255,.66);font-size:15px}
 .page[data-page="index.html"] .h-qfoot .tlink{margin:0}
-/* H11 closing: the form as a sheet of paper in the loading bay. The band above it runs down into the picture with no edge. */
+/* H11 closing: the form beside the factory arm on its line */
 .h-close{background:var(--paper,#f8fafd);padding:clamp(64px,5vw,74px) 0}
 .h-close-g{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:end}
 .h-close-l .h-big{font-size:clamp(34px,3.2vw,46px);margin-bottom:12px}
 .page[data-page="index.html"] .h-close-l .body{margin-bottom:22px;font-size:clamp(17px,1.3vw,19px);line-height:1.4;max-width:30em;color:#3e4656;text-wrap:pretty}
-.h-loopbot .rs-base{background:#cfd6e3}
-.h-loopbot canvas{filter:url(#h-ink)}
+.h-closebot .h-bs{padding:0;justify-content:center}
+.h-closebot .h-bc{width:min(100%,420px)}
+.page[data-page="index.html"] .h-close form{margin-bottom:0}
 @media (max-width:720px){
  .h-close{padding:64px 0 56px}
  .h-close-g{display:block}
  .h-close-r{margin-top:32px}
- .h-close-r .rs-bot{height:230px}
- .h-loopbot .rs-bot{justify-content:flex-start}
+ .h-closebot .h-bs{justify-content:flex-start}
+ .h-closebot .h-bc{width:min(100%,240px)}
 }
 /* reduced motion */
 @media (prefers-reduced-motion:reduce){
- .h-st em,.h-st b,.h-fb,.h-sb,.h-sl,.h-fc canvas,.h-tk-d i,.h-bot figcaption,.h-bl::after{transform:none!important;transition:none!important;animation:none!important}
- .h-bot figcaption,.h-split:not(.h-lo) .h-fb,.h-split:not(.h-lo) .h-sl,.h-split.h-lo .h-sa .h-sl,.h-split.h-lo .h-f7 .h-fb:nth-child(-n+2){opacity:1!important}
+ .h-st em,.h-st b,.h-fb,.h-sb,.h-sl,.h-fb canvas,.h-tk-d i,.h-bot figcaption,.h-bl::after{transform:none!important;transition:none!important;animation:none!important}
+ .h-bot figcaption,.h-fb,.h-sl{opacity:1!important}
  .h-world{margin-top:0;height:auto}}
 /* tablet */
 @media (max-width:1060px){
@@ -137,8 +134,8 @@
  .h-bs{padding:0}
  .h-bot figcaption{padding:10px 0 0}
  .page[data-page="index.html"] .h-vcap{padding:0;margin-top:0}
- .h-bot:nth-child(odd) .h-bs,.h-bot:nth-child(odd) figcaption{padding-right:6px}
- .h-bot:nth-child(even) .h-bs,.h-bot:nth-child(even) figcaption{padding-left:6px}
+ .h-six .h-bot:nth-child(odd) .h-bs,.h-six .h-bot:nth-child(odd) figcaption{padding-right:6px}
+ .h-six .h-bot:nth-child(even) .h-bs,.h-six .h-bot:nth-child(even) figcaption{padding-left:6px}
 }
 /* How it works: the example loan as a ticket. The stub holds the loan and tears off once it closes. */
 .h-tk{display:flex;width:100%;max-width:620px;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));font:400 16px/1.4 var(--doc);font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
@@ -182,7 +179,7 @@
 .h-acts a{display:inline-flex;align-items:center;min-height:44px;font-size:16px;color:#fff;text-decoration:none}
 .h-acts a:hover{text-decoration:underline;text-underline-offset:4px}
 .h-tool{font-weight:600}
-.h-film{position:relative;height:405vh;height:405svh;color:#fff}
+.h-film{position:relative;height:415vh;height:415svh;color:#fff}
 .h-stick{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden}
 .h-probe{position:absolute;top:0;left:0;width:1px;height:100vh;height:100svh;visibility:hidden;pointer-events:none}
 .h-cv{position:absolute;inset:0;width:100%;height:100%;display:block}

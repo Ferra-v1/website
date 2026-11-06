@@ -112,7 +112,7 @@
 .r-fine{margin:20px 0 0;max-width:62ch;font-size:15px;line-height:1.5;color:var(--muted);text-wrap:pretty}
 
 /* under ten sales, the two middles are set alike: neither figure has earned display size */
-.r-au-both{margin:clamp(14px,2vw,22px) 0 0;max-width:24em;font:700 clamp(30px,3.2vw,46px)/1.14 var(--serif);letter-spacing:-.03em;color:var(--ink);text-wrap:balance}
+.r-au-both{margin:clamp(14px,2vw,22px) 0 0;max-width:27em;font:700 clamp(26px,2.5vw,36px)/1.2 var(--serif);letter-spacing:-.025em;color:var(--ink);text-wrap:pretty}
 .r-au-both b{color:var(--c);font-weight:700}
 .r-au-of{margin:14px 0 0;max-width:40em;font-size:18px;line-height:1.5;color:#3e4656;text-wrap:pretty}
 .r-au-say{display:flex;align-items:center;gap:clamp(20px,3vw,40px);margin:clamp(20px,2.6vw,32px) 0 0;max-width:820px}
@@ -129,6 +129,21 @@
 .r-au-p b{font-weight:600}
 .r-au-p span,.r-tbl .r-au-m{display:none}
 
+/* one for sale, one sold: two real records as paper. They rise over the chart's last frame, so they read as its proof. */
+.sec.r-au-s{position:relative;z-index:2;padding-top:0}
+.r-au-s .h2{margin-top:clamp(48px,6vw,80px)}
+.r-pair{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px 32px}
+.r-lot{position:relative;display:flex;flex-direction:column;background:#fff;padding:22px 30px 18px;font:400 16px/1.45 var(--doc);font-variant-numeric:lining-nums tabular-nums;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));min-width:0}
+.r-lot .dr{align-items:baseline;gap:20px;border-bottom:0;padding:8px 0}
+.r-lot .dr span{flex:none}
+.r-fp b{font-size:24px;line-height:1}
+.r-tab{position:absolute;left:0;top:-32px;height:32px;display:flex;align-items:center;padding:0 30px 0 18px;background:#fff;font:600 15px var(--doc);font-style:normal;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 100%,0 100%)}
+.r-stamp{position:absolute;right:20px;top:-18px;padding:3px 13px;background:#fff;border:2.5px solid var(--c);color:var(--c);font:700 20px var(--serif);letter-spacing:-.01em;transform:rotate(-8deg)}
+.r-stamp.a{border-color:var(--ink);color:var(--ink)}
+.r-dl{align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;margin-top:auto;padding-top:8px;font-weight:600;color:var(--c);text-decoration:none}
+.r-dl:hover{text-decoration:underline;text-underline-offset:4px}
+.r-pick{margin:28px 0 0;max-width:46em;font-size:16px;line-height:1.5;color:#3e4656}
+
 /* how much to trust this */
 .r-tr-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
 .r-tally{display:block;width:100%;max-width:520px;height:auto;margin-top:clamp(22px,2.6vw,32px);overflow:visible}
@@ -140,7 +155,7 @@
 .r-chain1{margin:clamp(16px,2vw,24px) 0 0;font-size:clamp(21px,1.9vw,26px);line-height:1.32;letter-spacing:-.012em;font-weight:500;color:var(--ink);max-width:24em;text-wrap:pretty}
 .r-tr-t{padding-top:clamp(0px,1vw,10px)}
 .r-tr-t p{margin:0 0 20px;font-size:17px;line-height:1.55;color:#26303f;max-width:32em}
-.r-tr-t p:last-child{margin-bottom:0}
+.r-tr-t .tlink{display:inline-flex;align-items:center;min-height:44px;margin:0}
 
 /* look up one model */
 .r-mds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(32px,4vw,56px);margin-top:clamp(32px,4vw,48px)}
@@ -184,7 +199,13 @@
 .r-c-at,.r-c-ct{font-size:15px;line-height:1.35;color:rgba(255,255,255,.92)}
 .r-shelf.aged .r-cell:not(.r-c-top) .r-c-at{display:none}
 .r-c-at{margin-top:3px}
-.r-c-ct{margin-top:8px}
+.r-c-ct{margin-top:8px;display:grid}
+/* every card says the short count; the card the reader rests on says the long one, in the room kept for it, so nothing moves under the hand */
+.r-c-ct>span{grid-area:1 / 1;transition:opacity .15s ease}
+.r-ct-l{opacity:0}
+.r-cell:hover .r-ct-s{opacity:0}
+.r-cell:hover .r-ct-l{opacity:1}
+@media (hover:none){.r-ct-l{display:none}}
 .r-c-subs{display:flex;flex-direction:column;align-items:flex-start;padding-top:6px}
 .r-c-subs a{display:inline-flex;align-items:center;gap:8px;min-height:30px;font-size:15px;font-weight:600;color:#fff}
 .r-c-subs a:hover{text-decoration:underline;text-underline-offset:4px}
@@ -277,6 +298,9 @@
  .r-ag p{padding-right:14px}
  .r-au-say{flex-direction:column;align-items:flex-start;gap:8px}
  .r-mds{grid-template-columns:minmax(0,1fr)}
+ .r-pair{grid-template-columns:minmax(0,1fr)}
+ .r-lot{padding:18px 22px 14px}
+ .r-lot .dr span{max-width:40%}
  /* each listing becomes a small block of its own */
  .r-tbl,.r-tbl tbody{display:block}
  .r-tbl thead{display:none}
@@ -299,15 +323,21 @@
  [data-listings] .r-tb::before{content:"Built "}
  [data-listings] .r-tw{order:3;grid-column:1 / -1;margin-top:2px}
  .r-tw span{display:inline;margin-left:6px;font-size:15px}
- /* the shelf: two robots a row under the biggest one */
- .r-wrap{--R:min(88cqw,44svh);--floor:112px}
+ /* the shelf: two robots a row under the biggest one, and the age control under the words, riding along at the top of the screen where it covers no card */
+ .r-wrap{--R:min(88cqw,44svh);--floor:112px;display:flex;flex-direction:column}
+ .r-top{display:contents}
+ .r-top-t{order:1;min-width:0}
+ .r-dial{order:2;bottom:auto;top:calc(8px + env(safe-area-inset-top,0px));width:100%;margin:18px 0 0;transition:top .3s cubic-bezier(.2,.7,.2,1)}
+ html:has(.fbar.on) .r-dial{top:calc(76px + env(safe-area-inset-top,0px))}
+ .r-wrap .r-c-top{order:3;margin-top:20px}
+ .r-cells{order:4;width:100%}
  .r-cells{--R:232px}
  .r-top{grid-template-columns:minmax(0,1fr);gap:20px}
  .r-s-h{font-size:clamp(44px,12.4vw,60px);margin-top:4px}
  .r-cells{margin-top:44px}
  .r-cells .r-cell{grid-column:span 30;margin-bottom:36px}
  .r-s-from{grid-column:1 / -1;padding:0 0 28px}
- .r-dial label{padding:6px 18px;column-gap:9px}
+ .r-dial label{grid-template-columns:auto minmax(0,1fr);min-height:44px;padding:0 18px;column-gap:12px}
  .r-dial-k{display:none}
  .r-dial-v{font-size:21px;min-width:4.2em}
  .r-miss-g{grid-template-columns:repeat(2,minmax(0,1fr))}

@@ -115,7 +115,8 @@
   const spriteOf = (rid, k) => (window.FERRA_DOTS || {})[rid + '-' + k] || (window.FERRA_DOTS || {})['arm-' + k];
   // the link keeps the reader's numbers where the price tool knows the robot; for the rest it opens the tool as it is
   const TOOL = { arm: 'any-arm', cobot: 'any-arm', amr: 'warehouse-mobile-robot', cleaning: 'cleaning-robot' };
-  const tryLink = document.getElementById('f-try');
+  const toolLinks = ['f-try', 'f-bring'].map(id => document.getElementById(id)).filter(Boolean);
+  followers.push(st => { const id = TOOL[st.rid], h = id ? 'price.html#r=' + id + '&y=2026&p=' + st.price + '&m=' + rentOf(st.price) + '&n=36&f=' + st.n : 'price.html'; toolLinks.forEach(a => { a.href = h; }); });
   // one robot earning its price back: as the page scrolls, one month of rent at a time, the dots fill from the base up. Each dot is an equal share of the robot's price.
   const pbSec = pb && pb.closest('.f-why');
   if (pb && spriteOf('arm', 'l')) {
@@ -143,7 +144,7 @@
     let rid0 = 'arm';
     followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); }
       wP.textContent = usd(price); wR.textContent = usd(rent); wM.textContent = months; fix();
-      if (tryLink) { const id = TOOL[st.rid]; tryLink.href = id ? 'price.html#r=' + id + '&y=2026&p=' + price + '&m=' + rent + '&n=36&f=' + st.n : 'price.html'; } });
+    });
   }
   // one month: one small robot for each of the reader's robots, in two groups: the ones whose rent pays the loan, the ones whose rent stays. The picture and every figure come from the sentence on the first screen.
   // When the section first arrives each robot's rent comes in, left to right, then the two groups part. With reduced motion they stand finished.
@@ -176,10 +177,10 @@
     // the groups share the width as they share the robots, until the words under them would have no room
     const widths = () => { const a = N === 1 ? .5 : Math.max(.36, Math.min(.64, PAY / N)); mg.style.gridTemplateColumns = `minmax(0,${a}fr) minmax(0,${1 - a}fr)`; };
     followers.push(st => { N = st.n; rid = st.rid; PAY = Math.round(N * SHARE_PAY); if (N > 1 && PAY < 1) PAY = 1; const rent = rentOf(st.price), comes = N * rent, V = N * st.price, goes = V * ADV / TERM, left = comes - goes, one = N === 1;
-      $('f-m-h').textContent = one ? "In a month, about half of your robot's rent pays the loan." : 'In a month, ' + PAY.toLocaleString('en-US') + ' of your ' + N.toLocaleString('en-US') + ' robots pay the loan.';
+      $('f-m-h').textContent = one ? "Before interest, about half of your robot's rent pays the loan." : 'Before interest, the rent from ' + PAY.toLocaleString('en-US') + ' of your ' + N.toLocaleString('en-US') + ' robots pays the loan.';
       $('f-m-lead').innerHTML = one ? 'In our example, <b class="num">' + usd(comes) + '</b> of rent comes in from your robot.' : 'In our example, <b class="num">' + usd(comes) + '</b> of rent comes in, ' + usd(rent) + ' from each robot.';
       $('f-m-go').textContent = usd(goes); $('f-m-left').textContent = usd(left); $('f-m-v').textContent = usd(V);
-      $('f-m-gos').textContent = 'pays back the loan, before interest. ' + (one ? "That is about half of your robot's rent." : PAY === 1 ? 'That is about the rent from this 1 robot.' : 'That is about the rent from these ' + PAY.toLocaleString('en-US') + ' robots.');
+      $('f-m-gos').textContent = 'pays back the loan. ' + (one ? "That is about half of your robot's rent." : PAY === 1 ? 'That is about the rent from this 1 robot.' : 'That is about the rent from these ' + PAY.toLocaleString('en-US') + ' robots.');
       $('f-m-sr').textContent = one ? 'One robot. The part of its rent that pays the loan is drawn bright.' : N + ' robots. The rent from ' + PAY + ' of them, drawn bright, pays the loan. The rent from the other ' + (N - PAY) + ', drawn pale, stays with the company.';
       widths(); layout(); if (played || still) draw(1, 1); else draw(0, 0); });
   }

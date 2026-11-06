@@ -15,7 +15,7 @@
   // one small card per wall, kept inside it. Nothing changes while the pointer is on the card, so the link can be reached
   const tipper = (tip, box) => { let over = false; tip.addEventListener('pointerenter', () => { over = true; }); tip.addEventListener('pointerleave', () => { over = false; });
     return { busy: () => over, hide: () => { tip.hidden = true; tip.innerHTML = ''; over = false; },
-      show: (html, x, y) => { tip.innerHTML = html; tip.hidden = false; const W = box.clientWidth, H = box.clientHeight, w = tip.offsetWidth, h = tip.offsetHeight, gap = 14; let l = x + gap, t = y - h / 2; if (l + w > W) l = x - gap - w; l = clamp(l, 0, Math.max(0, W - w)); t = clamp(t, 0, Math.max(0, H - h)); tip.style.transform = `translate(${Math.round(l)}px,${Math.round(t)}px)`; } }; };
+      show: (html, x, y, under) => { tip.innerHTML = html; tip.hidden = false; const W = box.clientWidth, H = box.clientHeight, w = tip.offsetWidth, h = tip.offsetHeight, gap = 14; let l = x + gap, t = y - h / 2; if (l + w > W) l = x - gap - w; l = clamp(l, 0, Math.max(0, W - w)); t = under ? H + 4 : clamp(t, 0, Math.max(0, H - h)); if (under) l = clamp(x - w / 2, 0, Math.max(0, W - w)); tip.style.transform = `translate(${Math.round(l)}px,${Math.round(t)}px)`; } }; };
   if (cv) {
     const lev = cv.dataset.levels, n = lev.length, sec = cv.closest('.c-field'), run = sec.querySelector('.c-run'), wall = cv.parentElement, tipEl = wall.querySelector('.c-tip');
     const keys = [...sec.querySelectorAll('[data-key]')], num = sec.querySelector('.c-read b'), say = sec.querySelector('.c-read span'), C = cv.dataset.counts.split(',').map(Number), rest = [.15, .3, .5, 1];
@@ -35,7 +35,7 @@
         if (wide) { X[k][id] = fromEnd ? bx + bw - (b + .5) * P : bx + (b + .5) * P; Y[k][id] = by + o + (a + .5) * P; }
         else { X[k][id] = bx + o + (a + .5) * P; Y[k][id] = fromEnd ? by + bh - (b + .5) * P : by + (b + .5) * P; }
         RR[k][id] = rad; }); };
-    // the robot: the listings that passed every check, placed on an even lattice over the drawing, so 369 dots read as an arm
+    // the robot: the listings that passed every check, placed on an even lattice over the drawing, so 369 dots read as an arm. The caller leaves it a margin, so no dot is cut by the canvas edge
     const robot = (list, k, bx, by, bw, bh) => { const b = (window.FERRA_DOTS || {})[cv.dataset.bot]; if (!b) { block(list, k, bx, by, bw, bh, false, bw > bh); return; }
       const cells = new Set(), pts = b.d.split(';').filter(Boolean).map(s => s.split(',').map(Number)); pts.forEach(p => { if (p[3] > 20) cells.add(p[0] + p[1] * 1000); });
       const ys = pts.map(p => p[1]), xs = pts.map(p => p[0]), y0 = Math.min(...ys), y1 = Math.max(...ys), x0 = Math.min(...xs), x1 = Math.max(...xs), cw = x1 - x0 + 1, ch = y1 - y0 + 1, u = Math.min(bw / cw, bh / ch), ox = bx + (bw - cw * u) / 2, oy = by + bh - ch * u;
@@ -50,8 +50,8 @@
         const up = shuffled.filter(i => L[i] >= k), down = [];   // the ones that failed stand furthest out, the ones that got furthest stand closest
         for (let l = 0; l < k; l++) shuffled.forEach(i => { if (L[i] === l) down.push(i); });
         const room = wide ? W : H, keep = k === 3 ? .4 : Math.max(.16, Math.min(.66, up.length / n * 1.02));   // the robot gets more room than a block of the same dots would
-        if (wide) { const a = room * keep - G / 2, bx = room * keep + G / 2, bw = room - bx; if (k === 3) robot(up, k, 0, 0, a, H); else block(up, k, 0, 0, a, H, false, true); block(down, k, bx, 0, bw, H, true, true); }
-        else { const a = room * keep - G / 2, by = room * keep + G / 2, bh = room - by; if (k === 3) robot(up, k, 0, 0, W, a); else block(up, k, 0, 0, W, a, false, false); block(down, k, 0, by, W, bh, true, false); }
+        if (wide) { const a = room * keep - G / 2, bx = room * keep + G / 2, bw = room - bx; if (k === 3) robot(up, k, 12, 12, a - 12, H - 24); else block(up, k, 0, 0, a, H, false, true); block(down, k, bx, 0, bw, H, true, true); }
+        else { const a = room * keep - G / 2, by = room * keep + G / 2, bh = room - by; if (k === 3) robot(up, k, 12, 12, W - 24, a - 24); else block(up, k, 0, 0, W, a, false, false); block(down, k, 0, by, W, bh, true, false); }
       }
     };
     const N = 13;
@@ -87,13 +87,13 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { size(); last = -1; });
     }
   }
-  // the auction results: real sales, one dot each, in the same dark ink as the words beside them. They open the same way.
-  if (small) { const box = small.parentElement, tipEl = box.querySelector('.c-tip'), tip = tipper(tipEl, box), n = +small.dataset.n; let P = 22, cols = 1, picked = -1;
+  // the auction results: real sales, one large dot each, in the same ink as the number above them. On a wide screen they stand in one row, so 26 reads as few after 1,744. They open the same way, with the card under the row so it never covers a dot.
+  if (small) { const box = small.parentElement, tipEl = box.querySelector('.c-tip'), tip = tipper(tipEl, box), n = +small.dataset.n; let P = 44, cols = 1, picked = -1;
     const pos = i => [(i % cols + .5) * P, (Math.floor(i / cols) + .5) * P];
-    const draw = () => { const W = small.clientWidth; P = innerWidth > 900 ? 26 : 20; cols = Math.max(1, Math.floor(W / P)); const rows = Math.ceil(n / cols), d = Math.min(2, devicePixelRatio || 1); small.style.height = rows * P + 'px'; small.width = W * d; small.height = rows * P * d; const x = small.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, rows * P); for (let i = 0; i < n; i++) { const [a, b] = pos(i); x.fillStyle = i === picked ? '#2847ce' : '#0e1626'; x.beginPath(); x.arc(a, b, P * (i === picked ? .44 : .34), 0, 6.2832); x.fill(); } };
+    const draw = () => { const W = small.clientWidth; cols = W / n >= 34 ? n : Math.max(1, Math.floor(W / 44)); P = W / cols; const rows = Math.ceil(n / cols), d = Math.min(2, devicePixelRatio || 1); small.style.height = rows * P + 'px'; small.width = W * d; small.height = rows * P * d; const x = small.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, rows * P); for (let i = 0; i < n; i++) { const [a, b] = pos(i); x.fillStyle = i === picked ? '#2847ce' : '#0e1626'; x.beginPath(); x.arc(a, b, Math.min(P, 48) * (i === picked ? .44 : .38), 0, 6.2832); x.fill(); } };
     const card = i => { const r = LIST.auc[i]; return `<b>${r[0].replace(/&/g, '&amp;').replace(/</g, '&lt;')}</b><span>${usd(r[3])} paid at auction${r[2] ? ` in ${r[2]}` : ''} &middot; ${r[1]}</span><a href="${r[4].replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer nofollow">See the result &rarr;</a>`; };
     const hit = ev => { const b = small.getBoundingClientRect(), mx = ev.clientX - b.left, my = ev.clientY - b.top; const c = Math.floor(mx / P), r = Math.floor(my / P), i = r * cols + c; return c >= 0 && c < cols && i >= 0 && i < n ? i : -1; };
-    const open = i => need(() => { picked = i; draw(); const [a, b] = pos(i); tip.show(card(i), a, b); });
+    const open = i => need(() => { picked = i; draw(); const [a, b] = pos(i); tip.show(card(i), a, b, true); });
     if (fine) { small.addEventListener('pointermove', ev => { if (tip.busy()) return; const i = hit(ev); if (i >= 0 && i !== picked) open(i); }); box.addEventListener('pointerleave', () => setTimeout(() => { if (!tip.busy() && !box.matches(':hover')) { picked = -1; tip.hide(); draw(); } }, 220)); }
     small.addEventListener('click', ev => { const i = hit(ev); if (i >= 0) open(i); else { picked = -1; tip.hide(); draw(); } });
     near(box); draw(); addEventListener('resize', draw); }

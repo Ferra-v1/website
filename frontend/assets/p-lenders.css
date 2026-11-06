@@ -4,6 +4,7 @@
 .l-lede{max-width:72ch!important}
 [data-page="lenders.html"] .lead-1{max-width:60ch}
 [data-page="lenders.html"] .l-loan .h2{max-width:27ch}
+[data-page="lenders.html"] .l-loan .h2.l-moved{max-width:38ch}
 [data-page="lenders.html"] .notes a{text-decoration:none}
 [data-page="lenders.html"] .fl{font-size:15px}
 
@@ -30,7 +31,7 @@
 .l-loss tbody th{padding:10px 12px 10px 0;font:400 16px/1.3 var(--sans);text-align:left;color:rgba(255,255,255,.92);border-bottom:1px solid rgba(255,255,255,.2)}
 .l-loss tbody th b{display:block;font:700 19px/1.2 var(--sans);color:#fff}
 .l-loss td{padding:10px 12px 10px 0;font:600 18px/1.25 var(--sans);color:#fff;vertical-align:top;border-bottom:1px solid rgba(255,255,255,.2)}
-.l-adm{margin:18px 0 0;font-size:clamp(18px,1.5vw,21px);line-height:1.4;font-weight:600;max-width:32ch;color:#fff;text-wrap:pretty}
+.l-adm{margin:20px 0 0;font-size:clamp(17px,1.35vw,19px);line-height:1.4;font-weight:600;max-width:46ch;color:#fff;text-wrap:pretty}
 .l-ft{margin:12px 0 0;font-size:15px;line-height:1.5;max-width:50ch;color:rgba(255,255,255,.88);text-wrap:pretty}
 .l-bad .l-ft a,.l-bp a{color:#fff;font-weight:600;display:inline-block;padding-block:11px;margin-block:-11px}
 .l-ff{margin:0}
@@ -95,8 +96,6 @@
 .l-hx p{margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.5;color:#3e4656;max-width:52ch;text-wrap:pretty}
 .l-hx b{font-weight:600;color:var(--ink)}
 .l-hx a{color:var(--c);font-weight:500;display:inline-block;padding-block:11px;margin-block:-11px}
-.l-cap{margin:clamp(14px,1.6vw,20px) 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
-.l-cap a{color:var(--c);font-weight:500;display:inline-block;padding-block:11px;margin-block:-11px}
 
 /* auctions: the giant share, then every sale behind it as a dot you can touch */
 .l-rh{margin:clamp(14px,1.8vw,24px) 0 0;max-width:62ch;font-size:clamp(18px,1.5vw,21px);line-height:1.5;color:#3e4656;text-wrap:pretty}
@@ -108,7 +107,7 @@
 .l-sg th{padding:20px 0 8px;font-size:15px;line-height:1.45;font-weight:600;color:var(--ink);text-align:left;border-bottom:2px solid var(--ink)}
 .l-sg th span{font-weight:400;color:#3e4656}
 .l-led tbody tr:not(.l-sg) > *{padding:0 20px 0 0;height:44px;border-bottom:1px solid var(--line);font-weight:400;text-align:left}
-.l-led th a{display:inline-block;padding-block:11px;font-weight:500;color:var(--ink)}
+.l-led th a{display:inline-block;padding-block:12px;font-weight:500;color:var(--ink)}
 .l-led th a span[aria-hidden]{display:inline-block;color:var(--c);transition:transform .15s ease}
 .l-led th a:hover{color:var(--c)}.l-led th a:hover span[aria-hidden]{transform:translateX(3px)}
 .l-led .l-sp{font-weight:600;white-space:nowrap}
@@ -189,13 +188,17 @@ td.l-st b{display:inline-block;width:82px;text-align:right;font-weight:600;verti
  .l-key{display:block}
  .l-per{margin-top:0;padding-left:0}
  .l-bfs{grid-template-columns:minmax(0,1fr)}
- .l-bn{font-size:clamp(60px,18vw,84px)}
+ .l-bn{font-size:clamp(54px,15vw,84px)}
  .l-film{object-position:84% 50%}
  .l-hero{min-height:calc(100svh - 32px)}
  [data-page="lenders.html"] .l-hero .h1{font-size:clamp(52px,15vw,88px);max-width:8ch}
 }
 @media (max-width:760px){
  .l-hx{grid-template-columns:minmax(0,1fr)}
+ .l-loss td{white-space:nowrap}
+ .l-loss thead th:nth-child(2),.l-loss td:nth-child(2){width:auto}.l-loss thead th:nth-child(3),.l-loss td:nth-child(3){width:30%}
+ .l-ff{max-width:310px}
+ .l-bad{padding-block:56px}
  .l-led thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
  .l-led,.l-led tbody,.l-led tr,.l-led th,.l-led td{display:block}
  .l-sg th{padding-top:24px}
