@@ -116,7 +116,7 @@
   // the link keeps the reader's numbers where the price tool knows the robot; for the rest it opens the tool as it is
   const TOOL = { arm: 'any-arm', cobot: 'any-arm', amr: 'warehouse-mobile-robot', cleaning: 'cleaning-robot' };
   const toolLinks = ['f-try', 'f-bring'].map(id => document.getElementById(id)).filter(Boolean);
-  followers.push(st => { const id = TOOL[st.rid], h = id ? 'price.html#r=' + id + '&y=2026&p=' + st.price + '&m=' + rentOf(st.price) + '&n=36&f=' + st.n : 'price.html'; toolLinks.forEach(a => { a.href = h; }); });
+  followers.push(st => { const id = TOOL[st.rid], h = id ? 'price.html#r=' + id + '&y=2026&p=' + st.price + '&m=' + rentOf(st.price) + '&n=36&f=' + st.n : 'price.html'; toolLinks.forEach(a => { a.href = h; a.hidden = !id; }); });
   // one robot earning its price back: as the page scrolls, one month of rent at a time, the dots fill from the base up. Each dot is an equal share of the robot's price.
   const pbSec = pb && pb.closest('.f-why');
   if (pb && spriteOf('arm', 'l')) {

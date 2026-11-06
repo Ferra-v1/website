@@ -493,7 +493,7 @@ i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#
   .pp-t .pp-tmp{padding-left:0}
   .pp-t td.pp-tmp{white-space:normal;overflow-wrap:normal;word-break:keep-all;hyphens:none}
   .pp-t td.dt{white-space:normal;min-width:44px}
-  .pp-t td.pp-tln a{display:inline-flex;align-items:center;min-height:44px;margin:-10px 0}
+  .pp-t td.pp-tln a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;margin:-10px 0}
   .pp-covk{margin-left:0;flex-basis:100%}
   .pp-cmpt tbody th{width:46%}
   .pp-rv{font-size:68px}

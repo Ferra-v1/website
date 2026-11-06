@@ -17,7 +17,8 @@
 .f-pill input{cursor:text;text-align:center;font-variant-numeric:lining-nums tabular-nums;field-sizing:content}
 .f-pill b{font-weight:inherit}
 .f-pill:focus-within{outline:2px solid #fff;outline-offset:2px}
-.f-pill-n input{width:2.6em}
+.f-pill-n input{width:2.6em;min-width:44px}
+.f-try[hidden],#f-bring[hidden]{display:none}
 .f-pill-p input{width:4.2em;text-align:left}
 .f-pill-t,.f-pill-w{position:relative;padding-right:1.25em}
 .f-pill-t::after,.f-pill-w::after{content:"";position:absolute;right:.52em;top:50%;width:.34em;height:.34em;margin-top:-.26em;border:solid var(--c);border-width:0 .09em .09em 0;transform:rotate(45deg);pointer-events:none}
