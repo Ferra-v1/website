@@ -183,8 +183,8 @@ const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
     load('assets/h-arm.js', () => { fineD = window.FERRA_ARM.map(q => ({ x: q[0] + .5, y: q[1] + .5, s: q[2], acc: q[3], g: q[3] * 100 + Math.round(q[2] * 4), h: ((q[0] * 73 + q[1] * 151) % 97) / 97 })).sort((a, b) => a.g - b.g); seatFine(); flatFine(); dirty = true; });
     load('assets/h-film.js', () => { D = window.FERRA_FILM; prep(); seatFine(); layout(); });
   };
-  // the row comes as soon as the page has settled, because it is one scroll away. The price chapter's pieces wait until the row is arriving.
-  if (document.readyState === 'complete') fetchRow(); else addEventListener('load', fetchRow, { once: true });
+  // the row comes at the first sign of a reader, or after six seconds, because it is one scroll away and the first screen should stay light. The price chapter's pieces wait until the row is arriving.
+  { let got = false; const go = () => { if (got) return; got = true; EV.forEach(n => removeEventListener(n, go)); clearTimeout(tm); fetchRow(); }, EV = ['scroll', 'wheel', 'pointermove', 'pointerdown', 'touchstart', 'keydown'], tm = setTimeout(go, 6000); EV.forEach(n => addEventListener(n, go, { passive: true })); }
   let fetched = false;
   const fetchLate = () => { if (fetched) return; fetched = true; fetchFilm();  };
 

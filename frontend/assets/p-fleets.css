@@ -12,6 +12,7 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 /* the sentence: real words, with the answers in white fields in the same type. p-fleets.js sets each one as wide as its words */
 .f-say{line-height:56px;margin-top:12px}
 .f-say label{display:inline}
+#sz-n{width:3.15em}#sz-type{width:8.9em}#sz-p{width:6.5em}#sz-when{width:10.4em}
 .f-say .pf{font:inherit;line-height:46px;letter-spacing:inherit;color:var(--c);vertical-align:baseline;text-align:center;padding:0 18px;max-width:100%}
 .page[data-page="fleets.html"] .f-say select.pf{padding:0 38px 0 18px;text-align:left}
 .f-say .pf[aria-invalid="true"]{color:#b42318}

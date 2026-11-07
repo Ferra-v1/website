@@ -155,7 +155,7 @@
 
   const wire = () => {
     // the photo loads when its robot comes near. A hidden panel's card waits until the panel opens.
-    const near = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; near.unobserve(en.target); const r = get(en.target); if (r.src) photo(r.src); }), { rootMargin: '1200px' });
+    const near = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; near.unobserve(en.target); const r = get(en.target); if (r.src) photo(r.src); }), { rootMargin: '100px' });
     document.querySelectorAll('[data-resolve]').forEach(el => { near.observe(el); if (reduce || el.dataset.resolveHover === 'off') return;
       el.addEventListener('pointerenter', ev => { if (ev.pointerType === 'mouse') get(el).run(); });
       if (!el.closest('a')) el.addEventListener('click', () => get(el).run()); });
