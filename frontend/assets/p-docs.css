@@ -1,4 +1,5 @@
-/* Methodology and privacy (d-). Plain documents on white: contents beside one column of text, one shared left edge, sizes from the shared tokens. */
+/* Methodology and privacy (d-). Plain documents on white: contents beside one column of text, one shared left edge, sizes from the shared tokens. No motion anywhere on them. */
+html{scroll-behavior:auto}
 .d-body{padding-block:clamp(24px,3vw,40px) clamp(64px,7vw,104px)}
 .d-g{display:grid;grid-template-columns:204px minmax(0,1fr);gap:clamp(32px,4.4vw,64px);align-items:start}
 
@@ -13,7 +14,7 @@
 .d-toc b,.d-tocx b{display:block;font:600 var(--t-small)/1.35 var(--sans);color:var(--ink);padding:14px 0 4px}
 .d-tol{margin-top:14px!important}
 .d-toc ol,.d-tocx ol{list-style:none;margin:0;padding:0}
-.d-toc a,.d-tocx a{display:flex;align-items:center;padding:5px 0;font-size:var(--t-small);line-height:1.35;color:var(--muted);text-decoration:none;transition:color .2s ease}
+.d-toc a,.d-tocx a{display:flex;align-items:center;padding:5px 0;font-size:var(--t-small);line-height:1.35;color:var(--muted);text-decoration:none}
 .d-toc a:hover{color:var(--ink)}
 .d-toc a.on{color:var(--c);font-weight:500}
 .d-tocx{display:none}
@@ -92,7 +93,7 @@
 .d-fold{margin-top:4px}
 .d-fold summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:600 var(--t-body)/1.25 var(--sans);color:var(--c)}
 .d-fold summary::-webkit-details-marker{display:none}
-.d-fold summary::after{content:"";flex:none;width:7px;height:7px;margin:-3px 2px 0 2px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);transition:transform .2s ease}
+.d-fold summary::after{content:"";flex:none;width:7px;height:7px;margin:-3px 2px 0 2px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg)}
 .d-fold[open] summary::after{transform:translateY(4px) rotate(225deg)}
 
 /* tables: real tables keep their rules, and only those */
@@ -144,16 +145,16 @@
   /* a block here, because a sticky child of a grid only travels within its own row */
   .d-g{display:block}
   .d-toc{display:none}
-  .d-tocx{display:block;position:sticky;top:8px;z-index:20;margin-top:24px;border-radius:12px;background:var(--mist);padding:0 16px;transition:top .3s cubic-bezier(.2,.7,.2,1)}
+  .d-tocx{display:block;position:sticky;top:8px;z-index:20;margin-top:24px;border-radius:var(--r-card);background:var(--mist);padding:0 16px}
   /* the site's floating bar comes back when the reader scrolls up: the control steps down under it */
   html:has(.fbar.on) .d-tocx{top:76px}
   .d-tocx summary{display:flex;align-items:center;gap:10px;min-height:48px;font-size:var(--t-body);font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
   .d-tocx summary::-webkit-details-marker{display:none}
   .d-tocnow{font-weight:400;color:#4a5262;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-  .d-tocx summary::after{content:"";flex:none;width:8px;height:8px;margin:-4px 4px 0 auto;border-right:1.8px solid var(--c);border-bottom:1.8px solid var(--c);transform:rotate(45deg);transition:transform .2s ease}
+  .d-tocx summary::after{content:"";flex:none;width:8px;height:8px;margin:-4px 4px 0 auto;border-right:1.8px solid var(--c);border-bottom:1.8px solid var(--c);transform:rotate(45deg)}
   .d-tocx[open] summary::after{transform:translateY(4px) rotate(225deg)}
   /* the list opens over the page, so the text under it does not jump */
-  .d-tocx nav{position:absolute;left:0;right:0;top:100%;margin-top:-6px;padding:0 16px 8px;background:var(--mist);border-radius:0 0 12px 12px;max-height:calc(100vh - 80px);overflow:auto}
+  .d-tocx nav{position:absolute;left:0;right:0;top:100%;margin-top:-6px;padding:0 16px 8px;background:var(--mist);border-radius:0 0 var(--r-card) var(--r-card);max-height:calc(100vh - 80px);overflow:auto}
   .d-tocx a{min-height:44px;padding:8px 0}
   .d-tocx a.on{color:var(--c);font-weight:500}
   .d-priv .d-head{padding-left:0}
@@ -165,7 +166,7 @@
   .d-part + .d-col{padding-top:28px}
   .d-cold > summary{display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer}
   .d-cold > summary > *{margin:0}
-  .d-cold > summary::after{content:"";flex:none;width:9px;height:9px;margin:-4px 4px 0 auto;border-right:1.8px solid var(--c);border-bottom:1.8px solid var(--c);transform:rotate(45deg);transition:transform .2s ease}
+  .d-cold > summary::after{content:"";flex:none;width:9px;height:9px;margin:-4px 4px 0 auto;border-right:1.8px solid var(--c);border-bottom:1.8px solid var(--c);transform:rotate(45deg)}
   .d-cold[open] > summary::after{transform:translateY(4px) rotate(225deg)}
   .d-cold[open] > summary{margin-bottom:14px}
   .d-bars li{grid-template-columns:minmax(0,1fr);gap:2px 0}
@@ -184,4 +185,3 @@
   .d-yr .r,.d-yr thead th.r{white-space:normal}
   .d-acts{flex-direction:column;align-items:flex-start}
 }
-@media (prefers-reduced-motion:reduce){.d-tocx,.d-cold > summary::after{transition:none}}

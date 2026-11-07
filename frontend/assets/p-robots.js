@@ -2,6 +2,7 @@
 // A robot's page then has one short chart: every listing by age and asking price, and one age to read.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const NEAR = 2;   // a listing is near an age when it is within this many years, on the shelf and on every robot's chart
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const money = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
   const usd = v => '$' + Math.round(v).toLocaleString('en-US');
@@ -9,10 +10,10 @@
   const fit = cv => { const r = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight; if (cv.width !== Math.round(w * r) || cv.height !== Math.round(h * r)) { cv.width = Math.round(w * r); cv.height = Math.round(h * r); } const c = cv.getContext('2d'); c.setTransform(r, 0, 0, r, 0, 0); c.clearRect(0, 0, w, h); return { c, w, h }; };
   // the robot as faint halftone, shaded the way dotbot.js shades it. Its bounds and one painted bitmap per size.
   const ghost = name => { const g = (window.FERRA_DOTS || {})[name + '-l']; if (!g) return null; if (!g.g2) { const pts = g.d.split(';').filter(Boolean).map(s => { const [x, y, L, A, , ed] = s.split(',').map(Number); return [x, y, (A / 100) * Math.min(1, .28 + .72 * Math.pow(L / 100, .9) + (ed / 100) * .35)]; }); let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (const p of pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; } g.g2 = { pts, x0, x1, y0, y1 }; } return g.g2; };
-  // on a big robot each grid square holds a little block of very small dots, so the machine reads as a fine print and nothing reads as a cartoon
-  const ghostBitmap = (G, cell, alpha, rgb = '255,255,255') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); const sub = cell >= 4.4 ? 3 : cell >= 2.6 ? 2 : 1, st = cell / sub; for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.3 + .7 * s)})`; c.beginPath(); const q = Math.max(.32, st * .34 * (.5 + .5 * s)); for (let i = 0; i < sub; i++) for (let j = 0; j < sub; j++) { const px = (x - G.x0 + (i + .5) / sub) * cell, py = (y - G.y0 + (j + .5) / sub) * cell; c.moveTo(px + q, py); c.arc(px, py, q, 0, 6.2832); } c.fill(); } return b; };
+  // the pixel robot: one dot on each grid square, sized by the machine's shading
+  const ghostBitmap = (G, cell, alpha, rgb = '255,255,255') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.55 + .45 * s)})`; c.beginPath(); c.arc((x - G.x0 + .5) * cell, (y - G.y0 + .5) * cell, Math.max(.3, cell * .44 * s), 0, 6.2832); c.fill(); } return b; };
   // the robot's body stays quiet, so each bright dot reads as one listing at a glance
-  const BODY = .56, THIN_DOTS = 20;
+  const BODY = .3, THIN_DOTS = 20;
   // nice dollar ticks inside a range
   const TICKS = [300, 1000, 3000, 10000, 30000, 100000, 300000];
   // a tooltip that stays inside its parent
@@ -78,7 +79,7 @@
     }
     function draw(now) {
       const { c } = fit(cv), { X, Y, base } = g, ink = 'rgb(14,22,38)', C = '40,71,206';
-      const rev = reduce ? 1 : seen ? ease(clamp((now - born) / 1100)) : 0; let moving = seen && rev < 1;
+      const rev = reduce ? 1 : seen ? ease(clamp((now - born) / 1800)) : 0; let moving = seen && rev < 1;
       c.save(); c.beginPath(); c.rect(0, 0, X(0) + rev * (X(30) - X(0)) + 8, g.H); c.clip();
       // the band and the typical price: solid where this robot has listings, quieter and dotted where they are worked out from other ages
       const a0 = clamp(D.range[0] - 1, 0, 30), a1 = clamp(D.range[1] + 1, 0, 30);
@@ -104,14 +105,13 @@
     }
     function reading() {
       if (sel === shown) return; shown = sel;
-      const c = D.curve[sel], y = D.now - sel, near = P.filter(q => Math.abs(q.whole - sel) <= 1).length, thin = D.tier === 'thin';
+      const c = D.curve[sel], y = D.now - sel, near = P.filter(q => Math.abs(q.whole - sel) <= NEAR).length, thin = D.tier === 'thin';
       read.querySelector('.r-ra').textContent = sel === 1 ? '1 year old' : sel + ' years old';
       read.querySelector('.r-ry').textContent = y;
       read.querySelector('.r-rv').textContent = thin ? `${money(c[0])} to ${money(c[2])}` : money(c[1]);
-      // one sentence for each state, counting only the listings that back the price when those are few
-      const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1);
-      const nf = P.filter(q => q.fit && Math.abs(q.whole - sel) <= 1).length, F = D.fit;
-      read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this, ${nf === 0 ? 'none this age. Our guess from other ages.' : nf === F ? (F === 1 ? 'near this age.' : F === 2 ? 'both near this age.' : 'all near this age.') : NW[nf] + ' near this age.'}` : `Most ask ${money(c[0])} to ${money(c[2])}. ${near ? `${near} listing${near === 1 ? '' : 's'} near this age.` : 'No listings this age yet. Our guess from other ages.'}`;
+      // the same count, by the same band, as this robot's card on the shelf. When few listings set the price, the sentence says how many first.
+      const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1), F = D.fit, count = near ? `${near} for sale near this age.` : 'None for sale near this age. Our guess from other ages.';
+      read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this. ${count}` : `Most ask ${money(c[0])} to ${money(c[2])}. ${count}`;
       read.querySelector('.r-rl').href = `price.html#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
@@ -154,8 +154,6 @@
     layout(); reading(); kick();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); kick(); });
     // the long lists start short
-    const mds = document.querySelector('.r-mds');
-    if (mds) { const links = [...mds.children], keep = matchMedia('(max-width:760px)').matches ? 6 : 12; if (links.length > keep + 3) { links.slice(keep).forEach(a => { a.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${links.length} models \u2192`; mds.after(b); b.addEventListener('click', () => { links.forEach(a => { a.hidden = false; }); b.remove(); }); } }
     document.querySelectorAll('[data-listings]').forEach(tbl => { const rows = [...tbl.tBodies[0].rows], keep = +(matchMedia('(max-width:760px)').matches ? tbl.dataset.keepM : tbl.dataset.keep); if (rows.length > keep + 2) { const step = (rows.length - 1) / (keep - 1), show = new Set(Array.from({ length: keep }, (_, i) => Math.round(i * step))); rows.forEach((r, i) => { if (!show.has(i)) r.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${rows.length} listings \u2192`; tbl.after(b); b.addEventListener('click', () => { rows.forEach(r => { r.hidden = false; }); b.remove(); }); } });
   }
 
@@ -190,23 +188,30 @@
     const geo = cv => { const G = ghost(cv.dataset.b), w = cv.clientWidth, h = cv.clientHeight, cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, (h - 2) / rows); return { G, cell, ox: cv.dataset.at === 'r' ? w - cols * cell : 0, oy: h - 2 - rows * cell, cols, rows }; };
     const dotXY = (g, d) => [g.ox + (d[0] - g.G.x0 + .5) * g.cell, g.oy + (d[1] - g.G.y0 + .5) * g.cell];
     // until the reader moves the age, every dot is bright. After that, only the dots near that age are.
-    const NEAR = 2; let sel = null;
+    let sel = null;
     const paint = (cv, t, hot) => {
       if (!ghost(cv.dataset.b)) return;
       const { c } = fit(cv), g = geo(cv), list = DOTS[cv.dataset.f] || [];
-      if (cv._cell !== g.cell) { cv._cell = g.cell; cv._bm = ghostBitmap(g.G, g.cell, g.cell < 2.4 ? BODY + .1 : BODY); }
-      c.drawImage(cv._bm, g.ox, g.oy, g.cols * g.cell, g.rows * g.cell);
-      // fine bright dots; a robot with very few listings keeps them a touch bigger, so each one can still be found and tapped
-      const lit = Math.round(list.length * t), r = clamp(g.cell * .32, list.length < THIN_DOTS ? 2.4 : 1.2, list.length < THIN_DOTS ? 3 : 1.9);
-      const far = [];
+      if (cv._cell !== g.cell) { cv._cell = g.cell; cv._bm = ghostBitmap(g.G, g.cell, g.cell < 2.4 ? BODY + .04 : BODY); }
+      c.globalAlpha = clamp(t * 2.5); c.drawImage(cv._bm, g.ox, g.oy, g.cols * g.cell, g.rows * g.cell); c.globalAlpha = 1;
+      // bright dots, one per listing. A robot with very few listings keeps them a touch bigger, so each one can still be found and tapped. They fly to their seats as t runs from 0 to 1.
+      const r = clamp(g.cell * .62, list.length < 30 ? 2.6 : 1.9, 3.3), n = list.length, far = [], W = cv.clientWidth, H = cv.clientHeight;
       c.fillStyle = '#fff'; c.beginPath();
-      for (let i = 0; i < lit; i++) { const k = list[(i * 7919) % list.length]; if (sel !== null && Math.abs(k[7] - sel) > NEAR) { far.push(k); continue; } const [x, y] = dotXY(g, k); c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); }
+      for (let i = 0; i < n; i++) {
+        const k = list[(i * 7919) % n];
+        let [x, y] = dotXY(g, k), q = r;
+        if (t < 1) { const rnd = (i * 7919 % 433) / 433, u = clamp((t - rnd * .45) / .55), e_ = 1 - Math.pow(1 - u, 3); if (u <= 0) continue; x += (1 - e_) * (rnd - .5) * W * .7; y += (1 - e_) * ((i * 613 % 433) / 433 - .3) * H * .5; q = r * (.5 + .5 * e_); }
+        else if (sel !== null && Math.abs(k[7] - sel) > NEAR) { far.push(k); continue; }
+        c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832);
+      }
       c.fill();
       if (far.length) { const q = r * .72; c.fillStyle = 'rgba(255,255,255,.34)'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
       if (hot) { const [x, y] = dotXY(g, hot); c.fillStyle = 'rgb(150,232,255)'; c.beginPath(); c.arc(x, y, r + 1.6, 0, 6.2832); c.fill(); }
     };
     const cvs = [...shelf.querySelectorAll('canvas[data-b]')];
-    const run = cv => { if (reduce) { paint(cv, 1); cv.dataset.done = 1; return; } const n = (DOTS[cv.dataset.f] || []).length, t0 = performance.now(), dur = 500 + Math.min(1100, n * 7); const step = now => { const t = clamp((now - t0) / dur); paint(cv, t); if (t < 1) requestAnimationFrame(step); else cv.dataset.done = 1; }; requestAnimationFrame(step); };
+    // Assemble: each robot's dots fly to their seats over 2200ms, the robots 300ms apart
+    let nextAt = 0;
+    const run = cv => { if (reduce) { paint(cv, 1); cv.dataset.done = 1; return; } const now0 = performance.now(), t0 = Math.max(now0, nextAt); nextAt = t0 + 300; const step = now => { const t = clamp((now - t0) / 2200); paint(cv, t); if (t < 1) requestAnimationFrame(step); else cv.dataset.done = 1; }; requestAnimationFrame(step); };
     const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.unobserve(en.target); run(en.target); } }), { threshold: .2 });
     cvs.forEach(cv => { paint(cv, 0); io.observe(cv); });
     let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => cvs.forEach(cv => paint(cv, cv.dataset.done ? 1 : 0)), 120); });
@@ -237,15 +242,15 @@
     if (dial) {
       const CUR = JSON.parse(shelf.querySelector('.r-cur').textContent), inp = dial.querySelector('input'), out = dial.querySelector('output'), cells = [...shelf.querySelectorAll('.r-cell')];
       const yrs = a => a === 1 ? '1 year' : `${a} years`, dots = n => `${n} dot${n === 1 ? '' : 's'}`;
-      dial.hidden = false; const sa = shelf.querySelector('.r-s-age'); if (sa) sa.hidden = false; shelf.classList.add('aged');
+      dial.hidden = false; shelf.classList.add('aged');
       inp.addEventListener('input', () => {
         const a = sel = +inp.value;
         out.textContent = yrs(a); inp.setAttribute('aria-valuetext', `${yrs(a)} old`);
         for (const ce of cells) {
           const list = DOTS[ce.dataset.k] || [], n = list.length, nr = list.filter(d => Math.abs(d[7] - a) <= NEAR).length, ct = ce.querySelector('.r-c-ct'), f = CUR[ce.dataset.k];
-          const short = nr ? `${nr} near this age` : 'None near this age';
+          const short = nr ? `${nr} for sale near this age` : 'None for sale near this age';
           ct.firstChild.textContent = ct.dataset.n ? short + '.' + ct.dataset.n : short;
-          ct.lastChild.textContent = (nr ? `${nr} of ${dots(n)} near this age.` : `None of its ${dots(n)} are near this age, so this is a rough guess.`) + ct.dataset.n;
+          ct.lastChild.textContent = (nr ? `${nr} of ${n} for sale near this age.` : `None of its ${dots(n)} are near this age, so this is a rough guess.`) + ct.dataset.n;
           if (!f) continue;
           const c = f.c[a], thin = f.t === 'thin', big = f.t === 'big', pr = ce.querySelector('.r-c-pr'), at = ce.querySelector('.r-c-at');
           pr.className = `r-c-pr ${thin || !nr ? 't' : big && nr >= 5 ? 'b' : nr >= 5 || big ? 'm' : 't'} num`;
@@ -255,5 +260,38 @@
         cvs.forEach(cv => paint(cv, cv.dataset.done ? 1 : 0));
       });
     }
+  }
+
+  // ---------------------------------------------------------------- the Ground Fade: gradient to white over 60vh of scroll, with the next section's top between 75% and 15% of the screen
+  // On a robot's page the first screen is sticky: it holds still for 60vh of scroll and through the fade, its words leave in the first half, and the next section rises past it. Taller than the screen on a phone, it first scrolls to its own bottom edge.
+  const gd = document.querySelector('.r-ground'), nx = document.querySelector('.r-gf-next'), pg = document.querySelector('.page'), one = document.querySelector('.r-one');
+  if (gd && nx && !reduce) {
+    pg.classList.add('gf-on'); let last = -1;
+    const place = () => { if (!one) return; const v = gd.offsetHeight, H = one.offsetHeight, over = Math.max(0, H - v); one.style.top = -over + 'px'; nx.style.marginTop = .75 * v + over + .6 * v - H + 'px'; };
+    const on = () => { const v = gd.offsetHeight, k = clamp((v * .75 - nx.getBoundingClientRect().top) / (v * .6)); if (k === last) return; last = k; pg.style.setProperty('--gf', k.toFixed(3)); pg.classList.toggle('gfing', k < 1); pg.classList.toggle('gfout', k >= .5); gd.style.opacity = 1 - k; gd.style.visibility = k >= 1 ? 'hidden' : ''; };
+    place();
+    addEventListener('scroll', on, { passive: true }); addEventListener('resize', () => { place(); on(); }, { passive: true }); on();
+    if (one) new ResizeObserver(() => { place(); on(); }).observe(one);
+  }
+
+  // ---------------------------------------------------------------- the seven robots to come: they assemble 300ms apart when the row arrives, and rest off screen
+  // A moving robot's picture decodes the first time it is drawn, and until then its canvas stays blank. So each is decoded ahead of time on a canvas outside the page, one at a time, well before the row arrives, and the row starts only when all seven are ready, with its timing intact.
+  const row = document.querySelector('.r-miss-g');
+  if (row) {
+    const bots = [...row.querySelectorAll('canvas')], d = () => window.FerraDots; let ready = false, wanted = false, started = false, live = false;
+    const go = () => { const D_ = d(); started = true; bots.forEach((c, i) => setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; D_.draw(c); if (!live) D_.pause(c); }, reduce ? 0 : i * 300)); };
+    const decode = i => {
+      if (i >= bots.length) { ready = true; if (wanted && !started) go(); return; }
+      const c = document.createElement('canvas'), idle = window.requestIdleCallback || setTimeout; let done = false;
+      const next = () => { if (done) return; done = true; idle(() => decode(i + 1)); };
+      c.dataset.bot = bots[i].dataset.bot; c.dataset.tone = bots[i].dataset.tone;
+      c._redo = next;           // dotbot.js calls this when the decode ends, and a canvas outside the page paints nothing
+      d().draw(c); setTimeout(next, 2500);   // a file that never answers must not hold up the rest
+    };
+    const early = new IntersectionObserver(es => { if (!es.some(en => en.isIntersecting)) return; early.disconnect(); const wait = () => { if (!d()) return setTimeout(wait, 100); bots.forEach(c => d().fetch(c)); decode(0); }; wait(); }, { rootMargin: '2400px' }); early.observe(row);
+    const seen = new IntersectionObserver(es => es.forEach(en => { const D_ = d(); if (!D_) return; live = en.isIntersecting;
+      if (en.isIntersecting && en.intersectionRatio >= .4 && !started) { if (ready) go(); else wanted = true; }
+      else if (started) bots.forEach(c => { if (c.classList.contains('dotbot')) live ? D_.resume(c) : D_.pause(c); }); }), { threshold: [0, .4] });
+    seen.observe(row);
   }
 })();

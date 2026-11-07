@@ -4,17 +4,18 @@
 // dots stay cobalt and the pointer and scan highlight is the brighter cobalt #2847ce). Cyan stays for dark backgrounds.
 // Names: arm, arm2, cobot, amr, pallet, delivery, cleaning, cell, cartons; "-s" coarse (46 columns), plain (72), "-l" fine (112, assets/dots-l.js).
 // A name ending in "-loop" is a moving robot (media/dots/seq.js, played at 12 frames a second); a missing name falls back to the nearest still.
-// hero-cobot-loop, hero-amr-loop, hero-pallet-loop, hero-delivery-loop and hero-cleaning-loop each travel in their own file, one per tone: media/dots/loops/<name>.js is
+// The nine moving robots (hero-arm, cobot, amr, pallet, delivery, cleaning, humanoid, drone, legged, each -loop) each travel in their own file, one per tone: media/dots/loops/<name>.js is
 // shaded for data-tone="light" and <name>-ink.js for data-tone="ink". The file loads when a canvas naming it comes near the screen, so a page without one pays nothing.
 // Inside .rstage (core.robot_stage) the canvas is sized from its box height and the empty rows under the robot are cut, so the lowest dots touch the hairline;
 // the footer fleet (.ff-bot) cuts them too, so all six robots stand on one line. On the home hero (.h-stage) the stage's scan line (.h-scan)
 // brightens a moving robot's live frame as it passes.
 // Inside an element with data-dot-hover, dots near the pointer grow and take the accent colour (pointer devices only).
+// On a screen under 2x, dots sit on a lattice a whole number of device pixels apart, at least 2, each centred on a pixel: a fractional distance beats against the pixel grid and paints a plaid pattern over the robot. Each point of the lattice takes the largest dot under it, so thin parts survive, and the canvas keeps the size the page gave it.
 (() => {
   const D = window.FERRA_DOTS || {}, Q = window.FERRA_SEQ = window.FERRA_SEQ || {}, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const TONES = { light: { base: [255, 255, 255], acc: [150, 232, 255], hi: [150, 232, 255], floor: .28 }, ink: { base: [30, 51, 155], acc: [30, 51, 155], hi: [40, 71, 206], floor: .46 } };
-  const FALL = { cell: 'arm2', cartons: 'pallet', 'cell-loop': 'cell', 'cobot-loop': 'cobot-l', 'arm2-loop': 'arm2', 'pallet-loop': 'pallet', 'arm-loop': 'arm', 'hero-cobot-loop': 'cobot-l', 'hero-amr-loop': 'amr-l', 'hero-pallet-loop': 'pallet-l', 'hero-delivery-loop': 'delivery-l', 'hero-cleaning-loop': 'cleaning-l' };
+  const FALL = { cell: 'arm2', cartons: 'pallet', 'cell-loop': 'cell', 'cobot-loop': 'cobot-l', 'arm2-loop': 'arm2', 'pallet-loop': 'pallet', 'arm-loop': 'arm', 'hero-cobot-loop': 'cobot-l', 'hero-amr-loop': 'amr-l', 'hero-pallet-loop': 'pallet-l', 'hero-delivery-loop': 'delivery-l', 'hero-cleaning-loop': 'cleaning-l', 'hero-arm-loop': 'arm-l' };
   const pick = n => { const seen = new Set(); while (n && !seen.has(n)) { seen.add(n); if (D[n]) return D[n]; if (n.endsWith('-l')) n = n.slice(0, -2); else n = FALL[n] || (n.endsWith('-s') && FALL[n.slice(0, -2)] ? FALL[n.slice(0, -2)] + '-s' : null); } return null; };
   const parse = b => b.pts || (b.pts = b.d.split(';').map(s => { const [x, y, L, A, acc, ed] = s.split(',').map(Number); return { x, y, L: L / 100, A: A / 100, acc, ed: ed / 100, r: Math.random() }; }));
   const ease = t => 1 - Math.pow(1 - t, 3);
@@ -42,7 +43,7 @@
   }
 
   // moving robots in their own file: a plain script tag, which also works from file:// and under the site's same-origin policy
-  const OWN = /^hero-(cobot|amr|pallet|delivery|cleaning)-loop$/, own = {};
+  const OWN = /^hero-(arm|cobot|amr|pallet|delivery|cleaning|humanoid|drone|legged)-loop$/, own = {};
   const ownKey = cv => { const n = cv.dataset.bot || ''; return OWN.test(n) ? n + (cv.dataset.tone === 'light' ? '' : '-ink') : n; };
   function fetchOwn(key, then) {
     const o = own[key] || (own[key] = { wait: [], done: false });
@@ -75,7 +76,9 @@
     // standing robots: cut the empty rows under the lowest dot, so the robot's feet sit on the box's bottom edge
     const box = cv.parentElement, stand = box && (box.classList.contains('rs-bot') || box.classList.contains('ff-bot'));
     if (stand && pts && bot.my === undefined) { let m = 0; for (const p of pts) if (p.y > m) m = p.y; bot.my = m; }
-    const rows = stand && pts ? bot.my + 1 : bot.h;
+    // a moving robot stands on the lowest row any of its frames reaches
+    if (stand && sq && sq.my === undefined) { let m = 0; for (const fr of sq.frames) for (const p of fr) if (p.y > m) m = p.y; sq.my = m; }
+    const rows = stand ? (sq ? sq.my : bot.my) + 1 : bot.h;
     const dpr = Math.min(2, devicePixelRatio || 1);
     let cw;
     if (box && box.classList.contains('rs-bot')) {
@@ -92,10 +95,21 @@
     const assemble = cv.dataset.anim === 'assemble' && !reduce && !resume, scan = cv.dataset.scan && !reduce, play = sq && !reduce;
     const hov = fine && cv.closest('[data-dot-hover]');
     cv._st = { pitch, cw, ch, bot, tone, light };
+    // what assets/resolve.js reads to resolve this robot into its photo, and f says which frame is on screen
+    if (sq) { const was = cv._rz; cv._rz = { frames: sq.frames, n: sq.n, w: sq.w, h: sq.h, p: pitch, dx: 0, dy: 0, f: was ? was.f : 0, rad: .44, style: (s, a) => { const b = a ? tone.acc : tone.base, al = light ? .55 + .45 * s : .45 + .55 * s; return `rgba(${b[0]},${b[1]},${b[2]},${al})`; } }; }
     // dot size: silhouette floor, then shading (bright plastic grows dots on blue, darker parts grow dots on paper), then outline boost
     const size = p => { if (p.s !== undefined) return p.s; const shade = light ? Math.pow(p.L, .9) : Math.pow(1 - p.L, .8); return p.A * Math.min(1, tone.floor + (1 - tone.floor) * shade + p.ed * .35); };
     const heat = hov ? (cv._heat && cv._heat.length === bot.w * bot.h ? cv._heat : (cv._heat = new Float32Array(bot.w * bot.h))) : null;
-    const paint = (c, el, list, dt) => {
+    // the lattice for a screen under 2x, worked out once per frame and size. The rows count up from the robot's feet, so it still stands on its line
+    const L = dpr < 2 ? Math.max(2, Math.round(pitch * dpr)) : 0, dot = L ? L / dpr : pitch;
+    const onLattice = list => { if (!L) return list; const key = L + '|' + W + '|' + H + '|' + cv.dataset.tone, memo = list._lat || (list._lat = {}); if (memo[key]) return memo[key];
+      const at = new Map(), d = pitch * dpr, out = []; for (const p of list) at.set(p.y * bot.w + p.x, p);
+      for (let Y = H % L; Y < H; Y += L) for (let X = 0; X + L <= W; X += L) { let best = null, top = 0;
+        for (let sy = Math.floor(Y / d), ey = Math.floor((Y + L - .01) / d); sy <= ey; sy++) for (let sx = Math.floor(X / d), ex = Math.floor((X + L - .01) / d); sx <= ex; sx++) { const p = at.get(sy * bot.w + sx); if (!p) continue; const v = size(p); if (v > top) { top = v; best = p; } }
+        if (best) out.push(Object.assign({}, best, { px: (X + (L >> 1) + .5) / dpr, py: (Y + (L >> 1) + .5) / dpr })); }
+      return memo[key] = out; };
+    const paint = (c, el, all, dt) => {
+      const list = onLattice(all);
       c.clearRect(0, 0, cw, ch);
       const sy = scan ? ((el * .22) % 1.6 - .3) * bot.h : -99, ptr = hov && cv._ptr, ey = extScan();
       let warm = false;
@@ -109,12 +123,12 @@
         if (heat) { const i = p.y * bot.w + p.x, px = (p.x + .5) * pitch, py = (p.y + .5) * pitch;
           const hit = ptr && Math.hypot(px - ptr.x, py - ptr.y) < 36;
           h = heat[i] = hit ? Math.min(1, heat[i] + dt / 120) : Math.max(0, heat[i] - dt / 400); if (h > 0) warm = true; }
-        const rad = pitch * .44 * sz * (1 + near * .45) * (1 + h * .35) * (.35 + .65 * k);
+        const rad = dot * .44 * sz * (1 + near * .45) * (1 + h * .35) * (.35 + .65 * k);
         const ox = (1 - k) * (p.r - .5) * pitch * 26, oy = (1 - k) * (p.r * 1.7 - 1.1) * pitch * 18;
         const b = p.acc ? tone.acc : tone.base, mix = Math.max(h, ey === null || p.acc ? 0 : Math.min(1, near * 1.3) * .85), cc = mix ? b.map((v, j) => v + (tone.hi[j] - v) * mix) : b;
         const al = (light ? .55 + .45 * sz : .45 + .55 * sz) * k;
         c.fillStyle = `rgba(${cc[0] | 0},${cc[1] | 0},${cc[2] | 0},${Math.min(1, al + near * .4 + h * .3)})`;
-        c.beginPath(); c.arc((p.x + .5) * pitch + ox, (p.y + .5) * pitch + oy, Math.max(.35, rad), 0, 6.283); c.fill();
+        c.beginPath(); c.arc((L ? p.px : (p.x + .5) * pitch) + ox, (L ? p.py : (p.y + .5) * pitch) + oy, Math.max(.35, rad), 0, 6.283); c.fill();
       }
       return warm;
     };
@@ -130,7 +144,9 @@
     const frame = t => {
       if (t0 === null) t0 = t; const el = Math.max(0, (t - t0) / 1000), dt = last === null ? 16 : Math.min(64, t - last); last = t;
       const asmOn = assemble && el < ASM;
-      const list = sq ? sq.frames[play && !asmOn ? Math.floor(((cv._f0 || 0) + (el - (assemble ? ASM : 0)) * sq.fps) % sq.n) : 0] : pts;
+      const fi = sq && play && !asmOn ? Math.floor(((cv._f0 || 0) + (el - (assemble ? ASM : 0)) * sq.fps) % sq.n) : 0;
+      if (cv._rz) cv._rz.f = fi;
+      const list = sq ? sq.frames[fi] : pts;
       const warm = paint(ctx, el, list, dt);
       cv._live = asmOn || scan || play || warm || !!(hov && cv._ptr);
       if (cv._live && cv._vis !== false) cv._raf = requestAnimationFrame(frame);
@@ -154,6 +170,10 @@
   const early = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; early.unobserve(en.target); fetchOwn(ownKey(en.target)); }), { rootMargin: '1200px' });
   const start = () => { all().forEach(cv => { io.observe(cv); if (OWN.test(cv.dataset.bot || '')) early.observe(cv); }); hover(); };
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => all().forEach(cv => { if (cv._seen) { cv.dataset.anim = 'static'; draw(cv); } }), 150); });
-  window.FerraDots = { draw, start, pick };
+  // for a canvas this script does not watch itself (the footer's robots: a sticky footer always counts as on screen, so site.js says when they show)
+  const fetch = cv => { if (OWN.test(cv.dataset.bot || '')) fetchOwn(ownKey(cv)); };
+  const pause = cv => { cv._vis = false; cancelAnimationFrame(cv._raf); };
+  const resume = cv => { cv._vis = true; if (cv._live === undefined || cv._live) draw(cv, true); };
+  window.FerraDots = { draw, start, pick, fetch, pause, resume };
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
 })();

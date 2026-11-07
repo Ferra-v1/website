@@ -16,6 +16,24 @@
     }
   }
 
+  // Overlap: a section holds with its foot on the bottom of the screen while the next slides up over it. Ground Fade: the empty stretch between two sections, and both sections with it, turn from one colour to the other, tied to the scroll
+  if (!reduce) {
+    const pins = [...document.querySelectorAll('.l-bad,.l-recv')];
+    const pin = () => pins.forEach(el => { el.classList.add('l-pin'); el.style.setProperty('--l-h', el.offsetHeight + 'px'); });
+    pin(); addEventListener('load', pin); addEventListener('resize', pin);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(pin);
+    const q = s => document.querySelector(s), gaps = [...document.querySelectorAll('.l-gap')];
+    const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+    // white to ink: the chart fades out with the first half of the ground, so it never sits in full colour on a grey page. White to pale: nothing needs to fade
+    const fades = [[q('.l-loan'), gaps[0], q('.l-bad'), hex('#ffffff'), hex('#0e1626'), q('.l-loan > .in')], [q('.l-resale'), gaps[1], q('.l-recv'), hex('#ffffff'), hex('#ebf5fd'), null]];
+    const ground = () => { const vh = innerHeight; for (const [a, gap, b, A, B, content] of fades) { const r = gap.getBoundingClientRect(), t = Math.max(0, Math.min(1, (vh * .7 - r.top) / r.height));
+        if (t <= 0) { a.style.backgroundColor = b.style.backgroundColor = gap.style.backgroundColor = ''; if (content) content.style.opacity = ''; continue; }
+        const c = `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`;
+        a.style.backgroundColor = gap.style.backgroundColor = c; b.style.backgroundColor = t >= 1 ? '' : c;
+        if (content) content.style.opacity = Math.max(0, 1 - t * 2); } };
+    let gt = 0; addEventListener('scroll', () => { if (!gt) gt = requestAnimationFrame(() => { gt = 0; ground(); }); }, { passive: true }); ground();
+  }
+
   // the slider. One number, the share lent, redraws the figures, the loan's shape and the words. Every sum comes from the rows the page was built with.
   const dc = document.querySelector('[data-dc]');
   if (!dc) return;
@@ -37,11 +55,13 @@
   // the first month a sale at this column covers what is left
   const covered = k => { for (let m = 0; m <= T; m++) if (R[m][k] >= owed(m) - .5) return m; return T; };
   const when = m => m === 0 ? 'Day one' : 'Month ' + m;
+  // the words under the chart only speak while a month is being read, by hover or by tap. The day one sums live on Methodology
   function words() {
-    const m = reading < 0 ? 0 : reading, [v, , a, s] = R[m], l = owed(m);
+    if (reading < 0) return '';
+    const m = reading, [v, , a, s] = R[m], l = owed(m);
     if (m === T) return `At month ${T}, the last payment is made and nothing is owed. The robots are worth about <b>${fifty(v)}</b> in our model.`;
-    const start = m === 0 ? `On the first day, <b>${money(l)}</b> is owed.` : `At month ${m}, <b>${money(l)}</b> is still owed and the robots are worth about <b>${fifty(v)}</b> in our model.`;
-    return `${start} A ${D.pct}% sale would bring ${m ? 'about ' : ''}<b>${m ? fifty(a) : whole(a)}</b> counting everything installed, or about <b>${rough(s)}</b> for the arms alone.`;
+    const start = m === 0 ? `On day one, <b>${money(l)}</b> is owed.` : `At month ${m}, <b>${money(l)}</b> is still owed.`;
+    return `${start} A forced sale would bring ${m ? 'about ' : ''}<b>${m ? fifty(a) : whole(a)}</b>, or about <b>${rough(s)}</b> for the arms alone.`;
   }
   // a label sits inside its shape at a month where the shape is thick enough, and steps aside when it is not
   function label(el, m, lo, hi) {
@@ -75,7 +95,7 @@
     now.innerHTML = words(); place();
     stops.forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.adv === adv)));
   }
-  function glide(to, ms = 480) {
+  function glide(to, ms = 700) {
     cancelAnimationFrame(tween);
     if (reduce) { set(to); return; }
     const from = adv, t0 = performance.now(), step = n => { const u = Math.min(1, (n - t0) / ms), e = u * u * (3 - 2 * u); set(from + (to - from) * e); if (u < 1) tween = requestAnimationFrame(step); };
@@ -96,11 +116,11 @@
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(place, 120); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
   addEventListener('load', place);
-  // on arrival the shapes draw in from the left, then the slider moves once on its own, so the reader sees that it is a control
+  // on arrival the shapes draw in from the left over 1800ms, then the slider moves once on its own, so the reader sees that it is a control
   if (!reduce && 'IntersectionObserver' in window) {
     plot.classList.add('l-wait');
     new IntersectionObserver((es, o) => es.forEach(en => { if (!en.isIntersecting) return; o.disconnect();
       plot.classList.remove('l-wait');
-      setTimeout(() => { if (touched) return; glide(50, 700); setTimeout(() => { if (!touched) glide(D.adv, 700); }, 900); }, 1300); }), { threshold: .4 }).observe(plot);
+      setTimeout(() => { if (touched) return; glide(50, 900); setTimeout(() => { if (!touched) glide(D.adv, 900); }, 1200); }, 2000); }), { threshold: .4 }).observe(plot);
   }
 })();

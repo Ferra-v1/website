@@ -2,7 +2,7 @@
 (() => {
   const links = [...document.querySelectorAll('.d-toc a')], secs = links.map(a => document.getElementById(a.hash.slice(1))).filter(Boolean);
   if (!secs.length) return;
-  // four reference sections start closed on a phone and stay plain sections on a wide screen. A link to one, or to anything inside one, opens it first.
+  // the reference sections start closed on a phone and stay plain sections on a wide screen. A link to one, or to anything inside one, opens it first.
   const folds = [...document.querySelectorAll('.d-cold')], phone = matchMedia('(max-width:720px)');
   const reveal = h => { const t = h && h.length > 1 && document.getElementById(h.slice(1)); if (!t) return; const d = t.querySelector(':scope > .d-cold') || t.closest('.d-cold'); if (d) d.open = true; return t; };
   const lay = () => { folds.forEach(d => { d.open = !phone.matches; }); const t = reveal(location.hash); if (t) t.scrollIntoView(); };

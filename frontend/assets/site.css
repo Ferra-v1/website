@@ -5,9 +5,9 @@
  --ink:#0e1626;--c:#2847ce;--deep:#1e339b;--mist:#ebf5fd;--paper:#f8fafd;--muted:#5b6474;--line:#e2e6ee;--cap:#6b7383;--w:1200px;
  --serif:'Inter',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--sans:'Geist',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--doc:'Source Serif 4',Georgia,'Times New Roman',serif;
  --t-display:clamp(52px,6.67vw,96px);--t-title:clamp(44px,5.56vw,80px);--t-statement:clamp(38px,4.45vw,64px);--t-section:clamp(31px,3.06vw,44px);--t-sub:clamp(22px,1.67vw,24px);--t-smallh:17px;
- --t-lead:clamp(18px,1.39vw,20px);--t-body:16px;--t-small:14px;--t-btn:15px;--t-film:var(--t-section);
- --g-white:#fff;--g-pale:#ebf5fd;--g-dark:#0e1626;--g-grad:linear-gradient(215deg,#0fa9e8 0%,#0394e0 18.8%,#027dda 38.8%,#0b64d8 57.5%,#2847ce 77.5%,#233db5 100%);--g-foot:#2847ce;
- --r-field:12px;--r-card:20px;--r-doc:16px;--hair:1px solid var(--line);--sh-doc:0 1px 0 rgba(10,20,60,.04),0 18px 40px -24px rgba(10,20,60,.28)}
+ --t-lead:clamp(18px,1.39vw,20px);--t-body:16px;--t-small:14px;--t-btn:14px;--t-film:var(--t-section);
+ --g-white:#fff;--g-pale:#ebf5fd;--g-dark:#0e1626;--g-grad:linear-gradient(215deg,#0fa9e8 0%,#0394e0 18.8%,#027dda 38.8%,#0b64d8 57.5%,#2847ce 77.5%,#233db5 100%);--g-foot:#2847ce;--g-cobalt:#2847ce;
+ --r-field:2px;--r-card:4px;--r-doc:4px;--hair:1px solid var(--line);--sh-doc:0 1px 0 rgba(10,20,60,.04),0 18px 40px -24px rgba(10,20,60,.28)}
 @media (max-width:720px){:root{--t-small:15px}}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -19,10 +19,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 :where(p) a:where(:not(.btn,.tlink)){color:var(--c)}
-:where(.w,.on-dark,.band,.foot,.g-dark,.g-grad) :where(p) a:where(:not(.btn,.tlink)){color:#fff;font-weight:600}
+:where(.w,.on-dark,.band,.foot,.g-dark,.g-grad,.g-cobalt) :where(p) a:where(:not(.btn,.tlink)){color:#fff;font-weight:600}
 :where(p) a:where(:not(.btn,.tlink)):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 a:focus-visible,button:focus-visible{outline:2px solid var(--c);outline-offset:2px}
-:where(.w,.on-dark,.foot,.g-dark,.g-grad,.mn) :is(a,button):focus-visible{outline-color:#fff}
+:where(.w,.on-dark,.foot,.g-dark,.g-grad,.g-cobalt,.mn,.np,.np-on) :is(a,button):focus-visible{outline-color:#fff}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .in{max-width:var(--w);margin:0 auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 .num{font-variant-numeric:lining-nums tabular-nums}
@@ -63,91 +63,109 @@ canvas.dotbot{display:block;width:100%}
 .vis{font-family:var(--serif);font-weight:700;font-size:var(--t-section);line-height:1.12;letter-spacing:-.028em;color:var(--ink);max-width:1120px;margin:0;text-wrap:balance}
 .w .vis,.vis.w{color:#fff}
 
-/* the one button: a 48px pill, 15px 600, cobalt on light, white on dark. btn-c and btn-w name the fill; a bare .btn picks it from the ground */
-.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 24px;border:0;border-radius:999px;background:var(--c);color:#fff;font:600 var(--t-btn)/1 var(--sans);letter-spacing:0;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .15s ease,background .2s ease}
-.btn:hover{transform:translateY(-1px)}
+/* the one button: square, 48px, uppercase 14px 500. Filled cobalt on light, filled white on dark, outlined (.btn-o) as the only second style. btn-c and btn-w name the fill; a bare .btn picks it from the ground */
+.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 22px;border:1px solid transparent;border-radius:2px;background:var(--c);color:#fff;font:500 var(--t-btn)/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}
+.btn:hover{background:#2140bf}
 .btn-c{background:var(--c);color:#fff}.btn-c:hover{background:#2140bf}
-.btn-w,:where(.g-dark,.g-grad,.on-dark,.foot) .btn:where(:not(.btn-c)){background:#fff;color:var(--c)}
-.btn-w:hover{background:#eef2fb}
+.btn-w,:where(.g-dark,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)){background:#fff;color:var(--c)}
+.btn-w:hover,:where(.g-dark,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):hover{background:#e6ebf8}
+.btn.btn-o{background:transparent;color:var(--c);border-color:var(--c)}.btn.btn-o:hover{background:rgba(40,71,206,.08)}
+:where(.g-dark,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn.btn-o{color:#fff;border-color:rgba(255,255,255,.72);background:transparent}
+:where(.g-dark,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn.btn-o:hover{background:rgba(255,255,255,.12)}
 /* the one arrow link: 16px 600, cobalt on light, white on dark. Write the arrow in the text with &rarr; */
 .tlink{display:inline-flex;align-items:center;min-height:44px;font:600 16px/1.25 var(--sans);color:var(--c);text-decoration:none;margin:0}
-.tlink.w,:where(.g-dark,.g-grad,.on-dark,.foot) .tlink{color:#fff}
+.tlink.w,:where(.g-dark,.g-grad,.g-cobalt,.on-dark,.foot,.np) .tlink{color:#fff}
 .tlink:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .hlinks{display:flex;gap:12px 22px;flex-wrap:wrap;align-items:center;margin:18px 0 0}
 
-/* grounds: white, pale, one gradient, one dark ink, and cobalt for the footer only. At most one gradient region and one dark region a page beyond a video first screen */
+/* grounds: white, pale, and per page at most one gradient region, one dark ink region and one cobalt band, beyond a video first screen. The footer is cobalt on every page */
 .g-white,.white{background:var(--g-white)}
 .g-pale{background:var(--g-pale)}
 .g-grad{background:var(--g-grad);color:#fff}
 .g-dark{background:var(--g-dark);color:#fff}
+.g-cobalt{background:var(--g-cobalt);color:#fff}
 /* older names: both now read as white. New work uses g-white and g-pale */
 .paper,.mist{background:#fff}
 
-/* fields. Boxed in forms (.fl, 48px, radius 12). One pill for tools and typed sentences (.pf, 46px): pale on white, white on the gradient */
+/* fields, all radius 2px. Boxed in forms (.fl, 48px). One for tools and typed sentences (.pf, 46px): pale on white, white on the gradient */
 .fl{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:var(--t-small);color:var(--muted)}
 .fl.wide{grid-column:1 / -1}
 .fl input,.fl select,.fl textarea{height:48px;border-radius:var(--r-field);border:1px solid var(--line);padding:0 14px;font:400 16px var(--sans);color:var(--ink);background:#fff;width:100%;min-width:0}
 .fl textarea{height:auto;padding:12px 14px;resize:vertical}
 .fl select:required:invalid{color:#757f90}.fl select option{color:var(--ink)}
-.pf{height:46px;border:0;border-radius:999px;padding:0 20px;font:400 16px var(--sans);color:var(--ink);background:var(--g-pale);min-width:0}
+.pf{height:46px;border:0;border-radius:var(--r-field);padding:0 16px;font:400 16px var(--sans);color:var(--ink);background:var(--g-pale);min-width:0}
 .pf.w,:where(.g-grad) .pf{background:#fff}
 .pf:focus-visible,.fl input:focus,.fl select:focus,.fl textarea:focus{outline:2px solid var(--c);outline-offset:2px}
 /* select boxes: a drawn chevron in place of the browser arrow (the price tool's year stepper keeps its own) */
 .page select:not([multiple]):not(.pp-yr *){-webkit-appearance:none;appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230e1626' stroke-opacity='.6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;background-size:10px 6px;cursor:pointer}
 
-/* nav: at the top of the page in its own flow, or over a video first screen with .over. Below the first screen it leaves, and comes back as a floating bar when the reader scrolls up (.fbar, site.js) */
+/* the bar: full width, 72px, a hairline under it. Logo left, plain links centred, two square buttons right. Transparent over video and the gradient, white over white, dark while a panel is open.
+   .nav sits at the top of the page in its own flow, or over a video first screen with .over. Below the first screen it leaves, and the same bar (.fbar) comes back when the reader scrolls up (site.js). */
+.nav,.fbar{height:72px;color:var(--ink);background:#fff;border-bottom:1px solid var(--line);transition:background .25s ease,border-color .25s ease,color .25s ease}
 .nav{position:relative;z-index:30}
+.nav.on-dark{color:#fff;background:transparent;border-bottom-color:rgba(255,255,255,.22)}
 .nav.over{position:absolute;inset:0 0 auto}
-.nav .in{display:grid;grid-template-columns:minmax(auto,1fr) auto minmax(auto,1fr);align-items:center;gap:20px;height:80px}
-.nav .btn,.fbar .btn{justify-self:end}
-.brand{display:inline-flex;justify-self:start;text-decoration:none;align-items:center;min-height:44px}
+.nav.np-on,.fbar.np-on{color:#fff;background:var(--g-dark);border-bottom-color:rgba(255,255,255,.14)}
+.nav .in,.fbar .in{display:grid;grid-template-columns:minmax(auto,1fr) auto minmax(auto,1fr);align-items:center;gap:20px;height:100%;max-width:none;padding-inline:clamp(16px,2.8vw,40px)}
+.brand{display:inline-flex;justify-self:start;text-decoration:none;align-items:center;min-height:44px;color:var(--c)}
+.on-dark .brand,.np-on .brand{color:#fff}
 .brand .ilock{display:inline-flex;align-items:center;line-height:1;white-space:nowrap;font-size:24px}
 .brand .imk{display:inline-flex;flex:none}.brand svg{display:block;width:100%;height:100%}
-.links{position:relative;display:flex;gap:2px;font:500 var(--t-small)/1 var(--sans)}
-.links a{position:relative;z-index:1;display:inline-flex;align-items:center;height:40px;padding:0 14px;border-radius:999px;color:#3e4656;white-space:nowrap;transition:color .15s ease}
-.links a:hover{color:var(--ink)}
-.links a[aria-current]{color:var(--ink);background:rgba(14,22,38,.05)}
-.lhl{position:absolute;left:0;top:0;height:40px;border-radius:999px;background:rgba(14,22,38,.06);opacity:0;pointer-events:none;transition:transform .26s cubic-bezier(.2,.7,.2,1),width .26s cubic-bezier(.2,.7,.2,1),opacity .16s ease}
-.lhl.on{opacity:1}
-/* the small second level: opens under its nav page on hover or keyboard focus. The padding above the panel keeps the pointer inside on the way down */
+.links{position:relative;display:flex;gap:4px;font:500 var(--t-small)/1 var(--sans)}
+.links a{position:relative;display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 12px;color:inherit;white-space:nowrap}
+.links a::after{content:"";position:absolute;left:12px;right:12px;bottom:5px;height:2px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
+.links a[aria-current]::after,.links .lk.open a::after,.links a:hover::after,.links a:focus-visible::after{transform:none}
+.links a:not([aria-current]):hover::after{opacity:.45}
+.links .lk.open a::after{opacity:1}
 .lk{position:relative;display:inline-flex}
-.lsub{position:absolute;left:0;top:100%;z-index:5;padding-top:8px;visibility:hidden;opacity:0;transform:translateY(-4px);transition:opacity .16s ease,transform .16s ease,visibility 0s .16s}
-.lk:hover .lsub,.lk:focus-within .lsub{visibility:visible;opacity:1;transform:none;transition:opacity .16s ease,transform .16s ease}
-.lsub-in{display:flex;flex-direction:column;gap:2px;width:max-content;padding:8px;border-radius:18px;background:#fff;box-shadow:0 0 0 1px rgba(14,22,38,.07),0 18px 40px -20px rgba(14,22,38,.4)}
-.links .lsub a,.on-dark .links .lsub a{height:44px;border-radius:12px;color:#3e4656}
-.links .lsub a:hover,.on-dark .links .lsub a:hover{color:var(--ink);background:rgba(14,22,38,.05)}
-.links .lsub a[aria-current],.on-dark .links .lsub a[aria-current]{color:var(--ink);background:rgba(14,22,38,.05)}
-.on-dark .links a{color:rgba(255,255,255,.88)}.on-dark .links a:hover{color:#fff}
-.on-dark .links a[aria-current]{color:#fff;background:rgba(255,255,255,.14)}.on-dark .lhl{background:rgba(255,255,255,.14)}
+.chev{flex:none;transition:transform .25s ease}
+.lk.open .chev{transform:rotate(180deg)}
+.nav-b{display:flex;gap:10px;justify-self:end}
+.nav-b .btn{height:48px;padding:0 18px}
 .menu{display:none;width:44px;height:44px;border:0;background:none;color:inherit;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0;margin-right:-10px}
-.menu span{display:block;width:22px;height:2px;background:currentColor;border-radius:2px}
-.nav:not(.on-dark) .menu,.fbar .menu{color:var(--ink)}
-.on-dark .menu{color:#fff}
-/* the floating bar */
-.fbar{position:fixed;z-index:50;left:50%;top:calc(12px + env(safe-area-inset-top,0px));width:min(1080px,calc(100% - 24px));transform:translate(-50%,-160%);visibility:hidden;transition:transform .3s cubic-bezier(.3,.7,.2,1),visibility 0s linear .3s;color:var(--ink)}
-.fbar.on{transform:translate(-50%,0);visibility:visible;transition:transform .34s cubic-bezier(.2,.7,.2,1)}
-.fbar-in{display:grid;grid-template-columns:minmax(auto,1fr) auto minmax(auto,1fr);align-items:center;gap:12px;height:60px;padding:0 6px 0 22px;border-radius:999px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px);box-shadow:0 0 0 1px rgba(14,22,38,.07),0 14px 34px -18px rgba(14,22,38,.4)}
-.fbar .brand .ilock{font-size:22px}
-/* the phone menu */
+.menu span{display:block;width:22px;height:2px;background:currentColor}
+/* the same bar, fixed to the top when the reader scrolls back up */
+.fbar{position:fixed;z-index:50;inset:0 0 auto;transform:translateY(-101%);visibility:hidden;transition:transform .3s cubic-bezier(.3,.7,.2,1),visibility 0s linear .3s,background .25s ease,border-color .25s ease,color .25s ease}
+.fbar.on{transform:none;visibility:visible;transition:transform .34s cubic-bezier(.2,.7,.2,1),background .25s ease,border-color .25s ease,color .25s ease}
+/* the panels: one full-width dark layer under the bar, plain links on the left, one feature card on the right. It opens on hover and on keyboard focus. Its ::before is the bridge over the bar's lower edge, so the pointer never leaves it on the way down */
+.np{position:fixed;z-index:55;left:0;right:0;top:var(--np-top,72px);background:var(--g-dark);color:#fff;border-bottom:1px solid rgba(255,255,255,.14);opacity:0;transform:translateY(-8px);transition:opacity .25s ease,transform .25s ease}
+.np.on{opacity:1;transform:none}
+.np::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px}
+.np-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:clamp(40px,6vw,96px);max-width:var(--w);margin:0 auto;padding:clamp(32px,3vw,44px) 24px clamp(36px,3.4vw,52px)}
+.np-l{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.np-l a{display:block;padding:12px 0;min-height:44px}
+.np-l b,.np-card b{display:block;font:600 var(--t-smallh)/1.35 var(--serif);letter-spacing:-.01em;color:#fff}
+.np-l span,.np-card > span:last-child{display:block;margin-top:3px;font:400 var(--t-small)/1.45 var(--sans);color:rgba(255,255,255,.62)}
+.np-l a:hover span,.np-l a:focus-visible span,.np-l a[aria-current] span{color:rgba(255,255,255,.86)}
+.np-l a:hover b,.np-l a:focus-visible b{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+.np-card{display:block;padding:0 0 4px;color:#fff}
+.np-pic{display:flex;align-items:flex-end;justify-content:center;height:190px;margin-bottom:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-card);overflow:hidden}
+.np-card:hover .np-pic{border-color:rgba(255,255,255,.28)}
+.np-bot{padding:18px 18px 12px}.np-bot canvas{width:auto!important;max-width:100%;height:160px;aspect-ratio:112/96}
+.np-doc{align-items:flex-start;padding-top:18px}.np-doc .sheet{width:440px;flex:none;transform:scale(.72);transform-origin:top center;margin-bottom:-120px;box-shadow:none;padding:24px 28px}
+.np-list{align-items:center;padding:12px}.np-list img{height:100%;width:auto}
+/* the Resolve's canvas, over the robot's own while it runs */
+.rz{position:absolute;display:none;pointer-events:none;max-width:none}
+/* the phone menu: the same items, with panels as groups that open in place */
 .mn{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:var(--g-dark);color:#fff;overflow-y:auto;overscroll-behavior:contain;padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));animation:mn-in .22s ease both}
 @keyframes mn-in{from{opacity:0}}
-.mn-top{display:flex;align-items:center;justify-content:space-between;flex:none;height:80px}
+.mn-top{display:flex;align-items:center;justify-content:space-between;flex:none;height:72px}
 .mn-x{position:relative;width:44px;height:44px;margin-right:-10px;border:0;padding:0;background:none;color:#fff;cursor:pointer}
-.mn-x span{position:absolute;left:11px;top:21px;width:22px;height:2px;border-radius:2px;background:currentColor;transform:rotate(45deg)}.mn-x span:last-child{transform:rotate(-45deg)}
+.mn-x span{position:absolute;left:11px;top:21px;width:22px;height:2px;background:currentColor;transform:rotate(45deg)}.mn-x span:last-child{transform:rotate(-45deg)}
 .mn-links{display:flex;flex-direction:column;flex:none;padding-top:8px}
-.mn-links a{display:flex;align-items:center;min-height:56px;font:700 var(--t-section)/1.08 var(--serif);letter-spacing:-.028em;color:#fff;animation:mn-up .42s calc(var(--i) * 45ms + 40ms) cubic-bezier(.2,.7,.2,1) both}
-.mn-links a[aria-current]{color:rgb(150,232,255)}
-.mn-sub{display:flex;flex-direction:column;margin:-6px 0 8px}
-.mn-links .mn-sub a{min-height:44px;font:500 var(--t-body)/1.2 var(--sans);letter-spacing:0;color:rgba(255,255,255,.8)}
-.mn-links .mn-sub a[aria-current]{color:rgb(150,232,255)}
-@keyframes mn-up{from{opacity:0;transform:translateY(14px)}}
-.mn-foot{flex:none;padding:18px 0 24px;margin-top:auto}
+.mn-t{display:flex;align-items:center;justify-content:space-between;min-height:56px;font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em;color:#fff;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;list-style:none}
+.mn-t::-webkit-details-marker{display:none}
+.mn-t[aria-current]{color:rgb(150,232,255)}
+.mn-g[open] .chev{transform:rotate(180deg)}
+.mn-sub{display:flex;flex-direction:column;padding:6px 0 12px;border-bottom:1px solid rgba(255,255,255,.12)}
+.mn-sub a{display:block;padding:10px 0;min-height:44px}
+.mn-sub b{display:block;font:600 var(--t-smallh)/1.35 var(--serif);letter-spacing:-.01em;color:#fff}
+.mn-sub span{display:block;margin-top:2px;font:400 var(--t-small)/1.45 var(--sans);color:rgba(255,255,255,.62)}
+.mn-sub a[aria-current] b{color:rgb(150,232,255)}
+.mn-foot{display:flex;flex-direction:column;gap:10px;flex:none;padding:18px 0 24px;margin-top:auto}
 .mn-foot .btn{width:100%}
-@media (max-width:960px){.links{display:none}.nav .in,.fbar-in{grid-template-columns:minmax(0,1fr) auto auto;gap:8px}.menu{display:flex}.fbar-in{padding:0 18px 0 18px}}
-@media (min-width:961px){.mn{display:none}}
-/* on a phone the logo has the bar to itself while the first screen is showing. The floating bar brings the action back past it (.past, site.js), with the mark standing in for the whole logo so the full label fits. The action is always in the phone menu. */
-@media (max-width:560px){.nav .btn.lng,.fbar:not(.past) .btn.lng{display:none}}
-@media (max-width:439px){.fbar .btn.lng{padding:0 16px}.fbar.past:has(.btn.lng) .ilock > :not(.imk){display:none}}
+@media (max-width:1080px){.links,.nav-b{display:none}.nav .in,.fbar .in{grid-template-columns:minmax(0,1fr) auto;gap:8px}.menu{display:flex}.np{display:none}}
+@media (min-width:1081px){.mn{display:none}}
 
 /* lead forms */
 .lead{width:100%;max-width:680px}
@@ -159,7 +177,7 @@ canvas.dotbot{display:block;width:100%}
 .lerr{margin:0;font-size:var(--t-small);font-weight:500;color:#b42318}
 .fl [aria-invalid="true"]{border-color:#b42318;outline:1px solid #b42318;outline-offset:-2px}.lead-d .fl [aria-invalid="true"]{border-color:#ffd2cc;outline:2px solid #ffd2cc;outline-offset:0}
 .lead-d .lerr{color:#fff}
-.ldone{padding:18px 20px;border-radius:16px;background:#fff;color:var(--ink);border:var(--hair)}
+.ldone{padding:18px 20px;border-radius:var(--r-card);background:#fff;color:var(--ink);border:var(--hair)}
 .ldone b{display:block;font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em}
 .ldone span{display:block;font-size:var(--t-small);color:var(--muted);margin:10px 0 4px}
 .ldone ol{margin:0;padding-left:20px;font-size:var(--t-body);color:#3e4656}.ldone li{margin-bottom:4px}
@@ -181,7 +199,7 @@ canvas.dotbot{display:block;width:100%}
 .sh-h{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:2px solid var(--ink);font:400 14px var(--doc);color:var(--muted)}
 .sh-h .ilock{display:inline-flex;align-items:center;line-height:1;white-space:nowrap;font-size:16px}.sh-h .imk{display:inline-flex}.sh-h svg{display:block;width:100%;height:100%}
 .sh-t{font:600 25px/1.2 var(--doc);letter-spacing:-.005em;margin:22px 0 12px}
-.dr{display:flex;justify-content:space-between;gap:12px;padding:11px 0;margin:0;border-bottom:1px solid var(--line);transition:background .3s ease}
+.dr{display:flex;justify-content:space-between;gap:12px;padding:11px 0;margin:0;border-bottom:1px solid var(--line);transition:background .7s ease}
 .dr span{color:#3e4656}.dr b{font-weight:600;text-align:right}
 .dr[data-row="3"] b{color:var(--ink);border-bottom:0}
 .dr.hl span,.dr.hl b{color:var(--c)}
@@ -191,9 +209,9 @@ canvas.dotbot{display:block;width:100%}
 .chart .grid line{stroke:#e5e9f1}.chart text{font:12px var(--sans);fill:#7a8396}
 .chart .line{fill:none;stroke:var(--c);stroke-width:3;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
 .in-view .chart .line,.chart.drawn .line{transition:stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1);stroke-dashoffset:0}
-.chart .dots circle{fill:#fff;stroke:var(--c);stroke-width:2.5;opacity:0;transition:opacity .4s ease 1.4s}
+.chart .dots circle{fill:#fff;stroke:var(--c);stroke-width:2.5;opacity:0;transition:opacity .7s ease 1.4s}
 .in-view .chart .dots circle,.chart.drawn .dots circle{opacity:1}
-.chart .end{font:600 15px var(--serif);fill:var(--c);opacity:0;transition:opacity .4s ease 1.7s}
+.chart .end{font:600 15px var(--serif);fill:var(--c);opacity:0;transition:opacity .7s ease 1.7s}
 .in-view .chart .end,.chart.drawn .end{opacity:1}
 /* a table set the way a financial statement is printed: a heavy rule on top, hairlines between rows, right-aligned even-width digits, a double rule under totals */
 .stmt{width:100%;border-collapse:collapse;font-size:var(--t-body);line-height:1.35;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
@@ -215,32 +233,57 @@ canvas.dotbot{display:block;width:100%}
 .w .rstage .rs-base,.on-dark .rstage .rs-base,.band .rstage .rs-base,.rstage.on-dark .rs-base{background:rgba(255,255,255,.28)}
 @media (max-width:720px){.rstage .rs-bot{height:calc(var(--h) * .72)}}
 
-/* the notes block: the same small block in the same place on every page, on white, directly above the footer. Up to three lines of this page's sentences, then the one link to Methodology. These win over page styles on purpose. */
-.page .notes{background:#fff!important;padding-block:clamp(36px,4vw,56px) clamp(36px,4vw,56px)!important;color:var(--muted)}
-.page .notes ul{margin:0 0 6px;padding:0;list-style:none;max-width:1040px!important;columns:auto;font:400 var(--t-small)/1.6 var(--sans)!important;color:var(--muted)!important}
-.page .notes li{break-inside:avoid;margin:0}
+/* the notes: one quiet line at the foot of the page, on white, directly above the footer. It opens this page's sentences in place, and the opened part links on to Methodology. These win over page styles on purpose. */
+.page .notes{background:#fff!important;padding-block:clamp(20px,2.4vw,32px)!important;color:var(--muted)}
+.nt summary,.nt-l{display:inline-flex;align-items:center;gap:8px;min-height:44px;font:400 var(--t-small)/1.4 var(--sans);color:var(--muted);cursor:pointer;list-style:none;transition:color .15s ease}
+.nt summary::-webkit-details-marker{display:none}
+.nt summary:hover,.nt-l:hover{color:var(--ink)}
+.nt[open] .chev{transform:rotate(180deg)}
+@supports (interpolate-size:allow-keywords){.nt{interpolate-size:allow-keywords}.nt::details-content{height:0;overflow:clip;transition:height .7s ease,content-visibility .7s allow-discrete}.nt[open]::details-content{height:auto}}
+.nt-b{padding:4px 0 12px}
+.page .notes ul{margin:0 0 6px;padding:0;list-style:none;max-width:1040px!important;font:400 var(--t-small)/1.6 var(--sans)!important;color:var(--muted)!important}
+.page .notes li{margin:0}
 .page .notes li a{color:var(--c)!important;display:inline-block;padding:12px 2px;margin:-12px -2px}
 .page .notes .tlink{color:var(--c)!important}
 /* Methodology carries the full text of every note, at reading size */
+.page .notes.full{padding-block:clamp(36px,4vw,56px)!important}
 .page .notes.full ul{max-width:64ch!important;font-size:var(--t-body)!important;color:#3e4656!important}
 .page .notes.full li{margin-bottom:14px;scroll-margin-top:100px}
 .page .notes.full h2{margin:0 0 16px;color:var(--ink)}
 
-/* the footer: one version on every page. Cobalt is this ground's alone */
-.foot{background:var(--g-foot);color:#fff;padding-block:clamp(56px,6vw,88px) 36px;overflow:hidden}
+/* the Reveal: the page is one opaque layer (.lift) over a sticky footer, so the page lifts off it as the reader reaches the end. The footer is at least 70vh tall, which makes that lift about 70vh of scroll. A footer taller than the screen just flows (.flow, site.js) */
+.lift{position:relative;z-index:1;background:#fff}
+.foot{position:sticky;bottom:0;z-index:0;display:flex;flex-direction:column;min-height:70vh;background:var(--g-foot);color:#fff;padding-block:clamp(48px,5vw,72px) 28px;overflow:hidden}
+.foot.flow{position:relative}
+.foot > .in{display:flex;flex-direction:column;flex:1;width:100%}
 .fg{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px clamp(48px,8vw,120px);align-items:start}
 .fbrand{display:flex;flex-direction:column;align-items:flex-start}
+.foot .brand{color:#fff}
 .ftag{margin:20px 0 0;max-width:22em;font:700 var(--t-sub)/1.25 var(--serif);letter-spacing:-.02em;color:#fff;text-wrap:balance}
 .fcols{display:grid;grid-template-columns:auto auto;gap:0 clamp(40px,6vw,88px);padding-top:6px}
 .fcols div{display:flex;flex-direction:column;min-width:0}
 .fcols a{display:inline-flex;align-items:center;min-height:38px;font-size:var(--t-body);line-height:1.25;color:rgba(255,255,255,.85);transition:color .15s ease}.fcols a:hover{color:#fff}
-.fg + .fine-w{margin-top:clamp(40px,5vw,64px)}
-.fine-w{margin:20px 0 0;max-width:80ch;font-size:var(--t-small);line-height:1.5;color:rgba(255,255,255,.78)}
-@media (max-width:760px){.fg{grid-template-columns:minmax(0,1fr)}.fcols{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px;padding-top:0}.fcols a{min-height:44px}}
+/* six moving robots on one line */
+.ffleet{display:flex;align-items:flex-end;gap:clamp(16px,3vw,40px);margin-top:auto;padding-top:clamp(40px,5vw,64px);border-bottom:1px solid rgba(255,255,255,.32)}
+.ff-row{display:contents}
+.ff-bot{display:block;flex:var(--w) 1 0;min-width:0}.ff-bot canvas{display:block;width:100%;aspect-ratio:var(--ar)}
+.fine-w{margin:16px 0 0;font-size:var(--t-small);line-height:1.5;color:rgba(255,255,255,.78)}
+@media (max-width:760px){.fg{grid-template-columns:minmax(0,1fr)}.fcols{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px;padding-top:0}.fcols a{min-height:44px}
+ .ffleet{display:block;border:0}.ff-row{display:flex;align-items:flex-end;gap:14px;padding-top:18px;border-bottom:1px solid rgba(255,255,255,.32)}.ff-bot{flex:var(--w) 1 0}}
 
 /* reveal */
 .rv{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
 .rv.in-view{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.fbar,.fbar.on,.lhl,.mn{transition:none;animation:none}.mn-links a{animation:none}.rv{opacity:1;transform:none;transition:none}.chart .line{stroke-dashoffset:0}.chart .dots circle,.chart .end{opacity:1}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.fbar,.fbar.on,.mn,.np,.nav{transition:none;animation:none}.foot{position:relative}.nt::details-content{transition:none}.rv{opacity:1;transform:none;transition:none}.chart .line{stroke-dashoffset:0}.chart .dots circle,.chart .end{opacity:1}html{scroll-behavior:auto}}
 @media (max-width:1060px){.howg{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:680px){.lf{grid-template-columns:minmax(0,1fr)}.in{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+
+/* the scene chain (FerraChain in site.js): each .sc is one pinned screen */
+.sc-on .sc{position:relative;pointer-events:none}
+.sc-on .sc > *{pointer-events:auto}
+.sc-on .sc:not([data-flow]) > .sc-s{position:sticky;top:0;height:100vh;height:100lvh;overflow:clip}
+.sc-on .sc-s > section{min-height:100vh;min-height:100lvh;display:flex;flex-direction:column;justify-content:center}
+.sc-on .notes{position:relative;z-index:200}
+/* words that Rise as their scene arrives. Without the chain they simply stand */
+.sc-on .sc:not(.on) .ri{opacity:0;transform:translateY(18px)}
+.sc-on .ri{transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}

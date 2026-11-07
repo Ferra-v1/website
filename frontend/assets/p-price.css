@@ -1,7 +1,7 @@
 /* Price a robot (price.html). The tool itself: inputs on the left, the answer on the right, on white. Results are large figures and printed statements (.stmt).
    Only the term sheets are paper (.sheet). Dots mark real listings. Sizes come from the shared tokens in site.css; new classes start with pp-. */
-.page[data-page="price.html"]{--cy:rgb(150,232,255);--cyl:#0394e0;--soft:rgba(40,71,206,.32);--txt:#3e4656}
-.pp-hero,.pp-sec,.pp-risk,#method{scroll-margin-top:72px}
+.page[data-page="price.html"]{--cy:rgb(150,232,255);--cyl:#0394e0;--soft:rgba(40,71,206,.32);--txt:#3e4656;--pp-ov:100vh}
+.pp-hero,.pp-sec,.pp-risk{scroll-margin-top:72px}
 .pp-nwr{white-space:nowrap}
 .page[data-page="price.html"] section a:not(.btn,.tlink){text-decoration:none}
 .page[data-page="price.html"] section a:not(.btn,.tlink):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
@@ -13,19 +13,20 @@
 .pp-sh .t-lead{margin:16px 0 0;max-width:62ch;color:var(--txt)}
 .pp-grad .pp-sh .t-lead{color:#fff}
 
-/* the Model marker: every engine figure links to the method. Plain text the size of the label beside it */
-.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;margin:-13px 0 -13px 2px;padding:0 4px;color:var(--c);font:500 var(--t-small)/18px var(--sans);text-decoration:none;white-space:nowrap}
+/* the Model marker: a plain word beside an engine figure. Inside the term sheets the tool draws it as a link to Methodology */
+.pp-mk{margin-left:6px;color:var(--muted);font:400 var(--t-small)/18px var(--sans);white-space:nowrap}
+a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;margin:-13px 0 -13px 2px;padding:0 4px;color:var(--c);font-weight:500;text-decoration:none}
 .pp-flag{font-weight:600;color:var(--ink)}
 
 /* the first screen: the title and its one sentence, then inputs beside the answer */
-.pp-hero{padding-block:clamp(12px,1.6vw,24px) clamp(48px,5vw,72px);position:relative}
+.pp-hero{padding-block:clamp(24px,2.8vw,40px) clamp(48px,5vw,72px);position:relative}
 .pp-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px clamp(40px,5vw,72px);align-items:end}
 .pp-head h1{margin:0}
 .pp-lede{margin:0 0 6px;color:var(--txt);text-wrap:pretty}
 .pp-tool{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px clamp(40px,5vw,72px);align-items:start;margin-top:clamp(32px,3.4vw,48px)}
 .pp-lft{min-width:0}
 
-/* the inputs: one pill field each, with its name above it */
+/* the inputs: one field each, with its name above it */
 .pp-in{display:flex;flex-direction:column;gap:14px}
 .pp-flds{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 16px}
 .pp-f{display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -36,20 +37,20 @@
 .pp-cb .pf{display:block;padding-right:40px;text-overflow:ellipsis}
 .pp-cb::after{content:"";position:absolute;right:20px;top:18px;width:7px;height:7px;border-right:1.6px solid var(--c);border-bottom:1.6px solid var(--c);transform:rotate(45deg);pointer-events:none}
 .pp-cbn{display:none}
-.pp-lb{position:absolute;left:0;top:calc(100% + 6px);z-index:30;width:min(440px,calc(100vw - 48px));max-height:330px;overflow:auto;margin:0;padding:6px;list-style:none;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--line),0 24px 48px -20px rgba(10,20,60,.35);font-weight:400}
-.pp-lb li{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:var(--t-small);line-height:1.35}
+.pp-lb{position:absolute;left:0;top:calc(100% + 6px);z-index:30;width:min(440px,calc(100vw - 48px));max-height:330px;overflow:auto;margin:0;padding:6px;list-style:none;background:#fff;border-radius:var(--r-card);box-shadow:0 0 0 1px var(--line),0 24px 48px -20px rgba(10,20,60,.35);font-weight:400}
+.pp-lb li{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:6px 10px;border-radius:2px;cursor:pointer;font-size:var(--t-small);line-height:1.35}
 .pp-lb li small{color:var(--muted);font-size:var(--t-small)}
 .pp-lb li em{font-style:normal;font-size:var(--t-small);color:var(--muted);text-align:right}
 .pp-lb li[aria-selected="true"]{background:var(--mist)}
 .pp-lb li[aria-selected="true"] em{color:var(--deep)}
 .pp-lb .pp-none{cursor:default;color:var(--muted)}
-/* the year: one pill, a minus and a plus inside its ends */
+/* the year: one field, a minus and a plus inside its ends */
 .pp-yr{position:relative}
 .page .pp-yr select.pf{display:block;padding:0 48px;text-align:center;text-align-last:center;-webkit-appearance:none;appearance:none;cursor:pointer}
-.pp-st{position:absolute;top:1px;width:44px;height:44px;border:0;border-radius:50%;background:none;padding:0;font:500 var(--t-sub)/1 var(--sans);color:var(--c);cursor:pointer;text-align:center}
+.pp-st{position:absolute;top:1px;width:44px;height:44px;border:0;background:none;padding:0;font:500 var(--t-sub)/1 var(--sans);color:var(--c);cursor:pointer;text-align:center}
 .pp-st[data-d="-1"]{left:2px}.pp-st[data-d="1"]{right:2px}
 .pp-st:hover{color:var(--ink)}
-/* money: the dollar sign sits in the pill */
+/* money: the dollar sign sits in the field */
 .pp-money{position:relative}
 .pp-money > span{position:absolute;left:20px;top:0;line-height:46px;font:500 var(--t-body)/46px var(--sans);color:var(--muted);pointer-events:none}
 .pp-money:has(> span) .pf{padding-left:32px}
@@ -62,7 +63,7 @@
 .pp-row2{display:flex;flex-direction:column;gap:6px;margin-top:4px}
 .pp-use{flex-direction:column;gap:8px}
 .pp-seg{display:flex;flex-wrap:wrap;gap:4px}
-.pp-seg button{min-height:44px;border:0;border-radius:999px;background:none;padding:0 14px;font:500 var(--t-small)/1.2 var(--sans);color:#4a5262;cursor:pointer;white-space:nowrap;transition:color .15s ease,background .15s ease}
+.pp-seg button{min-height:44px;border:0;border-radius:2px;background:none;padding:0 14px;font:500 var(--t-small)/1.2 var(--sans);color:#4a5262;cursor:pointer;white-space:nowrap;transition:color .15s ease,background .15s ease}
 .pp-seg button:hover{color:var(--ink);background:var(--mist)}
 .pp-seg button[aria-checked="true"],.pp-seg button[aria-checked="true"]:hover{color:#fff;background:var(--c)}
 .pp-seg button:focus-visible,.pp-pre:focus-visible,.pp-copy:focus-visible,.pp-rb:focus-visible,.pp-st:focus-visible{outline:2px solid var(--c);outline-offset:2px}
@@ -84,7 +85,6 @@
 .pp-ac b{color:var(--muted);font-weight:400}
 .pp-arml{margin:12px 0 0;font:500 var(--t-body)/1.45 var(--sans);color:var(--ink)}
 .pp-arml b{font-weight:600}
-.pp-arml a{display:inline-flex;align-items:center;min-height:44px;margin:-13px 0;color:var(--c);font-weight:500}
 .pp-age{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:6px 0 0;font-size:var(--t-small);line-height:1.45;color:var(--muted)}
 .pp-agego{appearance:none;border:0;background:none;padding:0;margin:-10px 0;min-height:44px;font:500 var(--t-small)/1.4 var(--sans);color:var(--c);cursor:pointer}
 .pp-agego:hover{color:var(--ink)}
@@ -96,8 +96,7 @@
 .pp-a.busy .pp-av,.pp-a.busy .pp-ac{color:transparent!important;background:linear-gradient(90deg,#eef1f6 0%,#f8f9fc 40%,#eef1f6 80%) 0 0/300% 100%;animation:pp-sh 1.1s linear infinite}
 .pp-a.busy .pp-av *{visibility:hidden}
 @keyframes pp-sh{to{background-position:-300% 0}}
-.pp-a .pp-av,.pp-a .pp-ac{transition:opacity .18s ease}
-.pp-stale .pp-a,.pp-stale .pp-sec,.pp-stale .pp-risk{opacity:.38;filter:grayscale(1);transition:opacity .2s ease}
+.pp-stale .pp-a,.pp-stale .pp-sec,.pp-stale .pp-risk{opacity:.38;filter:grayscale(1);transition:opacity .7s ease}
 
 /* other robots to try, and what the figure rests on */
 .pp-pres{display:flex;flex-wrap:wrap;align-items:center;gap:0 18px;min-width:0;margin-top:4px}
@@ -148,9 +147,9 @@
 .pp-grad .pp-seg button:focus-visible{outline-color:#fff}
 .pp-log{position:relative;display:flex;align-items:center;gap:8px;font-size:var(--t-small);color:#fff;cursor:pointer;min-height:44px}
 .pp-log input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-.pp-log::before{content:"";flex:none;width:16px;height:16px;border-radius:4px;box-shadow:inset 0 0 0 1.5px #fff;background:center/10px 8px no-repeat}
+.pp-log::before{content:"";flex:none;width:16px;height:16px;border-radius:2px;box-shadow:inset 0 0 0 1.5px #fff;background:center/10px 8px no-repeat}
 .pp-log:has(input:checked)::before{box-shadow:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath d='M1 4l3 3 5-6' fill='none' stroke='%232847ce' stroke-width='1.6'/%3E%3C/svg%3E")}
-.pp-log:has(input:focus-visible){outline:2px solid #fff;outline-offset:2px;border-radius:6px}
+.pp-log:has(input:focus-visible){outline:2px solid #fff;outline-offset:2px}
 .pp-sc{position:relative;width:100%;touch-action:manipulation}
 .pp-sc svg{display:block;width:100%;height:auto;overflow:visible}
 .pp-scs .gl{stroke:rgba(255,255,255,.2)}
@@ -179,7 +178,7 @@
 .pp-empty b{color:#fff}
 .pp-lk{display:inline-flex;align-items:center;min-height:44px;border:0;background:none;padding:0;color:var(--c);font:600 var(--t-body)/1.25 var(--sans);cursor:pointer;text-decoration:none}
 .pp-empty .pp-lk{color:#fff}
-.pp-tip{position:absolute;z-index:10;width:280px;padding:12px 14px 6px;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--line),0 18px 40px -16px rgba(10,20,60,.35);font-size:var(--t-small);line-height:1.45;display:flex;flex-direction:column;gap:2px;color:#4a5262}
+.pp-tip{position:absolute;z-index:10;width:280px;padding:12px 14px 6px;background:#fff;border-radius:var(--r-card);box-shadow:0 0 0 1px var(--line),0 18px 40px -16px rgba(10,20,60,.35);font-size:var(--t-small);line-height:1.45;display:flex;flex-direction:column;gap:2px;color:#4a5262}
 .pp-tip b{font-weight:600;color:var(--ink);padding-right:18px}
 .pp-tip strong{font:700 var(--t-smallh) var(--serif);color:var(--ink)}
 .pp-tip em{font-style:normal;color:var(--muted)}
@@ -193,7 +192,7 @@
 
 /* the listings and sales sit behind one fold on the gradient. Open, they are a sheet of white */
 .pp-bh{margin-top:0}
-.pp-bhb{margin-top:10px;padding:clamp(20px,3vw,40px);background:#fff;border-radius:16px;color:var(--ink)}
+.pp-bhb{margin-top:10px;padding:clamp(20px,3vw,40px);background:#fff;border-radius:var(--r-card);color:var(--ink)}
 .pp-bhb h3{margin:0;color:var(--ink)}
 .pp-grad .pp-bhb summary{color:var(--c)}
 .pp-grad .pp-bhb summary:focus-visible{outline-color:var(--c)}
@@ -244,7 +243,7 @@
 .pp-covs .gl{stroke:#e8ecf2}
 .pp-covs .ax{font:12px var(--sans);fill:#6b7383}
 /* each year's range is a thin bar from its low case to its high case. The script draws wide columns, so these narrow them and hold them on their year */
-.pp-covs .bar{opacity:0;width:4px;--bx:9px;transform:translate(var(--bx),5px);transition:opacity .35s ease var(--d),transform .45s cubic-bezier(.2,.7,.2,1) var(--d)}
+.pp-covs .bar{opacity:0;width:4px;--bx:9px;transform:translate(var(--bx),5px);transition:opacity .8s ease var(--d),transform .8s cubic-bezier(.2,.7,.2,1) var(--d)}
 .pp-covc.on .pp-covs .bar{opacity:1;transform:translate(var(--bx),0)}
 .pp-covs .c{display:none}.pp-covs .c2,.pp-covs .gr{fill:#c6d0f3}
 .pp-covs .c2.bad,.pp-covs .gr.bad{fill:#c2410c}
@@ -279,20 +278,20 @@
 .pp-rk{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px clamp(40px,5vw,72px);align-items:start}
 .pp-rh h2{margin:0}
 .pp-rh .t-lead{margin:16px 0 0;max-width:46ch;color:var(--txt)}
-.pp-rdef{margin:14px 0 8px;max-width:52ch;font-size:var(--t-body);line-height:1.55;color:var(--txt)}
+.pp-rdef{margin:14px 0 8px;max-width:46ch;font-size:var(--t-body);line-height:1.55;color:var(--txt)}
 .pp-rbig{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
 .pp-rl{display:block;font:500 var(--t-small)/1.4 var(--sans);color:var(--txt)}
-.pp-rv{display:block;color:var(--ink);margin:6px 0 20px;white-space:nowrap;transition:color .6s ease}
+.pp-rv{display:block;color:var(--ink);margin:6px 0 20px;white-space:nowrap;transition:color .7s ease}
 .pp-rk.bk .pp-rv{color:var(--c)}
 .pp-rsw{display:flex;flex-direction:column;align-items:stretch;gap:2px;width:100%;max-width:360px}
-.pp-rb{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:none;color:var(--ink);cursor:pointer;font-family:var(--sans)}
+.pp-rb{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:0 16px;border:0;border-radius:2px;background:none;color:var(--ink);cursor:pointer;font-family:var(--sans)}
 .pp-rb span{font-size:var(--t-small);font-weight:500;color:#4a5262;white-space:nowrap}
 .pp-rb b{font:600 var(--t-small) var(--sans);color:#4a5262;font-variant-numeric:lining-nums tabular-nums}
 .pp-rb:hover span{color:var(--ink)}
 .pp-rb[aria-checked="true"]{background:#fff}
 .pp-rb[aria-checked="true"] span,.pp-rb[aria-checked="true"] b{color:var(--ink)}
 .pp-rb[data-v="1"][aria-checked="true"] b{color:var(--c)}
-.pp-rcap,.pp-rnote{margin:12px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--txt);max-width:52ch}
+.pp-rcap{margin:12px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--txt);max-width:52ch}
 
 /* the loan: the term sheets are real documents, so they stay paper */
 .pp-og{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:stretch}
@@ -328,54 +327,56 @@
 .pp-fullb{columns:1;max-width:72ch}
 .pp-cta{display:flex;align-items:center;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;margin-top:clamp(40px,4vw,56px)}
 .pp-cta h3{margin:0}
-.pp-cta p{margin:6px 0 0;color:var(--txt)}
-.pp-ctab{display:flex;align-items:center;gap:8px 24px;flex-wrap:wrap}
 
-/* how this works: the method the Model markers link to */
-.pp-msec{padding-block:0 clamp(64px,7vw,96px)}
-.pp-how{scroll-margin-top:84px;border-top:1px solid var(--line)}
-.pp-how summary{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 16px;padding:22px 0;cursor:pointer;list-style:none;scroll-margin-top:80px}
-.pp-how summary::-webkit-details-marker{display:none}
-.pp-how summary h2{margin:0}
-.pp-how summary h2::after{content:"";display:inline-block;width:.34em;height:.34em;margin:0 .1em .16em .42em;border-right:2px solid var(--c);border-bottom:2px solid var(--c);transform:rotate(45deg);transition:transform .2s ease}
-.pp-how[open] summary h2::after{transform:translateY(.12em) rotate(225deg)}
-.pp-how summary span{color:var(--muted);font-size:var(--t-small)}
-.pp-hg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;padding:12px 0 20px}
-.pp-hc h3{font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
-.pp-hc p{font-size:var(--t-small);line-height:1.6;color:#4a5262;margin:0 0 14px}
-.pp-hc p b{color:var(--ink);font-weight:600}
-.pp-srcs,.pp-as,.pp-tagl{list-style:none;margin:0 0 16px;padding:0}
-.pp-srcs li{display:grid;grid-template-columns:128px minmax(0,1fr) 36px;align-items:center;gap:10px;padding:5px 0;font-size:var(--t-small)}
-.pp-srcs li b{text-align:right;font-weight:500}
-.pp-as li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:var(--t-small);color:#4a5262}
-.pp-as li b{color:var(--ink);font-weight:600;white-space:nowrap}
-.pp-tagb{display:flex;gap:2px;height:10px;margin-bottom:10px}
-.pp-tagb i{flex:1 1 0;min-width:0}
-.pp-tagl i{flex:none;width:11px;height:11px}
-.pp-tagl li{display:flex;align-items:center;gap:8px;font-size:var(--t-small);color:#4a5262;padding:3px 0}
-i.data{background:var(--c)}i.claim{background:var(--cyl)}i.estimate{background:#9fb2ea}i.assumption{background:#dfe5ef}
-.pp-built{font-size:var(--t-small)!important;color:var(--muted)!important}
+/* the last line: what a price you can look up is for */
+.pp-end{padding-block:0 clamp(24px,3vw,32px)}
+.pp-end p{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.pp-end .tlink{margin:0}
 
-/* the last screen: what a price you can look up is for */
-.pp-close{padding-block:clamp(88px,10vw,144px)}
-.pp-close h2{margin:0;color:#fff;max-width:18ch}
-.pp-close .t-lead{margin:24px 0 16px;max-width:60ch;color:rgba(255,255,255,.86)}
+/* The plan for this page: Ground Fade, Overlap, Ground Fade, Overlap. All of it is page CSS, driven by the scroll itself.
+   Ground Fade: a backdrop stays on screen (.pp-gb, sticky, as tall as the window) and goes from nothing to the next ground over 60vh of scroll, timed by a marker between the sections (.pp-fade). Nothing else moves.
+   White to gradient flips the colour of the words, so that marker is a 110vh empty stretch. The fade starts when the hero's foot is 40vh down the window and ends as the white heading comes in, so that heading never sits on a half-faded ground and the hero's last line has gone by about the halfway point. White to pale leaves every word readable, so it needs no empty stretch.
+   Overlap: once a section's foot reaches the foot of the window it holds still, by moving down exactly as far as the page scrolls, and the next section slides over it. 100vh, 70vh on a phone. It works at any section height, with a fold open or shut.
+   Browsers without scroll-driven animation, and reduced motion, get the finished grounds and no movement. */
+.pp-gb,.pp-fade{display:none}
+@supports (animation-timeline:view()) and (timeline-scope:--x){@media (prefers-reduced-motion:no-preference){
+  .pp-gf{position:relative;isolation:isolate}
+  .pp-gf1{timeline-scope:--pp-f1}
+  .pp-gf2{timeline-scope:--pp-f2;background:#fff}
+  .pp-gb{display:block;position:sticky;top:0;height:100vh;margin-bottom:-100vh;z-index:0;opacity:0;pointer-events:none;animation:pp-on linear both}
+  .pp-gf1 > .pp-gb{background:var(--g-grad);animation-timeline:--pp-f1;animation-range:cover 60vh cover 120vh}
+  .pp-gf2 > .pp-gb{background:var(--g-pale);animation-timeline:--pp-f2;animation-range:cover 20vh cover 80vh}
+  .pp-fade{display:block;position:relative;height:1px}
+  .pp-gf1 > .pp-fade{height:110vh}
+  .pp-gf1 > .pp-fade{view-timeline-name:--pp-f1}
+  .pp-gf2 > .pp-fade{view-timeline-name:--pp-f2}
+  .pp-gf > section{position:relative;z-index:1;background:none}
+  .pp-gf > .pp-hero{z-index:2}
+  .pp-gf > .pp-grad,.pp-gf > .pp-risk{animation:pp-pin linear both;animation-range:entry-crossing 100% entry-crossing calc(100% + var(--pp-ov))}
+  .pp-gf > .pp-grad{view-timeline-name:--pp-p1;animation-timeline:--pp-p1}
+  .pp-gf > .pp-risk{view-timeline-name:--pp-p2;animation-timeline:--pp-p2;display:flex;align-items:center;min-height:100vh}
+  .pp-gf > .pp-risk > .in{flex:1 1 100%;min-width:0}
+  .pp-after{position:relative;z-index:1;background:#fff;overflow:clip}
+  .pp-after > section{position:relative;z-index:2;background:#fff}
+}}
+@keyframes pp-on{from{opacity:0}to{opacity:1}}
+@keyframes pp-pin{to{transform:translateY(var(--pp-ov))}}
 
 /* narrower windows */
 @media (max-width:1000px){
   .pp-head,.pp-tool,.pp-rk{grid-template-columns:minmax(0,1fr)}
-  .pp-hg{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .pp-lft .pp-pres{display:none}
   .pp-bar .pp-pres{display:flex}
 }
 @media (max-width:860px){
-  .pp-og,.pp-hg{grid-template-columns:minmax(0,1fr)}
+  .pp-og{grid-template-columns:minmax(0,1fr)}
   .pp-whyb{columns:1}
 }
 
 /* phones: fields stack, the answer lands on the first screen */
+@media (max-width:720px){.page[data-page="price.html"]{--pp-ov:70vh}}
 @media (max-width:600px){
-  .pp-hero{padding-top:0}
+  .pp-hero{padding-top:20px}
   .pp-tool{margin-top:24px;gap:28px}
   .pp-robot,.pp-year{grid-column:1 / -1}
   .pp-lb{width:calc(100vw - 48px);max-height:300px}

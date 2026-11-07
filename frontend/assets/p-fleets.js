@@ -1,6 +1,6 @@
-// Robot companies page: the sentence's fields stay in range, and every change goes straight to the answer: what you could borrow, what the robots cost, what you pay yourself, the robot you picked.
-// Further down, the same sentence sets one month of rent: one small robot for each of the reader's robots, in two groups, the ones whose rent pays the loan and the ones whose rent stays.
-// Every "Ask what you could borrow" link on the page returns to the sentence.
+// Robot companies page. Every section is one pinned screen, and FerraChain in site.js hands each to the next the way STORYBOARD.md plans it.
+// The sentence's fields stay in range, and every change goes straight to the answer. Further down, the same sentence sets the robot that fills with rent and the one month of rent split between the loan and the company.
+// Every "Ask what you could borrow" link on the page returns to the sentence. With reduced motion every section stands finished, in order.
 (() => {
   const ty = document.getElementById('sz-type'), n = document.getElementById('sz-n'), p = document.getElementById('sz-p'), wh = document.getElementById('sz-when');
   if (!ty) return;
@@ -37,10 +37,8 @@
     el.addEventListener('focus', () => { el.value = digits(el); fitNum(el); el.select(); });
     el.addEventListener('blur', () => { const d = digits(el); if (!d || +d < lim(el)[0]) say(el); comma(el); fitNum(el); upd(); });
   });
-  // the robot you picked stands beside the sentence, and a new type of robot brings its own typical price
-  const pic = $('f-robot'), fig = pic && pic.parentElement;
-  const swapPic = () => { const o = ty.selectedOptions[0], w = +o.dataset.w, one = o.dataset.one; pic.src = 'media/robots/' + o.dataset.pic + '.webp'; pic.width = w; pic.alt = ''; fig.classList.toggle('wide', w > 1200); };
-  ty.addEventListener('change', () => { last.set(p, clamp(p, +ty.selectedOptions[0].dataset.price)); comma(p); swapPic(); fitSel(ty); fitNum(p); upd(); });
+  // a new type of robot brings its own typical price
+  ty.addEventListener('change', () => { last.set(p, clamp(p, +ty.selectedOptions[0].dataset.price)); comma(p); fitSel(ty); fitNum(p); upd(); });
   wh.addEventListener('change', () => fitSel(wh));
   // site.js reads the fleet fields as plain numbers when the form is sent, so hand it digits for that moment
   const form = $('quote');
@@ -51,43 +49,65 @@
   // once the request is in, the fields are gone, so their small lines go too
   const done = form.querySelector('.ldone'), used = form.querySelector('.f-used');
   new MutationObserver(() => { if (!done.hidden) { msg.hidden = true; used.hidden = true; } }).observe(done, { attributes: true, attributeFilter: ['hidden'] });
-  const toForm = smooth => { const top = Math.max(0, form.getBoundingClientRect().top + scrollY - 100); scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); n.focus({ preventScroll: true }); };
+  const toForm = smooth => { scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' }); let tries = 0; const wait = () => { if (scrollY < 40 || ++tries > 240) n.focus({ preventScroll: true }); else requestAnimationFrame(wait); }; wait(); };   // the sentence is the first screen of the page. A faded screen cannot take focus, so the cursor goes there on arrival
   document.querySelectorAll('a[href="#quote"]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); history.replaceState(null, '', '#quote'); toForm(!still); }));
   if (location.hash === '#quote') addEventListener('load', () => setTimeout(() => toForm(false), 60));
   // "Ask what you could borrow" opens email and company and turns into Send
   const open = $('f-open'), send = $('f-send'), who = $('f-who');
   open.addEventListener('click', () => { who.hidden = false; open.hidden = true; send.hidden = false; const em = who.querySelector('input[type=email]'); if (em) em.focus({ preventScroll: true }); });
   const mSec = document.querySelector('.f-month'), SHARE = +mSec.dataset.share, ADV = +mSec.dataset.adv, TERM = +mSec.dataset.term, rentOf = price => Math.max(1, Math.round(price * SHARE));
-  // the link keeps the reader's numbers where the price tool knows the robot; for the rest it opens the tool as it is
-  const TOOL = { arm: 'any-arm', cobot: 'any-arm', amr: 'warehouse-mobile-robot', cleaning: 'cleaning-robot' }, bring = $('f-bring');
-  followers.push(st => { const id = TOOL[st.rid]; bring.href = id ? 'price.html#r=' + id + '&y=2026&p=' + st.price + '&m=' + rentOf(st.price) + '&n=36&f=' + st.n : 'price.html'; $('f-w-p').textContent = usd(st.price); $('f-w-r').textContent = usd(rentOf(st.price)); $('f-w-m').textContent = Math.ceil(st.price / rentOf(st.price)); });
-  // one month. When the section first arrives each robot's rent comes in, left to right, then the two groups part. With reduced motion they stand finished.
-  const mg = mSec.querySelector('.f-mg'), mc = [...mg.querySelectorAll('.f-mbots')], SHARE_PAY = ADV / TERM / SHARE;   // the loan's monthly part as a share of the rent: it does not depend on how many robots or what they cost
-  let N = 50, PAY = 27, played = false, cw = 0, ch = 0, spr = null, src = null, srcName = '';
-  const loadPic = name => { if (name === srcName) return; srcName = name; const i = new Image(); i.onload = () => { if (srcName === name) { src = i; layout(); draw(played || still ? 1 : 0, played || still ? 1 : 0); } }; i.src = 'media/robots/' + name + '.webp'; };
-  // the picture at the size it is drawn, halved down from the full size so small robots stay sharp
-  const sprite = (w, h) => { const d = Math.min(2, devicePixelRatio || 1), tw = Math.max(1, Math.round(w * d)), th = Math.max(1, Math.round(h * d)); let c = src, cwi = src.width, chi = src.height; while (cwi > tw * 2 && chi > th * 2) { const nx = document.createElement('canvas'); nx.width = Math.ceil(cwi / 2); nx.height = Math.ceil(chi / 2); const g = nx.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(c, 0, 0, nx.width, nx.height); c = nx; cwi = nx.width; chi = nx.height; } const out = document.createElement('canvas'); out.width = tw; out.height = th; const g = out.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(c, 0, 0, tw, th); return out; };
-  // one robot size for both groups: the largest that fits both within the height a screen can spare
-  const layout = () => { if (!src) return; const stacked = matchMedia('(max-width:820px)').matches, maxH = stacked ? Math.min(300, innerHeight * .34) : Math.min(380, innerHeight * .42), keep = N - PAY, asp = src.width / src.height, gapX = 1.14, gapY = 1.1;
-    let h = 170; const cellW = () => Math.max(6, h * asp * gapX), fits = (m, W) => { if (!m) return true; const c = Math.max(1, Math.floor(W / cellW())); return Math.ceil(m / c) * h * gapY <= maxH; };
-    while (h > 7 && !(fits(PAY, mc[0].clientWidth) && fits(keep, mc[1].clientWidth))) h -= 1;
-    ch = h; cw = h * asp; spr = sprite(cw, ch); const d = Math.min(2, devicePixelRatio || 1);
-    mc.forEach((c, gi) => { const m = N === 1 ? (gi ? 0 : 1) : gi ? keep : PAY, cols = Math.max(1, Math.floor(c.clientWidth / cellW())), rows = Math.ceil(m / cols), H = Math.ceil(rows * h * gapY); c._m = m; c._c = cols; c._from = gi ? PAY : 0; c._p = cellW(); c.style.height = H + 'px'; c.width = Math.round(c.clientWidth * d); c.height = Math.round(H * d); }); };
-  // k runs 0 to 1: how far the rent has come in; part runs 0 to 1: how far the two groups have turned into bright and pale
-  const draw = (k, part) => { if (!spr) return; const d = Math.min(2, devicePixelRatio || 1); mc.forEach((c, gi) => { const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, c.clientWidth, c.clientHeight);
-    for (let i = 0; i < c._m; i++) { const a = Math.min(1, Math.max(0, (k * (N + 6) - (c._from + i)) / 6)), target = gi ? 1 - .66 * part : 1, px = (i % c._c) * c._p, py = Math.floor(i / c._c) * ch * 1.1;
-      if (N === 1) { const cut = py + ch * (1 - SHARE_PAY); x.globalAlpha = .34; x.drawImage(spr, px, py, cw, ch); x.save(); x.beginPath(); x.rect(px, cut, cw, ch); x.clip(); x.globalAlpha = 1; x.drawImage(spr, px, py, cw, ch); x.restore(); continue; }
-      x.globalAlpha = (.12 + .88 * a) * target; x.drawImage(spr, px, py, cw, ch); } x.globalAlpha = 1; }); };
-  addEventListener('resize', () => { layout(); draw(played || still ? 1 : 0, played || still ? 1 : 0); });
-  if (still) played = true;
-  else new IntersectionObserver((es, io) => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); const t0 = performance.now(), tick = t => { const e = t - t0, k = Math.min(1, e / 1100), q = Math.min(1, Math.max(0, (e - 1150) / 500)); draw(k, q * q * (3 - 2 * q)); if (q < 1) requestAnimationFrame(tick); else played = true; }; requestAnimationFrame(tick); } }), { threshold: .3 }).observe(mg);
-  new IntersectionObserver((es, io) => es.forEach(en => { if (en.isIntersecting) { io.disconnect(); loadPic(ty.selectedOptions[0].dataset.pic); } }), { rootMargin: '1200px' }).observe(mSec);
-  const widths = () => { const a = N === 1 ? .5 : Math.max(.36, Math.min(.64, PAY / N)); mg.style.gridTemplateColumns = `minmax(0,${a}fr) minmax(0,${1 - a}fr)`; };
-  followers.push(st => { N = st.n; PAY = Math.round(N * SHARE_PAY); if (N > 1 && PAY < 1) PAY = 1; const rent = rentOf(st.price), comes = N * rent, V = N * st.price, goes = V * ADV / TERM, left = comes - goes, one = N === 1;
-    $('f-m-h').textContent = one ? "Before interest, about half of your robot's rent pays the loan." : 'Before interest, the rent from ' + PAY.toLocaleString('en-US') + ' of your ' + N.toLocaleString('en-US') + ' robots pays the loan.';
+  // one robot earning its price back: as the page scrolls, one month of rent at a time, the dots fill from the base up. Each dot is an equal share of the robot's price
+  const pb = document.querySelector('.f-pay-bot'), spriteOf = rid => (window.FERRA_DOTS || {})[rid + '-l'] || (window.FERRA_DOTS || {})['arm-l'];
+  let setRent = () => {};
+  if (pb && spriteOf('arm')) {
+    let price = +pb.dataset.price, rent = +pb.dataset.rent, months = +pb.dataset.months, data = null, list = [], rows = 1, y0 = 0, rid0 = 'arm', lastP = 1;
+    const load = rid => { data = spriteOf(rid); list = data.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A, , ed] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .3 + .7 * Math.pow(L / 100, .9) + (ed / 100) * .35) }; });
+      const ys = list.map(q => q.cy); y0 = Math.min(...ys); rows = Math.max(...ys) - y0 + 1; list.sort((a, b) => b.cy - a.cy || a.cx - b.cx); list.forEach((q, i) => { q.rank = i / list.length; }); };
+    load('arm');
+    const nEl = $('f-read-n'), sEl = $('f-read-s'), ctx = pb.getContext('2d');
+    let W = 0, H = 0, pitch = 0, ox = 0, oy = 0, shown = -1;
+    const size = () => { W = pb.clientWidth; H = pb.clientHeight || W * rows / data.w; const d = Math.min(2, devicePixelRatio || 1); pitch = Math.min(W / data.w, H / rows); ox = (W - pitch * data.w) / 2; oy = H - pitch * rows; pb.width = Math.round(W * d); pb.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); shown = -1; };
+    const paint = m => { const share = Math.min(1, m * rent / price), on = new Path2D(), off = new Path2D();
+      for (const q of list) { const r = Math.max(.5, pitch * .5 * Math.max(.34, q.s)), X = ox + (q.cx + .5) * pitch, Y = oy + (q.cy - y0 + .5) * pitch, path = q.rank < share ? on : off; path.moveTo(X + r, Y); path.arc(X, Y, r, 0, 6.2832); }
+      ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(40,71,206,.15)'; ctx.fill(off); ctx.fillStyle = '#2847ce'; ctx.fill(on); };
+    const read = m => { nEl.textContent = usd(m * rent); sEl.textContent = m === 0 ? 'of rent on day one. You have paid ' + usd(price) + ' for the robot.' : m < months ? 'of rent after ' + m + (m === 1 ? ' month.' : ' months.') : 'of rent after ' + m + ' months. The robot has earned back its price.'; };
+    const show = m => { if (m === shown) return; shown = m; paint(m); read(m); };
+    const fix = () => { if (still) pb.style.height = pb.clientWidth * rows / data.w + 'px'; size(); show(Math.round(Math.min(1, lastP / .86) * months)); };
+    setRent = p => { lastP = p; show(Math.round(Math.min(1, p / .86) * months)); };   // the fill takes 86% of the distance; the rest is the finished robot, held
+    pb._fix = fix; addEventListener('resize', fix);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fix);
+    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); } $('f-w-p').textContent = usd(price); $('f-w-r').textContent = usd(rent); fix(); });
+    requestAnimationFrame(fix);
+  }
+  // one month: the bar fills from the left as the page scrolls. With reduced motion it stands finished
+  const bar = $('f-bar');
+  const setBar = k => { bar.style.clipPath = `inset(0 ${((1 - k) * 100).toFixed(2)}% 0 0)`; };
+  followers.push(st => { const N = st.n, one = N === 1, rent = rentOf(st.price), comes = N * rent, V = N * st.price, goes = V * ADV / TERM, left = comes - goes;
+    mSec.style.setProperty('--pay', (goes / comes).toFixed(4));
     $('f-m-lead').innerHTML = 'In one month of our example, <b class="num">' + usd(comes) + '</b> of rent comes in' + (one ? ' from your robot.' : ', ' + usd(rent) + ' from each robot.');
-    $('f-m-go').textContent = usd(goes); $('f-m-left').textContent = usd(left); $('f-m-v').textContent = usd(V);
-    $('f-m-gos').textContent = 'pays back the loan. ' + (one ? "That is about half of your robot's rent." : PAY === 1 ? 'That is about the rent from this 1 robot.' : 'That is about the rent from these ' + PAY.toLocaleString('en-US') + ' robots.');
-    $('f-m-sr').textContent = one ? 'One robot. The part of its rent that pays the loan is drawn bright.' : N + ' robots. The rent from ' + PAY + ' of them, drawn bright, pays the loan. The rent from the other ' + (N - PAY) + ', drawn pale, stays with the company.';
-    widths(); const name = ty.selectedOptions[0].dataset.pic; if (name !== srcName) loadPic(name); else { layout(); draw(played ? 1 : 0, played ? 1 : 0); } });
+    $('f-m-go').textContent = usd(goes); $('f-m-left').textContent = usd(left);
+    bar.setAttribute('aria-label', 'Of ' + usd(comes) + ' of rent, ' + usd(goes) + ' pays back the loan and ' + usd(left) + ' stays with you.'); });
+  // the cobalt band: six moving robots assemble, 300ms apart, as the band arrives. They pause off screen and carry on where they were
+  const bots = [...document.querySelectorAll('.f-bot canvas')];
+  let botsOn = false;
+  const startBots = () => { if (botsOn || !window.FerraDots) return; botsOn = true; bots.forEach((c, i) => setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; FerraDots.draw(c); }, still ? 0 : i * 300)); };
+  addEventListener('load', () => { if (window.FerraDots) bots.forEach(c => FerraDots.fetch(c)); });
+  const botIo = new IntersectionObserver(es => es.forEach(en => { const c = en.target; if (!c._seen || !window.FerraDots) return; en.isIntersecting ? FerraDots.resume(c) : FerraDots.pause(c); }), { rootMargin: '80px' }); bots.forEach(c => botIo.observe(c));
+
+  // ------------------------------------------------------------ the chain
+  const page = document.querySelector('[data-page="fleets.html"]');
+  if (still) { setRent(1); startBots(); return; }
+  page.classList.add('sc-on'); setBar(0);
+  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+  // a phone shortens every distance to 70%. These two scenes are only holds, and a hold stays what it is. Registered before the chain, so a resize sets them before it lays out
+  const holds = [$('sc-hero'), $('sc-keep')], baseHold = holds.map(s => +s.dataset.hold), setHolds = () => holds.forEach((s, i) => { s.dataset.hold = Math.ceil(baseHold[i] / (innerWidth <= 720 ? .7 : 1)); });
+  setHolds(); addEventListener('resize', setHolds);
+  // white to ink gets a full 100vh (70vh on a phone) at an even rate: the chain in site.js does that for any fade between those two grounds
+  const why = $('sc-why'), mon = $('sc-month');
+  // the old words leave in the first 40% of a fade and the new ones arrive from 35% to 75%, so the two are never readable together and no frame stands empty. Runs just after the chain has drawn the frame
+  const words = (s, then) => (p, top) => { if (then) then(p, top); queueMicrotask(() => { const l = s._l, y = -top, k = l.out === 'gf' ? clamp01((y - l.inH - l.over - l.hold) / l.outH) : 0, w = Math.min(clamp01((y / l.inH - .35) / .4), 1 - clamp01(k / .4));
+    l.kids.forEach(c => { c.style.opacity = w.toFixed(3); }); }); };
+  const relay = FerraChain({ runs: { 'sc-why': words(why, p => setRent(p)), 'sc-month': words(mon, p => setBar(clamp01(p * 130 / 100))), 'sc-fleet': words($('sc-fleet')) }, arrive: { 'sc-fleet': startBots }, after: () => { if (pb && pb._fix) pb._fix(); } });
+  // the form opening changes the first screen's height
+  new ResizeObserver(relay).observe(document.querySelector('.f-hero'));
 })();

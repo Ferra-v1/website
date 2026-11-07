@@ -1,103 +1,88 @@
-/* How it works (hw-). One example loan drawn as one arm that fills: the story to the last payment (white), who does what (pale), what if a loan goes bad, one short passage (white), the last screen (the page's one gradient). */
+/* How it works (hw-). One example loan: the steps on the left, the stage held on the right (who pays whom on one line, and the arm that stands for the loan). Then what if a loan goes bad slides up over the held last step (the page's one dark region), and the ground fades to the page's one gradient. */
 
-/* the story: words on the left, the arm held on the right while the page scrolls */
-.hw-story{display:grid;grid-template-columns:minmax(0,6.6fr) minmax(0,5.4fr);column-gap:clamp(40px,5vw,72px);align-items:start}
-.hw-hero{grid-column:1;grid-row:1;padding-top:clamp(40px,8vh,96px);min-height:calc(100vh - 200px)}
-.hw-hero .lede{max-width:40ch;margin:24px 0 12px}
-.hw-new{margin:0;max-width:44ch;color:var(--muted)}
-.hw-chs{grid-column:1;grid-row:2;padding-bottom:6vh}
-.hw-stage{grid-column:2;grid-row:1 / span 2;position:sticky;top:0;height:100vh;display:flex;align-items:center;min-width:0}
-.hw-si{width:100%}
-.hw-gw{display:flex;justify-content:center;align-items:flex-end}
-.hw-grid{display:block}
-.hw-base{display:block;height:1px;background:var(--line)}
+/* the steps on the left, the stage held on the right */
+.hw-story{display:grid;grid-template-columns:minmax(0,5.7fr) minmax(0,6.3fr);column-gap:clamp(40px,4vw,56px);align-items:start}
+.hw-hero{grid-column:1;grid-row:1;padding-top:clamp(40px,8vh,88px);min-height:calc(82vh - 72px)}
+.hw-hero .lede{max-width:34ch;margin:24px 0 12px}
+.hw-new{margin:0;color:var(--muted)}
+.hw-chs{grid-column:1;grid-row:2}
+.hw-stage{grid-column:2;grid-row:1 / span 2;position:sticky;top:72px;height:calc(100vh - 72px);display:flex;flex-direction:column;justify-content:center;min-width:0}
 
-/* each step takes about a screen, and the one being read stays dark */
-.hw-ch{min-height:58vh;display:flex;flex-direction:column;justify-content:center;padding-block:24px}
-.hw-t{margin:0 0 18px}
-.hw-ch a{font-weight:500;display:inline-block;padding-block:11px;margin-block:-11px}
-.hw-ch p b{font-weight:600;color:var(--ink)}
-.hw-ch p{margin:0 0 14px;font:400 var(--t-lead)/1.45 var(--sans);color:#3e4656;max-width:42ch;text-wrap:pretty}
-.hw-on .hw-ch{opacity:.26;transition:opacity .4s ease}
+/* the steps: each holds still while the stage changes, and the one being read stays dark. Distances are the storyboard's */
+.hw-ch{height:70vh;padding-bottom:32px}
+.hw-s5{height:120vh}.hw-s7{height:300vh}
+.hw-s8{height:200vh}   /* 100vh for the step, then 100vh while the next section slides up over it */
+.hw-li{position:sticky;top:clamp(112px,26vh,240px);display:grid;grid-template-columns:40px minmax(0,1fr)}
+.hw-n{color:var(--c)}
+.hw-t{margin:0 0 12px}
+.hw-tx p{margin:0;color:#3e4656;max-width:38ch;text-wrap:pretty}
+.hw-on .hw-ch{opacity:.24;transition:opacity .7s ease}
 .hw-on .hw-ch.hw-live{opacity:1}
-.hw-inl{margin-top:12px;max-width:380px}
-.hw-terms{padding:20px 24px 16px;font-size:15px}
-.hw-terms .sh-t{margin:14px 0 6px;font-size:21px}
-.hw-terms .dr{padding:8px 0}
-.hw-terms .dr b{white-space:nowrap}
-.hw-terms .sh-f{margin:12px 0 0;font-size:var(--t-small)}
-.hw-terms .sh-h span{font-size:var(--t-small)}
 
-/* the monthly step is long: its words hold together while the months pass */
-.hw-long{display:block;min-height:120vh;padding-block:0}
-.hw-li{position:sticky;top:clamp(90px,19vh,190px)}
+/* the diagram: square nodes on one hairline, Ferra above the company. Money is one small square travelling a line */
+.hw-dia{position:relative;display:grid;grid-template-columns:repeat(4,var(--hw-n));grid-template-rows:var(--hw-n) var(--hw-n);justify-content:space-between;row-gap:34px;padding-bottom:64px;--hw-n:84px}
+.hw-lines{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.hw-p{fill:none;stroke:var(--c);stroke-width:1.5;opacity:0;transition:opacity .7s ease}
+.hw-p-base,.hw-p-stem{stroke:rgba(14,22,38,.3);stroke-width:1;opacity:1}
+.hw-p-dash{stroke-dasharray:6 6}
+.hw-p.on{opacity:1}
+.hw-nd{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;padding:6px;background:#fff;border:1px solid rgba(14,22,38,.3);color:var(--ink);font:500 var(--t-small)/1.25 var(--sans);text-align:center;transition:background-color .7s ease,border-color .7s ease,color .7s ease}
+.hw-nd.on{background:var(--c);border-color:var(--c);color:#fff}
+.hw-nd.off{background:#f3f4f7;border-color:#d8dce5;color:#9aa1af}
+.hw-nd-f{grid-column:2;grid-row:1}
+.hw-nd-l{grid-column:1;grid-row:2}.hw-nd-c{grid-column:2;grid-row:2}.hw-nd-r{grid-column:3;grid-row:2}.hw-nd-u{grid-column:4;grid-row:2}
+.hw-mv{position:absolute;z-index:1;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;background:var(--c);visibility:hidden}
+.hw-mv.info{background:#fff;border:2px solid var(--c)}
+.hw-lab{position:absolute;z-index:3;left:0;top:0;font:600 var(--t-body)/1.25 var(--sans);color:var(--c);white-space:nowrap;opacity:0;transition:opacity .7s ease;pointer-events:none}
+.hw-lab.on{opacity:1}
 
-/* the last payment: the arm takes its last dots, and these are the biggest words after the title */
-.hw-end{min-height:82vh}
-.hw-end .hw-t{margin-bottom:clamp(18px,2.2vw,28px)}
-
-/* two figures under the arm */
-.hw-read{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:clamp(14px,2.2vh,24px) 0 0;align-items:end}
-.hw-read dt{font-size:var(--t-small);line-height:1.3;color:var(--muted);margin-bottom:6px}
+/* under the diagram: the arm, and the two figures that stay on screen */
+.hw-low{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:32px;align-items:end}
+.hw-gw{display:block}
+.hw-grid{display:block}
+.hw-base{display:block;height:1px;background:rgba(14,22,38,.3)}
+.hw-read{margin:0}
+.hw-read > div{margin-bottom:20px}
+.hw-read dt{font:400 var(--t-body)/1.3 var(--sans);color:var(--muted);margin-bottom:4px}
 .hw-read dd{margin:0;white-space:nowrap;color:var(--ink)}
-.hw-ra dd{color:var(--c)}
-.hw-rb.hw-model dd{font-size:var(--t-sub);line-height:1.2;letter-spacing:-.02em}
+.hw-leg{margin:0;padding-top:16px;border-top:1px solid var(--line);font:400 var(--t-body)/1.45 var(--sans);color:#3e4656;max-width:30ch;text-wrap:pretty}
 
-/* who does what, and who gets paid: three short lines beside one sheet of paper */
-.hw-cg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,96px);align-items:start}
-.hw-ct .h2{margin:0}
-.hw-who{margin-top:clamp(24px,3vw,36px)}
-.hw-who h3{margin:0 0 4px}
-.hw-who p{margin:0 0 20px;color:#3e4656;max-width:44ch;text-wrap:pretty}
-.hw-bill{padding:clamp(24px,3.6vw,48px) clamp(20px,3.6vw,48px) clamp(18px,2.2vw,28px)}
-.hw-bill .sh-t{font-size:clamp(24px,2.1vw,30px)}
-.hw-bill .sh-h span{font-size:var(--t-small)}
-.hw-bill .sh-f{font-size:var(--t-small)}
-.hw-bill .stmt{margin-top:20px}
-.hw-bill .stmt thead th{border-top:0;border-bottom:1px solid var(--ink)}
-.hw-bill .stmt tbody th{font-weight:400}
-.hw-bill .stmt tbody th,.hw-bill .stmt tbody td{padding-block:10px}
+/* what if a loan goes bad, then the last screen. One ground behind both, which fades from ink to the gradient (p-how-it-works.js). With no script each section keeps its own */
+.hw-g{position:relative;z-index:6;margin-top:-100vh;background:var(--g-dark);overflow:clip}   /* clip: the fade layer's negative margin would otherwise let it stick past the end of this wrapper, over the notes line and the footer. A clip keeps position:sticky working */
+.hw-gl{display:block;position:sticky;top:0;height:100vh;margin-bottom:-100vh;background:var(--g-grad);opacity:0;pointer-events:none}
+.hw-gf .hw-bad,.hw-gf .hw-ask{background:none}
+.hw-bad,.hw-ask{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding-block:clamp(72px,8vw,120px)}
+.hw-bg,.hw-ag{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:20px clamp(40px,6vw,96px);align-items:end;width:100%}
+.hw-bad h2,.hw-ask h2{margin:0;color:#fff}
+.hw-bg p,.hw-ag p{margin:0 0 20px;color:rgba(255,255,255,.92);max-width:44ch;text-wrap:pretty}
 
-/* what if a loan goes bad: one short passage */
-.hw-bg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px clamp(40px,6vw,96px);align-items:start}
-.hw-bg .h2{margin:0}
-.hw-bg p{margin:0 0 10px;color:#3e4656;max-width:52ch}
-
-/* the last screen */
-.hw-ag{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px clamp(40px,6vw,96px);align-items:start}
-.hw-ask .h2{margin:0;color:#fff}
-.hw-ask .t-lead{margin:0;color:rgba(255,255,255,.94);max-width:52ch}
-.hw-nocan{margin:14px 0 24px;color:#fff;font-weight:500}
-.hw-ask .hlinks{margin:0}
-
-/* phone: the arm and its figures hold at the top, each heading docks right under them, and the words pass under the heading */
-@media (max-width:900px){
+/* phone: the stage on top, the nodes two by two, the steps pass under it */
+@media (max-width:1040px){
  .hw-story{display:block}
- .hw-hero{min-height:0;padding-top:12px;padding-bottom:20px}
+ .hw-hero{min-height:0;padding-top:12px;padding-bottom:28px}
  .hw-hero .lede{margin-top:16px}
- .hw-stage{height:auto;display:block;top:0;z-index:5;background:#fff;padding:8px 0 10px;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax)}
- .hw-si{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 12px;align-items:end}
- .hw-gw{grid-column:1;grid-row:1}
- .hw-base{display:none}
- .hw-read{grid-column:2;grid-row:1;grid-template-columns:minmax(0,1fr);gap:12px;margin:0}
- .hw-read dt{margin-bottom:2px;line-height:1.25}
- .hw-chs{padding-bottom:10vh}
- .hw-ch{display:block;min-height:34vh;padding-block:0 20px}
- .hw-t{position:sticky;top:var(--hw-sh,300px);z-index:2;background:#fff;margin:0 0 6px;padding-block:14px 8px}
- .hw-long .hw-t{position:static}
- .hw-ch p{max-width:none}
- .hw-long{min-height:84vh;padding-block:0 20px}
- .hw-end{min-height:42vh}
- .hw-li{top:var(--hw-sh,300px)}
- .hw-cg,.hw-bg,.hw-ag{grid-template-columns:minmax(0,1fr)}
+ .hw-stage{top:0;z-index:5;height:auto;min-height:52vh;justify-content:flex-start;padding:10px 0 12px;background:#fff}
+ .hw-stage::before{content:"";position:absolute;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% - 50vw);background:#fff;border-bottom:1px solid var(--line);z-index:-1}
+ .hw-dia{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,38px);gap:10px 28px;padding-bottom:28px;max-width:560px}
+ .hw-nd{padding:2px 6px}
+ .hw-nd-f{grid-column:2;grid-row:1}
+ .hw-nd-l{grid-column:1;grid-row:2}.hw-nd-c{grid-column:2;grid-row:2}.hw-nd-r{grid-column:2;grid-row:3}.hw-nd-u{grid-column:1;grid-row:3}
+ .hw-lab{top:auto;bottom:0;left:0;font-size:var(--t-small)}
+ .hw-lab[data-at="cu"],.hw-lab[data-at="lc2"]{left:auto;right:0}
+ .hw-low{column-gap:16px;margin-top:10px;max-width:560px}
+ .hw-read > div{margin-bottom:8px}
+ .hw-read dt{font-size:var(--t-small);margin-bottom:0}
+ .hw-leg{padding-top:8px;font-size:var(--t-small);line-height:1.35}
+ .hw-stage::after{content:"";position:absolute;top:100%;height:36px;left:calc(50% - 50vw);right:calc(50% - 50vw);background:linear-gradient(180deg,#fff,rgba(255,255,255,0));pointer-events:none}   /* words leaving under the stage fade out here, so no line is ever cut through */
+ .hw-chs{padding-top:40px}
+ .hw-ch{height:calc(60vh + 200px);padding-bottom:20px}   /* 60vh of holding still, plus the words' own height */
+ .hw-s5{height:calc(84vh + 200px)}.hw-s7{height:210vh}.hw-s8{height:170vh}
+ .hw-li{position:sticky;top:calc(var(--hw-sh,52vh) + 36px);grid-template-columns:32px minmax(0,1fr)}
+ .hw-tx p{max-width:none}
+ .hw-bg,.hw-ag{grid-template-columns:minmax(0,1fr)}
 }
-@media (max-width:379px){.hw-read dd{font-size:var(--t-sub);line-height:1.2}}
-/* reduced motion: the finished picture sits still above the words */
+/* reduced motion: every step shows its finished stage, with no travel and no fade */
 @media (prefers-reduced-motion:reduce){
- .hw-stage{position:static;height:auto;padding-block:24px}
- .hw-on .hw-ch{opacity:1;transition:none}
- .hw-ch{min-height:0;padding-block:20px}
- .hw-t{position:static}
- .hw-long,.hw-end{min-height:0;padding-block:20px}.hw-li{position:static}
+ .hw-p,.hw-nd,.hw-lab,.hw-on .hw-ch{transition:none}
+ .hw-gl{display:none}
 }
-@media (prefers-reduced-motion:reduce) and (min-width:901px){.hw-stage{position:sticky;top:24px}}
