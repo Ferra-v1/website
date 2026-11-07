@@ -1,70 +1,70 @@
-/* Vision page (v-). One sticky stage: film, the dark parade of dot robots, two more films. Then the plain page slides over it, sized to its words. Without motion each film is one screen, stacked, with its poster and its words in place. */
+/* Vision page (v-). A first film that scrolls away like any page, then one sticky stage: the dark parade of dot robots. Under it the lower films and the plan sit in plain flow, sized to their words. Without motion each film is one screen, stacked, with its poster and its words in place. */
 [data-page="vision.html"]{--gy:72svh;--gy2:53svh;--rh:min(47svh,31vw)}
+.page[data-page="vision.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
+/* a smooth jump across the pinned parade would run through ten screens */
+html:has(.page[data-page="vision.html"]){scroll-behavior:auto}
 .v-run{position:relative;background:var(--g-ink);color:#fff}
-.v-run > .nav{z-index:5}
+.v-first{position:relative}
+.v-first > .nav{z-index:5}
 
-/* the films. Words sit bottom left on every film, on a scrim strong enough for the film's brightest frame. The first film is one screen. The two lower ones keep their shape and scroll like the rest of the page */
+/* the films. The first is one screen, with its line in the dark ground under the robot's wheels. The two lower ones are shown whole, fading at the foot into the ink, with their words straight under them on the page's left edge, so nothing crosses the figures in the picture */
 .v-layer{position:relative;overflow:hidden;background:var(--g-ink);color:#fff}
 .v-street{min-height:100svh}
-.v-site,.v-hall{width:100%;aspect-ratio:16/9;max-height:100svh;min-height:600px}
+.v-frame{position:relative;width:100%;aspect-ratio:16/9;max-height:100svh;overflow:hidden}
 .v-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .v-shade{position:absolute;inset:0;pointer-events:none}
-/* the films carry their own dusk, so a light scrim is enough: on the dark paving at the left, on the wet ground, on the empty floor to the right of the arms */
+/* the films carry their own dusk, so the first needs only a light scrim on the dark paving at the left */
 .v-street .v-shade{background:linear-gradient(to top,rgba(14,22,38,.82),rgba(14,22,38,0) 46%),linear-gradient(to right,rgba(14,22,38,.55),rgba(14,22,38,0) 52%)}
-.v-site .v-shade{background:linear-gradient(to top,rgba(14,22,38,.74),rgba(14,22,38,0) 34%),radial-gradient(90% 60% at 0 100%,rgba(14,22,38,.74),rgba(14,22,38,0) 70%)}
-.v-hall .v-film{object-position:0% 50%}
-.v-hall .v-shade{background:linear-gradient(to top,#0e1626,rgba(14,22,38,0) 24%),linear-gradient(to left,rgba(14,22,38,.92),rgba(14,22,38,.66) 42%,rgba(14,22,38,0) 68%)}
+.v-frame .v-shade{background:linear-gradient(to top,#0e1626,rgba(14,22,38,0) 14%),linear-gradient(to bottom,#0e1626,rgba(14,22,38,0) 8%)}
+.v-site .v-frame .v-shade{background:linear-gradient(to top,#0e1626,rgba(14,22,38,0) 14%)}
+.v-below{padding-block:20px var(--sec)}
+.v-below p{margin:16px 0 0;max-width:34em;text-wrap:balance}
 .v-words{position:absolute;left:0;right:0;width:100%;bottom:clamp(40px,7svh,72px);z-index:2}
 .v-words p{margin:0}
-.v-words .t-lead{margin-top:16px;max-width:30em}
-.v-words h1,.v-words h2{max-width:none}
-.v-w-street h1{max-width:7.6em}
-.v-w-hall{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px}
-.v-w-hall > *{grid-column:7 / 13}
-.v-layer .fp{z-index:3}
+.v-words .t-lead{margin-top:12px}
+.v-w-street{bottom:clamp(28px,4.4svh,40px)}
+.v-w-street .t-lead{margin-top:18px}
 
-/* the parade, without motion: a plain list of robots on ink. Its two uncaptioned robots wait for the line of eight */
-.v-work{position:relative;background:var(--g-ink);padding-block:clamp(56px,10vh,104px)}
-.v-track{display:flex;flex-direction:column;align-items:center;gap:48px}
-.v-slot{margin:0;display:flex;flex-direction:column;align-items:center;text-align:center;width:min(88vw,640px)}
+/* the parade, without motion: a plain list of robots on ink, one to a row, its words on the left and its robot's own pixels starting on the middle line. Its two uncaptioned robots wait for the line of eight */
+.v-work{position:relative;background:var(--g-ink);padding-block:120px}
+.v-road{max-width:var(--w);margin-inline:auto;padding-inline:var(--gl)}
+.v-track{display:grid;row-gap:72px}
+.v-slot{margin:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
 .v-slot[data-extra]{display:none}
-.v-slot .rs-bot{display:flex;align-items:flex-end;justify-content:center;position:relative;height:var(--rh);width:100%}
+.v-slot .rs-bot{grid-column:7 / 13;grid-row:1;display:flex;align-items:flex-end;justify-content:flex-start;position:relative;height:var(--rh);width:100%}
 .v-slot canvas.dotbot,.v-crowd canvas.dotbot{display:block;height:100%;width:auto;max-width:100%}
+.v-slot canvas.dotbot{transform:translateX(calc(var(--lm,0) * -100%))}
 /* drawn twice over itself, so the robots read full white on the ink */
 .v-slot canvas,.v-crowd canvas{filter:drop-shadow(0 0 0 #fff)}
-.v-slot[data-fly] canvas.dotbot,.v-crowdbot[data-fly] canvas.dotbot{transform:translateY(-16%)}
-.v-line,.v-crowd,.v-lat{display:none}
-.v-world{position:relative;margin-bottom:48px;text-align:center}
-.v-world h2{margin-inline:auto;max-width:18em}
-.v-slot figcaption{margin-top:clamp(18px,3vh,30px);padding-inline:12px;color:#fff;text-wrap:balance}
+.v-slot[data-fly] canvas.dotbot{transform:translate(calc(var(--lm,0) * -100%),-16%)}
+.v-crowdbot[data-fly] canvas.dotbot{transform:translateY(-16%)}
+.v-line,.v-crowd{display:none}
+.v-world{position:relative;margin-bottom:72px}
+.v-slot figcaption{grid-column:1 / 7;grid-row:1;color:#fff;text-wrap:pretty}
 
 /* the plan: the point across the top, then the three steps in reading order, one to a column, tops in line */
-.v-path{padding-block:120px}
-.v-pg h2{max-width:20em}
+.v-path{padding-block:var(--sec)}
 .v-steps{list-style:none;margin:clamp(48px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .v-step{padding-top:20px;border-top:1px solid var(--ink)}
-.v-step p{margin:10px 0 0;color:#3e4656}
-/* the ask: words on the left, the button on the page's right edge, on one line */
-.v-ask{padding-block:100px}
-.v-ag{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
-.v-ag h2{grid-column:1 / 7}
-.v-ar{grid-column:7 / 13;display:flex;align-items:center;justify-content:space-between;gap:16px 24px;flex-wrap:wrap}
-.v-ar p{margin:0;color:#3e4656}
+.v-step p{margin:10px 0 0;color:#3e4656;text-wrap:pretty}
+.v-go{display:inline-block;margin-top:16px}
 
 /* with motion: one stage */
 .v-live .v-stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--g-ink)}
-.v-live .v-street{position:absolute;inset:0;min-height:0}
-/* the ink ground with its round holes lies over the films and under the robots */
-.v-live .v-lat{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:1;visibility:hidden;pointer-events:none}
 /* the parade: the page scrolls, they drive past on one line that sits high enough for robot and caption to fit together */
-.v-live .v-work{position:absolute;inset:0;z-index:2;padding:0;background:none;visibility:hidden;overflow:hidden;pointer-events:none}
-.v-live .v-road{position:absolute;inset:0}
+.v-live .v-work{position:absolute;inset:0;z-index:2;padding:0;background:none;overflow:hidden;pointer-events:none}
+.v-live .v-road{position:absolute;inset:0;max-width:none;margin:0;padding:0}
 .v-live .v-line{display:block;position:absolute;left:0;right:0;top:var(--gy);height:1px;background:rgba(255,255,255,.34)}
+.v-live .v-line2{display:none}
 .v-live .v-track{display:block;position:absolute;left:0;top:calc(var(--gy) - var(--rh));width:100%;height:calc(100svh - var(--gy) + var(--rh))}
-.v-live .v-slot,.v-live .v-slot[data-extra]{display:flex;--slot:min(46vw,640px);position:absolute;left:0;top:0;width:var(--slot);transform-origin:50% var(--rh);will-change:transform,opacity;opacity:0}
-.v-live .v-slot figcaption{opacity:0;will-change:transform,opacity}
+.v-live .v-slot,.v-live .v-slot[data-extra]{display:flex;flex-direction:column;align-items:center;text-align:center;--slot:min(46vw,640px);position:absolute;left:0;top:0;width:var(--slot);transform-origin:50% var(--rh);will-change:transform,opacity;opacity:0}
+.v-live .v-slot .rs-bot{justify-content:center}
+.v-live .v-slot canvas.dotbot{transform:none}
+.v-live .v-slot[data-fly] canvas.dotbot{transform:translateY(-16%)}
+.v-live .v-slot figcaption{margin-top:clamp(18px,3vh,30px);padding-inline:12px;opacity:0;will-change:transform,opacity}
 /* the page's point takes the captions' place under the line, and the line rises so the two sit in the middle of the screen */
-.v-live .v-world{position:absolute;left:0;right:0;top:calc(var(--gy2) + clamp(24px,4.4svh,44px));z-index:1;margin:0 auto;opacity:0}
+.v-live .v-world{position:absolute;left:0;right:0;top:calc(var(--gy2) + clamp(24px,4.4svh,44px));z-index:1;margin:0 auto;opacity:0;text-align:center}
+.v-live .v-world h2{margin-inline:auto}
 /* where they end: drawn at their final size, and only shown once the pull-back has nearly finished */
 .v-live .v-crowd{position:absolute;bottom:calc(100svh - var(--gy));align-items:flex-end;opacity:0}
 .v-crowded .v-crowd{display:flex!important}
@@ -77,15 +77,19 @@
  .v-live .v-slot,.v-live .v-slot[data-extra]{--slot:88vw}
  .v-live .v-world{top:clamp(44px,9svh,96px);text-align:left}
  .v-live .v-world h2{margin-inline:0}
- .v-ag{grid-template-columns:minmax(0,1fr);row-gap:24px}
- .v-ag h2,.v-ar{grid-column:1}
+ /* the end picture is two rows of four, placed one by one (p-vision.js), each row on its own line */
+ .v-live .v-line2{display:block;opacity:0}
+ .v-live .v-crowd{inset:0}
+ .v-live .v-work.v-crowded .v-crowd{display:block!important}
+ .v-live .v-crowdbot{position:absolute}
+ .v-work{padding-block:72px}
+ .v-slot{grid-template-columns:minmax(0,1fr);row-gap:20px}
+ .v-slot .rs-bot,.v-slot figcaption{grid-column:1}
+ .v-slot figcaption{grid-row:2}
  .v-steps{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:32px}
- /* the phone cuts: the site is a full height crop with dark ground at its foot, the arm is a band with its words on ink under it */
- .v-site{aspect-ratio:auto;min-height:0;height:min(100svh,177vw)}
- .v-hall{aspect-ratio:auto;min-height:0;max-height:none}
- .v-hall .v-film{position:relative;height:auto;aspect-ratio:720/518;object-position:50% 50%}
- .v-hall .v-shade{background:none}
- .v-w-hall{display:block;position:relative;bottom:auto;padding-block:24px 56px}
- .v-hall .fp{top:calc(71.9vw - 60px);bottom:auto}
- .v-path{padding-block:72px}.v-ask{padding-block:72px}
+ /* the phone cuts: the site film is tall, near black at its head and empty at its foot, so it is cut just over the drone and just under the figures; the arm film is a band */
+ .v-site .v-frame{aspect-ratio:390/450;max-height:none}
+ .v-site .v-film{object-position:50% 29%}
+ .v-hall .v-frame{aspect-ratio:720/518;max-height:none}
+ .v-below br,.v-pg h2 br{display:none}
 }

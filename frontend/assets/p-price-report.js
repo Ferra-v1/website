@@ -1,27 +1,26 @@
 // Price report. The first screen: the arm assembles, each line draws and its figure ticks, and the paint drains down the arm to the lowest price.
-// The ink section with the chart sits directly under it, with a plain edge, and scrolls up as a page does.
-// Then one chart in five chapters, all tied to the scroll: each chapter's words swap, then one thing on the chart changes while they hold. When the last chapter ends it scrolls away normally.
+// The ink section with the chart sits directly under it, with a plain edge, and scrolls up as a page does. Nothing here pins or follows the scroll.
+// The dots arrive when the chart comes into view. Four rows sit beside it: choosing one opens its words and changes one thing on the chart.
 // No label sits on a mark. Line labels stand past the line ends in the clean column at the right; on a phone they stand in rows above the plot. The two price labels that must sit in the plot make the dots under them give way.
-// Native scrolling, position sticky. Hover or tap a dot to read the listing or sale it stands for. Readers who ask for less motion get the finished arm and the finished chart with all the words beside it.
+// Hover or tap a dot to read the listing or sale it stands for. Readers who ask for less motion get the finished arm and the finished chart with all the words beside it.
 (() => {
   const root = document.querySelector('[data-pr-stage]'), F = window.FerraPlot;
   if (!root || !F) return;
   const { clamp, usd, ease, fit, TICKS, placeTip, tipLink, reduce, clearLabel, endLabels, keyRows, lowestOf } = F;
-  // a screen too short to hold the chart and its words together, such as a phone held sideways, gets what less motion gets: the finished chart with all the words beside it
-  const still = reduce || innerHeight < 640 || innerWidth < 375;
-  addEventListener('orientationchange', () => { setTimeout(() => { if (still !== (reduce || innerHeight < 640 || innerWidth < 375)) location.reload(); }, 300); });
+  const still = reduce;
   const D = JSON.parse(root.querySelector('.pr-data').textContent);
-  const pin = root.querySelector('.pr-pin'), chart = root.querySelector('.pr-chart'), cv = root.querySelector('.pr-cv'), ax = root.querySelector('.pr-ax'), tip = root.querySelector('.pr-tip');
+  const chart = root.querySelector('.pr-chart'), cv = root.querySelector('.pr-cv'), ax = root.querySelector('.pr-ax'), tip = root.querySelector('.pr-tip');
   const [tb, ts, ta] = [tip.querySelector('b'), tip.querySelector('span'), tip.querySelector('a')];
-  const steps = [...root.querySelectorAll('.pr-step')], N = steps.length;
+  // chapter 0 is the dots arriving, under the heading. Chapters 1 to 4 are the four rows.
+  const steps = [...root.querySelectorAll('.pr-step')], N = steps.length + 1;
   root.classList.add(still ? 'still' : 'live');
   const CY = [92, 196, 255];
   const P = D.pts.map((p, i) => ({ age: p[0], usd: p[1], t: p[2], year: p[3], src: p[4], url: p[5], whole: p[6], fam: p[7], a: 0, d: i * 7919 % 433 / 433, gv: [] }));
   const A = D.auc.map(a => ({ age: a[0], usd: a[1], t: a[2], when: a[3], src: a[4], url: a[5], sold: true, a: 0 })).sort((a, b) => a.age - b.age);
   // the axis starts just under the lowest ordinary price; a rare listing far below it sits on the floor, and a label says what it is
   const lo = Math.min(...P.map(q => q.usd).filter(v => v >= 1000), ...A.map(q => q.usd)) * .82, hi = Math.max(...P.map(q => q.usd)) * 1.12;
-  let g = {}, hover = null, raf = 0, ch = still ? N - 1 : 0;
-  // w[i]: chapter i's swap, 0 to 1. s[i]: its change, 0 to 1.
+  let g = {}, hover = null, raf = 0, cur = still ? N - 1 : 1, prev = cur;
+  // w[i]: how far chapter i has taken over, 0 to 1. s[i]: its change, 0 to 1. The two run together now that a row chooses the chapter.
   const w = new Array(N).fill(still ? 1 : 0), s = new Array(N).fill(still ? 1 : 0); w[0] = 1;
   const mix = (a, b, k) => a + (b - a) * k;
   // how much of chapter c is on screen: in with its swap, out with the next one's
@@ -50,10 +49,10 @@
     const low = A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]), floor = lowestOf(P, lo);
     if (phone) {
       out += keyRows([{ txt: 'Typical asking price', mark: 'line', row: 1, s: '1 2 4' }, { txt: D.hi.label, mark: 'line', row: 1, s: '3' }, { txt: '8 in 10 ask inside this band', mark: 'band', row: 2, cls: 'pl', s: '2 4' }, { txt: D.lo.label, mark: 'line', cy: 1, row: 2, s: '3' }, { txt: say, mark: 'dot', cy: 1, row: 3, s: '4' }], 2);
-      if (floor) out += `<g class="lg" data-s="0 1 2 3 4"><text x="0" y="${base + 44}">Dot on the floor: lowest ask, ${usd(floor.usd)}</text></g>`;
+      if (floor) out += `<g class="lg" data-s="0 1 2 3 4"><text x="0" y="${base + 44}">Dot on the floor: ${usd(floor.usd)}, off the chart</text></g>`;
     } else {
       const gx = R + 16, wd = side - 16, tx = X(30) + 3, one = [{ txt: 'Typical asking price', y: Y(end[1]), x: tx, s: '1 2 4' }, { txt: '8 in 10 ask inside this band', y: Y(end[0]), x: tx, cls: 'pl', s: '2 4' }, { txt: say, y: low.y, cls: 'lb cy', s: '4' }];
-      if (floor) one.push({ txt: `Lowest ask: ${usd(floor.usd)}`, y: floor.y, x: floor.x + 5, cls: 'pl', s: '0 1 2 3 4' });
+      if (floor) one.push({ txt: `Below the chart: ${usd(floor.usd)}`, y: floor.y, x: floor.x + 5, cls: 'pl', s: '0 1 2 3 4' });
       out += endLabels(one, gx, wd, top, base - 10);
       out += endLabels([{ txt: D.hi.label, y: Y(D.hi.curve[30]), x: tx, s: '3' }, { txt: D.lo.label, y: Y(D.lo.curve[30]), x: tx, cy: 1, cls: 'lb cy', s: '3' }], gx, wd, top, base - 10);
     }
@@ -72,10 +71,11 @@
     const clipTo = (a0, a1, fn) => { c.save(); c.beginPath(); c.rect(X(a0), 0, X(a1) - X(a0), g.H); c.clip(); fn(); c.restore(); };
     const endDot = (v, col, k) => { if (k <= 0) return; c.fillStyle = `rgba(${col},${k})`; c.beginPath(); c.arc(X(30), Y(v), 3.2, 0, 6.2832); c.fill(); };
     // the band: opens outward from the age of 10 in chapter 2, leaves with chapter 3's swap, and comes back with chapter 4's
-    const band = still ? 1 : Math.max(clamp(s[2] * 3) * (1 - w[3]), w[4]), opened = still || w[4] ? 1 : ease(s[2]);
+    // a chapter passed over on the way to another shows none of its marks
+    const has = i => cur === i || prev === i, band = still ? 1 : has(2) || has(4) ? Math.max(clamp(s[2] * 3) * (1 - w[3]), w[4]) : 0, opened = still || w[4] ? 1 : ease(s[2]);
     if (band > .004) clipTo(10 - 22 * opened, 10 + 22 * opened, () => { c.fillStyle = `rgba(255,255,255,${.1 * band})`; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][2])); for (let a = 30; a >= 0; a--) c.lineTo(X(a), Y(D.curve[a][0])); c.closePath(); c.fill(); });
     // the two kinds of robot: their lines draw left to right in chapter 3
-    const fam = still ? 0 : 1 - w[4];
+    const fam = still ? 0 : has(3) ? 1 - w[4] : 0;
     if (s[3] > .004 && fam > .004) { clipTo(0, 32 * ease(s[3]), () => { const pl = (cu, col) => { c.strokeStyle = `rgba(${col},${fam})`; c.lineWidth = 2; c.beginPath(); cu.forEach((v, a) => { if (a <= 30) c.lineTo(X(a), Y(v)); }); c.stroke(); }; pl(D.hi.curve, '255,255,255'); pl(D.lo.curve, CY.join(',')); }); const k = fam * clamp((s[3] - .85) / .1); endDot(D.hi.curve[30], '255,255,255', k); endDot(D.lo.curve[30], CY.join(','), k); }
     for (const q of P) {
       const edge = (q.x - L) / (R - L);
@@ -109,19 +109,24 @@
   }
   function kick() { if (!raf) raf = requestAnimationFrame(() => { raf = 0; draw(); }); }
 
-  const words = () => { steps.forEach((el, i) => { const o = win(i), inn = i === 0 ? 1 : clamp(w[i] * 2 - 1); el.style.opacity = o; el.style.visibility = o > .004 ? 'visible' : 'hidden'; el.style.marginTop = (1 - inn) * 12 + 'px'; }); };
-  function onScroll() {
-    if (still) return;
-    const r = root.getBoundingClientRect(), v = pin.offsetHeight, phone = innerWidth <= 720, change = (phone ? .6 : .75) * v, swap = (phone ? .15 : .2) * v, t = -r.top, was = ch;
-    // the dots arrive from when the section is half way up until half a screen after it docks, and hold a moment. Each later chapter starts from there.
-    s[0] = clamp((t + .5 * v) / v); ch = 0;
-    for (let i = 1; i < N; i++) {
-      const u = t - .8 * v - (i - 1) * (swap + change);
-      w[i] = clamp(u / swap); s[i] = clamp((u - swap) / change);
-      if (u >= 0) ch = i;
-    }
-    if (ch !== was) hideTip();
-    words(); kick();
+  // the rows: one open at a time. Choosing one moves the chart to that chapter over 900ms.
+  const DUR = 900; let t0 = 0, f0 = null, arriving = 0, touched = false, looping = false;
+  function open(i) { cur = i; steps.forEach((el, k) => { const on = k + 1 === i; el.classList.toggle('on', on); const b = el.querySelector('button'); if (b) b.setAttribute('aria-expanded', on); }); }
+  function go(i) { prev = cur; open(i); hideTip(); f0 = { s: s.slice(), w: w.slice() }; t0 = performance.now(); loop(); }
+  function tick(t) {
+    let more = false;
+    if (arriving) { const k = clamp((t - arriving) / 1400); s[0] = k; if (k < 1) more = true; else { arriving = 0; if (!touched) { f0 = { s: s.slice(), w: w.slice() }; t0 = t; } } }
+    if (f0) { const k = ease(clamp((t - t0) / DUR)); for (let c = 1; c < N; c++) { const to = c <= cur ? 1 : 0; s[c] = mix(f0.s[c], to, k); w[c] = mix(f0.w[c], to, k); } if (k < 1) more = true; else { f0 = null; prev = cur; } }
+    draw();
+    if (more) requestAnimationFrame(tick); else looping = false;
+  }
+  function loop() { if (!looping) { looping = true; requestAnimationFrame(tick); } }
+  if (!still) {
+    steps.forEach((el, k) => { const h = el.querySelector('h3'), b = document.createElement('button'); b.type = 'button'; b.textContent = h.textContent; h.textContent = ''; h.append(b); b.addEventListener('click', () => { touched = true; if (cur !== k + 1 || f0) go(k + 1); }); });
+    open(1); s[0] = 0;
+    const seen = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { seen.disconnect(); arriving = performance.now(); loop(); } }, { threshold: .25 });
+    seen.observe(chart);
+    addEventListener('beforeprint', () => { s[0] = 1; for (let c = 1; c < N; c++) { s[c] = w[c] = c <= cur ? 1 : 0; } draw(); });
   }
   // dots you can read
   const live = () => (s[4] > .02 ? A.filter(q => q.a).concat(P) : P).filter(q => q.sold || q.a > .1);
@@ -143,11 +148,8 @@
   cv.addEventListener('pointerup', ev => { if (ev.pointerType !== 'touch' || !down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 8) return; const [x, y] = rel(ev), q = nearest(x, y, 26); if (q) showTip(q, 'touch'); else hideTip(); });
   document.addEventListener('pointerdown', ev => { if (!tip.contains(ev.target) && ev.target !== cv) hideTip(); });
   document.addEventListener('keydown', ev => { if (ev.key === 'Escape') hideTip(); });
-  addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('resize', onScroll, { passive: true });
   new ResizeObserver(layout).observe(chart);
-  layout(); onScroll();
-  if (!still) words();
+  layout();
 
   // the table: each dot is one listing behind that robot's price. Its place in the row says which listing it is. Rest on it or tap it to read it.
   const tw = document.querySelector('.pr-tw'), dt = tw && tw.querySelector('.pr-dtip');
@@ -157,12 +159,12 @@
     let ring = null, away = 0, lastTouch = false, url = '';
     const off = () => { if (ring) { ring.remove(); ring = null; } dt.hidden = true; };
     const read = (svg, ev) => {
-      const b = svg.getBoundingClientRect(), ix = svg.dataset.i.split(','), i = clamp(Math.floor((ev.clientY - b.top) / PITCH) * COLS + Math.floor((ev.clientX - b.left) / PITCH), 0, ix.length - 1), q = byIndex[+ix[i]];
+      const b = svg.getBoundingClientRect(), k = b.width / svg.viewBox.baseVal.width, ix = svg.dataset.i.split(','), i = clamp(Math.floor((ev.clientY - b.top) / k / PITCH) * COLS + Math.floor((ev.clientX - b.left) / k / PITCH), 0, ix.length - 1), q = byIndex[+ix[i]];
       const x = i % COLS * PITCH + PITCH / 2, y = Math.floor(i / COLS) * PITCH + PITCH / 2, wb = tw.getBoundingClientRect();
       if (ring) ring.remove();
       ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); ring.setAttribute('cx', x); ring.setAttribute('cy', y); ring.setAttribute('r', 3.4); svg.append(ring);
       db.textContent = q[2]; ds.textContent = `Built ${q[3]}. Asking ${usd(q[1])} on ${q[4]}.`; tipLink(dt, da, ev.pointerType === 'touch' || lastTouch ? 'touch' : 'mouse', 'See the listing', q[5]); url = q[5];
-      placeTip(dt, tw, b.left - wb.left + x, b.top - wb.top + y);
+      placeTip(dt, tw, b.left - wb.left + x * k, b.top - wb.top + y * k);
     };
     tw.querySelectorAll('.pr-dots').forEach(svg => {
       svg.addEventListener('pointermove', ev => { if (ev.pointerType === 'touch') return; clearTimeout(away); read(svg, ev); });

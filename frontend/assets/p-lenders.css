@@ -1,26 +1,21 @@
-/* Lenders page (l-). The film, the proof (what auctions really paid, white), the slider against the loan (pale), what if a loan goes bad (ink), the term sheet (pale), the final ask (white).
-   Sizes come from the shared type classes and tokens. Every section is sized to its content, and each ground meets the next at a plain edge. The one held section is the film, which the proof slides up over. */
+/* Lenders page (l-). The film, the proof (what auctions really paid), the slider against the loan, what if a loan goes bad (ink), the term sheet, the final ask.
+   Sizes come from the shared type classes and tokens. One 12-column grid with a 24px gutter, shared with the header. Every section is sized to its content and sits directly under the last one. */
 
-/* the first screen: the film, full height, the words low at the left */
-.l-stack{position:relative}
-.l-hero{position:sticky;top:0;z-index:0;display:flex;flex-direction:column;height:100vh;height:100svh;min-height:600px;background:var(--g-ink);color:#fff;overflow:hidden}
+/* the first screen: the film, full height, the words low at the left. It scrolls away like any page */
+.l-hero{position:relative;display:flex;flex-direction:column;height:100vh;height:100svh;min-height:600px;background:var(--g-ink);color:#fff;overflow:hidden}
 .l-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0% 50%}
 .l-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,22,38,.78) 0,rgba(14,22,38,.66) 9%,rgba(14,22,38,.1) 26%,rgba(14,22,38,.12) 38%,rgba(14,22,38,.9) 100%),linear-gradient(90deg,rgba(14,22,38,.82) 0,rgba(14,22,38,.62) 38%,rgba(14,22,38,0) 66%);pointer-events:none}
 .l-hero .nav{z-index:3}
-.l-hero .fp{right:max(24px,calc(50% - 576px));bottom:clamp(36px,6vh,64px)}
-.l-hc{position:relative;z-index:2;width:100%;margin-top:auto;padding-bottom:clamp(36px,6vh,64px)}
-.l-hc .h1{max-width:9.2em}
-.l-hc .lede{max-width:46ch;margin:24px 0 32px;color:#fff}
-.l-resale{position:relative;z-index:1}
+.l-hc{position:relative;z-index:2;width:100%;margin-top:auto;padding-top:100px;padding-bottom:100px}
+.l-hc .lede{max-width:46ch;margin:18px 0 32px;color:#fff}
 
-/* a heading on the left, its paragraph on the right */
-.l-lh{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:20px clamp(40px,6vw,88px);align-items:end}
-.l-lh p{margin:0;color:#3e4656;max-width:44ch}
+/* a heading with its short line directly under it, together, in one column */
 .l-lh h2{margin:0}
+.l-lh p{margin:16px 0 0;max-width:690px;color:#3e4656;text-wrap:pretty}
 .l-bad .l-lh p{color:rgba(255,255,255,.92)}
 
 /* the proof: three numbers in a row, each with a thin bar where the full width is what sellers ask */
-.l-pfs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px clamp(32px,4vw,56px);margin-top:clamp(48px,5vw,72px)}
+.l-pfs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 24px;margin-top:clamp(40px,4.4vw,56px)}
 .l-pf b{display:block;color:var(--ink)}
 .l-pf:nth-child(2) b{color:var(--c)}
 .l-pb{display:block;height:6px;margin:20px 0 14px;background:#dbe2f0}
@@ -41,8 +36,9 @@
 .l-led th a:hover{color:var(--c)}.l-led th a:hover span[aria-hidden]{transform:translateX(3px)}
 .l-led .l-sp{font-weight:500;white-space:nowrap}
 .l-n{color:var(--c);font-weight:500}
+.l-nb{white-space:nowrap}
 .l-led td.l-sw{color:var(--muted);white-space:nowrap}
-.l-led td.l-st{padding-right:0;width:27%}
+.l-led tbody tr:not(.l-sg) > td.l-st{padding-right:0;width:27%}
 .l-st{white-space:nowrap}
 td.l-st{display:table-cell}
 td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;vertical-align:middle;white-space:nowrap}
@@ -52,12 +48,12 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
 .l-js .rv:not(.in-view) .l-tk i{left:calc(100% - 8px)}
 .l-led tfoot td{padding:20px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--muted);max-width:90ch}
 
-/* the slider against the loan */
-.l-dc{--l-th:32px;--l-gut:204px;margin:clamp(40px,4.4vw,64px) 0 0}
-.l-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px clamp(32px,4vw,56px)}
+/* the slider against the loan: the heading and its line, then across the whole width the figures, the slider and the chart, so sliding always shows what it changes */
+.l-dc{--l-th:32px;margin:clamp(32px,3.4vw,48px) 0 0;min-width:0}
+.l-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
 .l-fig b{display:block;white-space:nowrap;color:var(--ink)}
 .l-fig:first-child b{color:var(--c)}
-.l-fig > span{display:block;margin-top:8px;color:#3e4656;text-wrap:balance}
+.l-fig > span{display:block;margin-top:8px;color:#3e4656;text-wrap:pretty}
 .l-fig span span{display:inline;margin:0;font-variant-numeric:lining-nums tabular-nums;font-weight:500;color:var(--ink)}
 
 .l-sl{position:relative;margin:clamp(20px,2vw,28px) 0 0}
@@ -67,29 +63,30 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
 .l-adv::-moz-range-progress{height:4px;border-radius:0;background:var(--c)}
 .l-adv::-webkit-slider-thumb{-webkit-appearance:none;width:var(--l-th);height:var(--l-th);margin-top:-14px;border-radius:2px;background:var(--c);border:0}
 .l-adv::-moz-range-thumb{width:32px;height:32px;border-radius:2px;background:var(--c);border:0}
-.l-adv:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:2px}
+.l-adv:focus-visible,.l-stop:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:2px;box-shadow:none}
 /* the three real shares, each under its own place on the track */
-.l-stops{position:relative;height:60px;margin:2px calc(var(--l-th) / 2) 0}
-.l-stop{position:absolute;left:calc(var(--p) * 1%);top:0;transform:translateX(-50%);min-width:44px;min-height:44px;padding:4px 6px;border:0;background:none;cursor:pointer;color:var(--muted);line-height:1.3;text-align:center;white-space:nowrap;transition:color .15s ease}
+.l-stops{position:relative;height:52px;margin:2px calc(var(--l-th) / 2) 0}
+.l-stop{position:absolute;left:calc(var(--p) * 1%);top:0;transform:translateX(-50%);min-width:44px;min-height:44px;padding:4px 6px;border:0;background:none;cursor:pointer;color:var(--muted);line-height:1.3;text-align:center;width:max-content;transition:color .15s ease}
+.l-stop,.l-adv{-webkit-tap-highlight-color:transparent}
 .l-stop:first-child{transform:translateX(-22px);text-align:left}
 .l-stop b{display:block;font-weight:500;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 .l-stop span{display:block}
 .l-stop:hover,.l-stop:hover b,.l-stop[aria-pressed="true"] b,.l-stop[aria-pressed="true"]{color:var(--c)}
 
 /* the chart: solid shapes, one calm line. Its labels sit in the clean space to the left, level with where each shape starts, each tied to its shape by a thin line. Nothing is written on the shapes. */
-.l-chart{display:grid;grid-template-columns:var(--l-gut) minmax(0,1fr);margin-top:32px}
-.l-gut{position:relative;height:clamp(300px,40vh,400px)}
+.l-chart{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;margin-top:24px}   /* the month tag sits in this gap, clear of the slider labels */
+.l-gut{grid-column:1 / 4;margin-right:-24px;position:relative;height:clamp(260px,33vh,340px)}
 .l-wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .l-wires path{fill:none;stroke:var(--ink);stroke-width:1;opacity:.55}
 .l-lab{position:absolute;right:30px;left:0;transform:translateY(-50%);font:400 var(--t-small)/1.3 var(--sans);color:var(--ink);text-align:right;pointer-events:none}
 .l-lab b{display:block;font-weight:600}
 .l-lab span{display:block;color:#3e4656}
-.l-plot{position:relative;height:clamp(300px,40vh,400px);touch-action:pan-y;cursor:crosshair}
+.l-plot{grid-column:4 / -1;position:relative;height:clamp(260px,33vh,340px);touch-action:pan-y;cursor:crosshair}
 .l-svg{position:absolute;inset:0;width:100%;height:100%;display:block;clip-path:inset(-20px 0 0 0);transition:clip-path 1s var(--m-ease)}
 .l-wait .l-svg{clip-path:inset(-20px 100% 0 0)}
 .l-wait > :not(.l-svg){opacity:0}
 .l-plot > :not(.l-svg){transition:opacity .6s ease .8s}
-.l-a-v{fill:#fff}.l-a-l{fill:#58bdf0}.l-a-e{fill:var(--c)}.l-a-a{fill:var(--ink)}
+.l-a-v{fill:#e6eaf2}.l-a-l{fill:#58bdf0}.l-a-e{fill:var(--c)}.l-a-a{fill:var(--ink)}
 .l-ln-l{fill:none;stroke:var(--ink);stroke-width:2}
 .l-ln-s{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:5 5;opacity:.6}
 .l-read{stroke:var(--ink);stroke-width:1.5}
@@ -97,7 +94,7 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
 .l-drop{position:absolute;width:1px;bottom:0;background:var(--ink);opacity:.55;pointer-events:none}
 /* reading a month: a solid plate above the chart, so it never sits on what it describes */
 .l-mtag{position:absolute;top:-6px;transform:translate(-50%,-100%);padding:3px 8px;background:var(--ink);color:#fff;font:500 var(--t-small)/1.3 var(--sans);white-space:nowrap;pointer-events:none;border-radius:2px}
-.l-yrs{grid-column:2;position:relative;height:58px;border-top:1px solid var(--ink);font:400 var(--t-small)/1 var(--sans);color:var(--muted)}
+.l-yrs{grid-column:4 / -1;position:relative;height:58px;border-top:1px solid var(--ink);font:400 var(--t-small)/1 var(--sans);color:var(--muted)}
 .l-yrs > span{position:absolute;top:10px;transform:translateX(-50%);white-space:nowrap}
 .l-yrs > span:first-child{transform:none}
 .l-yrs > span:nth-child(4){left:auto!important;right:0;transform:none}
@@ -108,53 +105,70 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
 .l-key li:last-child{border-bottom:0}
 .l-key li::before{content:"";position:absolute;left:0;top:13px;width:12px;height:12px;background:var(--kc);box-shadow:inset 0 0 0 1px rgba(14,22,38,.2)}
 .l-key b{font-weight:600;white-space:nowrap}
-.l-k-v{--kc:#fff}.l-k-l{--kc:#58bdf0}.l-k-e{--kc:var(--c)}.l-k-a{--kc:var(--ink)}
-.l-now{margin:16px 0 0 var(--l-gut);max-width:80ch;min-height:1.6em;color:#3e4656;text-wrap:pretty}
+.l-k-v{--kc:#e6eaf2}.l-k-l{--kc:#58bdf0}.l-k-e{--kc:var(--c)}.l-k-a{--kc:var(--ink)}
+/* the words the chart speaks, under the plot and starting on its left edge */
+.l-now{margin:8px 0 0 calc((100% + 24px) / 4);min-height:1.6em;color:#3e4656;text-wrap:pretty}
 .l-now b{font-weight:600;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 .l-dc .sr{left:0;max-width:1px}
 
 /* what if a loan goes bad */
 .l-bad h2{color:#fff}
 .l-bars{margin-top:clamp(40px,4.4vw,64px)}
-.l-bar{display:grid;grid-template-columns:minmax(0,3.4fr) minmax(0,7fr) 150px;gap:clamp(14px,2vw,24px);align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.14)}
-.l-bt{color:rgba(255,255,255,.86)}
-.l-bv{display:block;height:12px}
+.l-bar{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.14)}
+.l-bt{grid-column:1 / 5;color:rgba(255,255,255,.86)}
+.l-bv{grid-column:5 / 11;display:block;height:12px}
 .l-bv i{display:block;height:100%;width:var(--w);background:#58bdf0;transform-origin:0 50%;transition:transform .7s var(--m-ease) .1s}
 .l-js .rv:not(.in-view) .l-bv i{transform:scaleX(.02)}
 .l-bar-o .l-bv i{background:#fff}
-.l-bar b{font-weight:500;color:#fff;text-align:right;white-space:nowrap}
-.l-model{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:24px clamp(40px,6vw,88px);margin-top:clamp(48px,5vw,72px);align-items:start}
-.l-model h3{margin:0;color:#fff}
-.l-loss{width:100%;border-collapse:collapse;font-variant-numeric:lining-nums tabular-nums}
+.l-bar b{grid-column:11 / -1;font-weight:500;color:#fff;text-align:right;white-space:nowrap}
+.l-model{margin-top:clamp(40px,4.4vw,56px)}
+.l-model h3{margin:0 0 20px;color:#fff}
+/* the columns start where the bars above start */
+.l-loss{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:lining-nums tabular-nums}
+.l-loss th:first-child{width:34%}
+.l-loss thead th:nth-child(2){width:33%}
 .l-loss thead th{padding:0 12px 10px 0;font:400 var(--t-small)/1.3 var(--sans);text-align:left;vertical-align:bottom;color:rgba(255,255,255,.78);border-bottom:1px solid rgba(255,255,255,.3)}
 .l-loss tbody th{padding:12px 12px 12px 0;font:400 var(--t-small)/1.35 var(--sans);text-align:left;color:rgba(255,255,255,.82);border-bottom:1px solid rgba(255,255,255,.14)}
-.l-loss tbody th b{display:block;font:500 var(--t-smallh)/1.3 var(--sans);color:#fff}
+.l-loss tbody th b{font:500 var(--t-smallh)/1.3 var(--sans);color:#fff}
 .l-loss td{padding:12px 12px 12px 0;font:500 var(--t-smallh)/1.3 var(--sans);color:#fff;vertical-align:top;border-bottom:1px solid rgba(255,255,255,.14);white-space:nowrap}
 
-/* the term sheet, on paper, with each term in plain words */
-.l-rg{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(36px,5vw,72px);align-items:start}
-.l-rs .h2{margin:0}
-.l-docs{list-style:none;margin:clamp(24px,2.8vw,36px) 0 0;padding:0;border-top:1px solid rgba(14,22,38,.16)}
-.l-docs li{padding:14px 0;border-bottom:1px solid rgba(14,22,38,.16);font-weight:500}
+/* the heading, then the three documents beside the term sheet, which is on paper with each term in plain words. The list shares the sheet's height, so neither column ends in empty space */
+.l-recv h2{margin:0}
+.l-rg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:stretch;margin-top:clamp(32px,3.4vw,48px)}
+.l-docs{grid-column:1 / 5;display:flex;flex-direction:column;list-style:none;margin:0;padding:0;border-top:1px solid rgba(14,22,38,.16)}
+.l-pap{grid-column:5 / -1}
+.l-docs li{flex:1;padding:16px 0;border-bottom:1px solid rgba(14,22,38,.16)}
+.l-docs b{display:block;font-weight:600;color:var(--ink)}
+.l-docs span{display:block;margin-top:4px;color:#3e4656}
 .l-sheet{padding:clamp(24px,2.5vw,36px) clamp(20px,3vw,44px) clamp(20px,1.6vw,24px)}
 .l-sheet .sh-h span{font-size:var(--t-small)}
-.l-sheet .sh-t{text-wrap:balance;font-size:var(--t-sub);margin:16px 0 4px}
-.l-dl{margin:0}
-.l-dl > div{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:4px 20px;padding:9px 0;border-bottom:1px solid var(--line)}
-.l-dl > div:last-child{border-bottom:0}
+.l-sheet .sh-t{text-wrap:pretty;font-size:var(--t-sub);margin:16px 0 4px}
+.l-dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,auto);grid-auto-flow:column;column-gap:32px;margin:0}
+.l-dl > div{padding:10px 0;border-bottom:1px solid var(--line)}
+.l-dl > div:nth-child(4n){border-bottom:0}
 .l-dl dt{font-weight:500;color:var(--ink)}
-.l-dl dt span{display:block;font-weight:400;font-size:var(--t-small);line-height:1.35;color:var(--muted)}
+.l-dl dt span{margin-left:8px;font-weight:400;font-size:var(--t-small);line-height:1.35;color:var(--muted)}
 .l-dl dd{margin:0;color:#2f3747}
 .l-sheet .sh-f{margin:8px 0 0;padding-top:0;font-size:var(--t-small);line-height:1.45;text-align:left;color:var(--muted)}
 
-/* the final ask: the same shape as on Home, a line on the left and the form on the right */
-.l-contact{position:relative;padding-block:clamp(72px,8.34vw,120px)}
-.l-cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,560px);gap:clamp(32px,5vw,72px);align-items:start}
-.l-contact h2{margin:0}
+/* the final ask: the shared shape from site.css, the line and then the form. The sheet above already ends in white, so the top padding halves */
+.page .l-contact{position:relative;padding-top:calc(var(--sec) * .5)}
+.page .l-contact h2.h2{text-wrap:balance}
 
+/* below this the three stop labels would touch on one line, so each wraps */
+@media (max-width:1240px){.l-stops{height:76px}.l-stop{max-width:96px}.l-stop:last-child{max-width:none;white-space:nowrap}}
 @media (max-width:1060px){
- .l-lh,.l-model,.l-rg,.l-cg{grid-template-columns:minmax(0,1fr)}
- .l-rg > .rv:last-child{max-width:720px}
+ .l-rg{display:flex;flex-direction:column;gap:24px}
+ .l-pap{max-width:720px}
+ .l-now{margin-left:0;min-height:3.2em}
+}
+/* the dot track needs room the table no longer has here: the percent carries the same figure, and every row and heading wraps inside the content width */
+@media (max-width:900px){
+ .l-tk{display:none}
+ td.l-st b{width:auto}
+ .l-led thead .l-st{white-space:normal}
+ .l-led td.l-sw{white-space:normal}
+ .l-led tbody tr:not(.l-sg) > td.l-st{width:auto;text-align:right}
 }
 @media (max-width:820px){
  .l-pfs{grid-template-columns:minmax(0,1fr);gap:28px}
@@ -168,21 +182,26 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
  .l-stop span{display:none}
  .l-stops{height:44px}
  .l-stop b{line-height:36px}
- .l-chart{display:block}
+ .l-chart{display:block;margin-top:36px}
  .l-gut{display:none}
+ .l-loan{padding-bottom:24px}
  .l-key{display:block}
- .l-now{margin-left:0;min-height:4.8em}
- .l-plot{height:clamp(260px,38vh,340px)}
+ .l-plot{height:clamp(240px,34vh,320px)}
  .l-yrs{height:34px}
  .l-yrs > .l-rtag{display:none}
  .l-bar{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+ .l-bt{grid-column:1}.l-bar b{grid-column:2}
  .l-bv{grid-column:1 / -1;grid-row:2}
 }
 @media (max-width:720px){
  .l-film{object-position:50% 0}
  .l-hero::after{background:linear-gradient(180deg,rgba(14,22,38,.78) 0,rgba(14,22,38,.62) 9%,rgba(14,22,38,.05) 22%,rgba(14,22,38,.1) 34%,rgba(14,22,38,.92) 58%)}
- .l-hero .fp{top:88px;bottom:auto;right:16px}
- .l-hc{padding-bottom:28px}
+ .l-hc .btn{width:100%}
+ .l-dl{display:block}
+ .l-dl > div:nth-child(4n){border-bottom:1px solid var(--line)}
+ .l-dl > div:last-child{border-bottom:0}
+ .l-dl dt span{display:block;margin-left:0}
+ .l-hc{padding-top:0;padding-bottom:28px}
  .l-hc .lede{margin:16px 0 20px}
  .l-led thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
  .l-led,.l-led tbody,.l-led tfoot,.l-led tr,.l-led th,.l-led td{display:block}
@@ -194,16 +213,20 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
  .l-led tbody tr:not(.l-sg) > td.l-st{grid-column:2;width:auto;text-align:right}
  .l-tk{display:none}
  td.l-st b{width:auto}
- .l-dl > div{grid-template-columns:minmax(0,1fr);gap:4px}
  .l-loss tbody th,.l-loss td,.l-loss thead th{padding-right:10px}
+ .l-loss th:first-child{width:42%}
+ .l-loss thead th:nth-child(2){width:24%}
 }
+/* the narrowest phones: two "Month 35" figures no longer fit side by side, so they stack */
+@media (max-width:359px){.l-figs{grid-template-columns:minmax(0,1fr)}}
+/* the loss table: the middle column holds "about 5%" clear of the next one */
+@media (max-width:380px){.l-loss th:first-child{width:36%}.l-loss thead th:nth-child(2){width:30%}}
 /* whatever the keyboard reaches is already in view */
 .rv:focus-within{opacity:1;transform:none;transition:none}
 @media (prefers-reduced-motion:reduce){
- .l-hero{position:relative}
  .l-svg,.l-plot > :not(.l-svg),.l-bv i,.l-tk i,.l-pb i,.l-stop{transition:none}
  .l-js .rv:not(.in-view) .l-tk i{left:calc(var(--r) - 4px)}.l-js .rv:not(.in-view) .l-bv i,.l-js .rv:not(.in-view) .l-pb i{transform:none}
 }
 /* a tablet held upright: keep the arm in the picture */
 @media (min-width:721px) and (max-aspect-ratio:1/1){.l-film{object-position:74% 50%}}
-@media print{.l-hero{position:relative;height:auto;min-height:0;color:var(--ink);background:none}.l-hero::after{display:none}.l-hc .lede{color:var(--ink)}.l-hc .h1{color:var(--ink)}.l-hc{padding-top:24px}.l-sl,.l-now{display:none}}
+@media print{.l-hero{height:auto;min-height:0;color:var(--ink);background:none}.l-hero::after{display:none}.l-hc .lede{color:var(--ink)}.l-hc .h1{color:var(--ink)}.l-hc{padding-top:24px}.l-sl,.l-now{display:none}}

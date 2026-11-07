@@ -3,7 +3,7 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.documentElement.classList.add('l-js');   // bars and dots wait to draw only when this script can bring them back
 
-  // the film: the phone has its own still. Once the proof has slid up over it, it rests until the reader comes back. The pause control (site.js) wins: a paused film stays paused.
+  // the film: the phone has its own still. Once it has scrolled away, it rests until the reader comes back. The pause control (site.js) wins: a paused film stays paused.
   const hero = document.querySelector('.l-hero'), film = hero && hero.querySelector('.l-film'), fp = hero && hero.querySelector('[data-film-pause]');
   if (film) {
     if (matchMedia('(max-width:720px)').matches) film.poster = 'assets/p-lenders.dock-phone.webp';
@@ -20,7 +20,7 @@
   const dc = document.querySelector('[data-dc]');
   if (!dc) return;
   const D = JSON.parse(dc.dataset.dc), R = D.rows, T = D.term;
-  const $ = s => dc.querySelector(s), inp = $('.l-adv'), plot = $('.l-plot'), svg = $('.l-svg'), now = $('.l-now'), tag = $('.l-mtag'), read = $('.l-read'), gut = $('.l-gut');
+  const $ = s => dc.querySelector(s), inp = $('.l-adv'), plot = $('.l-plot'), svg = $('.l-svg'), now = document.querySelector('.l-now'), tag = $('.l-mtag'), read = $('.l-read'), gut = $('.l-gut');
   const P = { l: $('.l-a-l'), e: $('.l-a-e'), a: $('.l-a-a'), top: $('.l-ln-l') };
   const figL = $('[data-lend]'), figM = $('[data-lent]'), covA = $('[data-cov="a"]'), covS = $('[data-cov="s"]'), stops = [...dc.querySelectorAll('.l-stop')];
   const whole = v => '$' + Math.round(v).toLocaleString('en-US');
@@ -28,7 +28,7 @@
   const rough = v => '$' + (Math.round(v / 10000) * 10000).toLocaleString('en-US');
   const fifty = v => '$' + (Math.round(v / 50000) * 50000).toLocaleString('en-US');   // a value from our assumed curve, to the nearest $50,000
   const marks = { a: [$('[data-ring="a"]'), $('[data-drop="a"]'), $('[data-rtag="a"]'), 2], s: [$('[data-ring="s"]'), $('[data-drop="s"]'), $('[data-rtag="s"]'), 3] };
-  const HINT = 'Point at any month to read it.';
+  const HINT = matchMedia('(hover: none)').matches ? 'Tap any month to read it.' : 'Point at any month to read it.';
   let adv = D.adv, reading = -1, touched = false, tween = 0;
   const loan = () => D.v * adv / 100, owed = m => loan() * (1 - m / T);
   const lerp = (m, k) => { const i = Math.min(T - 1, Math.floor(m)), f = m - i; return R[i][k] + (R[i + 1][k] - R[i][k]) * f; };
@@ -66,7 +66,7 @@
       const x = m / T * 100, y = Y(R[m][col]) / 10; ring.style.left = x + '%'; ring.style.top = y + '%';
       drop.style.left = x + '%'; drop.style.top = y + '%';
       rt.textContent = 'Month ' + m; rt.style.left = x + '%'; rt.classList.toggle('l-end', x > 94); seen.push([rt, m / T * W]); }
-    if (seen.length === 2 && Math.abs(seen[0][1] - seen[1][1]) < 76) seen[1][0].hidden = true;   // two tags that close would touch: the figures above still give both
+    if (seen.length === 2) { const a = seen[0][0].getBoundingClientRect(), b = seen[1][0].getBoundingClientRect(); if (a.right + 4 > b.left && b.right + 4 > a.left) seen[1][0].hidden = true; }   // two tags that would touch: the figures above still give both
   }
   function set(v) {
     adv = Math.max(+inp.min, Math.min(+inp.max, Math.round(v)));

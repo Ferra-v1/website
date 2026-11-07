@@ -10,6 +10,8 @@
   // reveal on scroll, and charts and bars that draw when they arrive
   const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in-view'); io.unobserve(en.target); } }), { threshold: .18, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.rv,.lossbox,.dia,.chartcard').forEach(el => reduce ? el.classList.add('in-view') : io.observe(el));
+  // a keyboard stop inside something still waiting to fade in shows it at once, so focus never rests on something unseen
+  addEventListener('focusin', ev => { const r = ev.target.closest && ev.target.closest('.rv,.lossbox,.dia,.chartcard'); if (r) r.classList.add('in-view'); });
   // counters run on a timer once visible and always rest on the real figure
   const cio = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; cio.unobserve(en.target); const el = en.target, end = parseFloat(el.dataset.count), suf = el.dataset.suffix || '', pre = el.dataset.prefix || '', dec = (el.dataset.count.split('.')[1] || '').length;
     const show = v => el.textContent = pre + (dec ? v.toFixed(dec) : Math.round(v).toLocaleString('en-US')) + suf; if (reduce) return show(end); const t0 = performance.now(), D = 1200;
@@ -69,9 +71,21 @@
     const show = () => { const off = v.paused || v.ended; b.setAttribute('aria-pressed', String(off)); b.setAttribute('aria-label', off ? 'Play the film' : 'Pause the film'); };
     b.addEventListener('click', () => { if (v.paused) { held.delete(v); const go = v.play(); if (go && go.catch) go.catch(() => {}); } else { held.add(v); v.pause(); } });
     v.addEventListener('play', show); v.addEventListener('pause', show); show(); });
-  // the bar comes back as soon as the reader scrolls up, and goes again near the top where the page's own bar sits
+  // the bar that comes back on scrolling up, in normal sections only. Inside a pinned scene, scrolling up plays the scene backwards, so the bar stays away and never covers it; a mouse at the top of the screen still calls it.
+  // On the way up it stays until the page's own bar is back in place at the very top, then fades over 200ms (.at-top) so there is no gap and no snap between the two.
   const fbar = document.querySelector('.fbar');
-  if (fbar) { let last = scrollY, on = false; addEventListener('scroll', () => { const y = scrollY, d = y - last; if (Math.abs(d) < 6) return; last = y; const v = d < 0 && y > 240; if (v !== on) { on = v; fbar.classList.toggle('on', v); if (!v && fbar.classList.contains('np-on')) closePanel(); } }, { passive: true }); }
+  if (fbar) { let last = scrollY, on = false, asked = false, mouseY = 1e4, drop;
+    const OWN = 72;   // past here the page's own bar has left the screen
+    const PINS = '.h-stage,.h-ink,.f-live .f-wpin,.v-live .v-stage,.hw-on .hw-stage,.sc-on .sc:not([data-flow]) > .sc-s';
+    // a scene is pinned while it is stuck at the top of the screen. Measured from its top only: a stage set in svh is shorter than the screen once a phone's address bar has gone, and How it works' stage on a phone is a card at the top of the screen
+    const inPin = () => { for (const el of document.querySelectorAll(PINS)) { const r = el.getBoundingClientRect(); if (r.height >= innerHeight * .3 && Math.abs(r.top) <= 1) return true; } return false; };
+    const set = v => { if (v !== on) { on = v; fbar.classList.toggle('on', v); if (!v && fbar.classList.contains('np-on')) closePanel(); } };
+    addEventListener('scroll', () => { const y = scrollY;
+      if (y <= 0) { last = y; asked = false; if (on) { fbar.classList.add('at-top'); set(false); } return; }
+      if (y > OWN) fbar.classList.remove('at-top'); const d = y - last; if (Math.abs(d) < 6) return; last = y;
+      if (inPin()) { if (!asked || mouseY >= OWN) { asked = false; set(false); } }
+      else { asked = false; if (d > 0) set(false); else if (on || y > OWN) set(true); } }, { passive: true });
+    addEventListener('mousemove', e => { mouseY = e.clientY; if (scrollY <= OWN || !inPin()) return; if (e.clientY < 56) { asked = true; set(true); } else if (asked && e.clientY > 160) { clearTimeout(drop); const go = () => { if (!asked || mouseY <= 160) return; if (fbar.classList.contains('np-on')) drop = setTimeout(go, 400); else { asked = false; set(false); } }; go(); } }, { passive: true }); }
   // the nav's panels: open on hover and on keyboard focus, close on Escape, on leaving, and after a 300ms grace. There is one layer, under whichever bar opened it.
   // Each panel's picture lives in assets/np-scenes.js with its data in media/nav/np-data.js: neither loads until a panel first opens.
   const np = document.getElementById('np'), npDim = document.querySelector('.np-dim'); let npCur = null, npBar = null, npItem = null, npTimer = 0, npIn = 0, npBack = false, npLoad = null, npHold = 0;
@@ -123,6 +137,8 @@
       if (!near && s > -1400) { near = true; bots.forEach(c => d.fetch(c)); }
       if (!started && (s >= H * .4)) { started = true; live = true; bots.forEach((c, i) => setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; d.draw(c); if (!live) d.pause(c); }, reduce ? 0 : i * 300)); }
       else if (started) { const on = s > 0; if (on !== live) { live = on; bots.forEach(c => { if (c._seen && c.classList.contains('dotbot')) on ? d.resume(c) : d.pause(c); }); } } };
+    // a sticky footer always counts as on screen, so the browser never scrolls to a link the page is still covering. Focus inside the footer lifts the page off it
+    foot.addEventListener('focusin', () => { if (!flow && lift.getBoundingClientRect().bottom > innerHeight - H + 1) scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); });
     measure(); check(); addEventListener('scroll', check, { passive: true }); addEventListener('resize', () => { measure(); check(); }); addEventListener('load', () => { measure(); check(); }); }
   // phone menu: full screen, the page behind it inert, Escape or any link closes it, focus goes back where it was
   const mn = document.getElementById('mn');

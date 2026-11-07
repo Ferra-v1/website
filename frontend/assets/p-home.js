@@ -1,9 +1,9 @@
-// Home page behaviour, row by row from STORYBOARD.md. Runs after site.js. Three parts: the first film; the stage (the robot row, the moat, the price chapter and the loan, one pinned scene painted from the scroll position); and the navy band.
+// Home page behaviour, row by row from STORYBOARD.md. Runs after site.js. Three parts: the first film; the stage (the robot row, the moat and the price chapter, one pinned scene painted from the scroll position); and the navy band.
 const hClamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, hSeg = (s, a, b) => hClamp((s - a) / (b - a)), hLerp = (a, b, t) => a + (b - a) * t, hIo3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, hOut3 = t => 1 - Math.pow(1 - t, 3), hSoft = t => .5 * t + .5 * t * t * (3 - 2 * t);
 const hMix = (a, b, t) => `rgb(${Math.round(hLerp(a[0], b[0], t))},${Math.round(hLerp(a[1], b[1], t))},${Math.round(hLerp(a[2], b[2], t))})`;
-const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
+const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
 
-// The first film stays pinned while the next section slides over it, and rests once it is covered. Reduced motion: site.js stops the video and the poster stays.
+// The first film scrolls away like any page, and rests once it has gone. Reduced motion: site.js stops the video and the poster stays.
 (() => {
   const top = document.querySelector('.h-top'), v = top && top.querySelector('video'); if (!v) return;
   if (innerWidth <= 720) v.poster = 'media/film/hero-phone-poster.webp';   // the page's poster is the wide cut
@@ -14,34 +14,35 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
   addEventListener('scroll', check, { passive: true }); check();
 })();
 
-// The stage. One sticky box from the row of robots to the loan. Every moment below is a function of s, how many screens the page has scrolled since the stage pinned, so scrolling back plays it backwards. Distances are the storyboard's.
+// The stage. One sticky box from the row of robots to the price. Every moment below is a function of s, how many screens the page has scrolled since the stage pinned, so scrolling back plays it backwards. Distances are the storyboard's.
 (() => {
   const story = document.querySelector('.h-story'); if (!story) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const $ = s => story.querySelector(s), stage = $('.h-stage'), clip = $('.h-clip'), gr = $('.h-gr'), gs = $('.h-gs'), cv = $('.h-cv'), ctx = cv.getContext('2d'), probe = $('.h-probe');
-  const vis = $('.h-vis'), moat = $('.h-moat'), film = $('.h-film'), loans = $('.h-loans'), lsp = document.querySelector('.h-lsp');
+  const $ = s => story.querySelector(s), stage = $('.h-stage'), gi = $('.h-gi'), gr = $('.h-gr'), gs = $('.h-gs'), cv = $('.h-cv'), ctx = cv.getContext('2d'), probe = $('.h-probe');
+  const vis = $('.h-vis'), moat = $('.h-moat'), film = $('.h-film'), loans = document.querySelector('.h-loans'), dotsEl = loans.querySelector('.h-dots');
   const b0 = $('.h-b0'), b1 = $('.h-b1'), b2 = $('.h-b2'), b3 = $('.h-b3'), axis = $('.h-axis'), tipEl = $('.h-tip'), lblA = $('.h-pa'), lblS = $('.h-ps'), lblC = $('.h-cl'), lblU = $('.h-al');
   const clamp = hClamp, seg = hSeg, lerp = hLerp, io3 = hIo3, out3 = hOut3, in2 = t => t * t, soft = hSoft, wait = ms => new Promise(r => setTimeout(r, ms));
 
   // ---------------------------------------------------------------- the timeline, in screens since the stage pinned. A change takes 85vh, or 70vh on a phone; words hold at least 60vh; a swap of words takes 20% of a change.
   let T = {}, U = 1;
   const buildT = () => { const u = U; let t = 0; const next = d => { const a = t; t += d; return [a, t]; };
-    T = {}; T.row = next(u + .2);         // the row holds while it assembles and sweeps
-    T.dark = next(.85); T.mIn = next(.2 * u); T.mHold = next(.45);    // the moat: the others leave as the ground turns to ink and the arm grows into the big dot arm, then its words hold
-    T.turn = next(u); T.photo = next(.3); T.res = next(u);          // the dots turn into the arm photo as the ground moves to the film's colour, the photo holds, then breaks back into the fine dots
+    T = {}; T.row = next(u + .1);         // the row holds while it assembles and sweeps
+    T.dark = next(1); T.mHold = next(.45);    // the row scrolls up as any section does, one screen for one screen, with the ink ground directly under it, while the arm grows into the big dot arm. Then the moat's words hold
+    T.turn = next(1); T.photo = next(.3); T.res = next(u);          // the film's ground comes up under the moat as the ink did, one screen for one screen, while the dots turn into the arm photo. The photo holds, then breaks back into the fine dots
     T.sw1 = next(.2 * u); T.gather = next(u + .1);                  // into the 433 listing dots: the change fills its stretch, so nothing sits still before the words swap
-    T.sw2 = next(.2 * u); T.fly = next(u + .2);                     // onto the chart, then the chart holds with its two labels
-    T.sw3 = next(.2 * u); T.fall = next(u + .1);                    // into one price
-    T.box = next(.45); T.wash = next(.65); T.lo = next(.7); T.end = t; };   // the box, the fade to white, then the loan, long enough to read after its 49 dots land. The stage then scrolls away with a plain edge
+    T.sw2 = next(.2 * u); T.fly = next(u + .4);                     // onto the chart, then the chart holds with its two labels
+    next(.3); T.fall = next(u + .1);                                          // into one price, with the chart's words still up. The price's own sentence only comes when the price has landed
+    T.sw3 = next(.2 * u); T.box = next(.45); T.end = t; };          // the box holds. The stage then scrolls away with a plain edge, the proof directly under it
   // reduced motion: the stage steps between finished stills
-  const snap = s => s < T.dark[0] + .4 ? 0 : s < T.turn[0] ? T.mHold[1] - .1 : s < T.res[1] ? T.photo[0] + .2 : s < T.fly[0] ? T.gather[1] : s < T.fall[0] ? T.fly[1] : s < T.wash[0] ? T.box[0] + .2 : T.lo[0] + .2;
+  const snap = s => s < T.dark[0] + .4 ? 0 : s < T.turn[0] ? T.mHold[1] - .1 : s < T.res[1] ? T.photo[0] + .2 : s < T.fly[0] ? T.gather[1] : s < T.fall[0] ? T.fly[1] : T.box[0] + .2;
 
   // ---------------------------------------------------------------- the row: nine moving robots on one line. Each plays from its own sprite, repainted only when its frame changes (twelve a second), as one path per colour.
   // A robot assembles when it arrives, 300ms after the one before it, and its caption rises after it. Reduced motion draws each robot's first frame, still.
   const figs = [...vis.querySelectorAll('.h-bot')], COB = '#2847ce', DEEP = '#1e339b', ASM = 2.2, POSE = +story.dataset.pose;   // the loop's frame that the fine dots and the photo were made from: measured, same grid, no offset
   const bots = figs.map(fig => { const c = fig.querySelector('canvas'); return { fig, cv: c, ctx: c.getContext('2d'), name: c.dataset.loop, frames: null, on: 0, f: 0, cols: 112, rows: +getComputedStyle(fig).getPropertyValue('--r'), dx: 0, dy: 0, n: 1, fps: 12, stale: false, t0: 0 }; });
-  const armB = bots[bots.length - 1], armFig = armB.fig, rowWords = [...vis.querySelectorAll('.h-rh,.h-vcap,figcaption')];
-  const size = b => { const w = b.cv.clientWidth, dpr = Math.min(2, devicePixelRatio || 1); if (!w) return; b.p = w / 112; b.dpr = dpr; const W2 = Math.round(w * dpr), H2 = Math.round(b.p * b.rows * dpr); if (b.cv.width !== W2 || b.cv.height !== H2) { b.cv.width = W2; b.cv.height = H2; } b.stale = true;
+  const armB = bots[bots.length - 1], armFig = armB.fig;
+  // a robot's pixels start on its caption's column line: the canvas slides left by the air its first frame leaves on that side
+  const size = b => { const w = b.cv.clientWidth, dpr = Math.min(2, devicePixelRatio || 1); if (!w) return; b.p = w / 112; b.dpr = dpr; if (b.frames) b.cv.style.marginLeft = (-(b.lo0 + b.dx) * b.p).toFixed(2) + 'px'; const W2 = Math.round(w * dpr), H2 = Math.round(b.p * b.rows * dpr); if (b.cv.width !== W2 || b.cv.height !== H2) { b.cv.width = W2; b.cv.height = H2; } b.stale = true;
     if (b.frames) b.cv._rz = { frames: b.frames, n: b.n, f: b.f, p: b.p, dx: b.dx, dy: b.dy, w: 112, h: b.gridH, colors: [COB, DEEP], rad: .5 }; };
   // one sprite to one Float32Array a frame: x, y, size, with the trim's dots after index frame.n
   const decode = (b, m, ok) => { const im = new Image(), ia = new Image(); let got = 0;
@@ -53,7 +54,8 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
         for (let y = 0; y < m.h; y++) for (let X = 0; X < m.w; X++) { const i = ((oy + y) * c.width + ox + X) * 4, v = sz[i]; if (!v) continue; if (X < lo) lo = X; if (X > hi) hi = X; if (y > low) low = y;
           const s = Math.pow(v / 252, .72); (ac[i] > 127 || s > .86 ? trim : base).push(X, y, s); }
         const a = new Float32Array(base.length + trim.length); a.set(base); a.set(trim, base.length); a.n = base.length; frames.push(a); }
-      b.dx = (112 - (hi + lo + 1)) / 2; b.dy = b.rows - 1 - low; b.n = m.frames; b.fps = m.fps || 12; b.gridH = m.h; b.low = low; ok(frames); };
+      { const f0 = frames[0]; let l0 = 1e9; for (let i = 0; i < f0.length; i += 3) if (f0[i] < l0) l0 = f0[i]; b.lo0 = l0; }
+      b.dx = (112 - (hi + lo + 1)) / 2; b.dy = b.rows - 1 - low; b.top = frames.reduce((q, a) => { for (let i = 1; i < a.length; i += 3) if (a[i] < q) q = a[i]; return q; }, 1e9); b.low = low; b.n = m.frames; b.fps = m.fps || 12; b.gridH = m.h; b.low = low; ok(frames); };
     im.onload = ia.onload = done; im.onerror = ia.onerror = () => ok(null); im.src = m.src; ia.src = m.acc; };
   const paintBot = (b, k) => { const { ctx: c, p, dpr } = b, a = b.frames[b.f], n = a.length, dx = b.dx + .5, dy = b.dy + .5; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, b.cv.width, b.cv.height);
     for (let part = 0; part < 2; part++) { c.fillStyle = part ? DEEP : COB; c.beginPath();
@@ -69,23 +71,81 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
       const fresh = k < 1 || f !== b.f || b.stale;
       if (b === armB && f !== b.f) changed = true;
       b.f = f; if (b.cv._rz) b.cv._rz.f = f;
-      if (fresh && rowA > 0 && !(b === armB && free)) { b.stale = false; paintBot(b, k); } }
+      if (fresh && rowA > 0 && !(b === armB && free) && !b.lensed) { b.stale = false; paintBot(b, k); } }
     return changed; };
   const fetchRow = () => bots.forEach(b => { const s = document.createElement('script'); s.src = 'media/dots/loops/' + b.name + '-ink.js';
-    s.onload = () => (window.requestIdleCallback || setTimeout)(() => { const m = (window.FERRA_SEQ || {})[b.name + '-ink']; if (!m) return; decode(b, m, fr => { if (!fr) return; b.frames = fr; b.f = 0; size(b); if (reduce) b.on = 1; }); }, { timeout: 400 });
+    s.onload = () => (window.requestIdleCallback || setTimeout)(() => { const m = (window.FERRA_SEQ || {})[b.name + '-ink']; if (!m) return; decode(b, m, fr => { if (!fr) return; b.frames = fr; b.f = 0; size(b); if (b === armB) { armTop = b.top; armLow = b.low; placeSlot(); } if (reduce) b.on = 1; }); }, { timeout: 400 });
     document.head.appendChild(s); });
-  // from 60% visible: one robot at a time, left to right, 600ms apart, with 8s rest between rounds. Hover or tap runs one robot (assets/resolve.js).
-  let lastS = -9, arrived = false;
+  // from 60% visible: one robot at a time, left to right, 600ms apart, with 8s rest between rounds. A tap runs one robot (assets/resolve.js); a mouse gets the lens below, and the sweep rests while it is over the row.
+  let lastS = -9, arrived = false, armTop = 0, armLow = 115;
   const rowOn = () => lastS > -.4 && lastS < T.row[1] - .02 && !document.hidden;
   const sweep = async () => { await wait(ASM * 1000 + 300 * bots.length); const R = window.FerraResolve; if (!R) return; const items = figs.map(R.get);
-    for (;;) { for (const r of items) { while (!rowOn()) await wait(300); if (r.ready()) { await r.run(); await wait(600); } } await wait(8000); } };
+    for (;;) { for (const r of items) { while (!rowOn() || (lens && lens.over())) await wait(300); if (r.ready()) { await r.run(); await wait(600); } } await wait(8000); } };
   const arrive = () => { if (arrived) return; arrived = true; bots.forEach((b, i) => { if (reduce) { b.on = 1; b.fig.classList.add('h-on'); return; } setTimeout(() => { b.on = 1; b.t0 = 0; b.fig.classList.remove('h-wait'); b.fig.classList.add('h-on'); }, i * 300); }); if (!reduce) sweep(); };
   figs.forEach(f => f.classList.add(reduce ? 'h-on' : 'h-wait'));
+
+  // ---------------------------------------------------------------- the Flashlight. With a mouse, the cursor carries a soft round lens over the row: inside it each pixel robot shows its real photo, from the aligned stills the Resolve uses. Its edge is the Resolve's own: a dot swells until it joins its neighbours, with the photo cut to the swollen dots. A robot holds its first frame, the one its photo was cut from, while the lens is on it, and the dots close again behind the lens. It replaces hover and click for a mouse; touch keeps the tap Resolve, and reduced motion gets neither.
+  const lens = (() => { if (reduce || !fine) return null;
+    const box = vis.querySelector('.h-rw'), six = vis.querySelector('.h-six'), MAXR = .78, PAD = 130, smooth = t => t * t * (3 - 2 * t);
+    let can = null, c = null, sc = null, scx = null, px = -1e4, py = -1e4, lx = 0, ly = 0, rn = 0, over = false, raf = 0, last = 0, R = 100, ld = 1, cw = 0, ch = 0, fresh = true, stale = true;
+    const measure = () => { const rb = box.getBoundingClientRect(), sb = six.getBoundingClientRect(); ld = Math.min(2, devicePixelRatio || 1); cw = Math.ceil(sb.width + PAD * 2); ch = Math.ceil(sb.height + PAD * 2); R = clamp(sb.width * .085, 72, 104);
+      Object.assign(can.style, { left: sb.left - rb.left - PAD + 'px', top: sb.top - rb.top - PAD + 'px', width: cw + 'px', height: ch + 'px' }); const W2 = Math.round(cw * ld), H2 = Math.round(ch * ld); if (can.width !== W2 || can.height !== H2) { can.width = W2; can.height = H2; }
+      const cr = can.getBoundingClientRect(); for (const b of bots) { if (!b.p) continue; const a = b.cv.getBoundingClientRect(); b.lx = a.left - cr.left + (b.dx || 0) * b.p; b.ly = a.top - cr.top + (b.dy || 0) * b.p; } stale = false; };
+    const build = () => { if (can) return; can = document.createElement('canvas'); can.className = 'h-lens'; can.setAttribute('aria-hidden', 'true'); box.appendChild(can); c = can.getContext('2d'); sc = document.createElement('canvas'); scx = sc.getContext('2d'); stale = true; };
+    // one robot's two frames on its dot grid, so the frame on screen can turn into the first one cell by cell, as the Resolve's do
+    const grid = (b, f, into, acc) => { into.fill(0); acc.fill(0); const a = b.frames[f]; for (let i = 0; i < a.length; i += 3) { const k = (a[i + 1] | 0) * 112 + (a[i] | 0); if (k >= 0 && k < into.length) { into[k] = a[i + 2]; acc[k] = i >= a.n ? 1 : 0; } } };
+    const prep = b => { if (b.lz) return b.lz; const n = 112 * b.gridH, z = b.lz = { F: new Float32Array(n), FA: new Uint8Array(n), Z: new Float32Array(n), ZA: new Uint8Array(n), g: new Float32Array(n), f: -1, m: 0, x0: 1e9, x1: 0, y0: 1e9, y1: 0, photo: null, im: null, p: 0 };
+      grid(b, 0, z.Z, z.ZA); const a = b.frames[0]; for (let i = 0; i < a.length; i += 3) { if (a[i] < z.x0) z.x0 = a[i]; if (a[i] > z.x1) z.x1 = a[i]; if (a[i + 1] < z.y0) z.y0 = a[i + 1]; if (a[i + 1] > z.y1) z.y1 = a[i + 1]; }
+      if (window.FerraResolve) window.FerraResolve.photo('media/dots/real/' + b.name + '.webp').then(im => { z.im = im; wake(); }); return z; };
+    const raster = (b, z) => { if (!z.im) return null; if (z.photo && z.p === b.p) return z.photo; const o = z.photo || document.createElement('canvas'); o.width = Math.round(112 * b.p * ld); o.height = Math.round(b.gridH * b.p * ld); const x = o.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(z.im, 0, 0, o.width, o.height); z.photo = o; z.p = b.p; return o; };
+    const release = b => { b.lensed = false; paintBot(b, 1); b.stale = false; b.fig.classList.remove('h-lensed'); };
+    // paints one robot under the lens. Returns whether anything is still moving.
+    const paintOne = (b, z, r, dt, loose) => { const p = b.p, K = 112, H = b.gridH, F = z.F, Z = z.Z, g = z.g, ox = b.lx, oy = b.ly, soft = r * .4, reach = r, pm = p * MAXR, kIn = 1 - Math.exp(-dt / 45), kOut = 1 - Math.exp(-dt / 260);
+      if (z.m < 1 && b.f !== z.f) { grid(b, b.f, F, z.FA); z.f = b.f; }
+      const m = smooth(z.m), base = new Path2D(), trim = new Path2D(), mask = new Path2D(); let any = false, busy = false;
+      for (let y = 0; y < H; y++) for (let x = 0, i = y * K; x < K; x++, i++) { const a = F[i], q = Z[i]; if (!a && !q && !g[i]) continue;
+        const sz = a + (q - a) * m, cx = ox + (x + .5) * p, cy = oy + (y + .5) * p, h = ((x * 73 + y * 151) % 97) / 97, d = Math.hypot(cx - lx, cy - ly), to = reach > 1 ? smooth(clamp((reach + (h - .5) * soft * .5 - d) / soft)) : 0, was = g[i];
+        let v = was; if (to !== was) { v = was + (to - was) * (to > was ? kIn : kOut); if (Math.abs(to - v) < .004) v = to; else busy = true; g[i] = v; }
+        if (sz <= 0) continue;
+        const r0 = Math.max(Math.min(.4, p * .3), p * .5 * sz), rr = r0 + (pm - r0) * v;
+        if (v < .34 && !loose) { const path = (m > .5 ? z.ZA[i] : z.FA[i]) ? trim : base; path.moveTo(cx + rr, cy); path.arc(cx, cy, Math.max(.35, rr), 0, 6.2832); }
+        if (v > 0) { const w = rr * Math.min(1, v * 3); mask.moveTo(cx + w, cy); mask.arc(cx, cy, w, 0, 6.2832); any = true; } }
+      c.fillStyle = COB; c.fill(base); c.fillStyle = DEEP; c.fill(trim);
+      const ph = raster(b, z);
+      if (ph) { if (any) { c.save(); c.clip(mask); c.drawImage(ph, ox, oy, 112 * p, H * p); c.restore(); }
+        // what the dots never covered, such as thin cables, shows only in the lens's middle, fading out well before its edge
+        if (reach > 8) { const e = Math.ceil(reach * .86), S = Math.ceil(e * 2 * ld); if (sc.width !== S) sc.width = sc.height = S; scx.setTransform(ld, 0, 0, ld, 0, 0); scx.globalCompositeOperation = 'source-over'; scx.clearRect(0, 0, e * 2, e * 2); scx.drawImage(ph, ox - lx + e, oy - ly + e, 112 * p, H * p); const gr_ = scx.createRadialGradient(e, e, e * .6, e, e, e); gr_.addColorStop(0, 'rgba(0,0,0,1)'); gr_.addColorStop(1, 'rgba(0,0,0,0)'); scx.globalCompositeOperation = 'destination-in'; scx.fillStyle = gr_; scx.fillRect(0, 0, e * 2, e * 2); c.drawImage(sc, lx - e, ly - e, e * 2, e * 2); } }
+      return busy; };
+    const frame = now => { raf = 0; if (!can) return; const dt = Math.min(64, now - last || 16); last = now; if (stale) measure();
+      const cr = can.getBoundingClientRect(), tx = px - cr.left, ty = py - cr.top, live = over && !vis._dk;
+      if (fresh && live) { lx = tx; ly = ty; fresh = false; } else { const k = 1 - Math.exp(-dt / 35); lx += (tx - lx) * k; ly += (ty - ly) * k; }
+      const to = live ? R : 0; rn += (to - rn) * (1 - Math.exp(-dt / (live ? 80 : 150))); if (Math.abs(to - rn) < .3) rn = to;
+      let busy = Math.abs(tx - lx) + Math.abs(ty - ly) > .2 && live || rn !== to;
+      c.setTransform(ld, 0, 0, ld, 0, 0); c.clearRect(0, 0, cw, ch);
+      let held = 0;
+      for (const b of bots) { if (!b.frames || !b.p) continue; const z = prep(b), bx0 = b.lx + z.x0 * b.p, bx1 = b.lx + (z.x1 + 1) * b.p, by0 = b.ly + z.y0 * b.p, by1 = b.ly + (z.y1 + 1) * b.p;
+        const near = live && Math.hypot(Math.max(bx0 - lx, 0, lx - bx1), Math.max(by0 - ly, 0, ly - by1)) < rn + 36, loose = b === armB && free;
+        if (!b.lensed) { if (!near) continue; const R0 = window.FerraResolve && window.FerraResolve.get(b.fig); if (!b.on || !b.t0 || (now - b.t0) / 1000 < ASM || (R0 && R0.running) || loose) continue; b.lensed = true; b.fig.classList.add('h-lensed'); z.m = 0; z.f = -1; }
+        z.m = clamp(z.m + (near ? dt / 240 : -dt / 320)); if (z.m > 0 && z.m < 1) busy = true;
+        const moving = paintOne(b, z, near ? rn : 0, dt, loose); busy = busy || moving;
+        if (near || moving || z.m > 0) held++; else if (!loose) release(b); else { b.lensed = false; b.fig.classList.remove('h-lensed'); b.stale = true; } }
+      if (busy) raf = requestAnimationFrame(frame);
+      else if (!live && !held && rn <= 2) { c.clearRect(0, 0, cw, ch); can.style.display = 'none'; } };
+    const wake = () => { if (can && !raf) { if (can.style.display === 'none') { can.style.display = ''; fresh = true; } raf = requestAnimationFrame(frame); } };
+    const judge = () => { const sb = six.getBoundingClientRect(), was = over; over = !vis._dk && px >= sb.left - 40 && px <= sb.right + 40 && py >= sb.top - 40 && py <= sb.bottom + 8; if (over && !can) build(); if (over !== was) { if (over) fresh = true; } if (over || was) wake(); };
+    vis.addEventListener('pointermove', ev => { if (ev.pointerType !== 'mouse') return; px = ev.clientX; py = ev.clientY; judge(); wake(); }, { passive: true });
+    vis.addEventListener('pointerleave', ev => { if (ev.pointerType !== 'mouse') return; px = py = -1e4; judge(); });
+    // a mouse's hover and click belong to the lens, so resolve.js never hears them. Touch still reaches it.
+    let lastType = ''; six.addEventListener('pointerdown', ev => { lastType = ev.pointerType; }, true);
+    six.addEventListener('pointerenter', ev => { if (ev.pointerType === 'mouse') ev.stopPropagation(); }, true);
+    six.addEventListener('click', ev => { if (lastType === 'mouse' || ev.pointerType === 'mouse') ev.stopPropagation(); }, true);
+    return { over: () => over, wake: () => { if (can) { if (px > -1e3) judge(); wake(); } }, mark: () => { stale = true; } };
+  })();
 
   // ---------------------------------------------------------------- the price box: the only numbers baked into the page
   const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
   let W = 0, H = 0, FH = 0, dpr = 1, phone = false, fineD = null, fineFlat = null, D = null, R = null, dirty = true, on = true, photo = null, photoOK = false;
-  let cam = { p: 6, l: 300 }, floorY = 800, axisY = 800, lineL = 0, C = { l: 0, r: 1000, t: 0, b: 800 }, age = 10, ask = 14700, sale = 6100, pt = null, slot = null, tgt = null, d1 = { x: 0, y: 0 };
+  let cam = { p: 6, l: 300 }, floorY = 800, axisY = 800, lineL = 0, C = { l: 0, r: 1000, t: 0, b: 800 }, age = 10, ask = 14700, sale = 6100, pt = null, slot = null, tgt = null;
   const X = a => C.l + a / 30 * (C.r - C.l), Y = u => C.t + (Math.log(HI) - Math.log(u)) / (Math.log(HI) - Math.log(LO)) * (C.b - C.t);
   const tab = JSON.parse(document.getElementById('h-prices').textContent), rSel = document.getElementById('h-r'), ySel = document.getElementById('h-y'), tool = document.getElementById('h-tool'), saleEl = document.getElementById('h-pv'), whyEl = document.getElementById('h-why');
   const fmt = n => '$' + Math.round(n).toLocaleString('en-US'), r100 = v => Math.round(v / 100) * 100;
@@ -142,31 +202,33 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
   // ---------------------------------------------------------------- layout
   // One arm, facing one way, in one place: the row's arm grows onto this spot, and the fine dots and arm-film.webp stand on it too. All three share one grid, so their one size and place is cam.
   const docTop = el => el.getBoundingClientRect().top + scrollY;
-  let storyTop = 0;
+  let storyTop = 0, gL = 0, gR = 0;
+  // where the row's arm stands now, in the stage. Its sprite can arrive after the layout, and its offsets arrive with it, so this runs again then: the big arm must start exactly on the row's.
+  const placeSlot = () => { if (!armB.p) return; const sr = stage.getBoundingClientRect(), ar = armB.cv.getBoundingClientRect(); slot = { p: armB.p, x: ar.left - sr.left + (armB.dx || 0) * armB.p, y: ar.top - sr.top + (armB.dy || 0) * armB.p }; dirty = true; };
   function layout() {
-    W = stage.clientWidth; FH = stage.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 720; U = phone ? .7 : .85; buildT();
+    W = stage.clientWidth; FH = stage.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 720 && !(FH < 500 && W > FH); U = W <= 720 ? .7 : .85; buildT();   // a phone held sideways stands the arm beside the words, as a wide screen does
+   
     story.style.height = (T.end * H + FH).toFixed(0) + 'px'; storyTop = docTop(story);
     cv.width = Math.round(W * dpr); cv.height = Math.round(FH * dpr);
-    const cols = BX1 - BX0 + 1, rows = BY1 - BY0 + 1, wrap = Math.min(W, 1200), mar = (W - wrap) / 2 + (phone ? 16 : 24);
+    const cols = BX1 - BX0 + 1, rows = BY1 - BY0 + 1, gi = b0.querySelector('.in'), gs_ = getComputedStyle(gi), gx = gi.getBoundingClientRect(); gL = gx.left + parseFloat(gs_.paddingLeft); gR = gx.right - parseFloat(gs_.paddingRight); const gg = phone ? 16 : 24, gc = (gR - gL - 11 * gg) / 12;   // the grid: the header's own edges, 12 columns
     if (phone) {
       // the arm stands over the words: as big as the width and the words allow, centred in what is left
       const wh = Math.max(...[...story.querySelectorAll('.h-mct,.h-b0 .h-bt,.h-b1 .h-bt,.h-b2 .h-bt')].map(el => el.getBoundingClientRect().height)), room = H - wh - 28 - 52, p = Math.min((W - 12) / cols, room / rows);
       floorY = Math.round(52 + rows * p + Math.max(0, room - rows * p) / 2); cam = { p, l: (W - cols * p) / 2 - BX0 * p };
-      const bh = b3.querySelector('.h-bt').getBoundingClientRect().height, bottom = H - bh - 54;
-      C = { l: mar + 60, r: W - mar - 4, t: 64, b: bottom }; axisY = bottom + 8; lineL = 0;
+      const bh = b3.querySelector('.h-bt').getBoundingClientRect().height, bottom = H - bh - 68;
+      C = { l: gL + 70, r: gR - 4, t: 64, b: bottom }; axisY = bottom + 8; lineL = 0;
     } else {
-      const colR = mar + Math.min(440, W * (W <= 1060 ? .4 : .34)), fy = Math.round(H * .9), p = Math.min((fy - 56) / rows, (W - colR - 24) / cols), edge = Math.max(40, (W - 1200) / 2 - 24);
-      floorY = fy; cam = { p, l: clamp((colR + W) / 2 - (BX0 + cols / 2) * p, colR + 8 - BX0 * p, W - 8 - (BX1 + 1) * p) };
-      C = { l: colR + 84, r: W - edge - 14, t: Math.max(56, H * .09), b: fy - 8 }; axisY = fy; lineL = colR + 44;
+      // the words stand on the first five columns. The arm's pixels and the chart's plot stand on the last six, ending on the header's right edge. Below 1060 the words take 40% and the arm has what is left.
+      const wide = W > 1060, colR = b3.querySelector('.h-bt').getBoundingClientRect().right + gg, x6 = gL + 6 * (gc + gg), fy = Math.round(H * .9), p = Math.min((fy - 56) / rows, ((wide ? gR - x6 : W - colR - 24)) / cols);
+      floorY = fy; cam = { p, l: gR - (BX1 + 1) * p };
+      C = { l: wide ? x6 : colR + 84, r: gR - 4, t: Math.max(56, H * .09), b: fy - 8 }; axisY = fy; lineL = colR;
     }
     // the row's arm, and the spot it grows into
     bots.forEach(size);
-    const sr = stage.getBoundingClientRect(), ar = armB.cv.getBoundingClientRect();
+    const sr = stage.getBoundingClientRect();
     tgt = { p: cam.p, x: cam.l, y: floorY - BY1 * cam.p };
-    slot = { p: armB.p || 1, x: ar.left - sr.left + (armB.dx || 0) * (armB.p || 1), y: ar.top - sr.top + (armB.dy || 0) * (armB.p || 1) };
-    const fd = loans.querySelector('.h-dots i').getBoundingClientRect(); d1 = { x: fd.left - sr.left + fd.width / 2, y: fd.top - sr.top + fd.height / 2, r: fd.width / 2 };
-    lsp.style.setProperty('--lo', Math.max(0, loans.offsetHeight - FH) + 'px');
-    axis.querySelectorAll('.h-xl').forEach(s => { const a = +s.dataset.age, x = X(a); s.style.transform = `translate(${(a === 0 ? x - 4 : a === 30 ? x - s.offsetWidth + 4 : x - s.offsetWidth / 2).toFixed(1)}px,${(axisY + 10).toFixed(1)}px)`; });
+    placeSlot();
+        axis.querySelectorAll('.h-xl').forEach(s => { const a = +s.dataset.age, x = X(a); s.style.transform = `translate(${(a === 0 ? x - 4 : a === 30 ? x - s.offsetWidth + 4 : x - s.offsetWidth / 2).toFixed(1)}px,${(axisY + 10).toFixed(1)}px)`; });
     axis.querySelectorAll('.h-yl').forEach(s => { s.style.transform = `translate(${(C.l - s.offsetWidth - (phone ? 6 : 14)).toFixed(1)}px,${(Y(+s.dataset.usd) - s.offsetHeight / 2).toFixed(1)}px)`; });
     labs = null; endDirty = true;   // the chart's labels find their clean spots again
     if (R) { const pb = cam.p;
@@ -174,7 +236,7 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
         R.r0[j] = pb * .94 * g; R.x1[j] = X(q[5]); R.y1[j] = Y(q[2]); R.r1[j] = (phone ? 2.8 : 4.8) * Math.pow(g, .8); }
       drain(); }
     flatFine();
-    pt = null; dirty = true;
+    pt = null; dirty = true; if (lens) lens.mark();
   }
 
   // ---------------------------------------------------------------- painting
@@ -195,53 +257,51 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
     }
     if (cur >= 0) ctx.fill();
   }
-  // the factory arm, on its way from the row to its one place: cobalt turning white, size and place eased together. It shares its grid with the fine dots, so in the last stretch the same dots change to the fine dots' sizes and shades, and nothing jumps.
-  function paintBig(m, white, mix) {
+  // the factory arm, on its way from the row to its one place: size and place eased together. It stays whole, in one colour at a time: as the ink's edge climbs past it, all of it lightens together from cobalt to a tint that reads on both grounds, and it reaches white once the edge has cleared its top. It shares its grid with the fine dots, so in the last stretch the same dots change to the fine dots' sizes and shades, and nothing jumps.
+  const H_MID = .62;
+  function paintBig(m, lift, edge, mix) {
     const a = armB.frames && armB.frames[armB.f]; if (!a || !slot || !tgt) return;
-    const p = lerp(slot.p, tgt.p, m), x0 = lerp(slot.x, tgt.x, m), y0 = lerp(slot.y, tgt.y, m), n = a.length;
-    if (mix > 0 && fineD) {
-      if (!fineD.c0) { const c = new Map(), f = armB.frames[POSE]; for (let i = 0; i < f.length; i += 3) c.set(f[i] * 1000 + f[i + 1], f[i + 2]); fineD.forEach(q => { q.c0 = c.get(Math.floor(q.x) * 1000 + Math.floor(q.y)) || q.s; }); fineD.c0 = true; }
-      let cur = -1;
+    const p = lerp(slot.p, tgt.p, m), x0 = lerp(slot.x, tgt.x, m), y0 = lerp(slot.y - lift, tgt.y, m), n = a.length;
+    const top = y0 + armTop * p, bot = y0 + armLow * p, on = clamp((bot - edge) / Math.max(1, bot - top)), t = on < 1 ? H_MID * Math.pow(on, .75) : H_MID + (1 - H_MID) * clamp(1 - edge / Math.max(1, top));
+    const plain = () => { for (let part = 0; part < 2; part++) { ctx.fillStyle = hMix(part ? H_DEEP : H_COB, H_WHITE, t); ctx.beginPath();
+      for (let i = part ? a.n : 0, e = part ? n : a.n; i < e; i += 3) { const x = (a[i] + .5) * p + x0, y = (a[i + 1] + .5) * p + y0, r = Math.max(.4, p * .5 * a[i + 2]); ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, 6.2832); }
+      ctx.fill(); } };
+    const fine = () => { if (!fineD.c0) { const c = new Map(), f = armB.frames[POSE]; for (let i = 0; i < f.length; i += 3) c.set(f[i] * 1000 + f[i + 1], f[i + 2]); fineD.forEach(q => { q.c0 = c.get(Math.floor(q.x) * 1000 + Math.floor(q.y)) || q.s; }); fineD.c0 = true; }
+      let cur = -1; const base = [lerp(H_COB[0], 255, t), lerp(H_COB[1], 255, t), lerp(H_COB[2], 255, t)], acc = [lerp(base[0], 150, mix), lerp(base[1], 232, mix), lerp(base[2], 255, mix)];
       for (const q of fineD) {
-        if (q.g !== cur) { if (cur >= 0) ctx.fill(); cur = q.g; const al = lerp(1, .55 + .45 * q.s, mix); ctx.fillStyle = q.acc ? `rgba(${Math.round(lerp(255, 150, mix))},${Math.round(lerp(255, 232, mix))},255,${al.toFixed(3)})` : `rgba(255,255,255,${al.toFixed(3)})`; ctx.beginPath(); }
+        if (q.g !== cur) { if (cur >= 0) ctx.fill(); cur = q.g; const al = lerp(1, .55 + .45 * q.s, mix * t), rgb = q.acc ? acc : base; ctx.fillStyle = `rgba(${Math.round(rgb[0])},${Math.round(rgb[1])},${Math.round(rgb[2])},${al.toFixed(3)})`; ctx.beginPath(); }
         const x = q.x * p + x0, y = q.y * p + y0, r = Math.max(.4, lerp(p * .5 * q.c0, p * .44 * q.s, mix)); ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, 6.2832);
       }
-      if (cur >= 0) ctx.fill();
-      return;
-    }
-    for (let part = 0; part < 2; part++) { ctx.fillStyle = hMix(part ? H_DEEP : H_COB, H_WHITE, white); ctx.beginPath();
-      for (let i = part ? a.n : 0, e = part ? n : a.n; i < e; i += 3) { const x = (a[i] + .5) * p + x0, y = (a[i + 1] + .5) * p + y0, r = Math.max(.4, p * .5 * a[i + 2]); ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, 6.2832); }
-      ctx.fill(); }
+      if (cur >= 0) ctx.fill(); };
+    if (mix > 0 && fineD) fine(); else plain();
   }
   const RES_K = [1, .612, .51, .47, .43, .38, .335, .295, .235, .13, 0];
   // the picture eases toward the scroll position, so a mouse wheel's steps read as one motion; the page itself scrolls natively
-  let sv = null, lastNow = 0, bgNow = '', fFrom = 0, pausedAt = 0;
-  const setBg = c => { if (c !== bgNow) { bgNow = c; clip.style.backgroundColor = c; } };
+  let sv = null, lastNow = 0, fFrom = 0, pausedAt = 0;
   function paint(now) {
     const target = scroll(), dt = Math.min(64, now - lastNow || 16); lastNow = now;
     if (sv === null || reduce) sv = target; else { sv += (target - sv) * (1 - Math.exp(-dt / 85)); if (Math.abs(target - sv) < .0005) sv = target; else dirty = true; }
     const s = sv; lastS = s; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, FH);
-    const dk = seg(s, ...T.dark), turn = seg(s, ...T.turn), res = seg(s, ...T.res), k = seg(s, ...T.gather), fly = seg(s, ...T.fly), fall = seg(s, ...T.fall), wash = seg(s, ...T.wash);
+    const dk = seg(s, ...T.dark), turn = seg(s, ...T.turn), res = seg(s, ...T.res), k = seg(s, ...T.gather), fly = seg(s, ...T.fly), fall = seg(s, ...T.fall);
 
-    // the row: the ground darkens, the eight others leave to the left, and the factory arm comes loose
-    rowA = 1 - seg(dk, 0, .38);
-    show(vis, rowA); vis.style.pointerEvents = rowA < 1 ? 'none' : '';
-    { const ta = 1 - seg(dk, 0, .14); if (ta !== vis._ta) { vis._ta = ta; vis.classList.toggle('h-going', dk > 0); rowWords.forEach(el => { put(el, ta); }); } }   // the row's words go first, before the ground has moved
-    { const lv = dk > 0 ? out3(seg(dk, 0, .38)) : 0; if (lv !== vis._lv) { vis._lv = lv; figs.forEach((f, i) => { if (f !== armFig) f.style.transform = lv ? `translateX(${(-lv * (64 + (8 - i) * 10)).toFixed(1)}px)` : ''; }); } }
+    // the row scrolls up as any section does, with the ink directly under it and a plain edge between. Only the factory arm comes loose.
+    const edge = FH * (1 - dk); rowA = dk < 1 ? 1 : 0;
+    if (dk !== vis._dk) { vis._dk = dk; vis.style.transform = dk ? `translateY(${(-dk * FH).toFixed(1)}px)` : ''; vis.style.visibility = dk >= 1 ? 'hidden' : ''; vis.style.pointerEvents = dk ? 'none' : ''; vis.classList.toggle('h-going', dk > 0); gi.style.transform = `translateY(${edge.toFixed(1)}px)`; gi.style.visibility = dk > 0 ? 'visible' : 'hidden'; }
+    // the words and the neighbours in the growing arm's path step aside before it reaches them, so no dot ever runs through a word or another robot
+    { const st = dk > .12; if (st !== vis._st) { vis._st = st; vis.classList.toggle('h-step', st); } const s2 = dk > .2; if (s2 !== vis._s2) { vis._s2 = s2; vis.classList.toggle('h-step2', s2); } }
     const isFree = dk > 0; if (isFree !== free) { free = isFree; armFig.classList.toggle('h-free', free); if (free) { fFrom = armB.f; pausedAt = now; } else { if (armB.t0) armB.t0 += now - pausedAt; armB.stale = true; } }
     // the arm turns to the pose the footage is waiting on, the short way round the loop, tied to the scroll
     if (free && armB.frames) { const n = armB.n, d = ((POSE - fFrom + n + n / 2) % n) - n / 2; armB.f = (fFrom + Math.round(d * soft(seg(dk, .05, .55))) + n) % n; if (armB.cv._rz) armB.cv._rz.f = armB.f; }
 
-    // the ground: pale to ink as the arm grows, ink to the film's colour as the arm becomes its photo, then to white for the loan
-    const inFilm = s >= T.turn[1];
-    { const g0 = seg(dk, .08, 1), g = .7 * g0 + .3 * g0 * g0 * (3 - 2 * g0); setBg(inFilm ? '#fff' : g < .5 ? hMix(H_PALE, H_MID, g * 2) : hMix(H_MID, H_INK, g * 2 - 1)); }   // by way of blue, never through grey
-    { const gw = seg(wash, .12, 1); put(gr, inFilm ? 1 - gw : soft(turn)); put(gs, .6 * seg(fly, .4, .72)); }   // the ground deepens under the chart, so its small labels stay readable at its brightest corner
+    // the film's ground comes up with a plain edge, the arm staying where it stands. It deepens under the chart, so the chart's small labels stay readable at its brightest corner
+    const edge2 = FH * (1 - turn); if (turn !== gr._t) { gr._t = turn; gr.style.transform = `translateY(${edge2.toFixed(1)}px)`; } put(gs, .6 * seg(fly, .4, .72));
 
-    // the moat's words, in the same column as the film's words: they leave a third of the way through the Resolve, before the next words arrive
-    { const t0 = T.turn[0] + .3 * (T.turn[1] - T.turn[0]), mw = beat(s, T.mIn[0], T.mIn[1], t0 - .1 * U, t0); show(moat, mw.a, mw.dy); }
+    // the moat's words ride up on the ink and leave at the top, as any section does
+    show(moat, dk > 0 && turn < 1 ? 1 : 0, edge - turn * FH);
+    { const ot = phone && turn > .03; if (ot !== moat._ot) { moat._ot = ot; moat.classList.toggle('h-out', ot); } }   // on a phone the words would run up through the arm above them, so they step aside instead
 
     // the arm, from the row to its place. It is painted here until the Resolve starts.
-    if (dk > 0 && turn <= 0) paintBig(soft(seg(dk, .25, 1)), seg(dk, .3, .46), seg(dk, .55, 1));
+    if (dk > 0 && turn <= 0) paintBig(soft(seg(dk, .25, 1)), dk * FH, edge, seg(dk, .55, 1));
 
     // The Resolve, tied to the scroll: the fine dots become the photo, the photo holds, then it breaks back into the same dots.
     // It changes unevenly across its k, so this table, measured from the rendered frames, spreads what the eye sees evenly over its stretch
@@ -252,15 +312,14 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
       if (rk > 0 && photoOK) { if (rk >= 1 || !window.FerraResolve || !fineFlat) { if (rk >= 1 || !fineFlat) ctx.drawImage(photo, left, top, pw, ph); }
         else { ctx.globalAlpha = seg(rk, 0, .1); window.FerraResolve.draw(ctx, { photo, x: left, y: top, w: pw, h: ph, dots: fineFlat, p: cam.p, k: rk, color: '#fff' }); ctx.globalAlpha = 1; } } }
 
-    // the chart, the dots on it and the price: all of it goes as the gradient goes
-    const axisA = seg(fly, .66, .74), chartA = 1 - seg(wash, 0, .16);
-    if (axisA > 0 && chartA > 0) { ctx.fillStyle = `rgba(255,255,255,${(.42 * axisA * chartA).toFixed(3)})`; ctx.fillRect(lineL, axisY, W - lineL, 1); }
+    // the chart, the dots on it and the price stay until the reader has scrolled them off
+    const axisA = seg(fly, .66, .74);
+    if (axisA > 0) { ctx.fillStyle = `rgba(255,255,255,${(.42 * axisA).toFixed(3)})`; ctx.fillRect(C.l, axisY, C.r - C.l, 1); }
     let hitOK = false; const mx = X(age), my = Y(sale);
     if (!pt) pt = { x: mx, y: my, a: Y(ask) };
     pt.x += (mx - pt.x) * .22; pt.y += (my - pt.y) * .22; pt.a += (Y(ask) - pt.a) * .22; if (Math.abs(mx - pt.x) + Math.abs(my - pt.y) + Math.abs(Y(ask) - pt.a) > .3) dirty = true; else { pt.x = mx; pt.y = my; pt.a = Y(ask); }
     if (R && !labs) placeLabels();
-    if (R && k > 0 && chartA > 0) {
-      ctx.globalAlpha = chartA;
+    if (R && k > 0) {
       const n = R.n;
       let arrivedN = 0;
       ctx.fillStyle = 'rgba(255,255,255,.94)'; ctx.beginPath();
@@ -283,7 +342,7 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
         for (let a = 0; a <= end; a += .5) { const c0 = D.curve[Math.floor(a)], c1 = D.curve[Math.min(30, Math.ceil(a))], v = Math.exp(lerp(Math.log(c0), Math.log(c1), a - Math.floor(a))); a === 0 ? ctx.moveTo(X(a), Y(v)) : ctx.lineTo(X(a), Y(v)); }
         ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.5; ctx.stroke(); }
       // the thin lines from a label to what it names. The labels wait until the dots have landed, and go before the dots pour, so nothing ever crosses them
-      const la = seg(fly, .7, .78) * (1 - seg(fall, 0, .1)); if (la > 0 && labs && labs.length) { ctx.strokeStyle = `rgba(255,255,255,${(.7 * la).toFixed(3)})`; ctx.lineWidth = 1; ctx.beginPath(); labs.forEach(q => { ctx.moveTo(q[0], q[1]); ctx.lineTo(q[2], q[3]); }); ctx.stroke(); }
+      const la = seg(fly, .78, .86) * (1 - seg(fall, 0, .1)); if (la > 0 && labs && labs.length) { ctx.strokeStyle = `rgba(255,255,255,${(.7 * la).toFixed(3)})`; ctx.lineWidth = 1; ctx.beginPath(); labs.forEach(q => { ctx.moveTo(q[0], q[1]); ctx.lineTo(q[2], q[3]); }); ctx.stroke(); }
       // whichever dot is open
       const hl = tip && tip.kind === 'l' ? tip.j : -1;
       if (hl >= 0 && R.r[hl] > 0) { ctx.fillStyle = 'rgb(150,232,255)'; ctx.beginPath(); ctx.arc(R.x[hl], R.y[hl], Math.max(R.r[hl] * 1.3, phone ? 4 : 4.5), 0, 6.2832); ctx.fill(); }
@@ -292,31 +351,22 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
       if (lk > 0) { const rr = (phone ? 4 : 5) * lk; ctx.strokeStyle = `rgba(255,255,255,${(.85 * lk).toFixed(3)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pt.x, pt.a); ctx.lineTo(pt.x, pt.y); ctx.stroke();
         ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(pt.x, pt.a, rr, 0, 6.2832); ctx.fill(); ctx.globalCompositeOperation = 'source-over';
         ctx.lineWidth = 1.5; ctx.strokeStyle = `rgba(255,255,255,${lk.toFixed(3)})`; ctx.beginPath(); ctx.arc(pt.x, pt.a, rr, 0, 6.2832); ctx.stroke(); }
-      ctx.globalAlpha = 1;
-      const lk2 = seg(fall, .86, 1), lm = fly >= .74 && fall < .06; if (lm !== lblC._on) { lblC._on = lm; lblC.classList.toggle('h-lon', lm); lblU.classList.toggle('h-lon', lm); } put(lblA, lk2 * chartA); put(lblS, lk2 * chartA);
+      const lm2 = fall >= .9, lm = fly >= .8 && fall < .06; if (lm !== lblC._on) { lblC._on = lm; lblC.classList.toggle('h-lon', lm); lblU.classList.toggle('h-lon', lm); } if (lm2 !== lblA._on) { lblA._on = lm2; lblA.classList.toggle('h-lon', lm2); lblS.classList.toggle('h-lon', lm2); }
       if (endDirty) placeEnds();
       if (ends) { const ee = q => { q.x += (q.tx - q.x) * .22; q.y += (q.ty - q.y) * .22; if (Math.abs(q.tx - q.x) + Math.abs(q.ty - q.y) > .3) dirty = true; else { q.x = q.tx; q.y = q.ty; } q.el.style.transform = `translate(${q.x.toFixed(1)}px,${q.y.toFixed(1)}px)`; }; ee(ends[0]); ee(ends[1]); }
       arrivedDot = Math.sqrt(arrivedN / n);
     }
-    // the price dot: it grows as the dots arrive, then falls as the gradient fades white and lands as the first of the loan's dots
-    if (R && fall > 0 && wash < .98) { const g = arrivedDot, r0 = 1.5 + g * (phone ? 4 : 5), f = seg(wash, .1, .98), yf = in2(f), xf = io3(f);
-      ctx.fillStyle = hMix(H_WHITE, H_COB, seg(wash, .25, .7)); ctx.beginPath(); ctx.arc(lerp(pt.x, d1.x, xf), lerp(pt.y, d1.y, yf), lerp(r0, d1.r || 5, f), 0, 6.2832); ctx.fill(); }
+    // the price dot: it grows as the dots arrive, and leaves with the chart when the stage scrolls away
+    if (R && fall > 0) { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.5 + arrivedDot * (phone ? 4 : 5), 0, 6.2832); ctx.fill(); }
 
-    // The price comes down from what sellers ask as the dots pour into it, tied to the scroll, so the sentence always ends in a number. The controls wait until the dots have landed
-    const ready = fall >= .86 || reduce;
+    // the sentence and the price come together, once the dots have landed. The price never runs beside the words, because the words would be false while it ran. The controls follow.
+    const sw = t => (t[0] + t[1]) / 2, ready = s >= sw(T.sw3) || reduce;
     if (ready !== ticked) { ticked = ready; if (!reduce) { cancelAnimationFrame(tw); if (ready) { shown = sale; saleEl.textContent = fmt(sale); b3.classList.add('h-told'); } else b3.classList.remove('h-told'); } }
-    if (!ready && s >= T.sw3[0]) { const tx = fmt(r100(lerp(ask, sale, soft(seg(fall, 0, .86))))); if (saleEl.textContent !== tx) saleEl.textContent = tx; }
 
     // the words. A swap takes 20vh: 10 out, 10 in.
-    const sw = t => (t[0] + t[1]) / 2;
-    const tm = T.turn[0] + .3 * (T.turn[1] - T.turn[0]), a0 = beat(s, tm, tm + .1 * U, T.sw1[0], sw(T.sw1)), a1 = beat(s, sw(T.sw1), T.sw1[1], T.sw2[0], sw(T.sw2)), a2 = beat(s, sw(T.sw2), T.sw2[1], T.sw3[0], sw(T.sw3)), a3 = beat(s, sw(T.sw3), T.sw3[1], T.wash[0], T.wash[0] + .16 * (T.wash[1] - T.wash[0]));
+    const o0 = seg(s, T.sw1[0], sw(T.sw1)), a0 = { a: (turn > 0 ? 1 : 0) * (1 - o0), dy: edge2 - in2(o0) * 18 }, a1 = beat(s, sw(T.sw1), T.sw1[1], T.sw2[0], sw(T.sw2)), a2 = beat(s, sw(T.sw2), T.sw2[1], T.sw3[0], sw(T.sw3)), a3 = beat(s, sw(T.sw3), T.sw3[1], 1e3, 1e3 + 1);
     show(b0, a0.a, a0.dy); show(b1, a1.a, a1.dy); show(b2, a2.a, a2.dy); put(b3, a3.a); b3.style.transform = a3.dy ? `translateY(${a3.dy.toFixed(1)}px)` : ''; b3.classList.toggle('h-on', a3.a > .4);
-    show(axis, axisA * chartA);
-
-    // the loan
-    const lv = wash > 0 ? 'visible' : 'hidden'; if (loans.style.visibility !== lv) loans.style.visibility = lv;
-    const land = s >= T.lo[0] + .12; if (land !== loans._land) { loans._land = land; loans.classList.toggle('h-land', land); }   // the words and the other 49 dots come once the ground has finished, so the two changes do not stack
-    const land0 = wash >= .98; if (land0 !== loans._l0) { loans._l0 = land0; loans.classList.toggle('h-land0', land0); }   // the price dot has landed: the page's first dot takes over from the canvas
+    { const ao = axisA >= .5; if (ao !== axis._on) { axis._on = ao; axis.classList.toggle('h-on', ao); } }
     hit = hitOK; if (tip && !hitOK) closeTip(); placeTip();
   }
   let arrivedDot = 0;
@@ -330,7 +380,7 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
     const free = (x, y, w, h) => { for (const [dx, dy, r] of dots) if (dx > x - pad - r && dx < x + w + pad + r && dy > y - pad - r && dy < y + h + pad + r) return false; return !taken.some(t => x < t[0] + t[2] + 12 && x + w + 12 > t[0] && y < t[1] + t[3] + 12 && y + h + 12 > t[1]); };
     const put1 = (el, ax, ay, above) => { const w = el.offsetWidth, h = el.offsetHeight; if (!w) return; let best = null, bd = 1e12;
       const crosses = (x, y, w) => { const ex = clamp(ax, x, x + w), ey = ay < y ? y : y + h; return taken.some(t => { for (let q = 0; q <= 1; q += .04) { const px = lerp(ex, ax, q), py = lerp(ey, ay, q); if (px > t[0] - 6 && px < t[0] + t[2] + 6 && py > t[1] - 6 && py < t[1] + t[3] + 6) return true; } return false; }); };
-      const right = Math.max(C.r, W - 10) - w;
+      const right = gR - w;
       for (let y = C.t; y <= (above ? ay - h - 4 : C.b - h); y += 6) for (let x = right; x >= C.l; x -= 6) { const d = (x + w / 2 - ax) ** 2 + (y + h / 2 - ay) ** 2; if (d < bd && free(x, y, w, h) && !crosses(x, y, w)) { bd = d; best = [x, y]; } }
       if (!best) { if (above) return put1(el, ax, ay, false); el.style.visibility = 'hidden'; return; } el.style.visibility = ''; taken.push([best[0], best[1], w, h]); el.style.transform = `translate(${best[0].toFixed(1)}px,${best[1].toFixed(1)}px)`;
       const ex = clamp(ax, best[0], best[0] + w), ey = ay < best[1] ? best[1] - 3 : ay > best[1] + h ? best[1] + h + 3 : best[1] + h / 2;
@@ -342,7 +392,7 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
   const placeEnds = () => { endDirty = false; const tx = X(age), ay = Y(ask), sy = Y(sale), marks = [], pad = 7, hit = (x, y, w, h, list) => { for (const [dx, dy, r] of list) if (dx > x - pad - r && dx < x + w + pad + r && dy > y - pad - r && dy < y + h + pad + r) return true; return false; };
     for (let a = 0; a <= 30; a += .2) { const c0 = D.curve[Math.floor(a)], c1 = D.curve[Math.min(30, Math.ceil(a))]; marks.push([X(a), Y(Math.exp(lerp(Math.log(c0), Math.log(c1), a - Math.floor(a)))), 1]); }
     for (let y = ay; y <= sy; y += 5) marks.push([tx, y, 1]); marks.push([tx, ay, 6], [tx, sy, 7]);
-    const lo = C.l + 2, hi = W - (phone ? 10 : 16), top = Math.max(phone ? 56 : 48, C.t - 8), bot = axisY - 8, taken = [];
+    const lo = C.l + 2, hi = gR, top = Math.max(phone ? 56 : 48, C.t - 8), bot = axisY - 8, taken = [];
     const one = (el, px, py) => { const w = el.offsetWidth, h = el.offsetHeight; let best = null, bd = 1e12;
       for (let y = top; y <= bot - h; y += 3) for (let x = lo; x <= hi - w; x += 3) { const d = (x - px) ** 2 + (y - py) ** 2 * 1.4; if (d >= bd) continue; if (hit(x, y, w, h, marks) || hit(x, y, w, h, taken)) continue; bd = d; best = [x, y]; }
       if (!best) best = [clamp(px, lo, hi - w), clamp(py, top, bot - h)];
@@ -373,13 +423,15 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
   }
   stage.addEventListener('click', ev => { if (fine || !R || !hit || ev.target.closest('a,.h-tip,select')) return; const p = stPos(ev), n = nearest(p.x, p.y, 20); if (n) openTip(n.kind, n.j); else closeTip(); });
   // keyboard: tabbing into the box brings the box on screen
-  b3.addEventListener('focusin', () => { if (scroll() < T.sw3[1]) scrollTo({ top: storyTop + T.box[0] * H, behavior: reduce ? 'auto' : 'smooth' }); });
+  b3.addEventListener('focusin', () => { const r = rawScroll(); if (r < T.box[0] || r > T.box[1]) scrollTo({ top: storyTop + (T.box[0] + .2) * H, behavior: 'instant' }); });
 
   // ---------------------------------------------------------------- run
   layout();
   const arriveCheck = () => { const r = rawScroll(); if (!arrived && r > -.55) arrive(); if (r > -.8) fetchLate(); };
   arriveCheck();
-  addEventListener('scroll', () => { dirty = true; arriveCheck(); }, { passive: true });
+  addEventListener('scroll', () => { dirty = true; arriveCheck(); if (lens) lens.wake(); }, { passive: true });
+  if (reduce) loans.classList.add('h-near', 'h-land'); else { new IntersectionObserver(es => { if (es[0].isIntersecting) loans.classList.add('h-near'); }, { rootMargin: '0px 0px -12% 0px' }).observe(loans);
+    new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { loans.classList.add('h-land'); io.disconnect(); } }, { rootMargin: '0px 0px -8% 0px' }).observe(dotsEl); }   // the dots settle in their column as it arrives, so there is never a hole waiting for them
   let lw = 0, lh = 0, rt; const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { if (stage.clientWidth === lw && Math.abs(stage.clientHeight - lh) < 120) return; lw = stage.clientWidth; lh = stage.clientHeight; layout(); }, 120); };
   lw = stage.clientWidth; lh = stage.clientHeight; addEventListener('resize', onResize); addEventListener('load', layout); if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
   new IntersectionObserver(es => { on = es[0].isIntersecting; if (on) dirty = true; }, { rootMargin: '300px' }).observe(stage);
@@ -387,18 +439,11 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
   requestAnimationFrame(loop);
 })();
 
-// The pinned band ends a screen after the next section reaches it, and the footer waits underneath, so the band is cut off at the top of the section passing over it.
-(() => {
-  const ink = document.querySelector('.h-ink'), day = document.querySelector('.h-day'); if (!ink || !day) return;
-  const qh = ink.querySelector('.h-qh'); let was = -1; const paint = () => { const hh = innerHeight, dt = day.getBoundingClientRect().top, y = Math.max(0, hh - dt); if (y === was) return; was = y; ink.style.clipPath = y > 0 ? `inset(0 0 ${y.toFixed(0)}px 0)` : ''; const qb = qh.getBoundingClientRect().bottom; qh.style.opacity = dt < qb + 200 ? hSeg(dt, qb + 24, qb + 200).toFixed(3) : ''; };
-  paint(); addEventListener('scroll', paint, { passive: true }); addEventListener('resize', () => { was = -1; paint(); });
-})();
-
-// What if a loan goes bad. The band is pinned and tied to the scroll: the arms light, the 35 and the 15 part, and they drain to what the middle auction sale would bring. Then the next section slides over. Reduced motion shows the finished picture.
+// What if a loan goes bad. The band is pinned and tied to the scroll: the arms light, the 35 and the 15 part, and they drain to what the middle auction sale would bring. Then it scrolls away, with the form directly under it. Reduced motion shows the finished picture.
 (() => {
   const w = document.querySelector('.h-inkw'), sp = w && w.querySelector('#h-split'); if (!sp) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return sp.classList.add('h-dr');
-  const f7 = [...sp.querySelectorAll('.h-f7 .h-fb canvas')], f3 = [...sp.querySelectorAll('.h-f3 .h-fb canvas:not(.h-cy)')], cy = [...sp.querySelectorAll('.h-f3 .h-cy')], sb = sp.querySelector('.h-sb'), s35 = sp.querySelector('.h-s35'), sd = sp.querySelector('.h-sd'), sx = sp.querySelector('.h-sx');
+  const f7 = [...sp.querySelectorAll('.h-f7 .h-fb canvas')], f3 = [...sp.querySelectorAll('.h-f3 .h-fb canvas:not(.h-cy)')], cy = [...sp.querySelectorAll('.h-f3 .h-cy')], s35 = sp.querySelector('.h-s35'), sd = sp.querySelector('.h-sd'), sx = sp.querySelector('.h-sx');
   const put = (el, a) => { const s = a.toFixed(3); if (el._a !== s) { el._a = s; el.style.opacity = s; } };
   let top = 0, H = 1, U = 1, was = null;
   new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { sp.classList.add('in-view'); io.disconnect(); } }, { threshold: .15 }).observe(sp);
@@ -408,7 +453,7 @@ const H_PALE = [235, 245, 253], H_MID = [88, 122, 214], H_INK = [14, 22, 38], H_
     const lit = k => { const d = k / 50 * .6; return hSeg(light, d, d + .4); };
     f7.forEach((c, k) => { const l = .13 + .87 * lit(k), dl = (34 - k) / 34 * .5, q = hSeg(dr, dl, dl + .5); put(c, k < 2 ? l : hLerp(l, k < 12 ? .46 : .13, q)); });
     f3.forEach((c, i) => { const l = .13 + .87 * lit(35 + i); put(c, l * (1 - part)); put(cy[i], l * part * (1 - .7 * dr)); });
-    sb.style.setProperty('--sp', (1 - hIo3(part)).toFixed(3));
-    put(s35, hSeg(part, .5, 1) * (1 - hSeg(dr, 0, .3))); put(sd, hSeg(dr, .7, 1)); put(sx, hSeg(part, .5, 1)); }
+    sp.style.setProperty('--sp', (1 - hIo3(part)).toFixed(3));
+    put(s35, hSeg(part, .5, 1) * (1 - hSeg(dr, 0, .3))); put(sd, hSeg(dr, .7, 1)); put(sx, hSeg(part, .5, 1)); sd.style.visibility = dr > .7 ? '' : 'hidden'; }
   layout(); addEventListener('scroll', paint, { passive: true }); addEventListener('resize', layout); addEventListener('load', layout); if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 })();

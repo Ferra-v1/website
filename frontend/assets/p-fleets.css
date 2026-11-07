@@ -1,15 +1,16 @@
 /* Robot companies page (f-). Plain sections sized to their content, on flat grounds. With motion (.f-live) one thing pins: the robot that fills with rent. When it is full it scrolls away like the rest of the page. Everything sits on the page's twelve columns. Sizes, buttons and fields come from site.css; layout lives here. */
 
+.page[data-page="fleets.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
+/* the sentence is reached by its own script; a keyboard stop arrives at once, without a smooth run through the pinned robot */
+html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 /* the first screen: the sentence and the answer, on flat cobalt */
-.f-hero{padding-block:100px}
+.f-hero{padding-block:var(--sec)}
 .f-left{min-width:0}
-.f-left h1{margin-bottom:clamp(32px,3.4vw,48px)}
+.f-left h1{margin-bottom:24px}
 .f-quote{max-width:none}
 .f-quote .lf{display:block}
-/* on a wide screen what you type stands on the left and the answer on the right, so the two carry the screen between them */
-@media (min-width:1001px){.f-quote .lf{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto 1fr;column-gap:24px}.f-say{grid-column:1 / 7;grid-row:1}.f-msg{grid-column:1 / 7;grid-row:2}.f-out{grid-column:7 / 13;grid-row:1/3}.f-who{grid-column:1/-1}}
 /* the sentence: real words, with the answers in white fields in the same type. p-fleets.js sets each one as wide as its words */
-.f-say{line-height:56px}
+.f-say{line-height:56px;margin-top:12px}
 .f-say label{display:inline}
 .f-say .pf{font:inherit;line-height:46px;letter-spacing:inherit;color:var(--c);vertical-align:baseline;text-align:center;padding:0 18px;max-width:100%}
 .page[data-page="fleets.html"] .f-say select.pf{padding:0 38px 0 18px;text-align:left}
@@ -18,6 +19,7 @@
 /* the range message has its own line, so showing it moves nothing */
 .f-msg{margin:0;min-height:21px;color:#fff;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s ease}
 .f-msg.on{opacity:1}
+.f-out{margin-top:12px}
 .f-out p{margin:0;color:#fff}
 .f-big{white-space:nowrap;margin-top:4px!important}
 .f-pay{margin-top:8px!important}
@@ -27,29 +29,27 @@
 .f-used{margin:12px 0 0;color:#fff}
 .f-quote .ldone{margin-top:20px;max-width:560px}
 
-/* the pain: the words stay put while one robot fills, month by month, beside them. Without motion it is a plain section with the robot full */
-.f-why{padding-block:120px}
-.f-whyg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center;width:100%}
-.f-whyt{grid-column:1 / 7}
+/* the pain: the heading across the top, its words straight under it, and one robot filling beside the words, month by month. Without motion it is a plain section with the robot full */
+.f-why{padding-block:var(--sec)}
+.f-whyg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start;width:100%}
+.f-whyg h2{grid-column:1 / -1;margin-bottom:16px}
+.f-whyt{grid-column:1 / 7;margin-top:16px}
 .f-run{grid-column:7 / 13;min-width:0}
-.f-whyt p{margin:clamp(18px,2vw,28px) 0 0;color:#3e4656;max-width:30em}
-.f-pay-bot{display:block;width:100%;max-width:560px;margin-inline:auto}
+.f-whyt p{margin:0;color:#3e4656;max-width:30em;text-wrap:balance}
+.f-pay-bot{display:block;width:100%}
 .f-read{margin:clamp(28px,3.4vw,48px) 0 0!important;color:var(--ink)!important}
 .f-read b{display:block;color:var(--c);font-weight:700}
 .f-read span{display:block;margin-top:6px;color:#3e4656;max-width:24em;min-height:3.2em}
 .f-live .f-wrun{height:calc(100lvh + 170vh)}
 .f-live .f-wpin{position:sticky;top:0;height:100lvh;overflow:clip}
 .f-live .f-why{height:100%;padding-block:0}
-.f-live .f-whyg{height:100%}
-.f-live .f-run{height:100%;padding-block:clamp(88px,10svh,112px) clamp(32px,6svh,64px)}
+.f-live .f-whyg{height:100%;grid-template-rows:auto minmax(0,1fr);padding-block:clamp(88px,10svh,112px) clamp(32px,5svh,56px)}
+.f-live .f-run{height:100%;min-height:0}
 .f-live .f-pay-bot{width:100%;max-width:none;height:100%}
 
 /* one month: heading left, paragraph right, then one wide bar for the rent, split at the loan's share. Each figure stands under its own part of the bar */
-.f-month{padding-block:120px}
-.f-mtop{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
-.f-mh{grid-column:1 / 7}
-.f-mlead{grid-column:7 / 13}
-.f-mlead{margin:0}
+.f-month{padding-block:var(--sec)}
+.f-mlead{margin:16px 0 0;text-wrap:pretty}
 .f-bar,.f-mg{display:grid;grid-template-columns:calc(var(--pay) * 100%) minmax(0,1fr)}
 .f-bar{margin-top:clamp(48px,5vw,72px);height:clamp(64px,6vw,88px);overflow:hidden;transition:clip-path 1.2s var(--m-ease)}
 .f-bar span{display:flex;align-items:center;padding:0 clamp(16px,2vw,28px);font:500 var(--t-smallh)/1.2 var(--sans);min-width:0}
@@ -60,32 +60,32 @@
 .f-mn{margin:0}
 .f-mw{margin:8px 0 0;max-width:26em}
 
-/* the one big number. Marked as a chart: it is the only figure on the site this size */
-.f-keep{padding-block:120px}
-.f-keepg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center}
-.f-zero{grid-column:1 / 5}
-.f-keept{grid-column:5 / 13}
-.f-zero{margin:0;font:700 clamp(200px,30vw,440px)/.8 var(--serif);letter-spacing:-.05em;color:var(--c);font-variant-numeric:lining-nums}
-.f-keept .t-lead{margin:clamp(16px,1.8vw,24px) 0 0;max-width:30em;color:#3e4656}
+/* the one big number, and its sentence ending on the number's foot. Marked as a chart: it is the only figure on the site this size. The glyph's own side space is pulled out, so its pixels stand on the page's left edge */
+.f-keep{padding-block:var(--sec)}
+.f-keepg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
+.f-zero{grid-column:1 / 4}
+.f-keept{grid-column:4 / 13}
+.f-zero{margin:0;text-indent:-.046em;font:700 clamp(200px,34vw,520px)/.8 var(--serif);letter-spacing:-.05em;color:var(--c);font-variant-numeric:lining-nums}
+.f-keept{margin-bottom:.75vw}
+.f-keept .t-lead{margin:clamp(16px,1.8vw,24px) 0 0;max-width:30em;color:#3e4656;text-wrap:pretty}
 
-/* the robots, then real listings under them. Heading left, paragraph right. The arms we price stand large; the others stand small and fainter */
-.f-fleet{padding-block:100px 120px;border-top:1px solid var(--line)}
-.f-ftop{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
-.f-ftop h2{grid-column:1 / 7}
-.f-fleetp{grid-column:7 / 13}
-.f-fleetp{margin:0;color:#3e4656}
+/* the robots, then real listings under them. Heading left, paragraph right. One row of six, two columns each, every robot's own pixels starting on a grid line. The arms we price stand large; the others stand small and fainter */
+.f-fleet{padding-block:var(--sec);border-top:1px solid var(--line)}
+.f-fleetp{margin:16px 0 0;color:#3e4656;text-wrap:pretty}
 .f-yard{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;margin-top:clamp(48px,5vw,72px)}
-.f-real{grid-column:1 / 7}
-.f-next{grid-column:7 / 13}
+.f-real{grid-column:1 / 5}
+.f-next{grid-column:5 / 13}
 .f-yg{display:grid;grid-template-rows:auto 1fr;min-width:0}
-.f-ybots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+.f-ybots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;align-items:start;align-self:end}
 .f-bot{display:flex;flex-direction:column;min-width:0;margin:0;color:var(--ink)}
-.f-bot .rs-bot{display:flex;align-items:flex-end;justify-content:center;height:clamp(150px,15vw,216px);padding-inline:clamp(6px,.8vw,12px);border-bottom:1px solid var(--line)}
+.f-bot .rs-bot{display:flex;align-items:flex-end;justify-content:flex-start;height:clamp(150px,15vw,216px);border-bottom:1px solid var(--line)}
 .f-next .f-ybots{grid-template-columns:repeat(4,minmax(0,1fr))}
 .f-next .f-bot .rs-bot{height:clamp(96px,8vw,116px)}
 .f-next .rs-bot canvas{opacity:.62}
-.f-bot canvas{display:block;max-width:100%;height:100%;width:auto}
-.f-bot figcaption{margin-top:12px;padding-right:12px;font:500 var(--t-small)/1.3 var(--sans);min-height:36px}
+.f-bot canvas{display:block;max-width:100%;height:100%;width:auto;transform:translateX(calc(var(--lm,0) * -100%))}
+.f-live .f-bot canvas{transition:opacity .5s var(--m-ease)}
+.f-live .f-yard:not(.on) .f-bot canvas{opacity:0}
+.f-bot figcaption{margin-top:12px;padding-right:12px;font:500 var(--t-small)/1.3 var(--sans);min-height:42px}
 .f-ysay{margin:0 0 clamp(14px,1.6vw,22px);padding-right:16px}
 /* listings: a plain table, ruled, with the figures lined up on the right */
 .f-list{width:100%;border-collapse:collapse;margin-top:clamp(48px,5vw,64px);font-size:16px;line-height:1.4;font-variant-numeric:lining-nums tabular-nums}
@@ -100,34 +100,29 @@
 .f-lsrc{margin:16px 0 0;color:var(--muted)}
 .f-yall{margin-top:12px}
 
-/* the long view */
-.f-last{padding-block:100px}
-.f-endi{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
-.f-endi h2{grid-column:1 / 7}
-.f-endr{grid-column:7 / 13}
-.f-endr p{margin:0;color:#3e4656}
-.f-endr .btn{margin-top:24px}
+/* the closing ask: heading, then the form straight under it */
+.f-last{padding-block:var(--sec);border-top:1px solid var(--line)}
+.f-endf{margin-top:24px}
+.f-endf .lead{max-width:none}
+@media (min-width:681px){.f-endf .lf{column-gap:24px}}
 
 @media (prefers-reduced-motion:reduce){.f-msg,.f-bar{transition:none}}
 /* a short laptop screen still shows the button on the first screen */
-@media (min-width:901px) and (max-height:800px){.f-say{line-height:52px}.f-left h1{margin-bottom:12px}.f-hero{padding-block:48px}}
+@media (min-width:901px) and (max-height:800px){.f-say{line-height:52px}.f-left h1{margin-bottom:12px}}
 @media (max-width:900px){
- .f-hero{padding-block:48px 72px}
- .f-why{padding-block:72px}
  .f-whyg{grid-template-columns:minmax(0,1fr);gap:8px;align-items:start}
- .f-whyt,.f-run,.f-mh,.f-mlead,.f-ftop h2,.f-fleetp,.f-endi h2,.f-endr,.f-real,.f-next{grid-column:1}
- .f-live .f-whyg{grid-template-rows:auto minmax(0,1fr);padding-block:72px 8px}
+ .f-whyg h2{margin-bottom:8px}
+ .f-whyg h2 br{display:none}
+ .f-whyt,.f-run,.f-real,.f-next{grid-column:1}
+ .f-whyt{margin-top:8px}
+ .f-live .f-whyg{grid-template-rows:auto auto minmax(0,1fr);padding-block:72px 8px}
  .f-live .f-run{padding-block:8px 16px;min-height:0}
  .f-read{margin-top:16px!important}
  .f-read span{min-height:3.2em}
- .f-yard{grid-template-columns:minmax(0,1fr);row-gap:24px}
- .f-mtop,.f-ftop,.f-endi{grid-template-columns:minmax(0,1fr);row-gap:16px}
- .f-endr{margin-top:8px}
- .f-month,.f-keep,.f-last{padding-block:72px}
- .f-fleet{padding-block:72px}
+ .f-yard{grid-template-columns:minmax(0,1fr);row-gap:32px}
 }
 /* on a phone the figures stack, and the words inside the bar say which part is which */
-@media (max-width:820px){.f-mg{grid-template-columns:minmax(0,1fr);row-gap:24px}.f-mcol{padding-right:0}.f-keepg{grid-template-columns:minmax(0,1fr);row-gap:26px}.f-zero,.f-keept{grid-column:1}}
+@media (max-width:820px){.f-mg{grid-template-columns:minmax(0,1fr);row-gap:24px}.f-mcol{padding-right:0}.f-keepg{grid-template-columns:minmax(0,1fr);row-gap:26px}.f-zero,.f-keept{grid-column:1}.f-zero{font-size:min(120vw,520px)}}
 @media (max-width:720px){
  .f-live .f-wrun{height:calc(100lvh + 120vh)}
  .f-list thead .f-lh,.f-list .f-lh{display:none}
@@ -137,6 +132,6 @@
 }
 @media (max-width:680px){
  .f-who{grid-template-columns:minmax(0,1fr)}.f-say .pf{padding:0 16px}.f-say{line-height:56px}
- .f-bot .rs-bot{height:min(32vw,120px)}.f-next .f-ybots{grid-template-columns:repeat(2,minmax(0,1fr))}.f-next .f-bot .rs-bot{height:84px}
+ .f-bot .rs-bot{height:min(32vw,120px)}.f-ybots{column-gap:16px}.f-next .f-ybots{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:20px}.f-next .f-bot .rs-bot{height:84px}
  .f-bot figcaption{margin-top:8px;min-height:0}
 }

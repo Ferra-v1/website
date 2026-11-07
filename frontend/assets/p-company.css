@@ -1,28 +1,25 @@
 /* Company page (c-). Plain sections in plain flow, sized to their content, on flat grounds and the page's twelve columns. Sizes come from site.css. */
 
-/* the headline and its line on the left, the arm whole on the right, standing on the band's bottom edge */
-.c-hero{padding-block:100px}
+.page[data-page="company.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
+/* the headline and its line on the left, the arm whole on the right, standing on the band's bottom edge. Its own pixels run from one grid line to the header's right edge, wherever the canvas around them ends */
+.c-hero{padding-block:var(--sec)}
 .c-heg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center}
 .c-htxt{grid-column:1 / 8}
 .c-h1{color:#fff;margin:0}
 .c-lead{margin:20px 0 0;color:#fff}
-.c-pic{grid-column:8 / 13;min-width:0;margin-block:-40px -100px;align-self:end}
-.c-bot .rs-bot{height:clamp(280px,29vw,420px);display:flex;align-items:flex-end;justify-content:flex-end}
-.c-bot .rs-bot canvas{display:block}
+.c-pic{grid-column:7 / 13;min-width:0;margin-block:-40px calc(var(--sec) * -1);align-self:end}
+.c-bot .rs-bot{height:clamp(280px,29.15vw,480px);display:flex;align-items:flex-end;justify-content:flex-end}
+.c-bot .rs-bot canvas{display:block;transform:translateX(3.25%)}
 
-/* who: the point on the left, a short plain letter on the right */
-.c-top{padding-block:120px}
-.c-tg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
-.c-we{grid-column:1 / 8}
-.c-sheet{grid-column:8 / 13}
-.c-we{color:var(--ink)}
-.c-sheet{font:400 var(--t-lead)/1.5 var(--sans);color:var(--ink)}
-.c-sheet p{margin:0 0 1em}
-.c-sign{font-weight:600;margin:1.5em 0 0!important}
+/* who: the point, and a short plain letter straight under it on the same left edge */
+.c-top{padding-block:var(--sec)}
+.page .c-top .c-we{color:var(--ink);margin:0}
+.c-sheet{margin-top:16px;width:calc((100% - 264px) / 12 * 7 + 144px);font:400 var(--t-lead)/1.5 var(--sans);color:var(--ink)}
+.c-sheet p{margin:0 0 1em;text-wrap:pretty}
+.c-sheet p:last-child{margin-bottom:0}
 
 /* the numbers in one row, and the wall they count */
-.c-field{padding-block:100px 120px;background:#fff;border-top:1px solid var(--line)}
-.c-fh h2{max-width:none}
+.c-field{padding-block:var(--sec);background:#fff;border-top:1px solid var(--line)}
 .c-fh p{margin:16px 0 0;color:#3e4656}
 .c-keys{list-style:none;margin:clamp(48px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
 .c-k b{display:block;color:var(--ink)}
@@ -37,29 +34,26 @@
 .c-tip span{display:block;margin-top:5px;color:#3e4656}
 .c-tip a{display:inline-flex;align-items:center;min-height:44px;font-weight:500;color:var(--c)}
 .c-src{margin:16px 0 0;color:var(--muted);max-width:none}
-.c-more{white-space:nowrap}
+.c-more{white-space:nowrap;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 
-/* what you will not find, across the page; how to reach us, heading left and form right */
-.c-ng{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
-.c-ng > :first-child{grid-column:1 / 7}
-.c-ng > :last-child{grid-column:7 / 13}
-.c-nots h2{max-width:none}
+/* how to reach us: the heading, its line and the form in one column, together */
 .c-ctxt p{margin:16px 0 0;color:#3e4656}
-.c-nots{padding-block:100px}
-.c-nots p{margin:16px 0 0;color:#3e4656}
-.c-contact{padding-block:120px}
-.c-contact .lf{grid-template-columns:minmax(0,1fr)}
+.c-form{margin-top:24px}
+.c-contact{padding-block:var(--sec);border-top:1px solid var(--line)}
+.c-form .lead{max-width:none}
+/* this form has no next steps to list, so nothing promises them */
+.c-form .ldone span,.c-form .ldone ol:empty{display:none}
+/* the email and Send stand on the left, as tall as the message beside them */
+@media (min-width:681px){.c-form .lead{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;grid-template-rows:auto 1fr}.c-form .lf{display:contents}.c-form .lf[hidden],.c-form .la[hidden]{display:none}.c-form .fl:not(.wide){grid-area:1 / 1}.c-form .fl.wide{grid-area:1 / 2 / 3 / 3}.c-form .la{grid-area:2 / 1;align-items:flex-end}.c-form .ldone{grid-column:1 / -1}.c-form .lead.sending .fl{opacity:.55;pointer-events:none}}
 
+@media (max-width:680px){.c-form .la .btn{width:100%}}
 @media (max-width:900px){
- .c-hero{padding-block:48px 72px}
+ .c-sheet{width:auto}
  .c-heg{grid-template-columns:minmax(0,1fr);row-gap:32px}
- .c-htxt,.c-pic,.c-we,.c-sheet,.c-ng > :first-child,.c-ng > :last-child{grid-column:1}
+ .c-htxt,.c-pic{grid-column:1}
  .c-h1 br,.c-we br{display:none}
- .c-pic{margin:0 0 -72px}
- .c-bot .rs-bot{justify-content:center}
- .c-bot .rs-bot{height:min(66vw,420px)}
- .c-top,.c-contact,.c-nots{padding-block:72px}
- .c-field{padding-block:72px}
- .c-tg,.c-ng{grid-template-columns:minmax(0,1fr);row-gap:20px}
- .c-keys{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .c-pic{margin:0 0 calc(var(--sec) * -1)}
+ .c-bot .rs-bot{justify-content:flex-start;height:min(66vw,420px)}
+ .c-bot .rs-bot canvas{transform:translateX(-1.81%)}
+ .c-keys{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px}
 }

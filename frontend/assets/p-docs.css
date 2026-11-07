@@ -1,16 +1,15 @@
 /* Methodology and privacy (d-). Plain documents on white: contents beside one column of text, one shared left edge, sizes from the shared tokens. No motion anywhere on them. */
 html{scroll-behavior:auto}
-.d-body{padding-block:clamp(40px,7vw,100px) clamp(64px,7vw,104px)}
-/* one grid: 12 columns between the header's own edges. Ten for the document, two for the contents rail at the right. In a section the heading takes four columns and the words the next six */
-.page:is([data-page="methodology.html"],[data-page="privacy.html"]){--d-gut:24px;--d-shift:calc((100% + var(--d-gut)) * .4)}
-.page:is([data-page="methodology.html"],[data-page="privacy.html"]) section .in,.page:is([data-page="methodology.html"],[data-page="privacy.html"]) .d-g.in{max-width:none;padding-inline:clamp(16px,2.8vw,40px)}
+.d-body{padding-block:var(--sec)}
+/* one grid: 12 columns between the header's own edges. Ten for the document, two for the contents rail at the right. A section's heading stands straight over its words, on the page's left edge */
+.page:is([data-page="methodology.html"],[data-page="privacy.html"]){--d-gut:24px;--dc:calc((100vw - 2 * var(--gl) - 11 * var(--d-gut)) / 12)}
 .d-g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--d-gut);align-items:start}
 .d-toc{grid-column:11 / -1;grid-row:1}
 .d-art{grid-column:1 / span 10;grid-row:1}
 
 /* the title and what it is for */
-.d-head h1{margin:0}
-.d-head .t-lead{margin:clamp(20px,2vw,28px) 0 0;max-width:640px;color:#3e4656;text-wrap:pretty}
+.d-head h1{margin:0;text-wrap:balance}
+.d-head .t-lead{margin:16px 0 0;max-width:640px;color:#3e4656;text-wrap:pretty}
 .d-head .d-miss{margin-top:14px;color:var(--ink);font-weight:500}
 .d-upd{margin:18px 0 0;font-size:var(--t-small);color:var(--muted)}
 
@@ -29,8 +28,8 @@ html{scroll-behavior:auto}
 .d-sec{padding-top:clamp(56px,6vw,88px);scroll-margin-top:-24px}
 .d-sec h2{margin:0 0 16px}
 .d-sec h3{margin:0 0 14px}
-.d-sec p{margin:0 0 16px;max-width:500px;color:#3e4656;font-size:var(--t-body);line-height:1.65}
-.d-sec .d-ld{margin:0 0 20px;max-width:640px;font-size:var(--t-lead);line-height:1.45;color:var(--ink);text-wrap:pretty}
+.d-sec p{margin:0 0 16px;max-width:490px;color:#3e4656;font-size:var(--t-body);line-height:1.65}
+.d-sec .d-ld{margin:0 0 20px;max-width:700px;font-size:var(--t-lead);line-height:1.45;color:var(--ink);text-wrap:pretty}
 .d-sec b{color:var(--ink);font-weight:500}
 .d-sec b.num{font-weight:700}
 .d-rl > b:first-child{display:block;width:fit-content;margin-bottom:2px}
@@ -43,7 +42,7 @@ html{scroll-behavior:auto}
 .d-bars h3{margin:0 0 4px;color:var(--ink)}
 .d-bars h3:not(:first-child){margin-top:24px}
 .d-bars ul{list-style:none;margin:0;padding:0}
-.d-bars li{display:grid;grid-template-columns:calc((100% - 9 * var(--d-gut)) / 5 + var(--d-gut)) minmax(0,1fr);align-items:baseline;gap:0 var(--d-gut);padding:10px 0 12px}
+.d-bars li{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:baseline;gap:0 var(--d-gut);padding:10px 0 12px}
 .d-bars b{color:var(--ink)}
 .d-bars b.fig-24{font-size:var(--t-lead);letter-spacing:-.015em}
 .d-bars li.hi b{color:var(--c)}
@@ -55,7 +54,7 @@ html{scroll-behavior:auto}
 .d-sec .d-gapl{margin:8px 0 clamp(32px,4vw,48px);color:var(--ink);font-weight:500}
 
 /* what we do not know: the document's one loud moment, three smaller admissions under it */
-.d-unk h2{margin:0}
+.d-unk h2{margin:0;text-wrap:wrap}
 .d-sec .d-uns{margin:clamp(14px,1.6vw,20px) 0 0;font-size:var(--t-lead);line-height:1.45;color:#3e4656}
 .d-ung{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:0 var(--d-gut);margin-top:clamp(32px,4vw,48px)}
 .d-ung > div:nth-child(1),.d-ung > div:nth-child(2){grid-column:span 3}
@@ -138,41 +137,40 @@ html{scroll-behavior:auto}
 
 /* the last screen: why any of this is written down */
 .d-close{padding-top:clamp(72px,8vw,120px)}
-.d-close h2{margin:0 0 16px}
+.d-close h2{margin:0 0 16px;text-wrap:balance!important}
 .d-sec.d-close .t-lead{font-size:var(--t-lead);line-height:1.45;color:#3e4656;max-width:700px}
 .d-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;margin-top:8px}
 .d-sec .d-acts .tlink{margin-top:0}
 
 
 /* privacy: one row per question, on the same left edge as Methodology's text */
-.d-priv{padding-block:clamp(40px,7vw,100px) clamp(64px,7vw,104px)}
+.d-priv{padding-block:var(--sec)}
 .d-priv .d-head{padding-bottom:clamp(40px,5vw,72px)}
 .d-pr{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px var(--d-gut);padding:0 0 clamp(24px,2.6vw,36px)}
 .d-pr h3{grid-column:1 / span 4;margin:0;padding-top:1px;color:var(--ink)}
 .d-pr > div,.d-pr > .t-lead{grid-column:5 / span 6}
 .d-pr p{margin:0;max-width:530px;font-size:var(--t-body);line-height:1.65;color:#3e4656}
 .d-pr p + p,.d-pl + p{margin-top:12px}
+.d-pr:last-child{padding-bottom:0}
 .d-pl{list-style:none;margin:8px 0 0;padding:0;font-size:var(--t-body);line-height:1.55;color:#3e4656}
 .d-pl li{padding:3px 0}
-.d-pr .t-lead{font-size:var(--t-lead);line-height:1.45;max-width:700px}
 [data-page="methodology.html"] .notes li{max-width:530px}
-.d-pend{padding-top:clamp(16px,2vw,24px);padding-bottom:0}
 
 @media (max-width:1060px){
   /* a block here, because a sticky child of a grid only travels within its own row */
   .d-g{display:block}
   .page:is([data-page="methodology.html"],[data-page="privacy.html"]){--d-gut:16px}
   .d-toc{display:none}
-  .d-tocx{display:block;position:sticky;top:8px;z-index:20;margin-top:24px;border-radius:var(--r-card);background:var(--mist);padding:0 16px}
+  .d-tocx{display:block;position:sticky;top:8px;z-index:20;margin-top:24px;border-radius:var(--r-card);background:#fff;box-shadow:inset 0 0 0 1px rgba(14,22,38,.14);padding:0 16px}
   /* the site's floating bar comes back when the reader scrolls up: the control steps down under it */
   html:has(.fbar.on) .d-tocx{top:76px}
   .d-tocx summary{display:flex;align-items:center;gap:10px;min-height:48px;font-size:var(--t-body);font-weight:500;color:var(--ink);cursor:pointer;list-style:none}
   .d-tocx summary::-webkit-details-marker{display:none}
-  .d-tocnow{font-weight:400;color:#4a5262;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .d-tocnow{font-weight:400;color:#4a5262;overflow:hidden;white-space:nowrap;min-width:0}
   .d-tocx summary::after{content:"";flex:none;width:8px;height:8px;margin:-4px 4px 0 auto;border-right:1.8px solid var(--c);border-bottom:1.8px solid var(--c);transform:rotate(45deg)}
   .d-tocx[open] summary::after{transform:translateY(4px) rotate(225deg)}
   /* the list opens over the page, so the text under it does not jump */
-  .d-tocx nav{position:absolute;left:0;right:0;top:100%;margin-top:-6px;padding:0 16px 8px;background:var(--mist);border-radius:0 0 var(--r-card) var(--r-card);max-height:calc(100vh - 80px);overflow:auto}
+  .d-tocx nav{position:absolute;left:0;right:0;top:100%;margin-top:-6px;padding:0 16px 8px;background:#fff;box-shadow:inset 0 0 0 1px rgba(14,22,38,.14);border-radius:0 0 var(--r-card) var(--r-card);max-height:calc(100vh - 80px);overflow:auto}
   .d-tocx a{min-height:44px;padding:8px 0}
   .d-tocx a.on{color:var(--c);font-weight:500}
   .d-pr h3,.d-pr > div,.d-pr > .t-lead{grid-column:1 / -1}
@@ -203,15 +201,17 @@ html{scroll-behavior:auto}
   .d-acts{flex-direction:column;align-items:flex-start}
 }
 
-/* the heading in the first four of the ten columns, everything under it in the next six */
+/* figures and tables take eight of the twelve columns, and a price's words start on a column line */
 @media (min-width:1061px){
-  .d-sec{display:flow-root}
-  .d-sec > h3,.d-cold > summary:has(h3){clear:left}
-  .d-sec > h3,.d-cold > summary:has(h3){float:left;width:calc((100% + var(--d-gut)) * .4 - var(--d-gut))}
-  .d-sec > :not(h2,h3,.d-cold),.d-sec .d-cold:has(> summary h3) > :not(summary){margin-left:var(--d-shift)}
-  .d-one > .d-ld,.d-one > .d-bars,.d-one > .d-gapl,.d-unk > *,.d-close > *,.d-wsec > *{margin-left:0!important}
-  .d-sec > table,.d-cold > table{width:calc(100% - var(--d-shift))}
+  .d-bars,.d-lots,.d-tw,.d-sheet{max-width:calc(8 * var(--dc) + 7 * var(--d-gut))}
+  .d-bars li{grid-template-columns:calc(2 * var(--dc) + var(--d-gut)) minmax(0,1fr)}
 }
 
 /* the notes sit on the same grid: a link stays part of its sentence */
 .page[data-page="methodology.html"] .notes li a{display:inline;padding:0;margin:0}
+/* on a narrow phone the note on the auction strip takes its own line along the top of the track, clear of the dots */
+@media (max-width:720px){
+  .d-lt:has(.d-ln){height:80px}
+  .d-ln{left:0!important;right:auto;top:0;bottom:auto;white-space:nowrap}
+}
+@media (min-width:901px){.d-sec .d-rl{max-width:440px}.d-cold p{max-width:440px}}

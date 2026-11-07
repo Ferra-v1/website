@@ -3,6 +3,28 @@
  "trailingSlash": false,
  "redirects": [
   {
+   "source": "/:path*",
+   "has": [
+    {
+     "type": "host",
+     "value": "ferra.world"
+    }
+   ],
+   "destination": "https://www.ferra.company/:path*",
+   "permanent": true
+  },
+  {
+   "source": "/:path*",
+   "has": [
+    {
+     "type": "host",
+     "value": "www.ferra.world"
+    }
+   ],
+   "destination": "https://www.ferra.company/:path*",
+   "permanent": true
+  },
+  {
    "source": "/price-index",
    "destination": "/price-report",
    "permanent": true
@@ -88,7 +110,7 @@
     },
     {
      "key": "Content-Security-Policy",
-     "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; media-src 'self'; worker-src 'self' blob:; connect-src 'self' https://ybgspxfnjkehjskhrpne.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+     "value": "default-src 'self'; script-src 'self' 'sha256-CHDxvNpzBQKNqpEOAZ9P/6GY/l/Sa+2F/4w07Wnl8V8=' 'sha256-GZIcz60Uwd6wT3vaYke/atSr53TehbYAPepOa3d03Vw=' 'sha256-OgwoNk7383iCJJTgnhe8pKNRDj47LvlP8z8CCJc3TOA=' 'sha256-UPhi5UC0E4y42C1sTLVWDChSDVZmscmpQZB5KFozyeA=' 'sha256-Xs2ve88E8SGFM2B9xsgv0t7vYkRfJPghKl4jtCAicg4=' 'sha256-YrjQJfggQqpmooLxEY7J3fgGxJ81llUKRlssId9VTbY=' 'sha256-ZBmlpUybx5muynWzPBOW9LVaGzp+vk7DtmCC/jDi7o8=' 'sha256-oNL60T+vgax9tP6Zl/ZDgpc3UFGEwvgdULlNfYS9OoA=' 'unsafe-hashes'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; media-src 'self'; worker-src 'self' blob:; connect-src 'self' https://ybgspxfnjkehjskhrpne.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
     }
    ]
   }

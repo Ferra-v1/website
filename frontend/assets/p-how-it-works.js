@@ -1,5 +1,5 @@
-// How it works: one example loan in five steps. Both columns hold still while the reader scrolls; scrolling opens each step and drives the stage. The stage always shows everyone and all four payments, and the step's payment lights up and moves.
-// All 5,000 dots are the loan, so the share of solid dots is the share paid back. Reduced motion, or a window too short to hold the scene: every step stands open and the stage shows the finished loan.
+// How it works: one example loan in five steps. The steps scroll in plain flow, and the stage stays beside them, driven by the same scroll. The stage always shows everyone and all four payments, and the step's payment lights up and moves.
+// One square for each monthly payment: empty until the loan is made, then owed, then paid. Reduced motion, or a window too short to hold the scene: every step stands open and the stage shows the finished loan.
 (() => {
   const run = document.querySelector('[data-hw]'); if (!run) return;
   const D = JSON.parse(run.dataset.hw), root = document.documentElement, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -10,38 +10,7 @@
   const held = () => !reduce && innerHeight >= 600;
   const $ = (s, r = run) => r.querySelector(s), $$ = (s, r = run) => [...r.querySelectorAll(s)];
 
-  // the arm: every dot has its place, its size from the shade in the picture, and a rank, the order it fills from the floor up. A share of the ranks is exactly that share of the dots.
-  const rows = D.grid.length, cols = Math.max(...D.grid.map(r => r.length));
-  const at = (x, y) => (D.grid[y] || '')[x] > ' ';
-  const pts = []; let sr = 0;
-  D.grid.forEach((line, y) => { for (let x = 0; x < line.length; x++) { const c = line[x]; if (c === ' ') continue; sr = (sr * 9301 + 49297) % 233280;
-    pts.push({ x, y, t: +c / 9, k: rows - y + (sr / 233280) * 5, edge: !at(x - 1, y) || !at(x + 1, y) || !at(x, y - 1) || !at(x, y + 1) }); } });
-  pts.slice().sort((a, b) => a.k - b.k).forEach((d, i, all) => { d.rank = i / all.length; });
-  const SOLID = '#ffffff', PALE = '#5f7fe6', FAINT = 'rgba(255,255,255,.26)', TAU = 6.2832;
-  const cv = $('.hw-grid'), ctx = cv.getContext('2d'), stage = $('.hw-stage'), dia = $('.hw-dia'), low = $('.hw-low');
-  let F = null;
-  function size() {
-    const ph = phone(), s = getComputedStyle(stage), avail = held() ? (ph ? Math.min(290, Math.max(120, innerHeight * .3)) : Math.max(180, innerHeight - parseFloat(s.paddingTop) - parseFloat(s.paddingBottom) - dia.offsetHeight - 36)) : (ph ? 220 : 420);
-    // the arm never reaches the figures beside it: the widest figure, $4,375,000, is about 5.5 times its type size
-    const room = low.clientWidth - parseFloat(getComputedStyle(figO).fontSize) * 5.5 - 16;
-    const h = Math.min(avail, 440, room * rows / cols), w = h * cols / rows, p = w / cols, H = p * rows, dpr = Math.min(2, devicePixelRatio || 1);
-    cv.style.width = w + 'px'; cv.style.height = H + 'px'; cv.width = Math.round(w * dpr); cv.height = Math.round(H * dpr);
-    F = { w, h: H, dpr, p };
-  }
-  const buckets = { faint: [], pale: [], solid: [] };
-  function paint() {
-    if (!F) return;
-    const { p, dpr, w, h } = F;
-    for (const k in buckets) buckets[k].length = 0;
-    for (const d of pts) (d.rank < S.paid ? buckets.solid : d.rank < S.fill ? buckets.pale : d.edge ? buckets.faint : []).push(d);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
-    for (const [k, c] of [['faint', FAINT], ['pale', PALE], ['solid', SOLID]]) {
-      const L = buckets[k]; if (!L.length) continue; ctx.fillStyle = c; ctx.beginPath();
-      const big = k === 'solid';   // a paid dot is a full dot, so the part that has been paid back reads solid beside the part still owed
-      for (const d of L) { const cx = (d.x + .5) * p, cy = (d.y + .5) * p, r = Math.max(.7, p * (big ? .42 + .12 * (1 - d.t) : .28 + .18 * (1 - d.t))); ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, TAU); }
-      ctx.fill();
-    }
-  }
+  const stage = $('.hw-stage'), dia = $('.hw-dia'), strip = $('.hw-pay'), squares = $$('.hw-pay i');
 
   // the diagram: lines, arrowheads and labels are placed from where the squares really are, so one script serves the wide row and the phone row
   const N = {}; $$('.hw-nd').forEach(n => { N[n.dataset.n] = n; });
@@ -94,7 +63,6 @@
     all: { show: ['loan', 'repay', 'rent', 'fee'], say: ['loan', 'repay', 'rent', 'fee'] }
   };
   const steps = $$('.hw-ch'), figO = $('[data-owed]'), figP = $('[data-paid]'), figM = $('[data-month]');
-  const S = { fill: 0, fillT: 0, paid: 0, paidT: 0 };
   const T = { o: -1, p: -1 }; let tick = null, shownO = 0, shownP = 0;   // the page prints the finished loan for readers with no script, so the first reading always rewrites the figures
   let phase = null, month = 0, way = null, t0 = 0, raf = 0, inView = true, runTop = 0, runLen = 1, spanSum = D.spans.reduce((a, b) => a + b, 0);
   function setPhase(ph) {
@@ -106,10 +74,10 @@
     if (!way) mv.style.visibility = 'hidden';
   }
   function targets() {
-    if (phase === 1 || phase === 2) return [0, 0, 0, 0];
-    if (phase === 3 || phase === 35 || phase === 4) return [1, 0, D.l, 0];
+    if (phase === 1 || phase === 2) return [0, 0];
+    if (phase === 3 || phase === 35 || phase === 4) return [D.l, 0];
     const m = phase === 6 || phase === 'all' ? D.term : month, paid = D.l * m / D.term;
-    return [1, m / D.term, D.l - paid, paid];
+    return [D.l - paid, paid];
   }
   function show(o, p) {
     shownO = o; shownP = p; figO.textContent = money(o);
@@ -117,8 +85,10 @@
     figP.textContent = p > 0 && Math.abs(o + p - D.l) < 1 ? money(D.l - Math.floor(o / 100 + .5) * 100) : money(p);
   }
   function readTargets() {
-    const [fill, paid, o, p] = targets(); S.fillT = fill; S.paidT = paid;
-    figM.textContent = phase === 5 ? 'Month ' + month + ' of ' + D.term : phase === 6 || phase === 'all' ? 'Month ' + D.term + ' of ' + D.term + '. Nothing is owed.' : '';
+    const [o, p] = targets(), n = phase === 5 ? month : phase === 6 || phase === 'all' ? D.term : 0;
+    figM.textContent = phase === 5 ? 'Month ' + month + ' of ' + D.term : phase === 6 || phase === 'all' ? 'Month ' + D.term + ' of ' + D.term + '. Nothing is owed.' : D.term + ' monthly payments';
+    strip.classList.toggle('made', phase !== 1 && phase !== 2);
+    squares.forEach((el, i) => el.classList.toggle('paid', i < n));
     if (o === T.o && p === T.p) return;
     const jump = Math.max(Math.abs(o - shownO), Math.abs(p - shownP)) > D.l / D.term * 2.5;
     T.o = o; T.p = p;
@@ -136,42 +106,32 @@
     if (ph === 3 && t >= .5) ph = 35;
     if (ph === 5) { month = Math.min(D.term, 1 + Math.floor(t / .86 * D.term)); if (month >= D.term) ph = 6; }
     setPhase(ph); readTargets();
-    steps.forEach((el, k) => { const on = k === i; if (el.classList.contains('hw-live') !== on) { el.classList.toggle('hw-live', on); $('.hw-b', el).setAttribute('aria-expanded', on); } });
+    steps.forEach((el, k) => el.classList.toggle('hw-live', k === i));
     wake();
   }
   const pointOn = (q, u) => { let tot = 0; const seg = []; for (let i = 1; i < q.length; i++) { const d = Math.hypot(q[i][0] - q[i - 1][0], q[i][1] - q[i - 1][1]); seg.push(d); tot += d; }
     let s = u * tot; for (let i = 0; i < seg.length; i++) { if (s <= seg[i]) { const k = seg[i] ? s / seg[i] : 0; return [q[i][0] + (q[i + 1][0] - q[i][0]) * k, q[i][1] + (q[i + 1][1] - q[i][1]) * k]; } s -= seg[i]; } return q[q.length - 1]; };
-  let last = 0;
   function frame(now) {
-    raf = 0; const dt = Math.min(64, now - (last || now)); last = now;
-    let dirty = false;
-    // the arm fills from the floor up over 1400ms when the loan is made. Paid dots follow the month a little behind the scroll, so they stay calm.
-    if (S.fill !== S.fillT) { const d = dt / 1400; S.fill = S.fill < S.fillT ? Math.min(S.fillT, S.fill + d) : Math.max(S.fillT, S.fill - d); dirty = true; }
-    if (S.paid !== S.paidT) { const d = S.paidT - S.paid; S.paid = Math.abs(d) < .0004 ? S.paidT : S.paid + d * .14; dirty = true; }
-    if (dirty) paint();
+    raf = 0;
     if (tick) { const u = clamp((now - tick.t) / 1200), e = ease(u); show(tick.o0 + (T.o - tick.o0) * e, tick.p0 + (T.p - tick.p0) * e); if (u >= 1) tick = null; }
     // one small square on its route: 1600ms of travel in every 2400ms. It starts and ends under a square, so it never pops in.
     if (way && inView) { const u = ((now - t0) % 2400) / 1600; if (u <= 1) { const [x, y] = pointOn(way, ease(u)); mv.style.transform = `translate(${x}px,${y}px)`; mv.style.visibility = 'visible'; } else mv.style.visibility = 'hidden'; }
-    if (inView && (way || dirty || tick)) raf = requestAnimationFrame(frame);
+    if (inView && (way || tick)) raf = requestAnimationFrame(frame);
   }
   function wake() { if (!raf) raf = requestAnimationFrame(frame); }
 
-  // the titles are real controls: pressing one goes to that step
-  const go = i => { if (held()) scrollTo({ top: runTop + (startOf(i) + D.spans[i] / spanSum * .08) * runLen }); };
-  steps.forEach((el, i) => { const b = $('.hw-b', el); b.addEventListener('click', () => go(i)); b.addEventListener('focus', () => { if (b.matches(':focus-visible')) go(i); }); });   // tabbing to a step opens it, so the keyboard reads what the wheel reads
-
   function still() {   // the finished loan, nothing travelling, every step open
-    root.classList.remove('hw-on'); steps.forEach(el => { el.classList.remove('hw-live'); $('.hw-b', el).setAttribute('aria-expanded', true); });
-    phase = null; setPhase('all'); month = D.term; S.fill = S.fillT = 1; S.paid = S.paidT = 1; T.o = 0; T.p = D.l; show(0, D.l); figM.textContent = 'Month ' + D.term + ' of ' + D.term + '. Nothing is owed.'; paint();
+    root.classList.remove('hw-on'); steps.forEach(el => el.classList.remove('hw-live'));
+    phase = null; setPhase('all'); month = D.term; T.o = 0; T.p = D.l; show(0, D.l); figM.textContent = 'Month ' + D.term + ' of ' + D.term + '. Nothing is owed.'; strip.classList.add('made'); squares.forEach(el => el.classList.add('paid'));
   }
   function refresh() {
-    const h = held(); root.classList.toggle('hw-on', h); size(); layout(); measure();
+    const h = held(); root.classList.toggle('hw-on', h); layout(); run.style.setProperty('--hw-sh', stage.offsetHeight + 'px'); measure();
     if (!h) { still(); return; }
-    phase = phase === 'all' ? null : phase; const p = phase; phase = null; if (p != null) setPhase(p); onScroll(); paint();
+    phase = phase === 'all' ? null : phase; const p = phase; phase = null; if (p != null) setPhase(p); onScroll();
   }
   function start() {
     refresh();
-    S.fill = S.fillT; S.paid = S.paidT; if (tick) { show(T.o, T.p); tick = null; } paint();
+    if (tick) { show(T.o, T.p); tick = null; }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
   }
   let rt, lw = innerWidth, lh = innerHeight;

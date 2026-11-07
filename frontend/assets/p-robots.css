@@ -1,9 +1,7 @@
 /* Robots we price: the shelf (robots.html) and one page per robot (robots-<id>.html). Classes start with r-. Every size here comes from the one scale in site.css.
    One grid: 12 columns between the header's own edges. --gl is the edge, --g the gutter. A robot's box takes whole columns and its height follows from its own shape (--ar), so what is drawn lands on the grid. */
-[data-page^="robots"]{--gl:clamp(16px,2.8vw,40px);--g:24px}
+[data-page^="robots"]{--g:24px}
 @media (max-width:720px){[data-page^="robots"]{--g:16px}}
-[data-page^="robots"] .in{max-width:none;padding-inline:var(--gl)}
-[data-page^="robots"] .h2{max-width:24ch}
 [data-page^="robots"] .lead-1{max-width:620px}
 .r-act{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:0}
 .r-act .tlink{margin:0}
@@ -12,8 +10,8 @@
 .r-one{position:relative;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);padding-left:var(--gl);padding-right:var(--gl);min-height:calc(100svh - 72px)}
 .r-one-l{grid-column:1 / 8;min-width:0}
 .r-one-li{padding:clamp(32px,4vw,56px) 0 clamp(32px,4vw,48px)}
-.page .r-h1{margin:0;color:var(--ink)}
-.r-kind{margin:12px 0 0;color:#3e4656}
+.page .r-h1{margin:0;color:var(--ink);text-wrap:balance}
+.r-kind{margin:18px 0 0;color:#3e4656}
 .r-kind-m{display:none}
 /* the ink starts a gutter into column eight, and its words start on the line of column nine */
 .r-one-r{grid-column:8 / 13;min-width:0;color:#fff;margin-right:calc(-1 * var(--gl));margin-left:var(--g)}
@@ -21,7 +19,7 @@
 .r-sum{flex:none}
 .r-big{display:block;color:#fff;white-space:nowrap}
 .r-say{margin:10px 0 0;color:#fff;text-wrap:pretty}
-.r-admit{margin:0 0 8px;font-weight:500;color:#fff;text-wrap:balance}
+.r-admit{margin:0 0 8px;font-weight:500;color:#fff;text-wrap:pretty}
 .r-one .r-act{margin-top:clamp(16px,2vh,24px)}
 .r-why{margin:clamp(10px,1.4vh,16px) 0 0;color:rgba(255,255,255,.92)}
 .r-one-bot{flex:none;margin-top:auto;padding-top:16px;width:100%}
@@ -45,22 +43,23 @@
 .r-tip.touch a{display:inline-flex;align-items:center;min-height:44px;margin-top:0}
 
 /* ------------------------------------------------------------------ one short chart */
-.r-ch-h{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);row-gap:24px;align-items:end}
-.r-ch-h>div:first-child{grid-column:1 / 9}
-.r-ch-h>.r-read{grid-column:9 / 13}
-.r-ch-h .h2{margin-bottom:16px}
-.r-read{min-width:0}
+/* the heading, its short line under it, then the age being read: its figure on the page's left edge, its words beside it, both standing on one line */
+.r-ch-h .h2{margin:0 0 12px}
+.r-read{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);row-gap:8px;align-items:end;margin-top:clamp(24px,2.8vw,40px)}
+.r-read>div{min-width:0}
+.r-read>div:first-child{grid-column:1 / 5}
+.r-read>div:last-child{grid-column:5 / 11}
 .r-rk{margin:0 0 4px;color:#3e4656}
 .r-rv{display:block;color:var(--c);white-space:nowrap}
-.r-rs{margin:6px 0 0;color:#3e4656;text-wrap:pretty}
-.tlink.r-rl{margin-top:4px}
+.r-rs{margin:0;color:#3e4656;text-wrap:pretty}
+.tlink.r-rl{margin:0;min-height:32px}
 .r-plot{position:relative;height:clamp(380px,38vw,540px);margin-top:clamp(24px,3vw,40px)}
 .r-cv,.r-ax{position:absolute;inset:0;width:100%;height:100%;display:block}
 .r-cv{touch-action:pan-y;cursor:default}
 .r-ax{pointer-events:none;font-family:var(--sans);overflow:visible}
-.r-ax text{fill:#3e4656;font-size:16px;font-variant-numeric:lining-nums tabular-nums;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.r-ax text{fill:var(--ink);font-size:16px;font-variant-numeric:lining-nums tabular-nums;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
 .r-ax .lb{fill:var(--ink);font-weight:500}
-.r-ax .pl{fill:#3e4656}
+.r-ax .pl{fill:var(--ink)}
 .r-ax .ax{stroke:rgba(14,22,38,.4);stroke-width:1}
 .r-ax .ld{fill:none;stroke:rgba(14,22,38,.35);stroke-width:1}
 .r-ax .k-line{fill:none;stroke:var(--c);stroke-width:2}
@@ -68,11 +67,13 @@
 .r-ax .k-dot{fill:var(--ink)}
 /* the age control: the chart's own axis is the track */
 .r-age{position:absolute;z-index:3;height:44px;display:block}
-.r-age input{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:ew-resize;opacity:0}
-.r-age input::-webkit-slider-thumb{-webkit-appearance:none;width:44px;height:44px}
+.r-age input{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:ew-resize;outline:0;box-shadow:none}
+.r-age input:focus-visible{outline:2px solid var(--c);outline-offset:-4px;box-shadow:none}
+.r-age input::-webkit-slider-runnable-track{background:none}
+.r-age input::-moz-range-track{background:none}
+.r-age input::-webkit-slider-thumb{-webkit-appearance:none;width:44px;height:44px;background:none}
 .r-age input::-moz-range-thumb{width:44px;height:44px;border:0;background:none}
 .r-th{position:absolute;z-index:2;left:0;display:flex;align-items:center;justify-content:center;height:26px;padding:0 11px;border-radius:2px;background:var(--c);color:#fff;font-size:var(--t-small);font-weight:500;white-space:nowrap;pointer-events:none;will-change:transform}
-.r-age:focus-within + .r-th{outline:2px solid var(--ink);outline-offset:3px}
 
 /* ------------------------------------------------------------------ tables: one rule under the head, and rows part with space */
 .r-tbl{width:100%;border-collapse:collapse;margin-top:clamp(24px,3vw,40px);font-size:16px;line-height:1.4;font-variant-numeric:lining-nums tabular-nums}
@@ -95,7 +96,7 @@
 .r-ls-h{margin:clamp(32px,4vw,48px) 0 0;color:var(--ink)}
 .r-tw{color:#3e4656}
 .r-tw span{display:block;color:var(--muted)}
-.r-more{display:inline-flex;align-items:center;min-height:44px;margin-top:14px;padding:0;border:0;background:none;color:var(--c);font:500 16px/1 var(--sans);cursor:pointer}
+.r-more{display:inline-flex;align-items:center;min-height:44px;margin-top:14px;padding:0;border:0;background:none;color:var(--c);font:500 16px/1 var(--sans);text-align:left;cursor:pointer}
 .r-more:hover{text-decoration:underline;text-underline-offset:4px}
 
 /* ------------------------------------------------------------------ what buyers paid, and what a buyer would likely pay */
@@ -109,6 +110,7 @@
 .r-like b{color:var(--c)}
 /* an auction row: the share reads as a figure, and on a phone the three middle cells fold into one line */
 .r-au-p b{font-weight:500}
+.r-tbl-a .r-au-p,.r-tbl-a thead th:last-child{padding-right:0}
 .r-au-p span,.r-tbl .r-au-m{display:none}
 /* one for sale, one sold: two real records as paper */
 .r-pair{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px var(--g);margin-top:clamp(64px,7vw,88px)}
@@ -123,15 +125,22 @@
 .r-dl:hover{text-decoration:underline;text-underline-offset:4px}
 
 /* how much to trust this */
-.r-tr-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px var(--g);align-items:start}
-.r-tally{display:block;width:100%;height:auto;margin-top:clamp(22px,2.6vw,32px);overflow:visible}
+.r-tr-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px var(--g);align-items:start;margin-top:clamp(24px,2.8vw,40px)}
+.r-tally{display:block;width:100%;height:auto;overflow:visible}
 .r-tally path{fill:none;stroke-linecap:round}
 .r-tally .s{stroke:var(--c);stroke-width:5}
 .r-tally .y{stroke:rgba(40,71,206,.62);stroke-width:5}
 .r-tally .p{stroke:rgba(40,71,206,.32);stroke-width:5}
 .r-tally .n{stroke:rgba(40,71,206,.14);stroke-width:5}
-.r-chain1{margin:clamp(16px,2vw,24px) 0 0;font:500 var(--t-lead)/1.45 var(--sans);letter-spacing:0;color:var(--ink);max-width:30em;text-wrap:pretty}
-.r-tr-t{margin-top:clamp(16px,2vw,24px)}
+/* the count chain: the figure on the column's left edge, its shade at the end of that column, the words from the next line */
+.r-chain{list-style:none;margin:0;padding:0;font-size:var(--t-body);line-height:1.4;color:var(--ink)}
+.r-chain li{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--g);align-items:center;min-height:40px}
+.r-chain b{grid-column:1;grid-row:1;font-weight:500;font-variant-numeric:lining-nums tabular-nums}
+.r-key{grid-column:1;grid-row:1;justify-self:end}
+.r-chain span{grid-column:2 / -1;grid-row:1}
+@media (max-width:1060px){.r-chain li{grid-template-columns:repeat(12,minmax(0,1fr))}.r-chain b,.r-key{grid-column:1 / 4}.r-chain span{grid-column:4 / -1}}
+.r-key.s circle{fill:var(--c)}.r-key.y circle{fill:rgba(40,71,206,.62)}.r-key.p circle{fill:rgba(40,71,206,.32)}.r-key.n circle{fill:rgba(40,71,206,.14)}
+.r-tr-t{margin-top:clamp(20px,2.8vw,40px)}
 .r-tr-t p{margin:0 0 12px;color:#3e4656;max-width:32em}
 .r-tr-t .tlink{margin:0}
 
@@ -141,15 +150,16 @@
 .r-mds-more[open] summary{display:none}
 .r-mds-more .r-mds{margin-top:0}
 .r-mds-more:not([open]) .r-mds{display:none}
-.r-mds{display:grid;grid-template-columns:minmax(0,1fr);margin-top:clamp(20px,2.4vw,28px)}
+/* the models fill the width in two columns, on the same grid as the section above */
+.r-mdl{padding-top:0}
+.r-mdl .h2{margin:0}
+.r-mds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--g);margin-top:clamp(20px,2.4vw,28px)}
+@media (max-width:980px){.r-mds{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .r-md-l{margin:12px 0 0;color:#3e4656}
 /* one row shape for every list of robots: a name, a quiet figure, an arrow */
 .r-mds a,.r-find-list a{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;column-gap:14px;min-height:44px;padding:6px 0;color:var(--ink)}
-/* in a column of the page, the count starts on a grid line */
-.r-mds a{grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--g)}
-.r-mds a b{grid-column:1 / 4}
-.r-mds a span{grid-column:4 / 6}
-.r-mds a i{grid-column:6}
+/* a model's name, its count and its arrow read as one thing */
+.r-mds a{display:flex;align-items:baseline;justify-content:flex-start;gap:12px;align-self:center}
 .r-mds b,.r-find-list b{font-weight:500;font-size:var(--t-body);line-height:1.25;transition:color .15s ease;min-width:0}
 .r-mds span,.r-find-list span{color:var(--muted);white-space:nowrap}
 .r-mds i,.r-find-list i{font-style:normal;font-size:16px;color:var(--c);font-weight:500;transition:transform .18s cubic-bezier(.2,.7,.2,1)}
@@ -157,6 +167,7 @@
 .r-mds a:hover i,.r-find-list a:hover i{transform:translateX(3px)}
 
 /* the page's one ask, the same on the Price report, the shelf and every robot's page. Pale, with a plain edge. */
+.r-close{padding-bottom:calc(var(--sec) - 8px)}
 .r-close .t-statement{max-width:15em}
 .r-act-c{margin-top:clamp(24px,2.6vw,32px)}
 /* the ask's button takes whole columns */
@@ -164,20 +175,22 @@
 @media (max-width:720px){.r-act-c .btn{width:calc((100% - var(--g)) / 2)}}
 
 /* ------------------------------------------------------------------ the shelf: robots drawn at the size of their evidence, in whole columns, all standing on lines */
-.r-shelf{position:relative;color:#fff;padding-bottom:clamp(72px,8.34vw,120px);overflow:clip}
+.r-shelf{position:relative;color:#fff;padding-bottom:var(--sec);overflow:clip}
 .r-wrap{container-type:inline-size}
-.r-top{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:stretch;padding-top:clamp(12px,1.6vw,28px)}
-.r-top-t{grid-column:1 / 6;display:flex;flex-direction:column;min-width:0}
-.page .r-s-h{margin:clamp(12px,2vw,28px) 0 0;color:#fff}
-.r-s-l{margin:clamp(18px,2vw,28px) 0 0;color:rgba(255,255,255,.96);text-wrap:pretty}
+.r-wrap.in{padding-top:var(--sec)}
+.r-top{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:stretch}
+.r-top-t{grid-column:1 / 6;padding-top:0;display:flex;flex-direction:column;align-self:stretch;min-width:0}
+.page .r-s-h{margin:0 0 clamp(16px,1.6vw,24px);color:#fff}
+.r-s-l{margin:0;color:rgba(255,255,255,.96);text-wrap:pretty}
 .r-cells{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);row-gap:0;margin-top:clamp(48px,5.6vw,80px);margin-bottom:calc(-1 * clamp(44px,5vw,72px))}
+.r-cells>:last-child{margin-bottom:clamp(44px,5vw,72px)}
 .r-cell{display:grid;grid-column:span var(--sd);grid-row:span 3;grid-template-rows:subgrid;min-width:0;color:#fff;margin-bottom:clamp(44px,5vw,72px)}
 .r-c-go{display:grid;grid-row:span 2;grid-template-rows:subgrid;min-width:0;color:#fff;border-radius:2px}
 .r-c-go:focus-visible,.r-cell:focus-visible{outline:2px solid #fff;outline-offset:6px}
 .r-c-bot{display:block;align-self:end;width:100%;border-bottom:1px solid rgba(255,255,255,.55)}
 .r-c-bot canvas{display:block;width:100%;aspect-ratio:var(--ar);height:auto;cursor:pointer}
 .r-c-t{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:14px 0 0}
-.r-c-nm{font:600 var(--t-smallh)/1.35 var(--sans);text-wrap:balance}
+.r-c-nm{font:600 var(--t-smallh)/1.35 var(--sans);text-wrap:pretty}
 .r-c-kd{margin-top:2px;color:rgba(255,255,255,.88)}
 /* the figure's line keeps its height as the age moves, so the shelf does not jump under the reader's hand. Two figure sizes from the one scale, by the listings near that age, and words for a rough guess. */
 .r-c-pr{display:flex;align-items:flex-end;margin-top:12px;min-height:calc(var(--t-sub) * 1.25)}
@@ -191,8 +204,13 @@
 .r-ct-l{opacity:0}
 @media (hover:hover){.r-cell:hover .r-ct-s{opacity:0}.r-cell:hover .r-ct-l{opacity:1}}
 @media (hover:none){.r-ct-l{display:none}}
-.r-c-subs{display:flex;flex-direction:column;align-items:flex-start;padding-top:6px}
-.r-c-subs a{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-weight:500;color:#fff}
+/* a card with sub-series: its words and links are one column, so the links sit straight under its own words */
+.r-c-has>.r-c-go{display:block;grid-row:1;align-self:end}
+.r-c-tw{grid-row:2 / span 2;min-width:0}
+.r-c-tl{display:block;color:#fff;border-radius:2px}
+.r-c-tl:focus-visible{outline:2px solid #fff;outline-offset:6px}
+.r-c-subs{display:flex;flex-direction:column;align-items:flex-start;padding-top:4px}
+.r-c-subs a{display:inline-flex;align-items:center;gap:8px;min-height:36px;font-weight:500;color:#fff}
 .r-c-subs a:hover{text-decoration:underline;text-underline-offset:4px}
 .r-c-subs span{font-weight:400}
 .r-c-subs i{font-style:normal;font-weight:500}
@@ -204,8 +222,6 @@
 .r-c-top .r-c-pr{min-height:calc(var(--t-section) * 1.08)}
 .r-c-top .r-c-nm{font:600 var(--t-lead)/1.25 var(--sans)}
 .r-shelf>.r-tip{z-index:8}
-/* under the last row, what all the dots add up to */
-.r-s-from{grid-column:1 / -1;margin:0 0 clamp(44px,5vw,72px);color:rgba(255,255,255,.94)}
 /* one age for the whole shelf: a plain white strip, edge to edge, its words on the grid. It rides along at the top of the screen until the shelf ends, and steps down when the bar comes back */
 .r-dial{position:sticky;top:0;z-index:6;margin:clamp(28px,3vw,44px) calc(-1 * var(--gl)) 0;background:#fff;color:var(--ink)}
 html:has(.fbar.on) .r-dial{top:72px}
@@ -241,12 +257,13 @@ html:has(.fbar.on) .r-dial{top:72px}
 .r-miss-g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:stretch;margin-top:clamp(40px,5vw,72px)}
 .r-miss-r{grid-column:span var(--sd);min-width:0;display:flex;flex-direction:column;justify-content:flex-end}
 .r-miss-bot.ff-bot{flex:none;display:block;width:100%;padding:0;border-bottom:1px solid var(--line)}
+.r-miss-bot canvas{transform:translateX(var(--dx,0))}
 .r-miss-r b{display:block;margin-top:14px;font-weight:500;color:var(--ink);white-space:nowrap}
 
 /* ------------------------------------------------------------------ narrower */
 @media (max-width:1060px){
  .r-tr-g{grid-template-columns:minmax(0,1fr)}
- .r-ch-h>div:first-child,.r-ch-h>.r-read{grid-column:1 / -1}
+ .r-read>div:first-child,.r-read>div:last-child{grid-column:1 / -1}
 }
 @media (max-width:960px){
  /* the title and its listings, then the price and the robot, standing on the bottom edge of the ink */
@@ -296,13 +313,14 @@ html:has(.fbar.on) .r-dial{top:72px}
  .r-wrap .r-c-top .r-c-go{display:block}
  .r-c-top .r-c-t{padding:14px 0}
  .r-cells{order:4;width:100%;margin-top:44px}
- .page .r-s-h{margin-top:4px}
  .r-cells .r-cell{grid-column:span 6;margin-bottom:36px}
- .r-s-from{margin-bottom:28px}
  .r-dial-in{grid-template-columns:auto minmax(0,1fr);column-gap:12px;min-height:44px}
  .r-dial-k{display:none}
  .r-dial-v{grid-column:auto;min-width:4.2em}
  .r-dial input{grid-column:auto}
+ .r-mds{grid-template-columns:minmax(0,1fr)}
+ .r-c-subs a{white-space:nowrap}
+ .r-c-subs span{display:none}
  /* three to a row, each on four columns */
  .r-miss-g{row-gap:32px}
  .r-miss-r{grid-column:span 4}
@@ -310,3 +328,8 @@ html:has(.fbar.on) .r-dial{top:72px}
 }
 /* the notes line stays on the same ground as the last section, so no edge shows before the footer */
 [data-page^="robots"] .notes{background:var(--g-pale)!important}
+/* notes keep a reading measure */
+[data-page^="robots"] .notes li{max-width:500px}
+/* a heading that must break never leaves one word alone */
+[data-page^="robots"] .r-mdl .h2,[data-page^="robots"] .r-ch .h2{text-wrap:balance}
+@media (max-width:900px){.tlink.r-rl{min-height:44px}.r-c-subs a{display:inline-flex;align-items:center;min-height:44px}}

@@ -3,18 +3,18 @@
 html:has(.page[data-page="price.html"]){scroll-behavior:auto}
 /* one grid: 12 columns between the header's own edges, with a 24px gutter (16 on a phone) */
 .page[data-page="price.html"]{--soft:rgba(40,71,206,.32);--txt:#3e4656;--pp-g:#fff;--pp-gut:24px}
-.page[data-page="price.html"] section > .in{max-width:none;padding-inline:clamp(16px,2.8vw,40px)}
-.pp-sh,.pp-tool,.pp-vtop,.pp-rk{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--pp-gut)}
+.pp-tool,.pp-vtop,.pp-rk{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--pp-gut)}
 .pp-hero,.pp-sec,.pp-risk{scroll-margin-top:72px}
 .pp-nwr{white-space:nowrap}
 .page[data-page="price.html"] section a:not(.btn,.tlink){text-decoration:none}
 .page[data-page="price.html"] section a:not(.btn,.tlink):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 
 /* every section */
-.pp-sec,.pp-risk{padding-block:clamp(72px,8.34vw,120px)}
-.pp-sh{row-gap:16px;align-items:end;margin-bottom:clamp(40px,4.4vw,64px)}
-.pp-sh h2{margin:0;grid-column:1 / span 6}
-.pp-sh .t-lead{margin:0;grid-column:7 / -1;color:var(--txt);text-wrap:pretty}
+.pp-sec,.pp-risk{padding-block:var(--sec)}
+/* a heading, its one short line straight under it, then the real thing */
+.pp-sh{margin-bottom:clamp(32px,3.4vw,48px)}
+.pp-sh h2{margin:0}
+.pp-sh .t-lead{margin:12px 0 0;max-width:700px;color:var(--txt);text-wrap:pretty}
 
 /* the Model marker: a plain word beside an engine figure. Inside the term sheets the tool draws it as a link to Methodology */
 .pp-mk{margin-left:6px;color:var(--muted);font:400 var(--t-small)/18px var(--sans);white-space:nowrap}
@@ -26,7 +26,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-tool{align-items:stretch}
 .pp-lft{grid-column:1 / span 5;min-width:0;padding-block:clamp(32px,3.4vw,48px) clamp(24px,2.8vw,40px)}
 .pp-head h1{margin:0}
-.pp-lede{margin:12px 0 0;color:var(--txt);text-wrap:pretty}
+.pp-lede{margin:18px 0 0;color:var(--txt);text-wrap:pretty}
 .pp-head{margin-bottom:clamp(28px,2.8vw,40px)}
 
 /* the inputs: one field each, with its name above it */
@@ -73,6 +73,11 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-seg{display:flex;flex-wrap:wrap;gap:0 20px}
 .pp-seg button{min-height:44px;min-width:44px;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:0;text-align:left;font:500 var(--t-small)/1.2 var(--sans);color:#4a5262;cursor:pointer;white-space:nowrap;transition:color .15s ease,border-color .15s ease}
 .pp-seg button:hover{color:var(--ink)}
+/* the four jobs sit on the same two columns as the fields above them, two rows of two */
+.pp-use .pp-seg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--pp-gut);row-gap:0}
+.pp-use .pp-seg button{justify-self:start}
+.pp-use .pp-seg button:nth-child(odd){grid-column:span 3}
+.pp-use .pp-seg button:nth-child(even){grid-column:span 2}
 .pp-seg button[aria-checked="true"],.pp-seg button[aria-checked="true"]:hover{color:var(--c);border-bottom-color:var(--c)}
 .pp-seg button:focus-visible,.pp-pre:focus-visible,.pp-copy:focus-visible,.pp-rb:focus-visible,.pp-st:focus-visible{outline:2px solid var(--c);outline-offset:2px}
 .pp-ans :is(a,button,summary):focus-visible,.pp-risk :is(a,button):focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:none}
@@ -99,6 +104,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-ans .pp-ac{color:rgba(255,255,255,.82);transition:opacity .6s var(--m-ease)}
 .pp-arml{margin:0;font:400 var(--t-body)/1.5 var(--sans);color:#fff}
 .pp-arml b{font-weight:600}
+.pp-army{margin:4px 0 0;line-height:1.45;color:rgba(255,255,255,.82)}
 .pp-age{margin:2px 0 0;line-height:1}
 .pp-agego{appearance:none;border:0;background:none;padding:0;min-height:44px;text-align:left;font:500 var(--t-small)/1.4 var(--sans);color:#fff;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
 .pp-agego:hover{color:#c9d6ff}
@@ -117,8 +123,8 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-ans .pp-whyb p:empty{display:none}
 
 /* other robots to try, and what the figure rests on */
-.pp-pres{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;min-width:0;margin-top:4px}
-.pp-pres > span{font-size:var(--t-small);color:var(--muted)}
+.pp-pres{display:flex;flex-wrap:wrap;align-items:center;gap:0 20px;min-width:0;margin-top:4px}
+.pp-pres > span{flex:none;font-size:var(--t-small);color:var(--muted)}
 .pp-pre,.pp-copy{min-height:44px;border:0;background:none;padding:0;text-align:left;font:500 var(--t-small)/1.3 var(--sans);color:var(--c);cursor:pointer;text-decoration:none}
 .pp-pre:hover,.pp-copy:hover,.pp-copy.done{color:var(--ink)}
 .pp-pre[aria-pressed="true"],.pp-pre[aria-pressed="true"]:hover{color:var(--ink)}
@@ -251,16 +257,16 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 
 /* how fast it loses value: on flat pale. The heading and the one rate, then the two lines that matter, what the robot is worth and what is still owed */
 .pp-val{--pp-g:var(--g-pale)}
-.pp-vtop{row-gap:24px;align-items:start;margin-bottom:clamp(44px,5vw,72px)}
-.pp-vtop h2{margin:0;grid-column:1 / span 6}
-.pp-vfig{grid-column:7 / -1;display:flex;flex-direction:column;gap:12px}
-.pp-vfig .t-lead{margin:0;color:var(--txt);text-wrap:pretty}
+.pp-vtop{row-gap:24px;align-items:start;margin-bottom:clamp(32px,3.4vw,48px)}
+.pp-vtop h2{margin:0;grid-column:1 / -1}
+.pp-vfig{grid-column:1 / span 5}
+.pp-vsay{grid-column:7 / -1}
 .pp-a[data-k="d"] .pp-av{color:var(--ink);margin-bottom:6px}
 .pp-cov{margin:0}
-.pp-covn{margin:0 0 8px;max-width:46ch;text-wrap:balance;color:var(--ink)}
+.pp-covn{margin:0 0 8px;max-width:46ch;text-wrap:pretty;color:var(--ink)}
 .pp-covn b{font:inherit;letter-spacing:inherit;color:inherit}
-.pp-covw{margin:0 0 clamp(28px,3vw,40px);font-size:var(--t-body);line-height:1.5;color:#4a5262;max-width:68ch}
-.pp-covh{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px;margin-bottom:12px;font-size:var(--t-body)}
+.pp-covw{margin:0;font-size:var(--t-body);line-height:1.5;color:#4a5262;max-width:68ch}
+.pp-covh{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin-bottom:12px;font-size:var(--t-body)}
 .pp-covh b{font-weight:500}
 .pp-covk{display:inline-flex;align-items:center;gap:8px;font:500 var(--t-small) var(--sans);color:var(--muted)}
 .pp-covk i{display:block;width:24px;border-top:1px dashed #6b7383}
@@ -273,7 +279,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-covs .c{display:none}.pp-covs .c2,.pp-covs .gr{fill:#b7c5ef}
 .pp-covs .c2.bad,.pp-covs .gr.bad{fill:#c2410c}
 .pp-covs .cush{fill:rgba(40,71,206,.1)}
-.pp-pl.cu{fill:#d8e4f8}
+.pp-pl.cu{fill:#eaedfa}
 .pp-covs .after{fill:transparent}
 .pp-covs .aft{font-size:16px;fill:var(--muted)}
 .pp-covs .p50{fill:none;stroke:var(--c);stroke-width:3;stroke-linejoin:round}
@@ -300,11 +306,11 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-caxs em{position:absolute;top:0;transform:translateX(-50%);font-style:normal;font-size:16px;color:var(--muted)}
 
 /* what if a loan goes bad: on flat ink. One short passage and one number, with a switch beside it. The full story is on Lenders */
-.pp-rk{row-gap:40px;align-items:start}
+.pp-rk{row-gap:24px;align-items:start}
+.pp-rt{grid-column:1 / -1;margin:0}
 .pp-rh{grid-column:1 / span 6}
 .pp-rbig{grid-column:7 / -1}
-.pp-rh h2{margin:0}
-.pp-rh .t-lead{margin:16px 0 0;max-width:46ch;color:#fff}
+.pp-rh .t-lead{margin:0;max-width:46ch;color:#fff}
 .pp-rdef{margin:14px 0 8px;max-width:46ch;font-size:var(--t-body);line-height:1.55;color:rgba(255,255,255,.82)}
 .pp-rbig{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
 .pp-rl{display:block;font:500 var(--t-small)/1.4 var(--sans);color:rgba(255,255,255,.82)}
@@ -331,7 +337,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-sheet .dr.big b{font:600 var(--t-sub)/1.1 var(--doc);color:var(--c)}
 .pp-sheet .dr.hl{background:var(--mist)}
 .pp-sheet .dr.hl span{color:#3e4656}.pp-sheet .dr.hl b{color:var(--ink)}.pp-sheet .dr.hl.big b{color:var(--c)}
-.pp-sheet .sh-f{margin-top:14px;padding-top:0;font-size:14px;line-height:1.4}
+.pp-sheet .sh-f{margin-top:14px;padding-top:0;font-size:14px;line-height:1.4;text-align:left}
 .pp-sb .sh-t{color:var(--deep)}
 .pp-sheet .sh-h span{font-size:14px}
 .pp-sheet .sh-t{margin-bottom:8px;font-size:var(--t-sub)}
@@ -339,8 +345,9 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 /* three terms on each sheet until the reader asks for the rest. The other rows keep their place in the page with no height */
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)){flex:none;height:0;min-height:0;padding:0;margin:0;border:0;overflow:hidden;order:9}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:not(:nth-child(3),:nth-child(6),:nth-child(7),:nth-child(9)) .pp-mk{display:none}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr{padding-inline:0}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.hl{background:none}
-.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big{order:1;display:block;padding:6px 8px 18px;border:0}
+.pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big{order:1;display:block;padding:6px 0 18px;border:0}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big span{display:block;font-size:14px;color:#5b6474}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big b{display:block;margin:6px 0 8px;text-align:left;font-size:clamp(32px,3.34vw,48px);line-height:1;letter-spacing:-.02em}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr.big small{display:none}
@@ -348,17 +355,19 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(6){order:3}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .dr:nth-child(9){order:4}
 .pp-offer:not(:has(.pp-fullt[open])) .pp-sheet .sh-f{order:10}
-.pp-oup{margin:24px 0 0;max-width:430px;font-size:var(--t-small);line-height:1.5;color:var(--txt)}
+.pp-oup{margin:clamp(32px,3.4vw,44px) 0 0;max-width:530px;font-size:var(--t-small);line-height:1.5;color:var(--txt)}
+/* the frozen script prints the fine print on both sheets; it reads once, under both */
+.pp-offer .pp-sheet .sh-f{display:none}
 .pp-fullt summary .b,.pp-fullt[open] summary .a{display:none}
 .pp-fullt[open] summary .b{display:inline}
-.pp-cta{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--pp-gut);row-gap:16px;align-items:center;margin-top:clamp(56px,6vw,80px);padding-top:clamp(32px,3.4vw,48px);border-top:1px solid var(--line)}
-.pp-cta h3{margin:0;grid-column:1 / span 6}
-.pp-cta .btn{grid-column:7 / span 3}
+/* the page's ask: the heading with its button straight under it */
+.pp-close{padding-top:0}
+.pp-close h2{margin:0 0 20px;text-wrap:balance!important}
 
 /* narrower windows */
 @media (max-width:1000px){
   .pp-whyb{columns:2}
-  .pp-lft,.pp-ans,.pp-sh h2,.pp-sh .t-lead,.pp-vtop h2,.pp-vfig,.pp-rh,.pp-rbig{grid-column:1 / -1}
+  .pp-lft,.pp-ans,.pp-vfig,.pp-vsay,.pp-rh,.pp-rbig{grid-column:1 / -1}
   .pp-lft{padding-bottom:28px}
   .pp-ans::before{left:calc(50% - 50vw)}
   .pp-lft .pp-pres{display:none}
@@ -371,11 +380,17 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
   .pp-whyb p{max-width:none}
 }
 
+/* on a narrow laptop the examples keep two columns, so none is left alone on a row */
+@media (min-width:1001px) and (max-width:1240px){
+  .pp-lft .pp-pres{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--pp-gut)}
+  .pp-lft .pp-pres > span{grid-column:1 / -1;margin-bottom:-6px}
+}
+
 /* phones: fields stack, the answer lands on the first screen */
 @media (max-width:600px){
   .pp-lft{padding-block:20px 16px}
   .pp-head{margin-bottom:20px}
-  .pp-lede{margin-top:8px}
+  .pp-lede{margin-top:16px}
   .pp-in{gap:8px}
   .pp-flds{gap:12px}
   .pp-row2{margin-top:0}
@@ -387,14 +402,15 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
   .pp-flds > .pp-f:nth-child(n){grid-column:span 1}
   .pp-flds > .pp-f.pp-robot:nth-child(n),.pp-flds > .pp-f.pp-year:nth-child(n){grid-column:1 / -1}
   .pp-dl,.pp-copy{grid-column:1 / -1}
-  .pp-cta .btn{grid-column:1 / -1}
-  .pp-cta h3{grid-column:1 / -1}
+  .pp-use .pp-seg{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pp-use .pp-seg button:nth-child(n){grid-column:auto}
   .pp-lb{width:calc(100vw - 48px);max-height:300px}
   .pp-lb li{flex-wrap:wrap;gap:0 12px;padding:8px 10px}
   .pp-lb li em{text-align:left}
   .pp-seg button{white-space:normal}
   .pp-more summary span{display:none}
-  .pp-pres > span{flex:1 1 100%;margin-bottom:-6px}
+  .pp-pres{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--pp-gut)}
+  .pp-pres > span{grid-column:1 / -1;margin-bottom:-6px}
   .pp-pre,.pp-copy{text-align:left}
   .pp-copy{width:100%}
   .pp-lad{grid-template-columns:minmax(0,1fr);gap:24px}
@@ -444,3 +460,16 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
   .pp-av,.pp-ans .pp-ac,.pp-stale .pp-a,.pp-stale .pp-sec,.pp-stale .pp-risk{transition:none}
   .pp-covs .bar,.pp-covc.on .pp-covs .bar{opacity:1;transform:translate(var(--bx),0);transition:none}
 }
+/* notes keep a reading measure */
+[data-page="price.html"] .notes li{max-width:530px}
+/* on a phone the count field takes half the width, on the grid, and the legend's words keep the left edge with their sample line after them */
+@media (max-width:600px){
+  .pp-cnt{width:calc((100% - 16px) / 2)}
+  .pp-covk{flex-direction:row-reverse;justify-content:flex-end}
+}
+
+.pp-covs .aft{display:none}
+@media (max-width:359px){.pp-covs .bl.cu{display:none}.pp-covs .bl:not(.rs):not(.al){transform:translateY(-16px)}}
+
+.pp-scs .lab:not(.ttl){transition:opacity .5s ease}
+.pp-scw:has(.pp-tip:not([hidden])) .pp-scs .lab:not(.ttl){opacity:0}

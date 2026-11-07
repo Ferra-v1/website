@@ -8,8 +8,18 @@
   const usd = v => '$' + Math.round(v).toLocaleString('en-US');
   const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const fit = cv => { const r = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight; if (cv.width !== Math.round(w * r) || cv.height !== Math.round(h * r)) { cv.width = Math.round(w * r); cv.height = Math.round(h * r); } const c = cv.getContext('2d'); c.setTransform(r, 0, 0, r, 0, 0); c.clearRect(0, 0, w, h); return { c, w, h }; };
+  // an arm's dot picture narrows to a point at the floor, so it would balance on an arrow. Under its widest low row, every row fills out to that width, and the base stands flat.
+  const flatBase = pts => {
+    const rows = new Map(); for (const p of pts) { const r = rows.get(p[1]) || [1e9, -1, 0, 0]; r[0] = Math.min(r[0], p[0]); r[1] = Math.max(r[1], p[0]); r[2] += p[2]; r[3]++; rows.set(p[1], r); }
+    const ys = [...rows.keys()].sort((a, b) => a - b), y1 = ys[ys.length - 1], wide = y => rows.get(y)[1] - rows.get(y)[0];
+    let at = y1; for (const y of ys) if (y > y1 - (y1 - ys[0]) * .3 && wide(y) >= wide(at)) at = y;
+    if (at === y1 || wide(y1) > wide(at) * .8) return pts;
+    const [a, b, sum, n] = rows.get(at), s = sum / n, out = pts.filter(p => p[1] <= at);
+    for (const y of ys) if (y > at) for (let x = a; x <= b; x++) out.push([x, y, s]);
+    return out;
+  };
   // the robot as faint halftone, shaded the way dotbot.js shades it. Its bounds and one painted bitmap per size.
-  const ghost = name => { const g = (window.FERRA_DOTS || {})[name + '-l']; if (!g) return null; if (!g.g2) { const pts = g.d.split(';').filter(Boolean).map(s => { const [x, y, L, A, , ed] = s.split(',').map(Number); return [x, y, (A / 100) * Math.min(1, .28 + .72 * Math.pow(L / 100, .9) + (ed / 100) * .35)]; }); let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (const p of pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; } g.g2 = { pts, x0, x1, y0, y1 }; } return g.g2; };
+  const ghost = (name, grid = '-l') => { const g = (window.FERRA_DOTS || {})[name + grid]; if (!g) return null; if (!g.g2) { let pts = g.d.split(';').filter(Boolean).map(s => { const [x, y, L, A, , ed] = s.split(',').map(Number); return [x, y, (A / 100) * Math.min(1, .28 + .72 * Math.pow(L / 100, .9) + (ed / 100) * .35)]; }); pts = flatBase(pts); let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (const p of pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; } g.g2 = { pts, x0, x1, y0, y1 }; } return g.g2; };
   // the pixel robot: one dot on each grid square, sized by the machine's shading
   const ghostBitmap = (G, cell, alpha, rgb = '255,255,255') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.55 + .45 * s)})`; c.beginPath(); c.arc((x - G.x0 + .5) * cell, (y - G.y0 + .5) * cell, Math.max(.3, cell * .44 * s), 0, 6.2832); c.fill(); } return b; };
   // the robot's body stays quiet, so each bright dot reads as one listing at a glance
@@ -96,11 +106,11 @@
       const bandWord = thin ? 'Our rough range' : '8 in 10 ask inside this band', end = D.curve[30], low = n ? A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]) : null;
       if (phone) {
         s += keyRows([{ txt: 'Typical asking price', mark: 'line', row: 1 }, { txt: bandWord, mark: 'band', row: 2, cls: 'pl' }].concat(n ? [{ txt: say, mark: 'dot', row: 3 }] : []), 2);
-        if (low0) s += `<text x="0" y="${base + 58}">Dot on the floor: lowest ask, ${usd(low0.usd)}</text>`;
+        if (low0) s += `<text x="0" y="${base + 58}">Dot on the floor: ${usd(low0.usd)}, off the chart</text>`;
       } else {
         const items = [{ txt: 'Typical asking price', y: Y(end[1]), x: X(30) + 3 }, { txt: bandWord, y: Y(end[0]), x: X(30) + 3, cls: 'pl' }];
         if (n) items.push({ txt: say, y: low.y });
-        if (low0) items.push({ txt: `Lowest ask: ${usd(low0.usd)}`, y: low0.y, x: low0.x + 5, cls: 'pl' });
+        if (low0) items.push({ txt: `Below the chart: ${usd(low0.usd)}`, y: low0.y, x: low0.x + 5, cls: 'pl' });
         s += endLabels(items, R + 16, side - 16, top, base - 10);
       }
       ax.setAttribute('viewBox', `0 0 ${W} ${H}`); ax.innerHTML = s;
@@ -247,8 +257,9 @@
     const cvs = [...shelf.querySelectorAll('canvas[data-b]')];
     // Assemble: each robot's dots fly to their seats over 2200ms, the robots 300ms apart
     let nextAt = 0;
-    const run = cv => { if (reduce) { paint(cv, 1); cv.dataset.done = 1; return; } const now0 = performance.now(), t0 = Math.max(now0, nextAt); nextAt = t0 + 300; const step = now => { const t = clamp((now - t0) / 2200); paint(cv, t); if (t < 1) requestAnimationFrame(step); else cv.dataset.done = 1; }; requestAnimationFrame(step); };
-    const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.unobserve(en.target); run(en.target); } }), { threshold: .2 });
+    // A robot starts a full screen before it arrives, so the grid is standing when the reader gets there. One still below the screen takes no turn in the queue and builds faster.
+    const run = cv => { if (reduce) { paint(cv, 1); cv.dataset.done = 1; return; } const now0 = performance.now(), below = cv.getBoundingClientRect().top > innerHeight, t0 = below ? now0 : Math.max(now0, nextAt), dur = below ? 1400 : 2200; if (!below) nextAt = t0 + 300; const step = now => { const t = clamp((now - t0) / dur); paint(cv, t); if (t < 1) requestAnimationFrame(step); else cv.dataset.done = 1; }; requestAnimationFrame(step); };
+    const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.unobserve(en.target); run(en.target); } }), { rootMargin: '100% 0px' });
     cvs.forEach(cv => { paint(cv, 0); io.observe(cv); });
     let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => cvs.forEach(cv => paint(cv, cv.dataset.done ? 1 : 0)), 120); });
     // rest on or tap a dot to read its listing

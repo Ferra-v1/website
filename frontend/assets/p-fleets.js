@@ -89,18 +89,19 @@
     const go100 = Math.round(goes / 100) * 100, left100 = comes - go100;   // the same rounding How it works prints
     $('f-m-go').textContent = usd(go100); $('f-m-left').textContent = usd(left100);
     bar.setAttribute('aria-label', 'Of ' + usd(comes) + ' of rent, ' + usd(go100) + ' pays back the loan and ' + usd(left100) + ' stays with you.'); });
-  // the cobalt band: six moving robots assemble, 300ms apart, as the band arrives. They pause off screen and carry on where they were
+  // the six moving robots: drawn while the row is still a screen away, so all six are finished as it arrives, when they come in together in 500ms (p-fleets.css). They pause off screen and carry on where they were
   const bots = [...document.querySelectorAll('.f-bot canvas')];
   let botsOn = false;
-  const startBots = () => { if (botsOn || !window.FerraDots) return; botsOn = true; bots.forEach((c, i) => setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; FerraDots.draw(c); }, still ? 0 : i * 300)); };
+  const startBots = () => { if (botsOn || !window.FerraDots) return; botsOn = true; bots.forEach(c => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; FerraDots.draw(c); }); };
   addEventListener('load', () => { if (window.FerraDots) bots.forEach(c => FerraDots.fetch(c)); });
   const botIo = new IntersectionObserver(es => es.forEach(en => { const c = en.target; if (!c._seen || !window.FerraDots) return; en.isIntersecting ? FerraDots.resume(c) : FerraDots.pause(c); }), { rootMargin: '80px' }); bots.forEach(c => botIo.observe(c));
 
   // ------------------------------------------------------------ the one pinned scene, and the things that start on arrival
   const page = document.querySelector('[data-page="fleets.html"]');
-  const arrive = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; arrive.unobserve(en.target); if (en.target === bar.nextElementSibling) setBar(1); else startBots(); }), { threshold: .3 });
+  const arrive = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; arrive.unobserve(en.target); if (en.target === bar.nextElementSibling) setBar(1); else { startBots(); en.target.classList.add('on'); } }), { threshold: .2 });
   if (still) { setRent(1); startBots(); return; }
   page.classList.add('f-live'); setBar(0); arrive.observe(bar.nextElementSibling); arrive.observe(document.querySelector('.f-yard'));
+  const near = new IntersectionObserver(es => { if (es.some(en => en.isIntersecting)) { near.disconnect(); startBots(); } }, { rootMargin: '0px 0px 100% 0px' }); near.observe(document.querySelector('.f-yard'));
   const runEl = $('sc-why'), pin = runEl.querySelector('.f-wpin'), clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
   let queued = false;
   const tick = () => { queued = false; const h = runEl.offsetHeight - pin.offsetHeight; setRent(clamp01(-runEl.getBoundingClientRect().top / Math.max(1, h))); };
