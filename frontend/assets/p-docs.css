@@ -1,17 +1,22 @@
 /* Methodology and privacy (d-). Plain documents on white: contents beside one column of text, one shared left edge, sizes from the shared tokens. No motion anywhere on them. */
 html{scroll-behavior:auto}
-.d-body{padding-block:clamp(24px,3vw,40px) clamp(64px,7vw,104px)}
-.d-g{display:grid;grid-template-columns:204px minmax(0,1fr);gap:clamp(32px,4.4vw,64px);align-items:start}
+.d-body{padding-block:clamp(40px,7vw,100px) clamp(64px,7vw,104px)}
+/* one grid: 12 columns between the header's own edges. Ten for the document, two for the contents rail at the right. In a section the heading takes four columns and the words the next six */
+.page:is([data-page="methodology.html"],[data-page="privacy.html"]){--d-gut:24px;--d-shift:calc((100% + var(--d-gut)) * .4)}
+.page:is([data-page="methodology.html"],[data-page="privacy.html"]) section .in,.page:is([data-page="methodology.html"],[data-page="privacy.html"]) .d-g.in{max-width:none;padding-inline:clamp(16px,2.8vw,40px)}
+.d-g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--d-gut);align-items:start}
+.d-toc{grid-column:11 / -1;grid-row:1}
+.d-art{grid-column:1 / span 10;grid-row:1}
 
 /* the title and what it is for */
 .d-head h1{margin:0}
-.d-head .t-lead{margin:clamp(20px,2vw,28px) 0 0;max-width:62ch;color:#3e4656;text-wrap:pretty}
+.d-head .t-lead{margin:clamp(20px,2vw,28px) 0 0;max-width:640px;color:#3e4656;text-wrap:pretty}
 .d-head .d-miss{margin-top:14px;color:var(--ink);font-weight:500}
 .d-upd{margin:18px 0 0;font-size:var(--t-small);color:var(--muted)}
 
 /* the contents rail */
 .d-toc{position:sticky;top:96px;max-height:calc(100vh - 112px);overflow:auto;padding-top:14px}
-.d-toc b,.d-tocx b{display:block;font:600 var(--t-small)/1.35 var(--sans);color:var(--ink);padding:14px 0 4px}
+.d-toc b,.d-tocx b{display:block;font:500 var(--t-small)/1.35 var(--sans);color:var(--ink);padding:14px 0 4px}
 .d-tol{margin-top:14px!important}
 .d-toc ol,.d-tocx ol{list-style:none;margin:0;padding:0}
 .d-toc a,.d-tocx a{display:flex;align-items:center;padding:5px 0;font-size:var(--t-small);line-height:1.35;color:var(--muted);text-decoration:none}
@@ -24,10 +29,13 @@ html{scroll-behavior:auto}
 .d-sec{padding-top:clamp(56px,6vw,88px);scroll-margin-top:-24px}
 .d-sec h2{margin:0 0 16px}
 .d-sec h3{margin:0 0 14px}
-.d-sec p{margin:0 0 16px;max-width:680px;color:#3e4656;font-size:var(--t-body);line-height:1.65}
-.d-sec .d-ld{margin:0 0 20px;max-width:680px;font-size:var(--t-lead);line-height:1.45;color:var(--ink);text-wrap:pretty}
-.d-sec b{color:var(--ink);font-weight:600}
-.d-sec p a,.d-pr p a{display:inline-block;padding:12px 0;margin:-12px 0;color:var(--c)}
+.d-sec p{margin:0 0 16px;max-width:500px;color:#3e4656;font-size:var(--t-body);line-height:1.65}
+.d-sec .d-ld{margin:0 0 20px;max-width:640px;font-size:var(--t-lead);line-height:1.45;color:var(--ink);text-wrap:pretty}
+.d-sec b{color:var(--ink);font-weight:500}
+.d-sec b.num{font-weight:700}
+.d-rl > b:first-child{display:block;width:fit-content;margin-bottom:2px}
+.d-sec p a,.d-pr p a{position:relative;color:var(--c);border-bottom:1px solid currentColor}
+.d-sec p a::after,.d-pr p a::after{content:"";position:absolute;inset:-12px 0}
 .d-sec .tlink{margin-top:4px}
 
 /* one robot: six prices on one scale */
@@ -35,8 +43,9 @@ html{scroll-behavior:auto}
 .d-bars h3{margin:0 0 4px;color:var(--ink)}
 .d-bars h3:not(:first-child){margin-top:24px}
 .d-bars ul{list-style:none;margin:0;padding:0}
-.d-bars li{display:grid;grid-template-columns:112px minmax(0,1fr);align-items:baseline;gap:0 16px;padding:10px 0 12px}
+.d-bars li{display:grid;grid-template-columns:calc((100% - 9 * var(--d-gut)) / 5 + var(--d-gut)) minmax(0,1fr);align-items:baseline;gap:0 var(--d-gut);padding:10px 0 12px}
 .d-bars b{color:var(--ink)}
+.d-bars b.fig-24{font-size:var(--t-lead);letter-spacing:-.015em}
 .d-bars li.hi b{color:var(--c)}
 .d-bars span{font-size:var(--t-body);line-height:1.4;color:#3e4656}
 .d-tr{position:relative;grid-column:1 / -1;height:6px;margin-top:8px;background:#f1f4f9}
@@ -48,16 +57,19 @@ html{scroll-behavior:auto}
 /* what we do not know: the document's one loud moment, three smaller admissions under it */
 .d-unk h2{margin:0}
 .d-sec .d-uns{margin:clamp(14px,1.6vw,20px) 0 0;font-size:var(--t-lead);line-height:1.45;color:#3e4656}
-.d-ung{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(24px,3vw,40px);margin-top:clamp(32px,4vw,48px)}
+.d-ung{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:0 var(--d-gut);margin-top:clamp(32px,4vw,48px)}
+.d-ung > div:nth-child(1),.d-ung > div:nth-child(2){grid-column:span 3}
+.d-ung > div:nth-child(3){grid-column:span 4}
 /* headings of one line and two lines still start their text together */
 .d-ung > div{display:grid;grid-row:span 2;grid-template-rows:subgrid;row-gap:0}
+.page .d-ung h3.t-smallh,.page .d-pr h3.t-smallh{font:700 var(--t-sub)/1.2 var(--serif)!important;letter-spacing:-.02em}
 .d-ung h3{margin:0 0 8px;color:var(--ink)}
 .d-ung p{margin:0}
 
 /* the two parts */
 .d-part{padding-top:clamp(72px,8vw,120px)}
 .d-part h2{margin:0}
-.d-part .t-lead{margin:12px 0 0;max-width:62ch;color:#3e4656}
+.d-part .t-lead{margin:12px 0 0;max-width:700px;color:#3e4656}
 .d-part + .d-sec{padding-top:clamp(32px,3.6vw,48px)}
 
 /* reference sections: plain sections on a wide screen, closed folds on a phone (assets/p-docs.js) */
@@ -65,7 +77,7 @@ html{scroll-behavior:auto}
 .d-cold > summary::-webkit-details-marker{display:none}
 
 /* big numbers sit straight on the page */
-.d-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 28px;margin:clamp(20px,2.4vw,28px) 0}
+.d-nums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px var(--d-gut);margin:clamp(20px,2.4vw,28px) 0}
 .d-nums div{min-width:0}
 .d-nums dd{margin:0;color:var(--ink)}
 .d-nums .hi dd{color:var(--c)}
@@ -87,11 +99,11 @@ html{scroll-behavior:auto}
 .d-lax span{position:absolute;transform:translateX(-50%)}
 .d-lax span:first-child{transform:none}.d-lax span:last-child{transform:translateX(-100%)}
 .d-lots figcaption{margin-top:10px;font-size:var(--t-small);line-height:1.45;color:var(--muted)}
-.d-sec .d-note{margin:10px 0 16px;font-size:var(--t-small);line-height:1.5;color:var(--muted)}
+.d-sec .d-note{max-width:440px;margin:10px 0 16px;font-size:var(--t-small);line-height:1.5;color:var(--muted)}
 
 /* a long table that repeats another page stays folded */
 .d-fold{margin-top:4px}
-.d-fold summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:600 var(--t-body)/1.25 var(--sans);color:var(--c)}
+.d-fold summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:500 var(--t-body)/1.25 var(--sans);color:var(--c)}
 .d-fold summary::-webkit-details-marker{display:none}
 .d-fold summary::after{content:"";flex:none;width:7px;height:7px;margin:-3px 2px 0 2px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg)}
 .d-fold[open] summary::after{transform:translateY(4px) rotate(225deg)}
@@ -101,54 +113,60 @@ html{scroll-behavior:auto}
 .d-t thead th{border-top:0;padding-top:0}
 .d-t tbody th{font-weight:400}
 .d-t tbody tr:last-child th,.d-t tbody tr:last-child td{border-bottom:0}
-.d-last tbody tr:last-child th,.d-last tbody tr:last-child td{font-weight:600;color:var(--c)}
+.d-last tbody tr:last-child th,.d-last tbody tr:last-child td{font-weight:500;color:var(--c)}
 .d-t a{display:inline-flex;align-items:center;min-height:44px;margin:-13px 0;color:var(--c);text-decoration:none}
 .d-t a.d-sub{padding-left:16px}
-.d-2t{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:40px;margin-top:8px}
+.d-2t{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:8px}
 .d-2t .d-tw{margin-bottom:0}
 .d-yr{margin:20px 0 20px}
 #chart tbody th,#chart tbody td{font-weight:400}#chart tbody th{font-weight:500}
 
 /* the one sheet of paper on the page */
-.d-sheet{max-width:560px;margin:24px 0;padding:28px 32px 16px}
+.d-sheet{margin-block:24px;padding:28px 32px 16px}
 .d-sheet .dr:last-child{border-bottom:0}
+.d-sheet .sh-h span,.d-sheet .sh-f{font-size:var(--t-small)}
+.d-sheet .sh-t{font-size:var(--t-sub)}
+.d-sheet .sh-h .ilock{font-size:var(--t-body)}
 
 /* words we use */
-.d-gl{margin:8px 0 0;max-width:680px}
-.d-gl div{display:grid;grid-template-columns:152px minmax(0,1fr);gap:4px 20px;padding:9px 0}
-.d-gl dt{font-weight:600;color:var(--ink);font-size:var(--t-body);line-height:1.55}
+.d-gl{margin:8px 0 0}
+.d-gl div{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px var(--d-gut);padding:9px 0}
+.d-gl dt{grid-column:span 4}
+.d-gl dd{grid-column:span 6;max-width:530px}
+.d-gl dt{font-weight:500;color:var(--ink);font-size:var(--t-body);line-height:1.55}
 .d-gl dd{margin:0;font-size:var(--t-body);line-height:1.55;color:#3e4656}
 
 /* the last screen: why any of this is written down */
 .d-close{padding-top:clamp(72px,8vw,120px)}
 .d-close h2{margin:0 0 16px}
-.d-sec.d-close .t-lead{font-size:var(--t-lead);line-height:1.45;color:#3e4656;max-width:62ch}
+.d-sec.d-close .t-lead{font-size:var(--t-lead);line-height:1.45;color:#3e4656;max-width:700px}
 .d-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;margin-top:8px}
 .d-sec .d-acts .tlink{margin-top:0}
 
-/* the full notes sit under the document on the same left edge */
-@media (min-width:1061px){[data-page="methodology.html"] .notes .in{padding-left:calc(24px + 204px + clamp(32px,4.4vw,64px))}}
 
 /* privacy: one row per question, on the same left edge as Methodology's text */
-.d-priv{padding-block:clamp(24px,3vw,40px) clamp(64px,7vw,104px)}
-.d-priv .d-head{padding-left:calc(204px + clamp(32px,4.4vw,64px));padding-bottom:clamp(40px,5vw,72px)}
-.d-pr{display:grid;grid-template-columns:204px minmax(0,1fr);gap:8px clamp(32px,4.4vw,64px);padding:0 0 clamp(24px,2.6vw,36px)}
-.d-pr h2{margin:0;padding-top:1px;color:var(--ink)}
-.d-pr p{margin:0;max-width:640px;font-size:var(--t-body);line-height:1.65;color:#3e4656}
+.d-priv{padding-block:clamp(40px,7vw,100px) clamp(64px,7vw,104px)}
+.d-priv .d-head{padding-bottom:clamp(40px,5vw,72px)}
+.d-pr{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px var(--d-gut);padding:0 0 clamp(24px,2.6vw,36px)}
+.d-pr h3{grid-column:1 / span 4;margin:0;padding-top:1px;color:var(--ink)}
+.d-pr > div,.d-pr > .t-lead{grid-column:5 / span 6}
+.d-pr p{margin:0;max-width:530px;font-size:var(--t-body);line-height:1.65;color:#3e4656}
 .d-pr p + p,.d-pl + p{margin-top:12px}
 .d-pl{list-style:none;margin:8px 0 0;padding:0;font-size:var(--t-body);line-height:1.55;color:#3e4656}
 .d-pl li{padding:3px 0}
-.d-pr .t-lead{font-size:var(--t-lead);line-height:1.45;max-width:58ch}
+.d-pr .t-lead{font-size:var(--t-lead);line-height:1.45;max-width:700px}
+[data-page="methodology.html"] .notes li{max-width:530px}
 .d-pend{padding-top:clamp(16px,2vw,24px);padding-bottom:0}
 
 @media (max-width:1060px){
   /* a block here, because a sticky child of a grid only travels within its own row */
   .d-g{display:block}
+  .page:is([data-page="methodology.html"],[data-page="privacy.html"]){--d-gut:16px}
   .d-toc{display:none}
   .d-tocx{display:block;position:sticky;top:8px;z-index:20;margin-top:24px;border-radius:var(--r-card);background:var(--mist);padding:0 16px}
   /* the site's floating bar comes back when the reader scrolls up: the control steps down under it */
   html:has(.fbar.on) .d-tocx{top:76px}
-  .d-tocx summary{display:flex;align-items:center;gap:10px;min-height:48px;font-size:var(--t-body);font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
+  .d-tocx summary{display:flex;align-items:center;gap:10px;min-height:48px;font-size:var(--t-body);font-weight:500;color:var(--ink);cursor:pointer;list-style:none}
   .d-tocx summary::-webkit-details-marker{display:none}
   .d-tocnow{font-weight:400;color:#4a5262;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .d-tocx summary::after{content:"";flex:none;width:8px;height:8px;margin:-4px 4px 0 auto;border-right:1.8px solid var(--c);border-bottom:1.8px solid var(--c);transform:rotate(45deg)}
@@ -157,9 +175,7 @@ html{scroll-behavior:auto}
   .d-tocx nav{position:absolute;left:0;right:0;top:100%;margin-top:-6px;padding:0 16px 8px;background:var(--mist);border-radius:0 0 var(--r-card) var(--r-card);max-height:calc(100vh - 80px);overflow:auto}
   .d-tocx a{min-height:44px;padding:8px 0}
   .d-tocx a.on{color:var(--c);font-weight:500}
-  .d-priv .d-head{padding-left:0}
-  .d-pr{grid-template-columns:minmax(0,1fr)}
-  .d-pend > span{display:none}
+  .d-pr h3,.d-pr > div,.d-pr > .t-lead{grid-column:1 / -1}
 }
 @media (max-width:720px){
   .d-col{padding-top:20px;scroll-margin-top:22px}
@@ -171,10 +187,11 @@ html{scroll-behavior:auto}
   .d-cold[open] > summary{margin-bottom:14px}
   .d-bars li{grid-template-columns:minmax(0,1fr);gap:2px 0}
   .d-ung{grid-template-columns:minmax(0,1fr);row-gap:24px}
+  .d-ung > div:nth-child(n){grid-column:auto}
   .d-ung > div{display:block}
   .d-nums{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .d-2t{grid-template-columns:minmax(0,1fr);gap:8px}
-  .d-gl div{grid-template-columns:minmax(0,1fr)}
+  .d-gl dt,.d-gl dd{grid-column:1 / -1}
   .d-sheet{padding:20px 16px 8px}
   .d-yr{table-layout:fixed}
   .d-yr th,.d-yr td{padding-right:3px}
@@ -185,3 +202,16 @@ html{scroll-behavior:auto}
   .d-yr .r,.d-yr thead th.r{white-space:normal}
   .d-acts{flex-direction:column;align-items:flex-start}
 }
+
+/* the heading in the first four of the ten columns, everything under it in the next six */
+@media (min-width:1061px){
+  .d-sec{display:flow-root}
+  .d-sec > h3,.d-cold > summary:has(h3){clear:left}
+  .d-sec > h3,.d-cold > summary:has(h3){float:left;width:calc((100% + var(--d-gut)) * .4 - var(--d-gut))}
+  .d-sec > :not(h2,h3,.d-cold),.d-sec .d-cold:has(> summary h3) > :not(summary){margin-left:var(--d-shift)}
+  .d-one > .d-ld,.d-one > .d-bars,.d-one > .d-gapl,.d-unk > *,.d-close > *,.d-wsec > *{margin-left:0!important}
+  .d-sec > table,.d-cold > table{width:calc(100% - var(--d-shift))}
+}
+
+/* the notes sit on the same grid: a link stays part of its sentence */
+.page[data-page="methodology.html"] .notes li a{display:inline;padding:0;margin:0}

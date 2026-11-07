@@ -1,16 +1,22 @@
-/* Price report (pr-). The first screen: one arm sliced to scale for its three prices. Then one chart walked in five chapters on the page's one dark ground, two real records, robot by robot, and the last screen on pale. */
+/* Price report (pr-). The first screen: one arm sliced to scale for its three prices. Directly under it, one chart on ink walked in five chapters, then two real records, robot by robot, and the page's one ask on pale. Every section sits under the last in plain flow, with a plain edge.
+   One grid: 12 columns between the header's own edges. --gl is the edge, --g the gutter, --cw one column. */
+[data-page="price-report.html"]{--gl:clamp(16px,2.8vw,40px);--g:24px;--cw:calc((100vw - 2 * var(--gl) - 11 * var(--g)) / 12)}
+@media (max-width:720px){[data-page="price-report.html"]{--g:16px}}
+[data-page="price-report.html"] .in{max-width:none;padding-inline:var(--gl)}
 [data-page="price-report.html"] .h2{max-width:22ch}
 [data-page="price-report.html"] .notes a{text-decoration:none}
-[data-page="price-report.html"] .sec.white + .sec.white{padding-top:0}
 /* the page ends on pale: the notes line stays on the same ground as the last screen, so no edge shows before the footer */
 [data-page="price-report.html"] .notes{background:var(--g-pale)!important}
 
 /* the first screen: the robot stands on the floor and its height is the ask. Each line crosses it at its own price. */
 .pr-hero{--pr-g:#fff;--pr-ink:var(--ink);--pr-c:var(--c);--pr-soft:#3e4656;--pr-line:rgba(14,22,38,.3);--pr-floor:var(--ink);padding-top:clamp(16px,2.4vh,32px);padding-bottom:clamp(16px,2.4vh,28px)}
 .pr-h{margin:0}
-.pr-lad{position:relative;height:clamp(400px,min(calc(100svh - 72px - 206px),62vw),720px);margin-top:clamp(16px,2.4vh,28px);border-bottom:1px solid var(--pr-floor)}
-.pr-hbot{position:absolute;right:0;bottom:0;display:block;height:100%;aspect-ratio:var(--ar,.87)}
-.pr-r{position:absolute;left:0;right:0;top:calc((1 - var(--h)) * 100%);padding-top:clamp(8px,1vw,14px);display:grid;grid-template-columns:calc(var(--t-display) * 3.9) minmax(0,clamp(160px,14vw,200px));column-gap:clamp(12px,1.4vw,20px);align-items:baseline}
+/* the arm takes four of the twelve columns, ending at the right edge, and its height follows from that */
+.pr-lad{position:relative;--span:calc(4 * var(--cw) + 3 * var(--g));height:calc(var(--span) / (var(--ar)));margin-top:clamp(16px,2.4vh,28px);border-bottom:1px solid var(--pr-floor)}
+.pr-hbot{position:absolute;right:0;bottom:0;display:block;height:100%;width:var(--span)}
+.pr-r{position:absolute;left:0;right:0;top:calc((1 - var(--h)) * 100%);padding-top:clamp(8px,1vw,14px);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:baseline}
+.pr-r b{grid-column:1 / 4}
+.pr-r span{grid-column:4 / 7}
 .pr-r::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--pr-line);transform-origin:left}
 .pr-r b{color:var(--pr-c);white-space:nowrap}
 .pr-r span{color:var(--pr-soft);text-wrap:pretty}
@@ -18,57 +24,64 @@
 .pr-lad.wait .pr-r::before{transform:scaleX(0)}
 .pr-lad.wait .pr-r b,.pr-lad.wait .pr-r span{opacity:0}
 .pr-lad .pr-r.on::before{transform:none;transition:transform 1s cubic-bezier(.4,0,.2,1)}
-.pr-lad .pr-r.on b,.pr-lad .pr-r.on span{opacity:1;transition:opacity .8s ease}
+.pr-lad .pr-r.on b,.pr-lad .pr-r.on span{opacity:1;transition:opacity .6s ease}
 .pr-plain{display:none}
-.pr-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 16px;margin:clamp(10px,1.4vh,16px) 0 0;color:var(--pr-soft)}
-.pr-lab{white-space:nowrap}
+.pr-foot{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);margin:clamp(10px,1.4vh,16px) 0 0;color:var(--pr-soft)}
+.pr-across{grid-column:1 / 7}
+.pr-lab{grid-column:7 / 13}
 
-/* the first screen holds still for 60vh of scroll, with the bar above it. Then the Ground Fade: over 60vh this white lifts off the ink chart waiting pinned behind it. Prices, arm and bar leave in the first half, the chart's words arrive in the second, and nothing moves. p-price-report.js sets the offsets and turns this on. */
-.pr-hero.held{--pr-g:color-mix(in srgb,#0e1626 calc(var(--d,0) * 100%),#fff);position:sticky;z-index:3;min-height:calc(100svh - 72px);background:none}
-.pr-hero.held::before{content:"";position:absolute;inset:-72px 0 0;background:#fff;opacity:calc(1 - var(--d,0))}
-.pr-hero.held>.in{position:relative;opacity:max(0,calc(1 - var(--d,0) * 2))}
-.pr-half .pr-hero.held{pointer-events:none}
-.pr-half .pr-hero.held>.in{visibility:hidden}
-.pr-gone .pr-hero.held{visibility:hidden}
-[data-page="price-report.html"] .nav.held{position:sticky;top:0;opacity:max(0,calc(1 - var(--d,0) * 2))}
-.pr-dusk .nav.held{background:none;border-bottom-color:transparent}
-.pr-half .nav.held{visibility:hidden}
-
-/* the pinned chart: its own screen, 60vh for the Ground Fade, five chapters (100vh, then four of 120vh), and one more screen for the next section to slide over it */
-.pr-stage{position:relative;color:#fff;height:calc(360svh + (var(--n) - 1) * 120svh)}
-.pr-stage:not(.live){height:auto}
-.pr-stage.live ~ *{position:relative;z-index:2}
-.pr-stage.live ~ .pr-srcs{margin-top:-100svh}
+/* the pinned chart: its own running animation, on ink, directly under the first screen. It takes half a screen as it docks, a third to hold, and four chapters of 95vh, then scrolls away normally. */
+.pr-stage{position:relative;color:#fff}
+.pr-stage.live{height:calc(190svh + (var(--n) - 1) * 95svh)}
 .pr-pin{position:sticky;top:0;height:100svh;overflow:hidden}
-.pr-pg{height:100%;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(24px,4vw,56px);align-items:center}
+.pr-pg{height:100%;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:center;padding-block:84px 24px}
+.pr-pg>.pr-steps{grid-column:1 / 5}
+.pr-pg>.pr-fig{grid-column:5 / 13}
 .pr-steps{position:relative;height:100%}
 /* the words swap with the scroll: nothing here runs on a timer */
 .pr-step{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);opacity:0;visibility:hidden}
 .pr-step h3{margin:0;color:#fff}
 .pr-step p{margin:18px 0 0;color:rgba(255,255,255,.88);text-wrap:pretty}
-.pr-chart{position:relative;height:calc(100% - clamp(64px,12vh,120px));min-width:0}
+.pr-fig{margin:0;height:100%;min-width:0;min-height:0;display:flex;flex-direction:column}
+.pr-chart{position:relative;flex:1 1 auto;min-height:0;min-width:0}
+.pr-cap{flex:none;margin:12px 0 0;color:rgba(255,255,255,.72);max-width:64ch}
+.pr-cap-s{display:none}
 .pr-cv,.pr-ax{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pr-cv{touch-action:pan-y}
 .pr-ax{pointer-events:none;overflow:visible;font-family:var(--sans)}
-.pr-ax text{fill:rgba(255,255,255,.72);font-size:14px;font-variant-numeric:lining-nums tabular-nums;paint-order:stroke;stroke:#0e1626;stroke-width:4px;stroke-linejoin:round}
-.pr-ax .lb{fill:#fff;font-weight:600}
+.pr-ax text{fill:rgba(255,255,255,.72);font-size:16px;font-variant-numeric:lining-nums tabular-nums;paint-order:stroke;stroke:#0e1626;stroke-width:4px;stroke-linejoin:round}
+.pr-ax .lb{fill:#fff;font-weight:500}
 .pr-ax .lb.cy{fill:rgb(92,196,255)}
 .pr-ax .pl{fill:rgba(255,255,255,.72)}
 .pr-ax .ax{stroke:rgba(255,255,255,.3);stroke-width:1}
-.pr-ax .ld{stroke:rgba(255,255,255,.4);stroke-width:1}
+.pr-ax .ld{fill:none;stroke:rgba(255,255,255,.45);stroke-width:1}
+.pr-ax .ld.cy{stroke:rgba(92,196,255,.6)}
+.pr-ax .k-line{fill:none;stroke:#fff;stroke-width:2}
+.pr-ax .k-line.cy{stroke:rgb(92,196,255)}
+.pr-ax .k-band{fill:rgba(255,255,255,.2)}
+.pr-ax .k-dot{fill:rgb(92,196,255)}
 .pr-ax .lg{opacity:0}
-.pr-tip{position:absolute;z-index:3;width:300px;max-width:calc(100% - 32px);background:#fff;color:var(--ink);border-radius:2px;padding:14px 16px 6px;font-size:var(--t-small);line-height:1.4;box-shadow:0 16px 32px -16px rgba(14,22,38,.45)}
-.pr-tip b{display:block;font-weight:600}
-.pr-tip span{display:block;margin-top:4px;color:#3e4656}
-.pr-tip a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--c)}
-.pr-tip a:hover{text-decoration:underline;text-underline-offset:4px}
+/* a tooltip: solid and small. It ignores the pointer, so a mouse clicks the dot; on a touch screen its link is the way through. */
+.pr-tip{position:absolute;z-index:3;width:290px;max-width:calc(100% - 16px);background:#fff;color:var(--ink);border-radius:2px;padding:10px 12px;font-size:var(--t-small);line-height:1.4;pointer-events:none}
+.pr-tip b{display:block;font-weight:500}
+.pr-tip span{display:block;margin-top:2px;color:#3e4656}
+.pr-tip a{display:block;margin-top:4px;font-weight:500;color:var(--c)}
+.pr-tip.touch{pointer-events:auto;padding-bottom:0}
+.pr-tip.touch a{display:inline-flex;align-items:center;min-height:44px;margin-top:0}
 /* a finished still, and the page before its script runs: every step in the flow, then the chart */
-.pr-stage:not(.live) .pr-pin{position:relative;height:auto;overflow:visible;padding-block:clamp(64px,8vw,112px)}
-.pr-stage:not(.live) .pr-pg{display:block}
+.pr-stage:not(.live) .pr-pin{position:relative;height:auto;overflow:visible;padding-block:clamp(72px,8.34vw,120px)}
+.pr-stage:not(.live) .pr-pg{display:block;height:auto;padding-block:0}
+.pr-stage:not(.live) .pr-fig{height:auto}
 .pr-stage:not(.live) .pr-steps{height:auto;display:grid;gap:32px;margin-bottom:48px}
 .pr-stage:not(.live) .pr-step{position:static;opacity:1;visibility:visible;transform:none}
-.pr-stage:not(.live) .pr-chart{height:min(84vh,680px)}
+.pr-stage:not(.live) .pr-step p{max-width:32em}
+.pr-stage:not(.live) .pr-chart{flex:none;height:min(84vh,680px)}
 .pr-stage:not(.live) .pr-ax .lg.on{opacity:1}
+
+/* heading at the left, a short paragraph at the right, the real thing below */
+.pr-head{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);row-gap:16px;align-items:end}
+.pr-head h2{grid-column:1 / 8}
+.pr-head p{grid-column:8 / 13;margin:0;color:#3e4656;text-wrap:pretty}
 
 /* robot by robot: one rule under the head, rows parted by space */
 .pr-tbl{width:100%;border-collapse:collapse;margin-top:clamp(32px,4vw,48px);font-size:16px;line-height:1.35;font-variant-numeric:lining-nums tabular-nums}
@@ -79,9 +92,9 @@
 .pr-tbl tbody td.r{text-align:right}
 .pr-tbl tbody th{padding-left:0}
 .pr-tbl tbody tr:first-child th,.pr-tbl tbody tr:first-child td{padding-top:18px}
-.pr-nm a{font-weight:600;color:var(--c)}
+.pr-nm a{font-weight:500;color:var(--c)}
 .pr-nm.pr-sub{padding-left:20px}
-.pr-a10{font-weight:700}
+.pr-a10{font-weight:500}
 .pr-tbl tbody td.pr-g{color:#6b7484;font-weight:400}
 /* one dot for each listing behind the price, so a thin price looks thin before a word is read */
 .pr-tbl thead th.pr-ev{padding-left:clamp(24px,3vw,44px)}
@@ -93,9 +106,9 @@
 .pr-dots path{fill:none;stroke:var(--c);stroke-width:3.2;stroke-linecap:round}
 .pr-dots circle{fill:var(--ink);stroke:#fff;stroke-width:1}
 .pr-say{line-height:23px;color:var(--muted);white-space:nowrap}
-.pr-say.b{color:var(--ink);font-weight:600}
+.pr-say.b{color:var(--ink);font-weight:500}
 .pr-tw{position:relative}
-.pr-dtip{z-index:4}
+.pr-dtip{z-index:4;box-shadow:0 0 0 1px var(--line)}
 .pr-all .pr-nm a{color:var(--ink)}
 .pr-all th,.pr-all td{padding-bottom:18px!important}
 .pr-tbl tbody tr{position:relative}
@@ -105,44 +118,45 @@
 .pr-rg{color:#4a5262;white-space:nowrap}
 
 /* where the prices come from: two real records, set as paper */
-.pr-srcg{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px 32px;margin-top:clamp(64px,7vw,88px)}
+.pr-srcg{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px var(--g);margin-top:clamp(64px,7vw,88px)}
 .pr-lot{position:relative;display:flex;flex-direction:column;background:#fff;padding:22px 30px 18px;font:400 16px/1.45 var(--doc);font-variant-numeric:lining-nums tabular-nums;filter:drop-shadow(0 1px 1px rgba(14,22,38,.1)) drop-shadow(0 16px 24px rgba(14,22,38,.16));min-width:0}
 .pr-lot .dr{align-items:baseline;gap:20px;border-bottom:0;padding:8px 0}
 .pr-lot .dr span{flex:none}
-.pr-fp b{font-size:24px;line-height:1}
-.pr-tab{position:absolute;left:0;top:-32px;height:32px;display:flex;align-items:center;padding:0 30px 0 18px;background:#fff;font:600 15px var(--doc);font-style:normal;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 100%,0 100%)}
-.pr-stamp{display:block;margin-bottom:6px;color:var(--c);font:700 24px/1.2 var(--doc);letter-spacing:-.01em}.pr-stamp.a{color:var(--ink)}
-.pr-dl{align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;margin-top:auto;padding-top:8px;font-weight:600;color:var(--c);text-decoration:none}
+.pr-fp b{font-size:var(--t-sub);line-height:1}
+.pr-tab{position:absolute;left:0;top:-32px;height:32px;display:flex;align-items:center;padding:0 30px 0 18px;background:#fff;font:600 var(--t-small) var(--doc);font-style:normal;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 100%,0 100%)}
+.pr-stamp{display:block;margin-bottom:6px;color:var(--c);font:700 var(--t-sub)/1.2 var(--doc);letter-spacing:-.01em}.pr-stamp.a{color:var(--ink)}
+.pr-dl{align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;margin-top:auto;padding-top:8px;font-weight:500;color:var(--c);text-decoration:none}
 .pr-dl:hover{text-decoration:underline;text-underline-offset:4px}
-
-/* the last screen. Pale arrives by a Ground Fade: while it runs, this section and the table above it share one colour, so no edge shows */
-.pr-gf .pr-fam,.pr-gf .pr-close{background:color-mix(in srgb,#ebf5fd calc(var(--gf,0) * 100%),#fff)}
-.pr-close .t-statement{max-width:15em}
-.pr-acts{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:clamp(24px,2.6vw,32px) 0 0}
 
 /* under 900px the chart sits above the words */
 @media (max-width:900px){
- .pr-pg{display:flex;flex-direction:column;gap:0;align-items:stretch;padding-top:14px;padding-bottom:14px}
- .pr-chart{order:1;flex:1 1 auto;height:auto;min-height:0}
- .pr-steps{order:2;flex:0 0 clamp(230px,34svh,320px);height:auto}
- .pr-step{top:12px;transform:none}
- .pr-step p{margin-top:10px;font-size:16px;line-height:1.42}
+ .pr-pg{display:flex;flex-direction:column;gap:0;align-items:stretch;padding-block:72px 12px}
+ .pr-pg>.pr-steps,.pr-pg>.pr-fig{grid-column:auto}
+ .pr-fig{order:1;flex:1 1 auto;height:auto;min-height:0}
+ .pr-cap{margin-top:6px}
+ .pr-stage.live .pr-cap-l{display:none}
+ .pr-stage.live .pr-cap-s{display:inline}
+ .pr-steps{order:2;flex:0 0 clamp(218px,28svh,290px);height:auto}
+ .pr-step{top:10px;transform:none}
+ .pr-step p{margin-top:8px}
  .pr-stage:not(.live) .pr-pg{padding-top:0}
- .pr-stage:not(.live) .pr-chart{height:64vh}
+ .pr-stage:not(.live) .pr-chart{height:560px}
  /* on a phone the arm takes the whole width, the figures sit on it, and the words run under it */
  .pr-hero{padding-top:12px}
- .pr-lad{height:clamp(240px,min(calc((100vw - 48px) * 1.147),calc(100svh - 72px - 330px)),64svh);margin-top:14px}
+ .pr-lad{--span:calc(100vw - 2 * var(--gl));margin-top:14px}
  .pr-r{display:block;padding-top:0}
  .pr-r span{display:none}
  .pr-r b{position:absolute;left:0;top:1px;padding:2px 8px 3px 0;background:var(--pr-g)}
  .pr-plain{display:grid;gap:8px;list-style:none;margin:14px 0 0;padding:0;color:var(--pr-soft)}
- .pr-plain b{font-weight:700;color:var(--pr-ink)}
- .pr-foot{margin-top:10px}
+ .pr-plain b{font-weight:500;color:var(--pr-ink)}
+ .pr-foot{margin-top:10px;display:block}
+ .pr-across,.pr-lab{display:block}
 }
-/* on a phone each 100vh of scroll becomes 70vh, and the words still hold */
+/* on a phone each chapter is 75vh of scroll, and the words still hold */
 @media (max-width:720px){
- .pr-stage{height:calc(300svh + (var(--n) - 1) * 90svh)}
- .pr-stage.live ~ .pr-srcs{margin-top:-70svh}
+ .pr-stage.live{height:calc(190svh + (var(--n) - 1) * 75svh)}
+ .pr-head h2,.pr-head p{grid-column:1 / -1}
+ .pr-tip{width:calc(100% - 84px)}
 }
 /* on a phone each robot is one tappable row: its name, its price at 10 years old, and a note when the data is thin */
 @media (max-width:820px){
@@ -164,7 +178,7 @@
  /* on a phone the dots run under the name, and the count follows them on one line of words */
  .pr-ev>div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;line-height:1.35}
  .pr-dots{grid-row:1;grid-column:1 / -1;margin:0 0 3px}
- .pr-n{grid-row:2;grid-column:1;display:block;min-width:0;text-align:left;font-weight:400;color:#3e4656;font-size:var(--t-small)}
+ .pr-n{grid-row:2;grid-column:1;display:block;min-width:0;text-align:left;font-weight:400;color:#3e4656}
  .pr-n .sr{display:none}
  .pr-w{display:inline}
  .pr-say{grid-row:2;grid-column:2;line-height:1.35}
@@ -175,5 +189,9 @@
  .pr-srcg{grid-template-columns:minmax(0,1fr);gap:56px}
  .pr-lot{padding:18px 22px 14px}
  .pr-lot .dr span{flex:none;max-width:40%}
- .pr-tip{width:calc(100% - 32px)}
 }
+/* the ask's button takes whole columns, the same on every page that carries this ask */
+.r-close .t-statement{max-width:15em}
+.r-act.r-act-c{display:flex;margin:clamp(24px,2.6vw,32px) 0 0}
+.r-act-c .btn{width:calc((100% - 11 * var(--g)) / 12 * 2 + var(--g))}
+@media (max-width:720px){.r-act-c .btn{width:calc((100% - var(--g)) / 2)}}

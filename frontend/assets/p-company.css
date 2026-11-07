@@ -1,77 +1,65 @@
-/* Company page (c-). Without motion: plain sections, one after another, each finished. With motion (.sc-on) the headline and the wall are pinned screens and FerraChain in site.js hands each to the next as STORYBOARD.md plans. Sizes come from site.css. */
+/* Company page (c-). Plain sections in plain flow, sized to their content, on flat grounds and the page's twelve columns. Sizes come from site.css. */
 
-
-/* the headline runs across the page, and the robot stands under it on the page's bottom edge, its reach coming up beside the words */
-.c-hero{overflow:hidden}
-.sc-on .sc-s > .c-hero{justify-content:flex-start}
-.c-heg{flex:1;width:100%;position:relative;display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:clamp(16px,2vw,32px);padding-top:clamp(20px,3vw,44px);min-height:calc(100vh - 72px);min-height:calc(100lvh - 72px)}
-.c-h1{grid-column:1 / -1;color:#fff;margin:0}
-.c-pic{grid-column:2;grid-row:2;min-width:0;align-self:end;margin-right:calc(-1 * min(48px,max(0px,(100vw - 1200px) / 2)))}
-.c-bot .rs-bot{height:clamp(280px,min(36vw,calc(100vh - 340px)),620px);display:flex;align-items:flex-end;justify-content:center}
+/* the headline and its line on the left, the arm whole on the right, standing on the band's bottom edge */
+.c-hero{padding-block:100px}
+.c-heg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center}
+.c-htxt{grid-column:1 / 8}
+.c-h1{color:#fff;margin:0}
+.c-lead{margin:20px 0 0;color:#fff}
+.c-pic{grid-column:8 / 13;min-width:0;margin-block:-40px -100px;align-self:end}
+.c-bot .rs-bot{height:clamp(280px,29vw,420px);display:flex;align-items:flex-end;justify-content:flex-end}
 .c-bot .rs-bot canvas{display:block}
 
-/* who: its first lines at statement size, then a short letter */
-.c-top{padding-block:clamp(72px,9vw,128px)}
-.sc-on .c-top{min-height:100vh;min-height:100lvh;display:flex;flex-direction:column;justify-content:center}
-.c-top > .in{width:100%}
+/* who: the point on the left, a short plain letter on the right */
+.c-top{padding-block:120px}
+.c-tg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
+.c-we{grid-column:1 / 8}
+.c-sheet{grid-column:8 / 13}
 .c-we{color:var(--ink)}
-.c-sheet{max-width:680px;margin:clamp(32px,4vw,56px) 0 0 auto;font:400 var(--t-lead)/1.55 var(--doc);color:var(--ink)}
-.c-sheet p{margin:0 0 1.1em}
-.c-sign{font-weight:600;margin:1.6em 0 0!important}
+.c-sheet{font:400 var(--t-lead)/1.5 var(--sans);color:var(--ink)}
+.c-sheet p{margin:0 0 1em}
+.c-sign{font-weight:600;margin:1.5em 0 0!important}
 
-/* one field of dots. Every dot is a listing; a pale dot stopped at one of the checks. Without motion: the finished wall, the few sales and the four counts under them */
-.c-field{padding-block:clamp(40px,5vw,72px)}
-.c-read{display:none}
-.c-wall{position:relative;width:calc(100% - 48px);max-width:1152px;height:min(72svh,640px);margin:clamp(24px,3vw,44px) auto 0}
-.c-dots{display:block;width:100%;height:100%;cursor:pointer;touch-action:pan-y}
-/* a listing's own card: above the dots, inside the wall */
-.c-tip{position:absolute;left:0;top:0;z-index:4;width:min(292px,calc(100vw - 48px));background:#fff;color:var(--ink);border-radius:4px;padding:14px 16px 6px;box-shadow:0 0 0 1px rgba(14,22,38,.07),0 10px 30px rgba(14,22,38,.2);font:400 var(--t-small)/1.4 var(--sans)}
-.c-tip[hidden]{display:none}
-.c-tip b{display:block;font-weight:600;overflow-wrap:anywhere}
-.c-tip span{display:block;margin-top:5px;color:#3e4656}
-.c-tip a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--c)}
-.c-aucw{position:relative;width:calc(100% - 48px);max-width:1152px;margin:clamp(24px,3vw,44px) auto 0}
-.c-aucs{display:block;width:100%;cursor:pointer}
-.c-keys{list-style:none;margin:clamp(24px,2.8vw,40px) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px clamp(24px,3vw,48px)}
+/* the numbers in one row, and the wall they count */
+.c-field{padding-block:100px 120px;background:#fff;border-top:1px solid var(--line)}
+.c-fh h2{max-width:none}
+.c-fh p{margin:16px 0 0;color:#3e4656}
+.c-keys{list-style:none;margin:clamp(48px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
 .c-k b{display:block;color:var(--ink)}
 .c-k-s b{color:var(--c)}
-.c-k span{display:block;margin-top:6px;color:#3e4656;max-width:22ch}
-/* with motion: the field fills the screen and holds still while the chapters run. The list stays for screen readers, and the number on screen says the same thing */
-.sc-on .c-field{padding-block:0;justify-content:flex-start}
-.sc-on .c-pin{height:100vh;height:100lvh;width:100%;display:flex;flex-direction:column;padding-block:clamp(28px,5svh,56px) clamp(20px,3.5svh,32px)}
-.sc-on .c-fh{width:100%;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:end;flex:none}
-.sc-on .c-read{display:block;margin:0;opacity:0;transition:opacity .8s ease}
-.sc-on .c-read.c-go{opacity:1}
-.c-read b{display:block;color:var(--c);transition:color .9s ease}
-.c-read.c-ink b{color:var(--ink)}
-.c-read span{display:block;margin-top:8px;min-height:1.4em;color:var(--ink)}
-.sc-on .c-wallw{position:relative;flex:1 1 0;min-height:0;width:calc(100% - 48px);max-width:1152px;margin:clamp(16px,2.6svh,28px) auto 0}
-.sc-on .c-wall{position:absolute;inset:0;width:auto;height:auto;max-width:none;margin:0}
-.sc-on .c-listw{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%)}
-/* the fourth chapter: the few real sales stand beside the arm, over the listings that faded behind them */
-.sc-on .c-aucw{position:absolute;left:44%;right:0;top:50%;width:auto;max-width:none;margin:0;transform:translateY(-50%);pointer-events:none}
-.sc-on .c-aucw.on{pointer-events:auto}
-.sc-on .c-aucw .c-tip{top:auto;bottom:100%;margin-bottom:8px}
+.c-k span{display:block;margin-top:8px;color:#3e4656;max-width:22ch}
+.c-wall{position:relative;margin-top:clamp(32px,3.4vw,48px)}
+.c-dots{display:block;width:100%;cursor:pointer;touch-action:pan-y}
+/* a listing's own card: solid, above the dots, inside the wall, and it never covers the dot it describes */
+.c-tip{position:absolute;left:0;top:0;z-index:4;width:min(292px,calc(100vw - 48px));background:#fff;color:var(--ink);border-radius:4px;padding:14px 16px 6px;box-shadow:0 0 0 1px rgba(14,22,38,.07),0 10px 30px rgba(14,22,38,.2);font:400 var(--t-small)/1.4 var(--sans)}
+.c-tip[hidden]{display:none}
+.c-tip b{display:block;font-weight:500;overflow-wrap:anywhere}
+.c-tip span{display:block;margin-top:5px;color:#3e4656}
+.c-tip a{display:inline-flex;align-items:center;min-height:44px;font-weight:500;color:var(--c)}
+.c-src{margin:16px 0 0;color:var(--muted);max-width:none}
+.c-more{white-space:nowrap}
 
-/* what you will not find, and how to reach us */
-.c-nots{padding-block:clamp(72px,9vw,128px)}
-.c-nots > .in,.c-contact > .in{width:100%}
+/* what you will not find, across the page; how to reach us, heading left and form right */
+.c-ng{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
+.c-ng > :first-child{grid-column:1 / 7}
+.c-ng > :last-child{grid-column:7 / 13}
+.c-nots h2{max-width:none}
+.c-ctxt p{margin:16px 0 0;color:#3e4656}
+.c-nots{padding-block:100px}
 .c-nots p{margin:16px 0 0;color:#3e4656}
-.c-contact{padding-block:clamp(72px,9vw,128px)}
-.c-form{margin-top:clamp(24px,3vw,36px);max-width:560px}
+.c-contact{padding-block:120px}
 .c-contact .lf{grid-template-columns:minmax(0,1fr)}
 
 @media (max-width:900px){
- .c-heg{grid-template-columns:minmax(0,1fr);gap:8px}
+ .c-hero{padding-block:48px 72px}
+ .c-heg{grid-template-columns:minmax(0,1fr);row-gap:32px}
+ .c-htxt,.c-pic,.c-we,.c-sheet,.c-ng > :first-child,.c-ng > :last-child{grid-column:1}
  .c-h1 br,.c-we br{display:none}
- .c-pic{grid-column:1;margin:0}
+ .c-pic{margin:0 0 -72px}
+ .c-bot .rs-bot{justify-content:center}
  .c-bot .rs-bot{height:min(66vw,420px)}
- .c-sheet{margin-left:0}
- .sc-on .c-pin{padding-block:16px 12px}
- .c-wall,.sc-on .c-wallw,.c-aucw{width:calc(100% - 32px)}
- .sc-on .c-wallw{margin-top:10px}
+ .c-top,.c-contact,.c-nots{padding-block:72px}
+ .c-field{padding-block:72px}
+ .c-tg,.c-ng{grid-template-columns:minmax(0,1fr);row-gap:20px}
  .c-keys{grid-template-columns:repeat(2,minmax(0,1fr))}
- .sc-on .c-fh{grid-template-columns:minmax(0,1fr);gap:clamp(12px,2svh,20px)}
- .c-read span{margin-top:2px}
- .sc-on .c-aucw{left:0;top:auto;bottom:4%;transform:none}
 }

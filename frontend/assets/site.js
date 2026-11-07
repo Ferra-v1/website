@@ -52,23 +52,41 @@
     if (v('robot_count')) row.robot_count = COUNT[v('robot_count')];
     const ty = document.getElementById('sz-type');
     if (ty && f.dataset.who === 'fleets') { row.robot_type = ty.selectedOptions[0].textContent; row.robot_count = +document.getElementById('sz-n').value || null; row.price_per_robot = +document.getElementById('sz-p').value || null; }
-    btn.disabled = true; const label = btn.textContent; btn.textContent = 'Sending';
-    try { const r = await fetch(SB, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row) }); if (!r.ok) throw r.status; done(); }
-    catch (x) { err.textContent = 'That did not go through. Please try again in a moment.'; err.hidden = false; btn.disabled = false; btn.textContent = label; }
+    // three states after the check: sending (fields rest, the button says so), sent (the next steps, with focus moved to them), failed (the message, with everything typed still in place)
+    btn.disabled = true; btn.setAttribute('aria-busy', 'true'); f.classList.add('sending'); const label = btn.textContent; btn.textContent = 'Sending';
+    const settle = () => { btn.disabled = false; btn.removeAttribute('aria-busy'); f.classList.remove('sending'); btn.textContent = label; };
+    try { const r = await fetch(SB, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row) }); if (!r.ok) throw r.status; settle(); done(); const d = f.querySelector('.ldone'); if (d.focus) d.focus({ preventScroll: true }); }
+    catch (x) { settle(); err.textContent = 'That did not go through. Your details are still here, so please try again in a moment.'; err.hidden = false; }
   }));
+  // the skip link moves focus past the header
+  const skip = document.querySelector('.skip');
+  if (skip) skip.addEventListener('click', ev => { const t = document.getElementById('main'); if (t) { ev.preventDefault(); t.focus({ preventScroll: true }); t.scrollIntoView({ block: 'start', behavior: 'auto' }); } });
+  // films: a video[data-arrive] starts when it arrives and rests when it leaves. [data-film-pause] (core.film_pause) stops it for good until pressed again. Its film is the one it names, or the first video in its parent box
+  const held = new WeakSet();
+  if ('IntersectionObserver' in window) { const arriving = new IntersectionObserver(es => es.forEach(en => { const v = en.target; if (en.isIntersecting) { if (!reduce && !held.has(v)) { const go = v.play(); if (go && go.catch) go.catch(() => {}); } } else if (!v.paused) v.pause(); }), { threshold: .25 });
+    document.querySelectorAll('video[data-arrive]').forEach(v => arriving.observe(v)); }
+  document.querySelectorAll('[data-film-pause]').forEach(b => { const v = b.dataset.filmPause ? document.querySelector(b.dataset.filmPause) : b.parentElement.querySelector('video'); if (!v) return;
+    const show = () => { const off = v.paused || v.ended; b.setAttribute('aria-pressed', String(off)); b.setAttribute('aria-label', off ? 'Play the film' : 'Pause the film'); };
+    b.addEventListener('click', () => { if (v.paused) { held.delete(v); const go = v.play(); if (go && go.catch) go.catch(() => {}); } else { held.add(v); v.pause(); } });
+    v.addEventListener('play', show); v.addEventListener('pause', show); show(); });
   // the bar comes back as soon as the reader scrolls up, and goes again near the top where the page's own bar sits
   const fbar = document.querySelector('.fbar');
   if (fbar) { let last = scrollY, on = false; addEventListener('scroll', () => { const y = scrollY, d = y - last; if (Math.abs(d) < 6) return; last = y; const v = d < 0 && y > 240; if (v !== on) { on = v; fbar.classList.toggle('on', v); if (!v && fbar.classList.contains('np-on')) closePanel(); } }, { passive: true }); }
   // the nav's panels: open on hover and on keyboard focus, close on Escape, on leaving, and after a 300ms grace. There is one layer, under whichever bar opened it.
-  const np = document.getElementById('np'); let npCur = null, npBar = null, npItem = null, npTimer = 0, npIn = 0, npBack = false;
-  const closePanel = () => { clearTimeout(npTimer); if (!np || !npCur) return; npCur = null; np.classList.remove('on'); if (npBar) npBar.classList.remove('np-on'); if (npItem) { npItem.classList.remove('open'); npItem.querySelector('a').setAttribute('aria-expanded', 'false'); } npBar = npItem = null;
-    cancelAnimationFrame(npIn); const close = () => { if (npCur) return; np.hidden = true; np.querySelectorAll('.np-p').forEach(p => { p.hidden = true; }); }; if (reduce) close(); else setTimeout(close, 260); };
+  // Each panel's picture lives in assets/np-scenes.js with its data in media/nav/np-data.js: neither loads until a panel first opens.
+  const np = document.getElementById('np'), npDim = document.querySelector('.np-dim'); let npCur = null, npBar = null, npItem = null, npTimer = 0, npIn = 0, npBack = false, npLoad = null, npHold = 0;
+  const npScenes = () => npLoad || (npLoad = new Promise(ok => { const v = np.dataset.v ? '?v=' + np.dataset.v : ''; const add = (src, then) => { const t = document.createElement('script'); t.src = src + v; t.onload = then; t.onerror = () => ok(false); document.head.appendChild(t); }; add('media/nav/np-data.js', () => add('assets/np-scenes.js', () => ok(true))); }));
+  // the picture follows the link under the pointer or the keyboard. A pointer sweeping down the list waits a moment before the picture changes
+  const npPick = (a, now) => { clearTimeout(npHold); if (!a) return; a.closest('.np-l').querySelectorAll('a').forEach(x => x.classList.toggle('sel', x === a)); const go = () => npScenes().then(ok => { if (ok && npCur && window.FerraNP) window.FerraNP.pick(a, JSON.parse(np.dataset.n || '{}')); }); if (now) go(); else npHold = setTimeout(go, 70); };
+  const closePanel = () => { clearTimeout(npTimer); if (!np || !npCur) return; npCur = null; clearTimeout(npHold); np.classList.remove('on'); if (npDim) npDim.classList.remove('on'); if (npBar) npBar.classList.remove('np-on'); if (npItem) { npItem.classList.remove('open'); npItem.querySelector('a').setAttribute('aria-expanded', 'false'); } npBar = npItem = null;
+    cancelAnimationFrame(npIn); const close = () => { if (npCur) return; np.hidden = true; if (npDim) npDim.hidden = true; if (window.FerraNP) window.FerraNP.stop(); np.querySelectorAll('.np-p').forEach(p => { p.hidden = true; }); }; if (reduce) close(); else setTimeout(close, 240); };
   const openPanel = item => { if (!np) return; clearTimeout(npTimer); const id = item.dataset.np, bar = item.closest('.nav,.fbar'); if (npItem === item) return;
     if (npItem) { npItem.classList.remove('open'); npItem.querySelector('a').setAttribute('aria-expanded', 'false'); } if (npBar && npBar !== bar) npBar.classList.remove('np-on');
     npCur = id; npBar = bar; npItem = item; item.classList.add('open'); item.querySelector('a').setAttribute('aria-expanded', 'true'); bar.classList.add('np-on');
     np.querySelectorAll('.np-p').forEach(p => { p.hidden = p.dataset.np !== id; });
-    np.style.setProperty('--np-top', Math.max(0, bar.getBoundingClientRect().bottom) + 'px');
-    if (np.hidden) { np.hidden = false; npIn = requestAnimationFrame(() => { npIn = requestAnimationFrame(() => np.classList.add('on')); }); } else np.classList.add('on'); };
+    const top = Math.max(0, bar.getBoundingClientRect().bottom) + 'px'; np.style.setProperty('--np-top', top); if (npDim) npDim.style.top = top;
+    if (np.hidden) { np.hidden = false; if (npDim) npDim.hidden = false; npIn = requestAnimationFrame(() => { npIn = requestAnimationFrame(() => { np.classList.add('on'); if (npDim) npDim.classList.add('on'); }); }); } else { np.classList.add('on'); if (npDim) npDim.classList.add('on'); }
+    npPick(np.querySelector('.np-p:not([hidden]) [data-sc]'), true); };
   const panelLater = () => { clearTimeout(npTimer); npTimer = setTimeout(closePanel, 300); };
   if (np) {
     document.querySelectorAll('.lk[data-np]').forEach(item => { const a = item.querySelector('a');
@@ -81,6 +99,8 @@
       a.addEventListener('blur', ev => { if (!np.contains(ev.relatedTarget)) panelLater(); });
       // the keyboard's way into the panel, which sits elsewhere in the page: Tab or the down arrow from the item goes to its first link
       a.addEventListener('keydown', ev => { if (npItem === item && ((ev.key === 'Tab' && !ev.shiftKey) || ev.key === 'ArrowDown')) { const first = np.querySelector('.np-p:not([hidden]) a'); if (first) { ev.preventDefault(); first.focus(); } } }); });
+    np.querySelectorAll('[data-sc]').forEach(a => { a.addEventListener('pointerenter', ev => { if (ev.pointerType !== 'touch') npPick(a); }); a.addEventListener('focus', () => npPick(a, true)); });
+    np.querySelectorAll('.np-card').forEach(c => c.addEventListener('click', () => { const a = c.closest('.np-in').querySelector('a.sel'); if (a) a.click(); }));
     np.addEventListener('pointerenter', () => clearTimeout(npTimer));
     np.addEventListener('pointerleave', ev => { if (ev.pointerType !== 'touch') panelLater(); });
     np.addEventListener('focusin', () => clearTimeout(npTimer));
@@ -91,7 +111,7 @@
     // the other nav links and the buttons close it after the same grace
     document.querySelectorAll('.links > a,.nav-b,.brand').forEach(x => x.addEventListener('pointerenter', () => { if (npCur) panelLater(); }));
     addEventListener('keydown', ev => { if (ev.key === 'Escape' && npCur) { const a = npItem && npItem.querySelector('a'); closePanel(); if (a && np.contains(document.activeElement)) { npBack = true; a.focus({ preventScroll: true }); } } });
-    addEventListener('scroll', () => { if (!npCur || !npBar) return; const b = npBar.getBoundingClientRect().bottom; if (b <= 0) closePanel(); else np.style.setProperty('--np-top', b + 'px'); }, { passive: true });
+    addEventListener('scroll', () => { if (!npCur || !npBar) return; const b = npBar.getBoundingClientRect().bottom; if (b <= 0) closePanel(); else { np.style.setProperty('--np-top', b + 'px'); if (npDim) npDim.style.top = b + 'px'; } }, { passive: true });
     addEventListener('resize', closePanel);
   }
   // the footer: robots assemble, 300ms apart, once the page has lifted 40% of the way off it. A sticky footer always counts as on screen, so they start and pause from here, and stop while the page covers them
@@ -106,9 +126,12 @@
     measure(); check(); addEventListener('scroll', check, { passive: true }); addEventListener('resize', () => { measure(); check(); }); addEventListener('load', () => { measure(); check(); }); }
   // phone menu: full screen, the page behind it inert, Escape or any link closes it, focus goes back where it was
   const mn = document.getElementById('mn');
-  if (mn) { let back = null; const btns = document.querySelectorAll('.menu'), pg = document.querySelector('.page');
-    const set = o => { mn.hidden = !o; document.documentElement.classList.toggle('mn-open', o); if (pg) pg.inert = o; if (fbar) fbar.inert = o; btns.forEach(b => b.setAttribute('aria-expanded', o));
-      if (o) { back = document.activeElement; mn.querySelector('.mn-x').focus({ preventScroll: true }); } else if (back && back.focus) back.focus({ preventScroll: true }); };
+  if (mn) { let back = null, later = 0; const btns = document.querySelectorAll('.menu'), pg = document.querySelector('.page'), bots = [...mn.querySelectorAll('.mn-bots canvas')];
+    // the sheet comes down and its lines arrive in turn (site.css). Its robots load the first time it opens, and rest while it is shut
+    const robots = on => { const d = window.FerraDots; if (!d) return; bots.forEach((c, i) => { if (!on) { if (c._seen) d.pause(c); return; } d.fetch(c); if (c._seen) d.resume(c); else setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; d.draw(c); }, reduce ? 0 : 180 + i * 120); }); };
+    const set = o => { clearTimeout(later); document.documentElement.classList.toggle('mn-open', o); if (pg) pg.inert = o; if (fbar) fbar.inert = o; btns.forEach(b => b.setAttribute('aria-expanded', o));
+      if (o) { mn.hidden = false; mn.classList.add('on'); robots(true); back = document.activeElement; mn.querySelector('.mn-x').focus({ preventScroll: true }); }
+      else { mn.classList.remove('on'); robots(false); if (back && back.focus) back.focus({ preventScroll: true }); if (reduce) mn.hidden = true; else later = setTimeout(() => { mn.hidden = true; }, 200); } };
     btns.forEach(b => b.addEventListener('click', () => set(true))); mn.querySelector('.mn-x').addEventListener('click', () => set(false)); mn.querySelectorAll('a').forEach(a => a.addEventListener('click', () => set(false)));
     addEventListener('keydown', ev => { if (ev.key === 'Escape' && !mn.hidden) set(false); }); matchMedia('(min-width: 1081px)').addEventListener('change', ev => { if (ev.matches && !mn.hidden) set(false); }); }
   // the scene chain, for the pages built as a run of pinned screens (Fleets, Company). Each .sc holds .sc-s > section and hands to the next by data-out: gf is a Ground Fade over 60vh, ov an Overlap over 100vh (70vh on a phone).

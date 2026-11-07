@@ -1,196 +1,191 @@
-/* Lenders page (l-). The film, the slider against the loan (white), what if a loan goes bad (the page's one dark region), the auction table (white), the term sheet (pale), the form (the page's one gradient). Sizes come from the shared type classes and tokens.
-   How one section leaves for the next follows STORYBOARD.md: Overlap (.l-pin holds a section while the next slides up over it) or Ground Fade (.l-gap, 60vh, its colour tied to the scroll in p-lenders.js). */
-[data-page="lenders.html"] .sec{padding-block:clamp(64px,6vw,88px)}
-/* the empty stretch of a Ground Fade counts as the space between two sections */
-[data-page="lenders.html"] .l-loan,[data-page="lenders.html"] .l-resale{padding-bottom:clamp(32px,3vw,48px)}
-[data-page="lenders.html"] .l-recv{padding-block:clamp(24px,3vw,40px)}
+/* Lenders page (l-). The film, the proof (what auctions really paid, white), the slider against the loan (pale), what if a loan goes bad (ink), the term sheet (pale), the final ask (white).
+   Sizes come from the shared type classes and tokens. Every section is sized to its content, and each ground meets the next at a plain edge. The one held section is the film, which the proof slides up over. */
 
-/* the first screen: the film, full height, the words low at the left. It holds still while the next section slides up over it and it darkens to ink */
+/* the first screen: the film, full height, the words low at the left */
 .l-stack{position:relative}
-.l-hero{position:sticky;top:0;z-index:0;display:flex;flex-direction:column;height:100vh;height:100svh;min-height:600px;background:var(--g-dark);color:#fff;overflow:hidden}
+.l-hero{position:sticky;top:0;z-index:0;display:flex;flex-direction:column;height:100vh;height:100svh;min-height:600px;background:var(--g-ink);color:#fff;overflow:hidden}
 .l-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0% 50%}
-.l-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,22,38,.45) 0,rgba(14,22,38,0) 20%,rgba(14,22,38,0) 40%,rgba(14,22,38,.86) 100%),linear-gradient(90deg,rgba(14,22,38,.74) 0,rgba(14,22,38,.5) 34%,rgba(14,22,38,0) 62%);pointer-events:none}
-.l-dim{position:absolute;inset:0;z-index:1;background:var(--g-dark);opacity:0;pointer-events:none}
+.l-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,22,38,.78) 0,rgba(14,22,38,.66) 9%,rgba(14,22,38,.1) 26%,rgba(14,22,38,.12) 38%,rgba(14,22,38,.9) 100%),linear-gradient(90deg,rgba(14,22,38,.82) 0,rgba(14,22,38,.62) 38%,rgba(14,22,38,0) 66%);pointer-events:none}
 .l-hero .nav{z-index:3}
+.l-hero .fp{right:max(24px,calc(50% - 576px));bottom:clamp(36px,6vh,64px)}
 .l-hc{position:relative;z-index:2;width:100%;margin-top:auto;padding-bottom:clamp(36px,6vh,64px)}
 .l-hc .h1{max-width:9.2em}
-.l-hc .lede{max-width:46ch;margin:22px 0 28px;color:rgba(255,255,255,.92)}
-.l-loan{position:relative;z-index:1;background:#fff}
+.l-hc .lede{max-width:46ch;margin:24px 0 32px;color:#fff}
+.l-resale{position:relative;z-index:1}
 
-/* Ground Fade: an empty stretch between two sections while the ground changes colour. Overlap: a section holds while the next slides up over it. Each pair lives in one wrapper (.l-w), so a held section can never pass the end of the one covering it */
-.l-gap{display:block;position:relative;z-index:2;height:60vh;background:#fff}
-.l-gap-ink{height:100vh}
-.l-w{position:relative}
-.l-pin{position:sticky;top:min(0px,calc(100vh - var(--l-h,100vh)))}
-.l-hold{display:block;height:60vh;pointer-events:none}
-.l-bad{z-index:1}
-.l-resale{position:relative;z-index:2;background:#fff}
-.l-recv{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;min-height:100vh}
-.l-recv > .in{width:100%}
-.l-recv.l-pin{position:sticky}
-.l-contact{position:relative;z-index:3}
-
-/* a heading beside its lead */
-.l-lh{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px clamp(40px,6vw,88px);align-items:end}
+/* a heading on the left, its paragraph on the right */
+.l-lh{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:20px clamp(40px,6vw,88px);align-items:end}
 .l-lh p{margin:0;color:#3e4656;max-width:44ch}
 .l-lh h2{margin:0}
 .l-bad .l-lh p{color:rgba(255,255,255,.92)}
 
-/* the slider against the loan */
-.l-dc{margin:clamp(28px,3vw,44px) 0 0}
-.l-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px clamp(24px,3.4vw,48px)}
-.l-fig b{display:block;white-space:nowrap;color:var(--ink)}
-.l-fig:first-child b{color:var(--c)}
-.l-fig span{display:block;margin-top:8px;color:var(--muted);text-wrap:balance}
-.l-fig span span{display:inline;margin:0;font-variant-numeric:lining-nums tabular-nums;font-weight:500;color:var(--ink)}
-
-.l-sl{position:relative;margin:clamp(14px,1.4vw,20px) 0 0}
-.l-dc{--l-th:32px}
-.l-adv{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:pointer;touch-action:pan-y}
-.l-adv::-webkit-slider-runnable-track{height:4px;border-radius:0;background:linear-gradient(90deg,var(--c) calc(var(--p,68.75) * 1%),#dbe2f0 calc(var(--p,68.75) * 1%))}
-.l-adv::-moz-range-track{height:4px;border-radius:0;background:#dbe2f0}
-.l-adv::-moz-range-progress{height:4px;border-radius:0;background:var(--c)}
-.l-adv::-webkit-slider-thumb{-webkit-appearance:none;width:var(--l-th);height:var(--l-th);margin-top:-14px;border-radius:2px;background:var(--c);border:0}
-.l-adv::-moz-range-thumb{width:32px;height:32px;border-radius:2px;background:var(--c);border:0}
-.l-adv:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:6px}
-/* the three real shares, each under its own place on the track */
-.l-stops{position:relative;height:60px;margin:2px calc(var(--l-th) / 2) 0}
-.l-stop{position:absolute;left:calc(var(--p) * 1%);top:0;transform:translateX(-50%);min-width:44px;min-height:44px;padding:4px 6px;border:0;background:none;cursor:pointer;color:var(--muted);font:400 var(--t-small)/1.3 var(--sans);text-align:center;white-space:nowrap;transition:color .15s ease}
-.l-stop:first-child{transform:translateX(-12px);text-align:left}
-.l-stop b{display:block;font-weight:600;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
-.l-stop span{display:block}
-.l-stop:hover,.l-stop:hover b,.l-stop[aria-pressed="true"] b,.l-stop[aria-pressed="true"]{color:var(--c)}
-
-/* the chart: solid shapes, one calm line, the labels inside what they name */
-.l-chart{margin-top:8px}
-.l-yl span{position:absolute;right:0;transform:translateY(-100%);padding-bottom:4px;font:400 13px/1 var(--sans);color:var(--cap);white-space:nowrap}
-.l-plot{position:relative;height:clamp(280px,38vh,380px);touch-action:pan-y;cursor:crosshair}
-.l-svg{position:absolute;inset:0;width:100%;height:100%;display:block;clip-path:inset(-20px 0 0 0);transition:clip-path 1.8s cubic-bezier(.3,.6,.2,1)}
-.l-wait .l-svg{clip-path:inset(-20px 100% 0 0)}
-.l-wait > :not(.l-svg){opacity:0}
-.l-plot > :not(.l-svg){transition:opacity .7s ease 1.4s}
-.l-a-v{fill:#e4ecfa}.l-a-l{fill:#58bdf0}.l-a-e{fill:var(--c)}.l-a-a{fill:var(--ink)}
-.l-grid line{stroke:rgba(14,22,38,.09);stroke-width:1;vector-effect:non-scaling-stroke}
-.l-ln-l{fill:none;stroke:var(--ink);stroke-width:2}
-.l-ln-s{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:5 5;opacity:.6}
-.l-read{stroke:var(--ink);stroke-width:1.5}
-.l-lab{position:absolute;transform:translateY(-50%);font:500 14px/1.25 var(--sans);white-space:nowrap;pointer-events:none}
-.l-lab-v{color:#3e4656;transform:translate(-20%,-50%)}.l-lab-l{color:var(--ink)}.l-lab-e,.l-lab-a{color:#fff}
-.l-lab-a{font-size:13px;line-height:1}
-.l-ring{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;border:2px solid var(--ink);pointer-events:none}
-.l-rtag{position:absolute;transform:translate(-50%,-100%);margin-top:-12px;font:600 14px/1 var(--sans);color:var(--ink);white-space:nowrap;pointer-events:none;font-variant-numeric:lining-nums tabular-nums}
-.l-rtag.l-end{right:0;transform:translateY(-100%)}
-.l-mtag{position:absolute;top:-8px;transform:translate(-50%,-100%);font:600 14px/1 var(--sans);color:var(--ink);white-space:nowrap;pointer-events:none}
-.l-yrs{position:relative;height:34px;border-top:1px solid var(--ink);font:400 13px/1 var(--sans);color:var(--cap)}
-.l-yrs span{position:absolute;top:10px;transform:translateX(-50%);white-space:nowrap}
-.l-yrs span:first-child{transform:none}.l-yrs span:last-child{left:auto!important;right:0;transform:none}
-.l-key{display:none;list-style:none;margin:12px 0 0;padding:0}
-.l-key li{position:relative;padding:0 0 6px 22px;font-size:var(--t-small);line-height:1.35;color:var(--ink)}
-.l-key li::before{content:"";position:absolute;left:0;top:3px;width:12px;height:12px;border-radius:3px;background:var(--kc)}
-.l-k-v{--kc:#e4ecfa}.l-k-l{--kc:#58bdf0}.l-k-e{--kc:var(--c)}.l-k-a{--kc:var(--ink)}
-.l-now{margin:clamp(14px,1.6vw,20px) 0 0;max-width:90ch;min-height:1.6em;color:#3e4656;text-wrap:pretty}
-.l-now b{font-weight:600;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
-.l-dc .sr{left:0;max-width:1px}
-
-/* what if a loan goes bad: the page's dark region. Bars draw over 1200ms, then the loss table */
-.l-bad{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding-block:clamp(24px,3vw,48px) clamp(64px,6vw,88px)}
-.l-bad > .in{width:100%}
-.l-bad h2{color:#fff}
-.l-bars{margin-top:clamp(40px,4.4vw,64px)}
-.l-bar{display:grid;grid-template-columns:minmax(0,3.4fr) minmax(0,7fr) 150px;gap:clamp(14px,2vw,24px);align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.14)}
-.l-bt{color:rgba(255,255,255,.86)}
-.l-bv{display:block;height:12px}
-.l-bv i{display:block;height:100%;width:var(--w);background:#58bdf0;transform-origin:0 50%;transition:transform 1.2s cubic-bezier(.2,.7,.2,1) .15s}
-.l-js .rv:not(.in-view) .l-bv i{transform:scaleX(.02)}
-.l-bar-o .l-bv i{background:#fff}
-.l-bar b{font-weight:600;color:#fff;text-align:right;white-space:nowrap}
-.l-model{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px clamp(40px,6vw,88px);margin-top:clamp(44px,5vw,72px);align-items:start}
-.l-model h3{margin:0;color:#fff}
-.l-loss{width:100%;border-collapse:collapse;font-variant-numeric:lining-nums tabular-nums}
-.l-loss thead th{padding:0 12px 10px 0;font:400 var(--t-small)/1.3 var(--sans);text-align:left;vertical-align:bottom;color:rgba(255,255,255,.72);border-bottom:1px solid rgba(255,255,255,.3)}
-.l-loss tbody th{padding:12px 12px 12px 0;font:400 var(--t-small)/1.35 var(--sans);text-align:left;color:rgba(255,255,255,.78);border-bottom:1px solid rgba(255,255,255,.14)}
-.l-loss tbody th b{display:block;font:600 var(--t-smallh)/1.3 var(--sans);color:#fff}
-.l-loss td{padding:12px 12px 12px 0;font:600 var(--t-smallh)/1.3 var(--sans);color:#fff;vertical-align:top;border-bottom:1px solid rgba(255,255,255,.14);white-space:nowrap}
+/* the proof: three numbers in a row, each with a thin bar where the full width is what sellers ask */
+.l-pfs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px clamp(32px,4vw,56px);margin-top:clamp(48px,5vw,72px)}
+.l-pf b{display:block;color:var(--ink)}
+.l-pf:nth-child(2) b{color:var(--c)}
+.l-pb{display:block;height:6px;margin:20px 0 14px;background:#dbe2f0}
+.l-pb i{display:block;height:100%;width:var(--w);background:var(--c);transform-origin:0 50%;transition:transform .7s var(--m-ease) .1s}
+.l-js .rv:not(.in-view) .l-pb i{transform:scaleX(.02)}
+.l-pf > span:last-child{display:block;color:#3e4656;max-width:30ch}
 
 /* the auction table: every sale behind the figure, each a dot at its own share */
-.l-ledw{margin-top:clamp(32px,3.6vw,48px)}
+.l-ledw{margin-top:clamp(40px,4.4vw,64px)}
 .l-led{width:100%;border-collapse:collapse;font-size:var(--t-body);line-height:1.35;font-variant-numeric:lining-nums tabular-nums}
 .l-led thead th{font-size:var(--t-small);font-weight:500;color:var(--muted);text-align:left;padding:0 20px 10px 0;vertical-align:bottom}
 .l-led thead .l-st{text-align:right;padding-right:0}
-.l-sg th{padding:22px 0 8px;font-size:var(--t-small);line-height:1.45;font-weight:600;color:var(--ink);text-align:left;border-bottom:1px solid var(--ink)}
+.l-sg th{padding:24px 0 8px;font-size:var(--t-small);line-height:1.45;font-weight:500;color:var(--ink);text-align:left;border-bottom:1px solid var(--ink)}
 .l-sg th span{font-weight:400;color:#3e4656}
 .l-led tbody tr:not(.l-sg) > *{padding:0 20px 0 0;height:44px;border-bottom:var(--hair);font-weight:400;text-align:left}
 .l-led th a{display:inline-block;padding-block:12px;font-weight:500;color:var(--ink)}
 .l-led th a span[aria-hidden]{display:inline-block;color:var(--c);transition:transform .15s ease}
 .l-led th a:hover{color:var(--c)}.l-led th a:hover span[aria-hidden]{transform:translateX(3px)}
 .l-led .l-sp{font-weight:500;white-space:nowrap}
-.l-n{color:var(--c);font-weight:600}
-.l-led td.l-sw{color:var(--muted);font-size:var(--t-small);white-space:nowrap}
+.l-n{color:var(--c);font-weight:500}
+.l-led td.l-sw{color:var(--muted);white-space:nowrap}
 .l-led td.l-st{padding-right:0;width:27%}
 .l-st{white-space:nowrap}
 td.l-st{display:table-cell}
-td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:600;vertical-align:middle;white-space:nowrap}
+td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;vertical-align:middle;white-space:nowrap}
 .l-tk{display:inline-block;position:relative;width:calc(100% - 84px);height:8px;margin-right:8px;vertical-align:middle}
 .l-tk::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#d6dce8}
-.l-tk i{position:absolute;top:0;left:calc(var(--r) - 4px);width:8px;height:8px;border-radius:50%;background:var(--c);transition:left 1.2s cubic-bezier(.2,.7,.2,1) .2s}
+.l-tk i{position:absolute;top:0;left:calc(var(--r) - 4px);width:8px;height:8px;border-radius:50%;background:var(--c);transition:left .7s var(--m-ease) .1s}
 .l-js .rv:not(.in-view) .l-tk i{left:calc(100% - 8px)}
+.l-led tfoot td{padding:20px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--muted);max-width:90ch}
 
-/* the term sheet, on paper, with each term in plain words. It rises over 1000ms */
-.l-sw.rv{transition-duration:1s,1s}
-.l-rg{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,6.4fr);gap:clamp(36px,4vw,64px);align-items:start}
-.l-rs{position:sticky;top:112px}
+/* the slider against the loan */
+.l-dc{--l-th:32px;--l-gut:204px;margin:clamp(40px,4.4vw,64px) 0 0}
+.l-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px clamp(32px,4vw,56px)}
+.l-fig b{display:block;white-space:nowrap;color:var(--ink)}
+.l-fig:first-child b{color:var(--c)}
+.l-fig > span{display:block;margin-top:8px;color:#3e4656;text-wrap:balance}
+.l-fig span span{display:inline;margin:0;font-variant-numeric:lining-nums tabular-nums;font-weight:500;color:var(--ink)}
+
+.l-sl{position:relative;margin:clamp(20px,2vw,28px) 0 0}
+.l-adv{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:pointer;touch-action:pan-y}
+.l-adv::-webkit-slider-runnable-track{height:4px;border-radius:0;background:linear-gradient(90deg,var(--c) calc(var(--p,68.75) * 1%),#cdd8ec calc(var(--p,68.75) * 1%))}
+.l-adv::-moz-range-track{height:4px;border-radius:0;background:#cdd8ec}
+.l-adv::-moz-range-progress{height:4px;border-radius:0;background:var(--c)}
+.l-adv::-webkit-slider-thumb{-webkit-appearance:none;width:var(--l-th);height:var(--l-th);margin-top:-14px;border-radius:2px;background:var(--c);border:0}
+.l-adv::-moz-range-thumb{width:32px;height:32px;border-radius:2px;background:var(--c);border:0}
+.l-adv:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:2px}
+/* the three real shares, each under its own place on the track */
+.l-stops{position:relative;height:60px;margin:2px calc(var(--l-th) / 2) 0}
+.l-stop{position:absolute;left:calc(var(--p) * 1%);top:0;transform:translateX(-50%);min-width:44px;min-height:44px;padding:4px 6px;border:0;background:none;cursor:pointer;color:var(--muted);line-height:1.3;text-align:center;white-space:nowrap;transition:color .15s ease}
+.l-stop:first-child{transform:translateX(-22px);text-align:left}
+.l-stop b{display:block;font-weight:500;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
+.l-stop span{display:block}
+.l-stop:hover,.l-stop:hover b,.l-stop[aria-pressed="true"] b,.l-stop[aria-pressed="true"]{color:var(--c)}
+
+/* the chart: solid shapes, one calm line. Its labels sit in the clean space to the left, level with where each shape starts, each tied to its shape by a thin line. Nothing is written on the shapes. */
+.l-chart{display:grid;grid-template-columns:var(--l-gut) minmax(0,1fr);margin-top:32px}
+.l-gut{position:relative;height:clamp(300px,40vh,400px)}
+.l-wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.l-wires path{fill:none;stroke:var(--ink);stroke-width:1;opacity:.55}
+.l-lab{position:absolute;right:30px;left:0;transform:translateY(-50%);font:400 var(--t-small)/1.3 var(--sans);color:var(--ink);text-align:right;pointer-events:none}
+.l-lab b{display:block;font-weight:600}
+.l-lab span{display:block;color:#3e4656}
+.l-plot{position:relative;height:clamp(300px,40vh,400px);touch-action:pan-y;cursor:crosshair}
+.l-svg{position:absolute;inset:0;width:100%;height:100%;display:block;clip-path:inset(-20px 0 0 0);transition:clip-path 1s var(--m-ease)}
+.l-wait .l-svg{clip-path:inset(-20px 100% 0 0)}
+.l-wait > :not(.l-svg){opacity:0}
+.l-plot > :not(.l-svg){transition:opacity .6s ease .8s}
+.l-a-v{fill:#fff}.l-a-l{fill:#58bdf0}.l-a-e{fill:var(--c)}.l-a-a{fill:var(--ink)}
+.l-ln-l{fill:none;stroke:var(--ink);stroke-width:2}
+.l-ln-s{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:5 5;opacity:.6}
+.l-read{stroke:var(--ink);stroke-width:1.5}
+.l-ring{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;border:2px solid var(--ink);pointer-events:none}
+.l-drop{position:absolute;width:1px;bottom:0;background:var(--ink);opacity:.55;pointer-events:none}
+/* reading a month: a solid plate above the chart, so it never sits on what it describes */
+.l-mtag{position:absolute;top:-6px;transform:translate(-50%,-100%);padding:3px 8px;background:var(--ink);color:#fff;font:500 var(--t-small)/1.3 var(--sans);white-space:nowrap;pointer-events:none;border-radius:2px}
+.l-yrs{grid-column:2;position:relative;height:58px;border-top:1px solid var(--ink);font:400 var(--t-small)/1 var(--sans);color:var(--muted)}
+.l-yrs > span{position:absolute;top:10px;transform:translateX(-50%);white-space:nowrap}
+.l-yrs > span:first-child{transform:none}
+.l-yrs > span:nth-child(4){left:auto!important;right:0;transform:none}
+.l-yrs > .l-rtag{top:36px;font-weight:500;color:var(--ink)}
+.l-yrs > .l-rtag.l-end{right:0;left:auto!important;transform:none}
+.l-key{display:none;list-style:none;margin:8px 0 0;padding:0}
+.l-key li{position:relative;display:flex;justify-content:space-between;gap:12px;padding:8px 0 8px 22px;border-bottom:1px solid rgba(14,22,38,.14);line-height:1.35;color:var(--ink)}
+.l-key li:last-child{border-bottom:0}
+.l-key li::before{content:"";position:absolute;left:0;top:13px;width:12px;height:12px;background:var(--kc);box-shadow:inset 0 0 0 1px rgba(14,22,38,.2)}
+.l-key b{font-weight:600;white-space:nowrap}
+.l-k-v{--kc:#fff}.l-k-l{--kc:#58bdf0}.l-k-e{--kc:var(--c)}.l-k-a{--kc:var(--ink)}
+.l-now{margin:16px 0 0 var(--l-gut);max-width:80ch;min-height:1.6em;color:#3e4656;text-wrap:pretty}
+.l-now b{font-weight:600;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
+.l-dc .sr{left:0;max-width:1px}
+
+/* what if a loan goes bad */
+.l-bad h2{color:#fff}
+.l-bars{margin-top:clamp(40px,4.4vw,64px)}
+.l-bar{display:grid;grid-template-columns:minmax(0,3.4fr) minmax(0,7fr) 150px;gap:clamp(14px,2vw,24px);align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.14)}
+.l-bt{color:rgba(255,255,255,.86)}
+.l-bv{display:block;height:12px}
+.l-bv i{display:block;height:100%;width:var(--w);background:#58bdf0;transform-origin:0 50%;transition:transform .7s var(--m-ease) .1s}
+.l-js .rv:not(.in-view) .l-bv i{transform:scaleX(.02)}
+.l-bar-o .l-bv i{background:#fff}
+.l-bar b{font-weight:500;color:#fff;text-align:right;white-space:nowrap}
+.l-model{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:24px clamp(40px,6vw,88px);margin-top:clamp(48px,5vw,72px);align-items:start}
+.l-model h3{margin:0;color:#fff}
+.l-loss{width:100%;border-collapse:collapse;font-variant-numeric:lining-nums tabular-nums}
+.l-loss thead th{padding:0 12px 10px 0;font:400 var(--t-small)/1.3 var(--sans);text-align:left;vertical-align:bottom;color:rgba(255,255,255,.78);border-bottom:1px solid rgba(255,255,255,.3)}
+.l-loss tbody th{padding:12px 12px 12px 0;font:400 var(--t-small)/1.35 var(--sans);text-align:left;color:rgba(255,255,255,.82);border-bottom:1px solid rgba(255,255,255,.14)}
+.l-loss tbody th b{display:block;font:500 var(--t-smallh)/1.3 var(--sans);color:#fff}
+.l-loss td{padding:12px 12px 12px 0;font:500 var(--t-smallh)/1.3 var(--sans);color:#fff;vertical-align:top;border-bottom:1px solid rgba(255,255,255,.14);white-space:nowrap}
+
+/* the term sheet, on paper, with each term in plain words */
+.l-rg{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(36px,5vw,72px);align-items:start}
 .l-rs .h2{margin:0}
-.l-docs{list-style:none;margin:clamp(24px,2.8vw,36px) 0 0;padding:0}
-.l-docs li{padding:0 0 12px}
+.l-docs{list-style:none;margin:clamp(24px,2.8vw,36px) 0 0;padding:0;border-top:1px solid rgba(14,22,38,.16)}
+.l-docs li{padding:14px 0;border-bottom:1px solid rgba(14,22,38,.16);font-weight:500}
 .l-sheet{padding:clamp(24px,2.5vw,36px) clamp(20px,3vw,44px) clamp(20px,1.6vw,24px)}
 .l-sheet .sh-h span{font-size:var(--t-small)}
-.l-sheet .sh-t{font-size:clamp(24px,2.1vw,30px);margin:clamp(14px,1.2vw,18px) 0 4px}
+.l-sheet .sh-t{text-wrap:balance;font-size:var(--t-sub);margin:16px 0 4px}
 .l-dl{margin:0}
 .l-dl > div{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:4px 20px;padding:9px 0;border-bottom:1px solid var(--line)}
 .l-dl > div:last-child{border-bottom:0}
-.l-dl dt{font-weight:600;color:var(--ink)}
-.l-dl dt span{display:block;font-weight:400;font-size:15px;line-height:1.35;color:var(--muted)}
+.l-dl dt{font-weight:500;color:var(--ink)}
+.l-dl dt span{display:block;font-weight:400;font-size:var(--t-small);line-height:1.35;color:var(--muted)}
 .l-dl dd{margin:0;color:#2f3747}
 .l-sheet .sh-f{margin:8px 0 0;padding-top:0;font-size:var(--t-small);line-height:1.45;text-align:left;color:var(--muted)}
 
-/* the last screen: the form and nothing else */
-.l-contact{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding-block:clamp(72px,8vw,120px)}
-.l-cg{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(36px,6vw,88px);align-items:end;width:100%}
-.l-contact h2{margin:0;color:#fff}
-.l-contact .lead{max-width:none}
-.l-contact .ldone{color:var(--ink)}
-[data-page="lenders.html"] .l-contact .fl{color:rgba(255,255,255,.92)}
+/* the final ask: the same shape as on Home, a line on the left and the form on the right */
+.l-contact{position:relative;padding-block:clamp(72px,8.34vw,120px)}
+.l-cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,560px);gap:clamp(32px,5vw,72px);align-items:start}
+.l-contact h2{margin:0}
 
-/* the whole paper stays on screen while it is held, on a shorter laptop window too */
-@media (min-width:1061px) and (max-height:840px){.l-sheet{zoom:.9}}
-@media (min-width:1061px) and (max-height:760px){.l-sheet{zoom:.8}}
 @media (max-width:1060px){
  .l-lh,.l-model,.l-rg,.l-cg{grid-template-columns:minmax(0,1fr)}
- .l-rs{position:static}
  .l-rg > .rv:last-child{max-width:720px}
 }
 @media (max-width:820px){
+ .l-pfs{grid-template-columns:minmax(0,1fr);gap:28px}
+ .l-pf{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:16px;align-items:end}
+ .l-pb{grid-column:1 / -1;margin:12px 0 0;grid-row:2}
+ .l-pf b{grid-row:1}
+ .l-pf > span:last-child{grid-row:1;padding-bottom:4px}
  .l-figs{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}
  .l-fig:first-child{grid-column:1 / -1;display:flex;align-items:baseline;gap:12px}
- .l-fig:first-child span{margin-top:0}
+ .l-fig:first-child > span{margin-top:0}
  .l-stop span{display:none}
  .l-stops{height:44px}
  .l-stop b{line-height:36px}
+ .l-chart{display:block}
+ .l-gut{display:none}
  .l-key{display:block}
- .l-now{min-height:4.8em}
- .l-fig:not(:first-child) b{font-size:var(--t-section);line-height:1.08;letter-spacing:-.028em}
+ .l-now{margin-left:0;min-height:4.8em}
  .l-plot{height:clamp(260px,38vh,340px)}
+ .l-yrs{height:34px}
+ .l-yrs > .l-rtag{display:none}
  .l-bar{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
  .l-bv{grid-column:1 / -1;grid-row:2}
 }
 @media (max-width:720px){
- .l-gap-ink{height:70vh}
  .l-film{object-position:50% 0}
- .l-hero::after{background:linear-gradient(180deg,rgba(14,22,38,.45) 0,rgba(14,22,38,0) 18%,rgba(14,22,38,0) 36%,rgba(14,22,38,.86) 56%)}
+ .l-hero::after{background:linear-gradient(180deg,rgba(14,22,38,.78) 0,rgba(14,22,38,.62) 9%,rgba(14,22,38,.05) 22%,rgba(14,22,38,.1) 34%,rgba(14,22,38,.92) 58%)}
+ .l-hero .fp{top:88px;bottom:auto;right:16px}
  .l-hc{padding-bottom:28px}
  .l-hc .lede{margin:16px 0 20px}
  .l-led thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
- .l-led,.l-led tbody,.l-led tr,.l-led th,.l-led td{display:block}
+ .l-led,.l-led tbody,.l-led tfoot,.l-led tr,.l-led th,.l-led td{display:block}
  .l-led tbody tr:not(.l-sg){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 12px;padding:2px 0 10px;border-bottom:var(--hair)}
  .l-led tbody tr:not(.l-sg) > *{height:auto;padding:0;border:0}
  .l-led th[scope="row"]{grid-column:1}
@@ -202,11 +197,13 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:600;verti
  .l-dl > div{grid-template-columns:minmax(0,1fr);gap:4px}
  .l-loss tbody th,.l-loss td,.l-loss thead th{padding-right:10px}
 }
+/* whatever the keyboard reaches is already in view */
+.rv:focus-within{opacity:1;transform:none;transition:none}
 @media (prefers-reduced-motion:reduce){
  .l-hero{position:relative}
- .l-gap,.l-hold{display:none}
- .l-svg,.l-plot > :not(.l-svg),.l-bv i,.l-tk i,.l-stop,.l-sw.rv{transition:none}
- .l-js .rv:not(.in-view) .l-tk i{left:calc(var(--r) - 4px)}.l-js .rv:not(.in-view) .l-bv i{transform:none}
+ .l-svg,.l-plot > :not(.l-svg),.l-bv i,.l-tk i,.l-pb i,.l-stop{transition:none}
+ .l-js .rv:not(.in-view) .l-tk i{left:calc(var(--r) - 4px)}.l-js .rv:not(.in-view) .l-bv i,.l-js .rv:not(.in-view) .l-pb i{transform:none}
 }
 /* a tablet held upright: keep the arm in the picture */
 @media (min-width:721px) and (max-aspect-ratio:1/1){.l-film{object-position:74% 50%}}
+@media print{.l-hero{position:relative;height:auto;min-height:0;color:var(--ink);background:none}.l-hero::after{display:none}.l-hc .lede{color:var(--ink)}.l-hc .h1{color:var(--ink)}.l-hc{padding-top:24px}.l-sl,.l-now{display:none}}

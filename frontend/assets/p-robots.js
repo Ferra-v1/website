@@ -1,5 +1,5 @@
 // Robots we price. FerraPlot holds what the robot pages and the price report share. A robot is built from its own listings, one bright dot at a time, on the shelf and on its own page.
-// A robot's page then has one short chart: every listing by age and asking price, and one age to read.
+// A robot's page opens with its listings, then has one short chart: every listing by age and asking price, and one age to read. Chart labels stand past the line ends, or on a phone in rows above the plot, so none sits on a mark.
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const NEAR = 2;   // a listing is near an age when it is within this many years, on the shelf and on every robot's chart
@@ -16,8 +16,18 @@
   const BODY = .3, THIN_DOTS = 20;
   // nice dollar ticks inside a range
   const TICKS = [300, 1000, 3000, 10000, 30000, 100000, 300000];
-  // a tooltip that stays inside its parent
-  const placeTip = (tip, par, x, y) => { tip.hidden = false; const w = tip.offsetWidth, h = tip.offsetHeight, W = par.clientWidth; tip.style.left = clamp(x - w / 2, 16, Math.max(16, W - w - 16)) + 'px'; const up = y - h - 14, screen = par.getBoundingClientRect().top + up; tip.style.top = (up > 8 && screen > 110 ? up : y + 16) + 'px'; };
+  // a tooltip: solid, small, beside what it describes and never on it. It looks for room above, below, right and left of the dot, inside box when there is one, and clear of the bar at the top of the screen.
+  const placeTip = (tip, par, x, y, box) => {
+    tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight, W = par.clientWidth, H = par.clientHeight, b = box || { l: 8, r: W - 8, t: 8, b: H - 8 }, gap = 14;
+    const minT = Math.max(b.t, 84 - par.getBoundingClientRect().top), maxL = Math.max(b.l, b.r - w), cx = clamp(x - w / 2, b.l, maxL);
+    const opts = [[cx, y - h - gap], [cx, y + gap], [x + gap, y - h / 2], [x - w - gap, y - h / 2]];
+    const fit_ = ([l, t]) => l >= b.l - .5 && l + w <= b.r + .5 && t >= minT && t + h <= b.b;
+    const [l, t] = opts.find(fit_) || (y - minT > b.b - y ? [cx, Math.max(minT, y - h - gap)] : [cx, Math.min(y + gap, Math.max(minT, b.b - h))]);
+    tip.style.left = l + 'px'; tip.style.top = t + 'px';
+  };
+  // a mouse reads the tip and clicks the dot; a finger taps the dot, then the link inside the tip
+  const tipLink = (tip, a, kind, words, url) => { const touch = kind === 'touch'; tip.classList.toggle('touch', touch); a.textContent = touch ? words + ' →' : 'Click the dot to ' + words.toLowerCase(); a.href = url; };
   // a chart label in the clearest spot the chart offers, with a short line to what it names. cands: [{x, y, tx, ty}]: the label's centre and its target.
   const clearLabel = (txt, cands, pts, box, used, cls = 'lb') => {
     const w = txt.length * (cls.includes('lb') ? 8 : 7.2) + 8, h = 22; let best = null, bs = 1e9;
@@ -32,9 +42,27 @@
     const gap = Math.abs(c.ty - ly), leader = gap > 6 ? `<line class="ld" x1="${lx}" y1="${ly}" x2="${c.tx}" y2="${c.ty}"/>` : '';
     return `${leader}<text class="${cls}" x="${cx}" y="${c.y + 5}" text-anchor="middle">${txt}</text>`;
   };
-  // the listing far below the rest says what it is
-  const lowest = (ps, lo) => { const low = ps.filter(q => q.usd < lo); if (!low.length) return ''; const m = low.reduce((a, q) => q.usd < a.usd ? q : a); return low.map(q => { const x = (q.x ?? q.cx) - 10, y = (q.y ?? q.cy) + 5; return q === m ? `<text x="${x}" y="${y - 17}" text-anchor="end">Lowest ask: ${usd(q.usd)},<tspan x="${x}" dy="17">left on the chart so you can see it.</tspan></text>` : `<text x="${x}" y="${y}" text-anchor="end">${usd(q.usd)}</text>`; }).join(''); };
-  window.FerraPlot = { clamp, money, usd, ease, fit, TICKS, placeTip, reduce, clearLabel, lowest, ghost, ghostBitmap };
+  // labels past the line ends, in the clean column right of the plot. Each sits at the height of what it names, moved only as far as it takes to keep them apart, and a thin bent line joins it to its mark. items: [{txt, y, x, cls, s}]; x is left out when the colour alone says what it names.
+  const wrapWords = (t, n) => { const out = []; let l = ''; for (const w of t.split(' ')) { if (l && (l + ' ' + w).length > n) { out.push(l); l = w; } else l = l ? l + ' ' + w : w; } if (l) out.push(l); return out; };
+  const endLabels = (items, gx, width, top, bottom, lh = 18) => {
+    const n = Math.floor(width / 8), L = items.map(i => ({ ...i, lines: wrapWords(i.txt, n) })).sort((a, b) => a.y - b.y);
+    L.forEach((i, k) => { i.h = i.lines.length * lh; i.c = Math.max(i.y, top + i.h / 2); if (k) i.c = Math.max(i.c, L[k - 1].c + (L[k - 1].h + i.h) / 2 + 10); });
+    for (let k = L.length - 1; k >= 0; k--) { const lim = k === L.length - 1 ? bottom - L[k].h / 2 : L[k + 1].c - (L[k + 1].h + L[k].h) / 2 - 10; if (L[k].c > lim) L[k].c = lim; }
+    return L.map(i => {
+      const y0 = i.c - i.h / 2 + 13, t = `<text class="${i.cls || 'lb'}" x="${gx}" y="${y0}">${i.lines.map((l, k) => `<tspan x="${gx}"${k ? ` dy="${lh}"` : ''}>${l}</tspan>`).join('')}</text>`;
+      const line = i.x == null ? '' : `<path class="ld${i.cy ? ' cy' : ''}" d="M${i.x} ${i.y}H${gx - 10}V${i.c}H${gx - 4}"/>`;
+      return i.s ? `<g class="lg" data-s="${i.s}">${line}${t}</g>` : line + t;
+    }).join('');
+  };
+  // on a phone there is no column to spare, so the same words stand in rows above the plot, each with a small sample of its mark. rows: [{txt, mark: 'line'|'band'|'dot', cy, row, s}]
+  const keyRows = (rows, y0, rh = 21) => rows.map(r => {
+    const y = y0 + r.row * rh, cy = r.cy ? ' cy' : '', mark = r.mark === 'band' ? `<rect class="k-band" x="0" y="${y - 12}" width="18" height="12"/>` : r.mark === 'dot' ? `<circle class="k-dot${cy}" cx="9" cy="${y - 6}" r="4"/>` : `<path class="k-line${cy}" d="M0 ${y - 6}h18"/>`;
+    const body = mark + `<text class="${r.cls || 'lb'}${cy}" x="26" y="${y}">${r.txt}</text>`;
+    return r.s ? `<g class="lg" data-s="${r.s}">${body}</g>` : body;
+  }).join('');
+  // the listing far below the rest
+  const lowestOf = (ps, lo) => { const low = ps.filter(q => q.usd < lo); return low.length ? low.reduce((a, q) => q.usd < a.usd ? q : a) : null; };
+  window.FerraPlot = { clamp, money, usd, ease, fit, TICKS, placeTip, tipLink, reduce, clearLabel, endLabels, keyRows, lowestOf, ghost, ghostBitmap };
 
   // ---------------------------------------------------------------- one robot's page: one short chart
   const page = document.querySelector('[data-robot]'), plot = document.querySelector('.r-plot');
@@ -50,30 +78,31 @@
     const lo = Math.min(...P.map(q => q.usd).filter(v => v >= 1000), ...A.map(q => q.usd), D.curve[30][0]) * .82, hi = Math.max(...P.map(q => q.usd), D.curve[0][2]) * 1.16;
     const few = P.length < THIN_DOTS;
     function layout() {
-      const W = plot.clientWidth, H = plot.clientHeight, phone = W < 560, top = 10, base = H - 46, gut = phone ? 52 : 58;
-      const X = a => gut + a / 30 * (W - gut - (phone ? 8 : 2)), Y = v => base - 14 - (Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (base - 14 - top);
-      g = { W, H, phone, base, top, X, Y, r: few ? (phone ? 4 : 4.6) : (phone ? 2.1 : 2.7) };
+      const W = plot.clientWidth, H = plot.clientHeight, phone = W < 560, thin = D.tier === 'thin', gut = 74, side = phone ? 0 : clamp(W * .16, 140, 190);
+      const under = A.filter(q => q.usd < D.curve[clamp(Math.round(q.age), 0, 30)][0]).length, n = A.length, low0 = lowestOf(P, lo);
+      // on a phone the key stands above the plot, and a note on the floor dot under the axis
+      const rows = phone ? 2 + (n ? 1 : 0) : 0, top = phone ? rows * 21 + 22 : 10, base = H - (phone && low0 ? 66 : 46), R = W - side - (phone ? 8 : 2);
+      const X = a => gut + a / 30 * (R - gut), Y = v => base - 14 - (Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (base - 14 - top);
+      g = { W, H, phone, base, top, X, Y, R, gut, r: few ? (phone ? 4 : 4.6) : (phone ? 2.1 : 2.7) };
       P.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); }); A.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); });
       age.style.cssText = `left:${X(0) - 22}px;width:${X(30) - X(0) + 44}px;top:${base - 22}px`;
       th.style.top = base - 13 + 'px';
-      let s = `<line class="ax" x1="0" x2="${W}" y1="${base + .5}" y2="${base + .5}"/>`;
+      let s = `<line class="ax" x1="0" x2="${R}" y1="${base + .5}" y2="${base + .5}"/>`;
       TICKS.filter(t => t > lo * 1.06 && t < hi).forEach(t => { s += `<text x="0" y="${Y(t) + 5}">${usd(t)}</text>`; });
-      [5, 10, 15, 20, 25, 30].forEach(a => { s += `<text x="${X(a)}" y="${base + 36}" text-anchor="${a === 30 ? 'end' : 'middle'}">${a === 30 && !phone ? '30 years old' : a}</text>`; });
-      if (phone) s += `<text x="0" y="${base + 36}">Age</text>`;
-      // labels go where the chart is empty, each with a short line to what it names
-      const dots = P.concat(A).map(q => ({ x: q.x, y: q.y })), box = { l: X(0) + 4, r: W, t: top, b: base - 6 }, used = [], agesR = [28, 26, 24, 22, 20, 18, 16, 14, 12, 8, 6, 4], onLine = [], onBand = [];
-      agesR.forEach(a => { const y = Y(D.curve[a][1]), up = Y(D.curve[a][2]), dn = Y(D.curve[a][0]); [up - 18, up - 44, y - 26, y + 26].forEach(v => onLine.push({ x: X(a), y: v, tx: X(a), ty: y })); [dn + 20, dn + 46].forEach(v => onBand.push({ x: X(a), y: v, tx: X(a), ty: dn })); });
-      s += clearLabel('Typical asking price', onLine, dots, box, used);
-      s += clearLabel(D.tier === 'thin' ? 'Our rough range' : '8 in 10 ask inside this band', onBand, dots, box, used, 'pl');
-      // what the dark dots imply, counted from the data: a sale is under the band when it brought less than the band's floor for its age
-      if (A.length) {
-        const under = A.filter(q => q.usd < D.curve[clamp(Math.round(q.age), 0, 30)][0]).length, n = A.length;
-        const say = n === 1 ? `This sale landed ${under ? 'under' : 'inside'} the band` : under === n ? 'Every sale here landed under the band' : under ? `${under} of these ${n} sales landed under the band` : 'These sales landed inside the band';
-        const low = A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]), w = say.length * 8, right = low.x + 12 + w < W, left = low.x - 12 - w > gut;
-        if (right || left) s += `<text class="lb" x="${low.x + (right ? 12 : -12)}" y="${low.y + 5}" text-anchor="${right ? 'start' : 'end'}">${say}</text>`;
-        else { const i = say.indexOf(' landed'), x = clamp(low.x - w * .31, gut, W - w * .62), y = low.y + 40 < base - 16 ? low.y + 22 : low.y - 30; s += `<text class="lb" x="${x}" y="${y}">${say.slice(0, i)}<tspan x="${x}" dy="18">${say.slice(i + 1)}</tspan></text>`; }
+      [5, 10, 15, 20, 25, 30].forEach(a => { s += `<text x="${X(a)}" y="${base + 36}" text-anchor="${a === 30 ? 'end' : 'middle'}">${a === 30 && R - gut >= 560 ? '30 years old' : a}</text>`; });
+      if (R - gut < 560) s += `<text x="0" y="${base + 36}">Age</text>`;
+      // labels past the line ends. What the dark dots imply is counted from the data: a sale is under the band when it brought less than the band's floor for its age.
+      const say = !n ? '' : n === 1 ? `This sale landed ${under ? 'under' : 'inside'} the band` : under === n ? (phone ? 'Every sale fell under the band' : 'Every sale here landed under the band') : under ? (phone ? `${under} of ${n} sales under the band` : `${under} of these ${n} sales landed under the band`) : 'These sales landed inside the band';
+      const bandWord = thin ? 'Our rough range' : '8 in 10 ask inside this band', end = D.curve[30], low = n ? A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]) : null;
+      if (phone) {
+        s += keyRows([{ txt: 'Typical asking price', mark: 'line', row: 1 }, { txt: bandWord, mark: 'band', row: 2, cls: 'pl' }].concat(n ? [{ txt: say, mark: 'dot', row: 3 }] : []), 2);
+        if (low0) s += `<text x="0" y="${base + 58}">Dot on the floor: lowest ask, ${usd(low0.usd)}</text>`;
+      } else {
+        const items = [{ txt: 'Typical asking price', y: Y(end[1]), x: X(30) + 3 }, { txt: bandWord, y: Y(end[0]), x: X(30) + 3, cls: 'pl' }];
+        if (n) items.push({ txt: say, y: low.y });
+        if (low0) items.push({ txt: `Lowest ask: ${usd(low0.usd)}`, y: low0.y, x: low0.x + 5, cls: 'pl' });
+        s += endLabels(items, R + 16, side - 16, top, base - 10);
       }
-      s += lowest(P, lo);
       ax.setAttribute('viewBox', `0 0 ${W} ${H}`); ax.innerHTML = s;
       place();
     }
@@ -95,7 +124,7 @@
       for (const q of P) {
         const t = Math.abs(q.whole - sel) <= 1 ? 1 : 0; q.hi += (t - q.hi) * .2; if (Math.abs(t - q.hi) > .01) moving = true;
         const app = reduce ? 1 : clamp((X(0) + rev * (X(30) - X(0)) - q.x + 6) / 40); if (app <= 0) continue;
-        c.fillStyle = q === hover ? ink : `rgba(${C},${(few ? .8 + .2 * q.hi : .5 + .5 * q.hi) * app})`;
+        c.fillStyle = q === hover ? ink : `rgba(${C},${(few ? .8 + .2 * q.hi : .5 + .5 * q.hi) * app * (hover ? .32 : 1)})`;
         c.beginPath(); c.arc(q.x, q.y, g.r + q.hi * .5 + (q === hover ? 1.6 : 0), 0, 6.2832); c.fill();
       }
       if (rev > .6) A.forEach(q => { c.fillStyle = ink; c.globalAlpha = clamp((rev - .6) / .4); c.beginPath(); c.arc(q.x, q.y, Math.max(g.r, 3.4) + .6 + (q === hover ? 1.4 : 0), 0, 6.2832); c.fill(); c.globalAlpha = 1; });
@@ -117,18 +146,18 @@
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
       place();
     }
-    function place() { if (!g.X) return; const w = th.offsetWidth; th.style.transform = `translateX(${clamp(g.X(sel) - w / 2, 0, g.W - w)}px)`; }
+    function place() { if (!g.X) return; const w = th.offsetWidth; th.style.transform = `translateX(${clamp(g.X(sel) - w / 2, 0, g.R - w)}px)`; }
     let raf = 0;
     const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
     function frame(now) { raf = 0; if (draw(now)) kick(); }
     // pointer: rest on a dot to read its listing; move along the chart to change the age
     const ALL = () => A.concat(P);
     function nearest(x, y, reach) { let best = null, bd = reach * reach; for (const q of ALL()) { const v = (q.x - x) ** 2 + (q.y - y) ** 2; if (v < bd) { bd = v; best = q; } } return best; }
-    function showTip(q) {
+    function showTip(q, kind) {
       hover = q; tb.textContent = q.t;
       ts.textContent = q.sold ? `Sold at auction for ${usd(q.usd)} a robot on ${q.when} at ${q.src}.` : `Built ${q.year}. Asking ${usd(q.usd)} on ${q.src}.`;
-      ta.textContent = (q.sold ? 'See the result' : 'See the listing') + ' \u2192'; ta.href = q.url;
-      placeTip(tip, plot, q.x, q.y); kick();
+      tipLink(tip, ta, kind, q.sold ? 'See the result' : 'See the listing', q.url);
+      placeTip(tip, plot, q.x, q.y, { l: g.gut, r: g.R, t: g.top, b: g.base - 2 }); kick();
     }
     function hideTip() { if (hover || !tip.hidden) { hover = null; tip.hidden = true; kick(); } }
     const rel = ev => { const b = cv.getBoundingClientRect(); return [ev.clientX - b.left, ev.clientY - b.top]; };
@@ -137,14 +166,15 @@
     cv.addEventListener('pointermove', ev => {
       if (ev.pointerType === 'touch') return;
       const [x, y] = rel(ev), a = ageAt(x);
-      if (x > g.X(0) && a !== sel) { sel = a; reading(); kick(); }
-      clearTimeout(wait); wait = setTimeout(() => { const q = nearest(x, y, 16); if (q) showTip(q); else if (hover) hideTip(); }, 70);
+      if (x > g.X(0) && x < g.R && a !== sel) { sel = a; reading(); kick(); }
+      clearTimeout(wait); wait = setTimeout(() => { const q = nearest(x, y, 16); cv.style.cursor = q ? 'pointer' : ''; if (q) showTip(q, 'mouse'); else if (hover) hideTip(); }, 70);
     });
-    cv.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY]; const [x, y] = rel(ev); if (ev.pointerType !== 'touch') { const q = nearest(x, y, 22); if (q) showTip(q); } });
+    cv.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY, ev.pointerType]; });
+    cv.addEventListener('click', ev => { if (down && down[2] === 'touch') return; const [x, y] = rel(ev), q = nearest(x, y, 22); if (q) window.open(q.url, '_blank', 'noopener'); });
     cv.addEventListener('pointerup', ev => {
       if (ev.pointerType !== 'touch' || !down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 8) return;
       const [x, y] = rel(ev), q = nearest(x, y, 24);
-      if (q) showTip(q); else { hideTip(); sel = ageAt(x); reading(); kick(); }
+      if (q) showTip(q, 'touch'); else { hideTip(); sel = ageAt(x); reading(); kick(); }
     });
     document.addEventListener('pointerdown', ev => { if (!tip.contains(ev.target) && ev.target !== cv) hideTip(); });
     document.addEventListener('keydown', ev => { if (ev.key === 'Escape') hideTip(); });
@@ -157,20 +187,26 @@
     document.querySelectorAll('[data-listings]').forEach(tbl => { const rows = [...tbl.tBodies[0].rows], keep = +(matchMedia('(max-width:760px)').matches ? tbl.dataset.keepM : tbl.dataset.keep); if (rows.length > keep + 2) { const step = (rows.length - 1) / (keep - 1), show = new Set(Array.from({ length: keep }, (_, i) => Math.round(i * step))); rows.forEach((r, i) => { if (!show.has(i)) r.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${rows.length} listings \u2192`; tbl.after(b); b.addEventListener('click', () => { rows.forEach(r => { r.hidden = false; }); b.remove(); }); } });
   }
 
-  // ---------------------------------------------------------------- find a model: type any part of its name
+  // ---------------------------------------------------------------- find a model: type any part of its name. The list opens as a solid panel under the field, on focus, and closes when focus leaves it or on Escape.
   const fnd = document.querySelector('[data-find]');
   if (fnd) {
     const ents = JSON.parse(fnd.querySelector('.r-find-d').textContent), norm = t => t.toLowerCase().replace(/[^a-z0-9 ]/g, '');
     ents.forEach(r => { r.k = norm(r[0]).replace(/ /g, ''); });
     const box = fnd.querySelector('.r-find-in'), inp = box.querySelector('input'), list = fnd.querySelector('.r-find-list'), say = fnd.querySelector('.r-find-n');
-    const row = r => { const a = document.createElement('a'), b = document.createElement('b'), s = document.createElement('span'), i = document.createElement('i'); a.href = r[1 + 1]; b.textContent = r[0]; s.className = 'num'; s.textContent = `${r[1].toLocaleString('en-US')} listing${r[1] === 1 ? '' : 's'}`; i.setAttribute('aria-hidden', 'true'); i.textContent = '\u2192'; a.append(b, s, i); return a; };
+    const row = r => { const a = document.createElement('a'), b = document.createElement('b'), s = document.createElement('span'), i = document.createElement('i'); a.href = r[1 + 1]; b.textContent = r[0]; s.className = 'num t-small'; s.textContent = `${r[1].toLocaleString('en-US')} listing${r[1] === 1 ? '' : 's'}`; i.setAttribute('aria-hidden', 'true'); i.textContent = '→'; a.append(b, s, i); return a; };
     const start = [...list.children], words = say.textContent, MAX = 8;
-    box.hidden = false;
+    box.hidden = false; fnd.classList.add('live');
+    const open = v => fnd.classList.toggle('open', v);
+    inp.addEventListener('focus', () => open(true));
+    fnd.addEventListener('focusout', ev => { if (!fnd.contains(ev.relatedTarget)) open(false); });
+    fnd.addEventListener('keydown', ev => { if (ev.key === 'Escape') { open(false); inp.blur(); } });
+    document.addEventListener('pointerdown', ev => { if (!fnd.contains(ev.target)) open(false); });
     inp.addEventListener('input', () => {
+      open(true);
       const toks = norm(inp.value).split(' ').filter(Boolean);
       if (!toks.length) { list.replaceChildren(...start); say.textContent = words; return; }
       const whole = toks.join(''), hit = ents.filter(r => toks.every(t => r.k.includes(t))).sort((a, b) => (b.k.includes(whole) - a.k.includes(whole)) || b[1] - a[1]);
-      if (!hit.length) { const a = document.createElement('a'); a.className = 'r-find-any'; a.href = 'price.html#r=any-arm'; a.textContent = 'Price it as an arm with no model named \u2192'; list.replaceChildren(a); say.textContent = 'We have no listings by that name.'; return; }
+      if (!hit.length) { const a = document.createElement('a'); a.className = 'r-find-any'; a.href = 'price.html#r=any-arm'; a.textContent = 'Price it as an arm with no model named →'; list.replaceChildren(a); say.textContent = 'We have no listings by that name.'; return; }
       list.replaceChildren(...hit.slice(0, MAX).map(row));
       say.textContent = hit.length > MAX ? `${hit.length} match. Here are the ${MAX} with the most listings.` : hit.length === 1 ? 'One match.' : `${hit.length} match.`;
     });
@@ -185,7 +221,7 @@
     else DOTS = JSON.parse(shelf.querySelector('.r-dots').textContent);
     const tip = shelf.querySelector(':scope > .r-tip'), [tb, ts, ta] = [tip.querySelector('b'), tip.querySelector('span'), tip.querySelector('a')];
     // the robot stands on the line at the height its listings earn, at the left of its box, or the right of it when the page asks
-    const geo = cv => { const G = ghost(cv.dataset.b), w = cv.clientWidth, h = cv.clientHeight, cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, (h - 2) / rows); return { G, cell, ox: cv.dataset.at === 'r' ? w - cols * cell : 0, oy: h - 2 - rows * cell, cols, rows }; };
+    const geo = cv => { const G = ghost(cv.dataset.b), w = cv.clientWidth, h = cv.clientHeight, cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1, cell = Math.min(w / cols, (h - 2) / rows); return { G, cell, ox: 0, oy: h - 2 - rows * cell, cols, rows }; };
     const dotXY = (g, d) => [g.ox + (d[0] - g.G.x0 + .5) * g.cell, g.oy + (d[1] - g.G.y0 + .5) * g.cell];
     // until the reader moves the age, every dot is bright. After that, only the dots near that age are.
     let sel = null;
@@ -219,24 +255,30 @@
     let hotCv = null, hot = null, wait = 0;
     const find = (cv, ev, reach) => { const b = cv.getBoundingClientRect(), x = ev.clientX - b.left, y = ev.clientY - b.top, g = geo(cv); let best = null, bd = reach * reach; for (const d of DOTS[cv.dataset.f] || []) { const [dx, dy] = dotXY(g, d), v = (dx - x) ** 2 + (dy - y) ** 2; if (v < bd) { bd = v; best = d; } } return best; };
     const hide = () => { if (hotCv) paint(hotCv, 1); hotCv = hot = null; tip.hidden = true; };
-    const show = (cv, d) => {
+    const show = (cv, d, kind) => {
       if (hotCv && hotCv !== cv) paint(hotCv, 1);
       hotCv = cv; hot = d; paint(cv, 1, d);
-      tb.textContent = d[6]; ts.textContent = `Built ${d[3]}. Asking ${usd(d[2])} on ${d[4]}.`; ta.textContent = 'See the listing \u2192'; ta.href = d[5];
+      tb.textContent = d[6]; ts.textContent = `Built ${d[3]}. Asking ${usd(d[2])} on ${d[4]}.`; tipLink(tip, ta, kind, 'See the listing', d[5]);
+      if (!own && kind !== 'touch') ta.textContent = 'Click to open this robot\u2019s page';
       const g = geo(cv), [x, y] = dotXY(g, d), b = cv.getBoundingClientRect(), s = shelf.getBoundingClientRect();
-      placeTip(tip, shelf, b.left - s.left + x, b.top - s.top + y);
+      placeTip(tip, shelf, b.left - s.left + x, b.top - s.top + y, own && cv.clientHeight > 280 ? { l: b.left - s.left + 8, r: Math.min(b.right - s.left, s.width) - 8, t: b.top - s.top + 8, b: b.bottom - s.top - 8 } : null);
     };
     let lastTouch = 0;
     cvs.forEach(cv => {
-      cv.addEventListener('pointermove', ev => { if (ev.pointerType === 'touch') return; clearTimeout(wait); wait = setTimeout(() => { const d = find(cv, ev, 16); if (d) { if (d !== hot) show(cv, d); } else if (hot && !tip.matches(':hover')) hide(); }, 60); });
-      cv.addEventListener('pointerleave', () => { clearTimeout(wait); setTimeout(() => { if (hot && !tip.matches(':hover') && hotCv === cv && !cv.matches(':hover')) hide(); }, 220); });
+      cv.addEventListener('pointermove', ev => { if (ev.pointerType === 'touch') return; clearTimeout(wait); wait = setTimeout(() => { const d = find(cv, ev, 16); cv.style.cursor = d && own ? 'pointer' : ''; if (d) { if (d !== hot) show(cv, d, 'mouse'); } else if (hot) hide(); }, 60); });
+      cv.addEventListener('pointerleave', () => { clearTimeout(wait); setTimeout(() => { if (hot && hotCv === cv && !cv.matches(':hover')) hide(); }, 120); });
       cv.addEventListener('pointerdown', ev => { if (ev.pointerType === 'touch') lastTouch = performance.now(); });
       // a tap on a dot reads that listing; a tap anywhere else on the robot opens its page
-      (cv.closest('a') || cv).addEventListener('click', ev => { if (performance.now() - lastTouch > 900 || ev.target !== cv) return; const d = find(cv, ev, 18); if (d) { ev.preventDefault(); show(cv, d); } });
+      (cv.closest('a') || cv).addEventListener('click', ev => {
+        if (ev.target !== cv) return; const d = find(cv, ev, 18); if (!d) return;
+        if (performance.now() - lastTouch <= 900) { ev.preventDefault(); show(cv, d, 'touch'); }
+        else if (own) window.open(d[5], '_blank', 'noopener');
+      });
     });
-    tip.addEventListener('pointerleave', hide);
     document.addEventListener('pointerdown', ev => { if (hot && !tip.contains(ev.target) && !(ev.target.matches && ev.target.matches('canvas[data-b]'))) hide(); });
     document.addEventListener('keydown', ev => { if (ev.key === 'Escape') hide(); });
+    // on a robot's page, resting on a listing in the table lights that listing's dot on the robot
+    if (own && cvs[0]) { const cv = cvs[0], list = DOTS[cv.dataset.f] || []; shelf.querySelectorAll('tr[data-u]').forEach(tr => { const d = list.find(x => x[5] === tr.dataset.u); if (!d) return; tr.addEventListener('pointerenter', ev => { if (ev.pointerType !== 'touch' && cv.dataset.done) paint(cv, 1, d); }); tr.addEventListener('pointerleave', () => { if (cv.dataset.done) paint(cv, 1, hot); }); }); }
     // one age for the whole shelf: every robot reprices from its own curve, and each figure is set at the size its listings near that age earn. robots.py prints the opening state by the same rule.
     const dial = shelf.querySelector('.r-dial');
     if (dial) {
@@ -253,25 +295,14 @@
           ct.lastChild.textContent = (nr ? `${nr} of ${n} for sale near this age.` : `None of its ${dots(n)} are near this age, so this is a rough guess.`) + ct.dataset.n;
           if (!f) continue;
           const c = f.c[a], thin = f.t === 'thin', big = f.t === 'big', pr = ce.querySelector('.r-c-pr'), at = ce.querySelector('.r-c-at');
-          pr.className = `r-c-pr ${thin || !nr ? 't' : big && nr >= 5 ? 'b' : nr >= 5 || big ? 'm' : 't'} num`;
+          const sz = thin || !nr ? 't' : big && nr >= 5 ? 'b' : 'm';
+          pr.className = `r-c-pr ${sz} ${sz === 't' ? 't-lead' : sz === 'b' && ce.classList.contains('r-c-top') ? 'fig-44' : 'fig-24'} num`;
           pr.textContent = thin ? `${money(c[0])} to ${money(c[2])}` : nr ? money(c[1]) : `About ${money(c[1])}`;
           if (at) at.textContent = `at ${yrs(a)} old`;
         }
         cvs.forEach(cv => paint(cv, cv.dataset.done ? 1 : 0));
       });
     }
-  }
-
-  // ---------------------------------------------------------------- the Ground Fade: gradient to white over 60vh of scroll, with the next section's top between 75% and 15% of the screen
-  // On a robot's page the first screen is sticky: it holds still for 60vh of scroll and through the fade, its words leave in the first half, and the next section rises past it. Taller than the screen on a phone, it first scrolls to its own bottom edge.
-  const gd = document.querySelector('.r-ground'), nx = document.querySelector('.r-gf-next'), pg = document.querySelector('.page'), one = document.querySelector('.r-one');
-  if (gd && nx && !reduce) {
-    pg.classList.add('gf-on'); let last = -1;
-    const place = () => { if (!one) return; const v = gd.offsetHeight, H = one.offsetHeight, over = Math.max(0, H - v); one.style.top = -over + 'px'; nx.style.marginTop = .75 * v + over + .6 * v - H + 'px'; };
-    const on = () => { const v = gd.offsetHeight, k = clamp((v * .75 - nx.getBoundingClientRect().top) / (v * .6)); if (k === last) return; last = k; pg.style.setProperty('--gf', k.toFixed(3)); pg.classList.toggle('gfing', k < 1); pg.classList.toggle('gfout', k >= .5); gd.style.opacity = 1 - k; gd.style.visibility = k >= 1 ? 'hidden' : ''; };
-    place();
-    addEventListener('scroll', on, { passive: true }); addEventListener('resize', () => { place(); on(); }, { passive: true }); on();
-    if (one) new ResizeObserver(() => { place(); on(); }).observe(one);
   }
 
   // ---------------------------------------------------------------- the seven robots to come: they assemble 300ms apart when the row arrives, and rest off screen

@@ -1,27 +1,30 @@
-// How it works: one example loan. The steps are real page text; scrolling through them drives the stage: who pays whom on one line, the arm that stands for the loan, and two figures.
-// All 5,000 dots are the loan, so the share of solid dots is the share paid back. Reduced motion: each step shows its finished stage, with nothing travelling.
+// How it works: one example loan in five steps. Both columns hold still while the reader scrolls; scrolling opens each step and drives the stage. The stage always shows everyone and all four payments, and the step's payment lights up and moves.
+// All 5,000 dots are the loan, so the share of solid dots is the share paid back. Reduced motion, or a window too short to hold the scene: every step stands open and the stage shows the finished loan.
 (() => {
-  const story = document.querySelector('[data-hw]'); if (!story) return;
-  const D = JSON.parse(story.dataset.hw), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const run = document.querySelector('[data-hw]'); if (!run) return;
+  const D = JSON.parse(run.dataset.hw), root = document.documentElement, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const money = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
   const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
   const ease = t => t * t * (3 - 2 * t);
-  const phone = () => innerWidth <= 1040;
-  const $ = (s, r = story) => r.querySelector(s), $$ = (s, r = story) => [...r.querySelectorAll(s)];
+  const phone = () => innerWidth <= 1100;
+  const held = () => !reduce && innerHeight >= 600;
+  const $ = (s, r = run) => r.querySelector(s), $$ = (s, r = run) => [...r.querySelectorAll(s)];
 
   // the arm: every dot has its place, its size from the shade in the picture, and a rank, the order it fills from the floor up. A share of the ranks is exactly that share of the dots.
   const rows = D.grid.length, cols = Math.max(...D.grid.map(r => r.length));
-  const at = (x, y) => (D.grid[y] || '')[x] > ' ' ;
+  const at = (x, y) => (D.grid[y] || '')[x] > ' ';
   const pts = []; let sr = 0;
   D.grid.forEach((line, y) => { for (let x = 0; x < line.length; x++) { const c = line[x]; if (c === ' ') continue; sr = (sr * 9301 + 49297) % 233280;
     pts.push({ x, y, t: +c / 9, k: rows - y + (sr / 233280) * 5, edge: !at(x - 1, y) || !at(x + 1, y) || !at(x, y - 1) || !at(x, y + 1) }); } });
   pts.slice().sort((a, b) => a.k - b.k).forEach((d, i, all) => { d.rank = i / all.length; });
-  const SOLID = '#2847ce', PALE = '#a9bbef', FAINT = '#cdd4e3', TAU = 6.2832;
-  const cv = $('.hw-grid'), ctx = cv.getContext('2d'), stage = $('.hw-stage'), dia = $('.hw-dia'), si = $('.hw-si');
+  const SOLID = '#ffffff', PALE = '#5f7fe6', FAINT = 'rgba(255,255,255,.26)', TAU = 6.2832;
+  const cv = $('.hw-grid'), ctx = cv.getContext('2d'), stage = $('.hw-stage'), dia = $('.hw-dia'), low = $('.hw-low');
   let F = null;
   function size() {
-    const ph = phone(), room = ph ? Math.max(120, innerHeight * .52 - dia.offsetHeight - 40) : Math.max(240, stage.clientHeight - dia.offsetHeight - 32);
-    const h = Math.min(room, ph ? 230 : 500), maxW = ph ? Math.min(560, si.clientWidth) * .38 : si.clientWidth - 296, w = Math.min(maxW, h * cols / rows), p = w / cols, H = p * rows, dpr = Math.min(2, devicePixelRatio || 1);
+    const ph = phone(), s = getComputedStyle(stage), avail = held() ? (ph ? Math.min(290, Math.max(120, innerHeight * .3)) : Math.max(180, innerHeight - parseFloat(s.paddingTop) - parseFloat(s.paddingBottom) - dia.offsetHeight - 36)) : (ph ? 220 : 420);
+    // the arm never reaches the figures beside it: the widest figure, $4,375,000, is about 5.5 times its type size
+    const room = low.clientWidth - parseFloat(getComputedStyle(figO).fontSize) * 5.5 - 16;
+    const h = Math.min(avail, 440, room * rows / cols), w = h * cols / rows, p = w / cols, H = p * rows, dpr = Math.min(2, devicePixelRatio || 1);
     cv.style.width = w + 'px'; cv.style.height = H + 'px'; cv.width = Math.round(w * dpr); cv.height = Math.round(H * dpr);
     F = { w, h: H, dpr, p };
   }
@@ -34,137 +37,147 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
     for (const [k, c] of [['faint', FAINT], ['pale', PALE], ['solid', SOLID]]) {
       const L = buckets[k]; if (!L.length) continue; ctx.fillStyle = c; ctx.beginPath();
-      const big = k === 'solid';   // a paid dot is a full dot, so the part that has been paid back reads solid beside the pale part still owed
+      const big = k === 'solid';   // a paid dot is a full dot, so the part that has been paid back reads solid beside the part still owed
       for (const d of L) { const cx = (d.x + .5) * p, cy = (d.y + .5) * p, r = Math.max(.7, p * (big ? .42 + .12 * (1 - d.t) : .28 + .18 * (1 - d.t))); ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, TAU); }
       ctx.fill();
     }
   }
 
-  // the diagram: the lines and the labels are placed from where the nodes really are, so one script serves the row at 1440 and the two by two on a phone
+  // the diagram: lines, arrowheads and labels are placed from where the squares really are, so one script serves the wide row and the phone row
   const N = {}; $$('.hw-nd').forEach(n => { N[n.dataset.n] = n; });
-  const P = {}; ['base', 'stem', 'lc', 'cf', 'fl', 'cr', 'dash'].forEach(k => { P[k] = $('.hw-p-' + k); });
-  const labs = $$('.hw-lab'), mv = $('.hw-mv'), monthLab = labs.find(l => l.dataset.at === 'lc2');
-  let box = {}, R = {};
-  const line = pts => 'M' + pts.map(q => q[0] + ' ' + q[1]).join('L');
+  const Pth = {}, Hd = {}; $$('.hw-p').forEach(p => { Pth[p.dataset.p] = p; }); $$('.hw-h').forEach(p => { Hd[p.dataset.h] = p; });
+  const Lab = {}; $$('.hw-lab').forEach(l => { Lab[l.dataset.k] = l; });
+  const mv = $('.hw-mv');
+  let R = {};
+  const line = q => 'M' + q.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
+  const head = (a, b, s = 6) => { const dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d, px = -uy, py = ux; return `M${b[0].toFixed(1)} ${b[1].toFixed(1)}L${(b[0] - ux * s + px * s * .55).toFixed(1)} ${(b[1] - uy * s + py * s * .55).toFixed(1)}L${(b[0] - ux * s - px * s * .55).toFixed(1)} ${(b[1] - uy * s - py * s * .55).toFixed(1)}Z`; };
   function layout() {
-    const d = dia.getBoundingClientRect(); box = {};
+    const d = dia.getBoundingClientRect(), box = {};
     for (const k in N) { const r = N[k].getBoundingClientRect(); box[k] = { l: r.left - d.left, r: r.right - d.left, t: r.top - d.top, b: r.bottom - d.top, x: r.left - d.left + r.width / 2, y: r.top - d.top + r.height / 2 }; }
-    const { l, c, r, u, f } = box, q = k => [box[k].x, box[k].y];
-    const elbow = [f.x, f.y], corner = [l.x, f.y];
-    R = { lc: [q('l'), q('c')], cl: [q('c'), q('l')], cf: [q('c'), q('f')], fl: [elbow, corner, q('l')], uc: [q('u'), q('r'), q('c')] };
-    P.base.setAttribute('d', line([q('l'), q('c'), q('r'), q('u')])); P.stem.setAttribute('d', line(R.cf));
-    P.lc.setAttribute('d', line(R.lc)); P.dash.setAttribute('d', line(R.lc)); P.cf.setAttribute('d', line(R.cf)); P.fl.setAttribute('d', line(R.fl)); P.cr.setAttribute('d', line(R.uc));
-    const ph = phone();
-    for (const el of labs) {
-      if (ph) { el.style.transform = ''; continue; }
-      const a = el.dataset.at, w = el.offsetWidth, h = el.offsetHeight, mid = (l.r + c.l) / 2, below = l.b + 12;
-      const pay = labs.find(x => x.dataset.at === 'lc' && x.dataset.ph === el.dataset.ph);   // the month sits under the payment it counts, on the same left edge
-      const [x, y] = a === 'fr' ? [f.r + 14, f.y - h / 2] : a === 'fl' ? [f.l - 14 - w, f.y - h - 8] : a === 'lcu' ? [Math.max(0, mid - w / 2), l.t - h - 8]
-        : a === 'cu' ? [c.l, below] : a === 'r' ? [r.x - w / 2, below] : a === 'lc2' ? [Math.max(0, mid - pay.offsetWidth / 2), below + h + 4] : [Math.max(0, mid - w / 2), below];
-      el.style.transform = `translate(${Math.round(x)}px,${Math.round(y)}px)`;
+    const { l, c, r, u, f } = box, ph = phone(), off = 8;
+    if (ph) {   // one rail under the row, since the gaps between the squares are too small to show anything moving. Each route drops from its squares to the rail
+      const y = l.b + 9;
+      R = { loan: [[l.x, l.b], [l.x, y], [c.x - 7, y], [c.x - 7, c.b]], repay: [[c.x + 7, c.b], [c.x + 7, y], [l.x + 12, y], [l.x + 12, l.b]], rent: [[u.x, u.b], [u.x, y], [c.x + 7, y], [c.x + 7, c.b]],
+        fee: [[c.x, c.t], [c.x, f.b]], numbers: [[f.l, f.y], [l.x, f.y], [l.x, l.t]], cr: [[c.r, c.y], [r.l, r.y]], ru: [[r.r, r.y], [u.l, u.y]] };
+    } else {
+      const ry = c.b + 18;
+      R = { loan: [[l.r, l.y - off], [c.l, c.y - off]], repay: [[c.l, c.y + off], [l.r, l.y + off]], rent: [[u.x, u.b], [u.x, ry], [c.x, ry], [c.x, c.b]],
+        fee: [[c.x, c.t], [c.x, f.b]], numbers: [[f.l, f.y], [l.x, f.y], [l.x, l.t]], cr: [[c.r, c.y], [r.l, r.y]], ru: [[r.r, r.y], [u.l, u.y]] };
     }
+    for (const k in R) { Pth[k].setAttribute('d', line(R[k])); const q = R[k], money = k === 'loan' || k === 'repay' || k === 'rent' || k === 'fee' || k === 'numbers'; Hd[k].setAttribute('d', money ? head(q[q.length - 2], q[q.length - 1]) : ''); }
+    const put = (k, x, y) => { Lab[k].style.transform = `translate(${Math.round(x)}px,${Math.round(y)}px)`; };
+    dia.style.paddingBottom = '';
+    if (ph) { const y = l.b + 16;
+      if (held()) { for (const k in Lab) put(k, 0, y); return; }
+      // nothing holds still here, so the one line under the row becomes a short list of all four payments
+      for (const k in Lab) put(k, 0, y); ['loan', 'fee', 'rent', 'repay'].forEach((k, i) => put(k, 0, y + i * 22)); dia.style.paddingBottom = '110px'; return; }
+    const hL = k => Lab[k].offsetHeight, wL = k => Lab[k].offsetWidth, g = c.l - l.r;
+    Lab.repay.style.maxWidth = Math.max(110, g - 16) + 'px';
+    put('loan', l.r + (g - wL('loan')) / 2, l.y - off - 6 - hL('loan'));
+    put('repay', l.r + (g - wL('repay')) / 2, l.y + off + 6);
+    put('rent', u.r - wL('rent'), c.b + 18 + 7);
+    put('fee', c.x - 12 - wL('fee'), (f.b + c.t - hL('fee')) / 2);
+    put('ask', c.x + 12, (f.b + c.t - hL('ask')) / 2);
+    put('price', f.r + 14, f.y - hL('price') / 2);
+    put('numbers', Math.max(l.x + 10, (l.x + f.l - wL('numbers')) / 2), f.y - hL('numbers') - 6);
   }
 
-  // the story's moments. lit: who is acting. way: the line money or a question travels. info: a question or numbers, a hollow square. show: the lines that stay on
+  // the story's moments. pay: who pays or asks. to: who receives. way: the route the small square travels. info: a question or numbers, a hollow square. show: the lines lit. say: the labels lit.
   const PH = {
-    0: {},
-    1: { lit: 'c', way: 'cf', info: 1, show: ['cf'] },
-    2: { lit: 'f' },
-    3: { lit: 'c', show: ['dash'] },
-    4: { lit: 'f', way: 'fl', info: 1, show: ['fl'] },
-    5: { lit: 'l', way: 'lc', show: ['lc'] },
-    55: { lit: 'c', way: 'cf', show: ['cf'] },
-    6: { lit: 'u', way: 'uc', show: ['cr'] },
-    7: { lit: 'c', way: 'cl', show: ['lc'] },
-    8: { lit: 'c', off: 'l' }
+    1: { pay: 'c', to: 'f', way: ['fee'], info: 1, show: ['fee'], say: ['ask', 'price'] },
+    2: { pay: 'f', to: 'l', way: ['numbers'], info: 1, show: ['numbers'], say: ['numbers'] },
+    3: { pay: 'l', to: 'c', way: ['loan'], show: ['loan'], say: ['loan'] },
+    35: { pay: 'c', to: 'f', way: ['fee'], show: ['loan', 'fee'], say: ['fee'] },
+    4: { pay: 'u', to: 'c', way: ['rent'], show: ['rent'], say: ['rent'] },
+    5: { pay: 'c', to: 'l', way: ['rent', 'repay'], show: ['rent', 'repay'], say: ['repay'] },
+    6: { pay: 'c', off: 'l', way: ['rent'], show: ['rent'], ghost: ['loan', 'repay'], say: ['rent'] },   // nothing is owed: the lender steps back, and the rent keeps coming
+    all: { show: ['loan', 'repay', 'rent', 'fee'], say: ['loan', 'repay', 'rent', 'fee'] }
   };
-  const steps = $$('.hw-ch'), figO = $('[data-owed]'), figP = $('[data-paid]');
+  const steps = $$('.hw-ch'), figO = $('[data-owed]'), figP = $('[data-paid]'), figM = $('[data-month]');
   const S = { fill: 0, fillT: 0, paid: 0, paidT: 0 };
-  const T = { o: 0, p: 0 }; let tick = null, shownO = 0, shownP = 0;
-  let phase = -1, month = 0, blocks = [], lineY = 0, wayName = null, t0 = 0, raf = 0, inView = true;
+  const T = { o: -1, p: -1 }; let tick = null, shownO = 0, shownP = 0;   // the page prints the finished loan for readers with no script, so the first reading always rewrites the figures
+  let phase = null, month = 0, way = null, t0 = 0, raf = 0, inView = true, runTop = 0, runLen = 1, spanSum = D.spans.reduce((a, b) => a + b, 0);
   function setPhase(ph) {
     if (ph === phase) return; phase = ph; const c = PH[ph];
-    for (const k in N) { N[k].classList.toggle('on', k === c.lit); N[k].classList.toggle('off', k === c.off); }
-    for (const k of ['lc', 'cf', 'fl', 'cr', 'dash']) P[k].classList.toggle('on', !!(c.show && c.show.includes(k)));
-    for (const el of labs) el.classList.toggle('on', +el.dataset.ph === ph);
-    wayName = c.way || null; t0 = performance.now(); mv.classList.toggle('info', !!c.info);
-    if (!wayName) mv.style.visibility = 'hidden';
-    else if (reduce) mv.style.visibility = 'hidden';
+    for (const k in N) { N[k].classList.toggle('on', k === c.pay); N[k].classList.toggle('to', k === c.to); N[k].classList.toggle('off', k === c.off); }
+    for (const k in Pth) { const on = !!(c.show && c.show.includes(k)), gh = !!(c.ghost && c.ghost.includes(k)); Pth[k].classList.toggle('on', on); Hd[k].classList.toggle('on', on); Pth[k].classList.toggle('ghost', gh); Hd[k].classList.toggle('ghost', gh); }
+    for (const k in Lab) Lab[k].classList.toggle('on', !!(c.say && c.say.includes(k)));
+    way = c.way && held() ? c.way.reduce((all, k) => { const q = R[k]; return all.concat(all.length ? q : q); }, []) : null; t0 = performance.now(); mv.classList.toggle('info', !!c.info);
+    if (!way) mv.style.visibility = 'hidden';
   }
   function targets() {
-    if (phase < 5) return [0, 0, 0, 0];
-    if (phase === 5 || phase === 55 || phase === 6) return [1, 0, D.l, 0];
-    const m = phase === 8 ? D.term : month, paid = D.l * m / D.term, owed = D.l - paid;
-    return [1, m / D.term, owed, paid];
-  }
-  function readTargets() {
-    const [fill, paid, o, p] = targets(); S.fillT = fill; S.paidT = paid;
-    if (o === T.o && p === T.p) return;
-    const jump = Math.max(Math.abs(o - shownO), Math.abs(p - shownP)) > D.l / D.term * 2.5;
-    T.o = o; T.p = p;
-    if (reduce || !jump) { tick = null; show(o, p); }
-    else tick = { o0: shownO, p0: shownP, t: performance.now() };
-    if (monthLab && phase === 7) monthLab.textContent = 'Month ' + month + ' of ' + D.term;
+    if (phase === 1 || phase === 2) return [0, 0, 0, 0];
+    if (phase === 3 || phase === 35 || phase === 4) return [1, 0, D.l, 0];
+    const m = phase === 6 || phase === 'all' ? D.term : month, paid = D.l * m / D.term;
+    return [1, m / D.term, D.l - paid, paid];
   }
   function show(o, p) {
-    shownO = o; shownP = p; const a = money(o); figO.textContent = a;
+    shownO = o; shownP = p; figO.textContent = money(o);
     // Paid back stays $0 until the first payment. Once payments run, the two figures always add up to the loan. Any other tick (the reader jumped across steps) shows Paid back as it stands.
     figP.textContent = p > 0 && Math.abs(o + p - D.l) < 1 ? money(D.l - Math.floor(o / 100 + .5) * 100) : money(p);
   }
-  function measure() {
-    const ph = phone(), y0 = scrollY, sh = ph ? stage.offsetHeight : 0;
-    if (ph) story.style.setProperty('--hw-sh', sh + 'px');
-    // a phone holds each step's words just under the stage. The next step takes over as those words start to leave, so what slides under the stage is already dimmed
-    lineY = ph ? sh + Math.min(236, (innerHeight - sh) * .6) : innerHeight * .46;
-    blocks = steps.map(el => { const r = el.getBoundingClientRect(); return { n: +el.dataset.ch, top: r.top + y0, h: r.height, el }; });
+  function readTargets() {
+    const [fill, paid, o, p] = targets(); S.fillT = fill; S.paidT = paid;
+    figM.textContent = phase === 5 ? 'Month ' + month + ' of ' + D.term : phase === 6 || phase === 'all' ? 'Month ' + D.term + ' of ' + D.term + '. Nothing is owed.' : '';
+    if (o === T.o && p === T.p) return;
+    const jump = Math.max(Math.abs(o - shownO), Math.abs(p - shownP)) > D.l / D.term * 2.5;
+    T.o = o; T.p = p;
+    if (!jump) { tick = null; show(o, p); }
+    else tick = { o0: shownO, p0: shownP, t: performance.now() };
   }
+  function measure() { const r = run.getBoundingClientRect(); runTop = r.top + scrollY; runLen = Math.max(1, r.height - innerHeight); }
+  const startOf = i => { let a = 0; for (let k = 0; k < i; k++) a += D.spans[k]; return a / spanSum; };
   function onScroll() {
-    const y = scrollY + lineY; let live = null;
-    for (const b of blocks) if (y >= b.top) live = b;
-    let ph = 0;
-    if (live) {
-      ph = live.n;
-      if (ph === 5 && (y - live.top) / live.h >= .5) ph = 55;
-      if (ph === 7) { const t = clamp((y - live.top) / live.h); let m = Math.min(D.term, 1 + Math.floor(t * D.term)); if (reduce) m = t < 1 / 3 ? 12 : t < 2 / 3 ? 24 : D.term; month = m; }
-    }
+    if (!held()) return;
+    const u = clamp((scrollY - runTop) / runLen);
+    let i = D.spans.length - 1; while (i > 0 && u < startOf(i)) i--;
+    const t = clamp((u - startOf(i)) / (D.spans[i] / spanSum));
+    let ph = i + 1;
+    if (ph === 3 && t >= .5) ph = 35;
+    if (ph === 5) { month = Math.min(D.term, 1 + Math.floor(t / .86 * D.term)); if (month >= D.term) ph = 6; }
     setPhase(ph); readTargets();
-    steps.forEach(el => el.classList.toggle('hw-live', live ? el === live.el : false));
-    if (reduce) { S.fill = S.fillT; S.paid = S.paidT; paint(); return; }
+    steps.forEach((el, k) => { const on = k === i; if (el.classList.contains('hw-live') !== on) { el.classList.toggle('hw-live', on); $('.hw-b', el).setAttribute('aria-expanded', on); } });
     wake();
   }
-  const pointOn = (pts, u) => { let tot = 0; const seg = []; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); tot += d; }
-    let s = u * tot; for (let i = 0; i < seg.length; i++) { if (s <= seg[i]) { const k = seg[i] ? s / seg[i] : 0; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * k, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * k]; } s -= seg[i]; } return pts[pts.length - 1]; };
+  const pointOn = (q, u) => { let tot = 0; const seg = []; for (let i = 1; i < q.length; i++) { const d = Math.hypot(q[i][0] - q[i - 1][0], q[i][1] - q[i - 1][1]); seg.push(d); tot += d; }
+    let s = u * tot; for (let i = 0; i < seg.length; i++) { if (s <= seg[i]) { const k = seg[i] ? s / seg[i] : 0; return [q[i][0] + (q[i + 1][0] - q[i][0]) * k, q[i][1] + (q[i + 1][1] - q[i][1]) * k]; } s -= seg[i]; } return q[q.length - 1]; };
   let last = 0;
   function frame(now) {
     raf = 0; const dt = Math.min(64, now - (last || now)); last = now;
     let dirty = false;
-    // the arm fills pale from the floor up over 1400ms when the loan is made. Paid dots follow the month a little behind the scroll, so they stay calm.
+    // the arm fills from the floor up over 1400ms when the loan is made. Paid dots follow the month a little behind the scroll, so they stay calm.
     if (S.fill !== S.fillT) { const d = dt / 1400; S.fill = S.fill < S.fillT ? Math.min(S.fillT, S.fill + d) : Math.max(S.fillT, S.fill - d); dirty = true; }
     if (S.paid !== S.paidT) { const d = S.paidT - S.paid; S.paid = Math.abs(d) < .0004 ? S.paidT : S.paid + d * .14; dirty = true; }
     if (dirty) paint();
     if (tick) { const u = clamp((now - tick.t) / 1200), e = ease(u); show(tick.o0 + (T.o - tick.o0) * e, tick.p0 + (T.p - tick.p0) * e); if (u >= 1) tick = null; }
-    // one small square on its line: 1600ms of travel in every 2400ms. It starts and ends under a node, so it never pops in.
-    if (wayName && inView) { const u = ((now - t0) % 2400) / 1600; if (u <= 1) { const [x, y] = pointOn(R[wayName], ease(u)); mv.style.transform = `translate(${x}px,${y}px)`; mv.style.visibility = 'visible'; } else mv.style.visibility = 'hidden'; }
-    if (inView && (wayName || dirty || tick)) raf = requestAnimationFrame(frame);
+    // one small square on its route: 1600ms of travel in every 2400ms. It starts and ends under a square, so it never pops in.
+    if (way && inView) { const u = ((now - t0) % 2400) / 1600; if (u <= 1) { const [x, y] = pointOn(way, ease(u)); mv.style.transform = `translate(${x}px,${y}px)`; mv.style.visibility = 'visible'; } else mv.style.visibility = 'hidden'; }
+    if (inView && (way || dirty || tick)) raf = requestAnimationFrame(frame);
   }
-  function wake() { if (!raf && !reduce) { raf = requestAnimationFrame(frame); } }
+  function wake() { if (!raf) raf = requestAnimationFrame(frame); }
 
-  // the ground behind the last two sections fades from ink to the gradient over 60vh of scroll, as the last screen comes up
-  const wrap = document.querySelector('.hw-g'), gl = wrap && wrap.querySelector('.hw-gl'), ask = wrap && wrap.querySelector('.hw-ask');
-  if (wrap && !reduce) wrap.classList.add('hw-gf');
-  function ground() { if (!gl || reduce) return; const k = clamp((innerHeight - ask.getBoundingClientRect().top) / (innerHeight * .6)); gl.style.opacity = k; }
+  // the titles are real controls: pressing one goes to that step
+  const go = i => { if (held()) scrollTo({ top: runTop + (startOf(i) + D.spans[i] / spanSum * .08) * runLen }); };
+  steps.forEach((el, i) => { const b = $('.hw-b', el); b.addEventListener('click', () => go(i)); b.addEventListener('focus', () => { if (b.matches(':focus-visible')) go(i); }); });   // tabbing to a step opens it, so the keyboard reads what the wheel reads
 
-  function refresh() { size(); layout(); measure(); onScroll(); paint(); ground(); }
+  function still() {   // the finished loan, nothing travelling, every step open
+    root.classList.remove('hw-on'); steps.forEach(el => { el.classList.remove('hw-live'); $('.hw-b', el).setAttribute('aria-expanded', true); });
+    phase = null; setPhase('all'); month = D.term; S.fill = S.fillT = 1; S.paid = S.paidT = 1; T.o = 0; T.p = D.l; show(0, D.l); figM.textContent = 'Month ' + D.term + ' of ' + D.term + '. Nothing is owed.'; paint();
+  }
+  function refresh() {
+    const h = held(); root.classList.toggle('hw-on', h); size(); layout(); measure();
+    if (!h) { still(); return; }
+    phase = phase === 'all' ? null : phase; const p = phase; phase = null; if (p != null) setPhase(p); onScroll(); paint();
+  }
   function start() {
-    if (!reduce) document.documentElement.classList.add('hw-on');
     refresh();
     S.fill = S.fillT; S.paid = S.paidT; if (tick) { show(T.o, T.p); tick = null; } paint();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
   }
   let rt, lw = innerWidth, lh = innerHeight;
   addEventListener('resize', () => { if (innerWidth === lw && Math.abs(innerHeight - lh) < 140) return; lw = innerWidth; lh = innerHeight; clearTimeout(rt); rt = setTimeout(refresh, 120); });
-  addEventListener('scroll', () => { onScroll(); ground(); }, { passive: true });
+  addEventListener('scroll', onScroll, { passive: true });
   addEventListener('load', refresh);
-  if (!reduce && 'IntersectionObserver' in window) new IntersectionObserver(es => { inView = es[0].isIntersecting; if (inView) wake(); }).observe(stage);
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { inView = es[0].isIntersecting; if (inView && held()) wake(); }).observe(stage);
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
 })();

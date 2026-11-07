@@ -1,88 +1,119 @@
-/* How it works (hw-). One example loan: the steps on the left, the stage held on the right (who pays whom on one line, and the arm that stands for the loan). Then what if a loan goes bad slides up over the held last step (the page's one dark region), and the ground fades to the page's one gradient. */
+/* How it works (hw-). The first screen: the title, the list of five steps on the left, the stage on the right on ink. While the reader scrolls, both hold still: the open step changes and the money moves. Then a plain edge to what if a loan goes bad, and the same final ask as Home.
+   With no script, reduced motion, or a very short window, nothing holds: every step stands open and the stage shows the finished loan. */
 
-/* the steps on the left, the stage held on the right */
-.hw-story{display:grid;grid-template-columns:minmax(0,5.7fr) minmax(0,6.3fr);column-gap:clamp(40px,4vw,56px);align-items:start}
-.hw-hero{grid-column:1;grid-row:1;padding-top:clamp(40px,8vh,88px);min-height:calc(82vh - 72px)}
-.hw-hero .lede{max-width:34ch;margin:24px 0 12px}
-.hw-new{margin:0;color:var(--muted)}
-.hw-chs{grid-column:1;grid-row:2}
-.hw-stage{grid-column:2;grid-row:1 / span 2;position:sticky;top:72px;height:calc(100vh - 72px);display:flex;flex-direction:column;justify-content:center;min-width:0}
+.hw-hero{display:grid;grid-template-columns:minmax(0,800px) minmax(0,1fr);column-gap:clamp(32px,4vw,56px);align-items:end;padding-top:clamp(40px,5.6vh,56px);padding-bottom:clamp(32px,4.4vh,44px)}
+.hw-hero .h1{margin:0}
+.hw-ld{margin:0 0 8px;color:#3e4656;max-width:40ch}
 
-/* the steps: each holds still while the stage changes, and the one being read stays dark. Distances are the storyboard's */
-.hw-ch{height:70vh;padding-bottom:32px}
-.hw-s5{height:120vh}.hw-s7{height:300vh}
-.hw-s8{height:200vh}   /* 100vh for the step, then 100vh while the next section slides up over it */
-.hw-li{position:sticky;top:clamp(112px,26vh,240px);display:grid;grid-template-columns:40px minmax(0,1fr)}
-.hw-n{color:var(--c)}
-.hw-t{margin:0 0 12px}
-.hw-tx p{margin:0;color:#3e4656;max-width:38ch;text-wrap:pretty}
-.hw-on .hw-ch{opacity:.24;transition:opacity .7s ease}
-.hw-on .hw-ch.hw-live{opacity:1}
+/* the held scene. The left track ends where the page's text column would, so the steps share the page's one left edge */
+.hw-run{position:relative;background:#fff}
+.hw-pin{--hw-top:max(96px,calc((100vh - 780px) / 2));display:grid;grid-template-columns:max(424px,calc(50% - 576px + 456px)) minmax(0,1fr);background:#fff}
+.hw-on .hw-run{height:calc(100vh + 540vh)}
+.hw-on .hw-pin{position:sticky;top:0;height:100vh}
 
-/* the diagram: square nodes on one hairline, Ferra above the company. Money is one small square travelling a line */
-.hw-dia{position:relative;display:grid;grid-template-columns:repeat(4,var(--hw-n));grid-template-rows:var(--hw-n) var(--hw-n);justify-content:space-between;row-gap:34px;padding-bottom:64px;--hw-n:84px}
+/* the steps: one list, always all five titles, one open */
+.hw-l{min-width:0;display:flex;justify-content:flex-end}
+.hw-chs{width:min(420px,calc(100% - 60px));margin:0 36px 0 0;padding:var(--hw-top) 0 40px;list-style:none;align-self:flex-start}
+.hw-ch{border-top:1px solid var(--line)}
+.hw-ch:last-child{border-bottom:1px solid var(--line)}
+.hw-t{margin:0}
+.hw-b{display:grid;grid-template-columns:28px minmax(0,1fr);width:100%;min-height:44px;padding:16px 0;border:0;background:none;color:var(--ink);font:inherit;letter-spacing:inherit;line-height:inherit;text-align:left;cursor:pointer;transition:color .3s ease}
+.hw-n{color:var(--muted)}
+.hw-b:hover{color:var(--c)}
+.hw-bd{padding-left:28px}
+.hw-bd p{margin:0 0 20px;color:#3e4656;text-wrap:pretty}
+.hw-on .hw-bd{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .6s var(--m-ease),visibility 0s linear .6s}
+.hw-on .hw-bd > div{min-height:0;overflow:hidden}
+.hw-on .hw-ch:not(.hw-live) .hw-b{color:var(--muted)}
+.hw-on .hw-ch:not(.hw-live) .hw-b:hover{color:var(--c)}
+.hw-on .hw-live .hw-bd{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .6s var(--m-ease),visibility 0s}
+.hw-on .hw-live .hw-n{color:var(--c)}
+
+/* the stage: everyone, every payment, the arm. Flat ink, edge to edge on the right */
+.hw-stage{min-width:0;background:var(--g-ink);color:#fff;padding:var(--hw-top) clamp(32px,4vw,56px) 32px}
+.hw-si{max-width:760px;display:flex;flex-direction:column;gap:clamp(12px,2vh,28px);height:100%}
+.hw-on .hw-stage{height:100vh;overflow:hidden}
+.hw-dia{--hw-n:clamp(84px,7.8vw,112px);position:relative;display:grid;grid-template-columns:var(--hw-n) minmax(120px,1fr) var(--hw-n) 7% var(--hw-n) 5% var(--hw-n);grid-template-rows:48px 64px 52px;padding-bottom:62px}
 .hw-lines{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.hw-p{fill:none;stroke:var(--c);stroke-width:1.5;opacity:0;transition:opacity .7s ease}
-.hw-p-base,.hw-p-stem{stroke:rgba(14,22,38,.3);stroke-width:1;opacity:1}
-.hw-p-dash{stroke-dasharray:6 6}
-.hw-p.on{opacity:1}
-.hw-nd{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;padding:6px;background:#fff;border:1px solid rgba(14,22,38,.3);color:var(--ink);font:500 var(--t-small)/1.25 var(--sans);text-align:center;transition:background-color .7s ease,border-color .7s ease,color .7s ease}
-.hw-nd.on{background:var(--c);border-color:var(--c);color:#fff}
-.hw-nd.off{background:#f3f4f7;border-color:#d8dce5;color:#9aa1af}
-.hw-nd-f{grid-column:2;grid-row:1}
-.hw-nd-l{grid-column:1;grid-row:2}.hw-nd-c{grid-column:2;grid-row:2}.hw-nd-r{grid-column:3;grid-row:2}.hw-nd-u{grid-column:4;grid-row:2}
-.hw-mv{position:absolute;z-index:1;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;background:var(--c);visibility:hidden}
-.hw-mv.info{background:#fff;border:2px solid var(--c)}
-.hw-lab{position:absolute;z-index:3;left:0;top:0;font:600 var(--t-body)/1.25 var(--sans);color:var(--c);white-space:nowrap;opacity:0;transition:opacity .7s ease;pointer-events:none}
-.hw-lab.on{opacity:1}
+.hw-p{fill:none;stroke:rgba(255,255,255,.34);stroke-width:1;transition:stroke .6s ease}
+.hw-h{fill:rgba(255,255,255,.5);stroke:none;transition:fill .6s ease}
+.hw-p.on{stroke:#fff;stroke-width:1.5}
+.hw-h.on{fill:#fff}
+.hw-p.ghost{stroke:rgba(255,255,255,.14)}
+.hw-h.ghost{fill:rgba(255,255,255,.2)}
+.hw-nd{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;padding:4px 6px;background:var(--g-ink);border:1px solid rgba(255,255,255,.42);color:#fff;font:500 var(--t-small)/1.2 var(--sans);text-align:center;transition:background-color .6s ease,border-color .6s ease,color .6s ease}
+.hw-nd.to{border-color:#fff}
+.hw-nd.on{background:#fff;border-color:#fff;color:var(--ink)}
+.hw-nd.off{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.62)}
+.hw-nd-f{grid-column:3;grid-row:1}
+.hw-nd-l{grid-column:1;grid-row:3}.hw-nd-c{grid-column:3;grid-row:3}.hw-nd-r{grid-column:5;grid-row:3}.hw-nd-u{grid-column:7;grid-row:3}
+.hw-mv{position:absolute;z-index:1;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;background:#58bdf0;visibility:hidden}
+.hw-mv.info{background:var(--g-ink);border:2px solid #58bdf0}
+.hw-lab{position:absolute;z-index:3;left:0;top:0;font:500 var(--t-small)/1.25 var(--sans);color:rgba(255,255,255,.72);white-space:nowrap;pointer-events:none;transition:color .6s ease,opacity .6s ease}
+.hw-lab.on{color:#fff}
+.hw-lab[data-k="repay"]{white-space:normal;text-align:center;text-wrap:balance}
+.hw-lab[data-k="ask"],.hw-lab[data-k="price"],.hw-lab[data-k="numbers"]{opacity:0;color:#fff}
+.hw-lab[data-k="ask"].on,.hw-lab[data-k="price"].on,.hw-lab[data-k="numbers"].on{opacity:1}
 
-/* under the diagram: the arm, and the two figures that stay on screen */
-.hw-low{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:32px;align-items:end}
+/* under the diagram: the two figures that stay on screen, and the arm under The robots */
+.hw-low{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:32px;align-items:end;padding-bottom:8px}
 .hw-gw{display:block}
 .hw-grid{display:block}
-.hw-base{display:block;height:1px;background:rgba(14,22,38,.3)}
+.hw-base{display:block;height:1px;background:rgba(255,255,255,.34)}
 .hw-read{margin:0}
-.hw-read > div{margin-bottom:20px}
-.hw-read dt{font:400 var(--t-body)/1.3 var(--sans);color:var(--muted);margin-bottom:4px}
-.hw-read dd{margin:0;white-space:nowrap;color:var(--ink)}
-.hw-leg{margin:0;padding-top:16px;border-top:1px solid var(--line);font:400 var(--t-body)/1.45 var(--sans);color:#3e4656;max-width:30ch;text-wrap:pretty}
+.hw-read > div{margin-bottom:16px}
+.hw-read dt{line-height:1.3;color:rgba(255,255,255,.78);margin-bottom:4px}
+.hw-read dd{margin:0;white-space:nowrap;color:#fff}
+.hw-mo{margin:0 0 16px;min-height:1.5em;font:500 var(--t-body)/1.5 var(--sans);color:#58bdf0}
+.hw-leg{margin:0;padding-top:12px;border-top:1px solid rgba(255,255,255,.18);line-height:1.45;color:rgba(255,255,255,.78);max-width:30ch;text-wrap:pretty}
 
-/* what if a loan goes bad, then the last screen. One ground behind both, which fades from ink to the gradient (p-how-it-works.js). With no script each section keeps its own */
-.hw-g{position:relative;z-index:6;margin-top:-100vh;background:var(--g-dark);overflow:clip}   /* clip: the fade layer's negative margin would otherwise let it stick past the end of this wrapper, over the notes line and the footer. A clip keeps position:sticky working */
-.hw-gl{display:block;position:sticky;top:0;height:100vh;margin-bottom:-100vh;background:var(--g-grad);opacity:0;pointer-events:none}
-.hw-gf .hw-bad,.hw-gf .hw-ask{background:none}
-.hw-bad,.hw-ask{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding-block:clamp(72px,8vw,120px)}
-.hw-bg,.hw-ag{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:20px clamp(40px,6vw,96px);align-items:end;width:100%}
-.hw-bad h2,.hw-ask h2{margin:0;color:#fff}
-.hw-bg p,.hw-ag p{margin:0 0 20px;color:rgba(255,255,255,.92);max-width:44ch;text-wrap:pretty}
+/* what if a loan goes bad: a heading on the left, the passage on the right */
+.hw-bg{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:20px clamp(40px,6vw,88px);align-items:end}
+.hw-bad h2{margin:0}
+.hw-bg p{margin:0 0 8px;color:#3e4656;max-width:44ch;text-wrap:pretty}
 
-/* phone: the stage on top, the nodes two by two, the steps pass under it */
-@media (max-width:1040px){
- .hw-story{display:block}
- .hw-hero{min-height:0;padding-top:12px;padding-bottom:28px}
- .hw-hero .lede{margin-top:16px}
- .hw-stage{top:0;z-index:5;height:auto;min-height:52vh;justify-content:flex-start;padding:10px 0 12px;background:#fff}
- .hw-stage::before{content:"";position:absolute;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% - 50vw);background:#fff;border-bottom:1px solid var(--line);z-index:-1}
- .hw-dia{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,38px);gap:10px 28px;padding-bottom:28px;max-width:560px}
- .hw-nd{padding:2px 6px}
+/* the final ask: the same shape as on Home */
+.hw-ask{position:relative;padding-block:clamp(72px,8.34vw,120px)}
+.hw-cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,560px);gap:clamp(32px,5vw,72px);align-items:start}
+.hw-ask h2{margin:0}
+
+/* a phone or small tablet: the stage on top, then only the open step. All five titles would not fit under it */
+@media (max-width:1100px){
+ .hw-hero{grid-template-columns:minmax(0,1fr);row-gap:16px;padding-top:28px;padding-bottom:28px}
+ .hw-pin{display:flex;flex-direction:column}
+ .hw-stage{order:-1;padding:clamp(72px,9vh,80px) 24px 14px}
+ .hw-on .hw-stage{height:auto;flex:none}
+ .hw-si{height:auto;max-width:640px;margin-inline:auto;gap:12px}
+ .hw-dia{grid-template-columns:.9fr 1.05fr .85fr 1.2fr;column-gap:8px;grid-template-rows:38px 14px 46px;padding-bottom:42px}
+ .hw-nd{padding:2px 0;line-height:1.15}
  .hw-nd-f{grid-column:2;grid-row:1}
- .hw-nd-l{grid-column:1;grid-row:2}.hw-nd-c{grid-column:2;grid-row:2}.hw-nd-r{grid-column:2;grid-row:3}.hw-nd-u{grid-column:1;grid-row:3}
- .hw-lab{top:auto;bottom:0;left:0;font-size:var(--t-small)}
- .hw-lab[data-at="cu"],.hw-lab[data-at="lc2"]{left:auto;right:0}
- .hw-low{column-gap:16px;margin-top:10px;max-width:560px}
+ .hw-nd-l{grid-column:1;grid-row:3}.hw-nd-c{grid-column:2;grid-row:3}.hw-nd-r{grid-column:3;grid-row:3}.hw-nd-u{grid-column:4;grid-row:3}
+ .hw-lab{opacity:0;white-space:nowrap;transition:none}
+ .hw-lab.on{opacity:1;color:#fff}
+ .hw-lab[data-k="ask"].on{opacity:0}
+ .hw-lab[data-k="repay"]{white-space:nowrap;text-align:left}
+ .hw-low{flex:none;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;padding-bottom:0}
  .hw-read > div{margin-bottom:8px}
- .hw-read dt{font-size:var(--t-small);margin-bottom:0}
- .hw-leg{padding-top:8px;font-size:var(--t-small);line-height:1.35}
- .hw-stage::after{content:"";position:absolute;top:100%;height:36px;left:calc(50% - 50vw);right:calc(50% - 50vw);background:linear-gradient(180deg,#fff,rgba(255,255,255,0));pointer-events:none}   /* words leaving under the stage fade out here, so no line is ever cut through */
- .hw-chs{padding-top:40px}
- .hw-ch{height:calc(60vh + 200px);padding-bottom:20px}   /* 60vh of holding still, plus the words' own height */
- .hw-s5{height:calc(84vh + 200px)}.hw-s7{height:210vh}.hw-s8{height:170vh}
- .hw-li{position:sticky;top:calc(var(--hw-sh,52vh) + 36px);grid-template-columns:32px minmax(0,1fr)}
- .hw-tx p{max-width:none}
- .hw-bg,.hw-ag{grid-template-columns:minmax(0,1fr)}
+ .hw-read dt{margin-bottom:0}
+ .hw-mo{margin:0 0 4px}
+ .hw-leg{display:none}
+ .hw-l{justify-content:center}
+ .hw-chs{width:100%;max-width:688px;margin:0;padding:20px 24px 24px}
+ .hw-on .hw-ch{border:0}
+ .hw-on .hw-ch:not(.hw-live){display:none}
+ .hw-on .hw-b{padding:0 0 8px;pointer-events:none;cursor:default}
+ .hw-on .hw-live{animation:hw-in .5s var(--m-ease)}
+ .hw-on .hw-bd{transition:none}
+ .hw-bg,.hw-cg{grid-template-columns:minmax(0,1fr)}
 }
-/* reduced motion: every step shows its finished stage, with no travel and no fade */
+@media (max-width:359px){.hw-dia{column-gap:4px}.hw-nd{font-size:13px}}
+@keyframes hw-in{from{opacity:0}to{opacity:1}}
+/* a window too short to hold the scene, or reduced motion: everything stands in plain flow (the script leaves .hw-on off) */
+/* whatever the keyboard reaches is already in view */
+.rv:focus-within{opacity:1;transform:none;transition:none}
 @media (prefers-reduced-motion:reduce){
- .hw-p,.hw-nd,.hw-lab,.hw-on .hw-ch{transition:none}
- .hw-gl{display:none}
+ .hw-p,.hw-h,.hw-nd,.hw-lab,.hw-b{transition:none}
 }
+html:not(.hw-on) .hw-b{cursor:default;pointer-events:none}
+@media (min-width:1101px){html:not(.hw-on) .hw-stage{align-self:start}}
+@media print{.hw-on .hw-run{height:auto}.hw-on .hw-pin{position:static;height:auto;display:block}.hw-stage{display:none}.hw-on .hw-bd{display:block;visibility:visible}.hw-on .hw-ch:not(.hw-live){display:block}.hw-chs{width:auto;margin:0;padding:0 24px}}

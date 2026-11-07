@@ -1,31 +1,30 @@
-/* Vision page (v-). One sticky stage: film, the dark parade of dot robots, two more films, one arm that brightens and lifts off, daylight at the ask. Without motion each scene is one screen, stacked, with its poster and its words in place. */
+/* Vision page (v-). One sticky stage: film, the dark parade of dot robots, two more films. Then the plain page slides over it, sized to its words. Without motion each film is one screen, stacked, with its poster and its words in place. */
 [data-page="vision.html"]{--gy:72svh;--gy2:53svh;--rh:min(47svh,31vw)}
-.v-run{position:relative;background:var(--g-dark);color:#fff}
+.v-run{position:relative;background:var(--g-ink);color:#fff}
 .v-run > .nav{z-index:5}
 
-/* the films */
-.v-layer{position:relative;min-height:100svh;overflow:hidden;background:var(--g-dark)}
+/* the films. Words sit bottom left on every film, on a scrim strong enough for the film's brightest frame. The first film is one screen. The two lower ones keep their shape and scroll like the rest of the page */
+.v-layer{position:relative;overflow:hidden;background:var(--g-ink);color:#fff}
+.v-street{min-height:100svh}
+.v-site,.v-hall{width:100%;aspect-ratio:16/9;max-height:100svh;min-height:600px}
 .v-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .v-shade{position:absolute;inset:0;pointer-events:none}
-.v-words{position:absolute;left:0;right:0;width:100%;z-index:2}
-.v-words p{margin:0}
-.v-words .t-lead{margin-top:16px;max-width:30em}
-/* the words sit where each film is calm: on the dark paving at the left, on the wet ground, on the empty floor to the right of the arms */
+/* the films carry their own dusk, so a light scrim is enough: on the dark paving at the left, on the wet ground, on the empty floor to the right of the arms */
 .v-street .v-shade{background:linear-gradient(to top,rgba(14,22,38,.82),rgba(14,22,38,0) 46%),linear-gradient(to right,rgba(14,22,38,.55),rgba(14,22,38,0) 52%)}
-.v-w-street{bottom:clamp(40px,7svh,72px)}
-.v-w-street h1{max-width:7.1em}
 .v-site .v-shade{background:linear-gradient(to top,rgba(14,22,38,.74),rgba(14,22,38,0) 34%),radial-gradient(90% 60% at 0 100%,rgba(14,22,38,.74),rgba(14,22,38,0) 70%)}
-.v-w-site1,.v-w-site2{bottom:clamp(40px,7svh,72px)}
-/* without motion both of the site's lines show, one above the other */
-[data-page="vision.html"]:not(.v-live) .v-w-site1{bottom:calc(clamp(40px,7svh,72px) + 140px)}
-.v-site h2{max-width:15em}
 .v-hall .v-film{object-position:0% 50%}
 .v-hall .v-shade{background:linear-gradient(to top,#0e1626,rgba(14,22,38,0) 24%),linear-gradient(to left,rgba(14,22,38,.92),rgba(14,22,38,.66) 42%,rgba(14,22,38,0) 68%)}
-.v-w-hall{top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-end}
-.v-w-hall > *{width:min(100%,520px)}
+.v-words{position:absolute;left:0;right:0;width:100%;bottom:clamp(40px,7svh,72px);z-index:2}
+.v-words p{margin:0}
+.v-words .t-lead{margin-top:16px;max-width:30em}
+.v-words h1,.v-words h2{max-width:none}
+.v-w-street h1{max-width:7.6em}
+.v-w-hall{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px}
+.v-w-hall > *{grid-column:7 / 13}
+.v-layer .fp{z-index:3}
 
 /* the parade, without motion: a plain list of robots on ink. Its two uncaptioned robots wait for the line of eight */
-.v-work{position:relative;background:var(--g-dark);padding-block:clamp(56px,10vh,104px)}
+.v-work{position:relative;background:var(--g-ink);padding-block:clamp(56px,10vh,104px)}
 .v-track{display:flex;flex-direction:column;align-items:center;gap:48px}
 .v-slot{margin:0;display:flex;flex-direction:column;align-items:center;text-align:center;width:min(88vw,640px)}
 .v-slot[data-extra]{display:none}
@@ -34,33 +33,31 @@
 /* drawn twice over itself, so the robots read full white on the ink */
 .v-slot canvas,.v-crowd canvas{filter:drop-shadow(0 0 0 #fff)}
 .v-slot[data-fly] canvas.dotbot,.v-crowdbot[data-fly] canvas.dotbot{transform:translateY(-16%)}
-.v-line,.v-crowd{display:none}
+.v-line,.v-crowd,.v-lat{display:none}
 .v-world{position:relative;margin-bottom:48px;text-align:center}
 .v-world h2{margin-inline:auto;max-width:18em}
 .v-slot figcaption{margin-top:clamp(18px,3vh,30px);padding-inline:12px;color:#fff;text-wrap:balance}
 
-/* the arm, without motion: it stands finished beside the steps in order */
-.v-own{position:relative;background:var(--g-dark)}
-.v-sky,.v-botbox{display:none}
-.v-bot{display:block;margin:0 auto;padding-top:clamp(40px,6vh,72px)}
-.v-own-g{padding-block:clamp(40px,6vh,72px) clamp(72px,9vw,128px)}
-.v-beats{display:flex;flex-direction:column;gap:56px;max-width:600px;margin-left:auto}
-.v-beat p{margin:0}
-.v-beat .t-lead{margin-top:16px}
-.v-pair{display:grid;gap:clamp(12px,2.2vh,24px);margin-top:clamp(16px,2.8vh,32px)}
-.v-pair b,.v-pair span{display:block}
-.v-pair span{margin-top:6px;font:400 var(--t-lead)/1.4 var(--sans)}
-.v-end{background:#fff;color:var(--ink);box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax);padding-block:clamp(40px,6vh,72px)}
-.v-end .btn{margin-top:24px}
+/* the plan: the point across the top, then the three steps in reading order, one to a column, tops in line */
+.v-path{padding-block:120px}
+.v-pg h2{max-width:20em}
+.v-steps{list-style:none;margin:clamp(48px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.v-step{padding-top:20px;border-top:1px solid var(--ink)}
+.v-step p{margin:10px 0 0;color:#3e4656}
+/* the ask: words on the left, the button on the page's right edge, on one line */
+.v-ask{padding-block:100px}
+.v-ag{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
+.v-ag h2{grid-column:1 / 7}
+.v-ar{grid-column:7 / 13;display:flex;align-items:center;justify-content:space-between;gap:16px 24px;flex-wrap:wrap}
+.v-ar p{margin:0;color:#3e4656}
 
 /* with motion: one stage */
-.v-live .v-stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--g-dark)}
-.v-live .v-layer{position:absolute;inset:0;min-height:0;opacity:0;visibility:hidden}
-.v-live .v-street{opacity:1;visibility:visible}
-.v-live .v-words{opacity:0}
-.v-live .v-w-street{opacity:1}
+.v-live .v-stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--g-ink)}
+.v-live .v-street{position:absolute;inset:0;min-height:0}
+/* the ink ground with its round holes lies over the films and under the robots */
+.v-live .v-lat{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:1;visibility:hidden;pointer-events:none}
 /* the parade: the page scrolls, they drive past on one line that sits high enough for robot and caption to fit together */
-.v-live .v-work{position:absolute;inset:0;z-index:2;padding:0;background:none;opacity:0;visibility:hidden;overflow:hidden;pointer-events:none}
+.v-live .v-work{position:absolute;inset:0;z-index:2;padding:0;background:none;visibility:hidden;overflow:hidden;pointer-events:none}
 .v-live .v-road{position:absolute;inset:0}
 .v-live .v-line{display:block;position:absolute;left:0;right:0;top:var(--gy);height:1px;background:rgba(255,255,255,.34)}
 .v-live .v-track{display:block;position:absolute;left:0;top:calc(var(--gy) - var(--rh));width:100%;height:calc(100svh - var(--gy) + var(--rh))}
@@ -74,32 +71,21 @@
 .v-crowdbot{flex:none}
 .v-crowd .rs-bot{display:flex;align-items:flex-end;justify-content:center}
 .v-settled .v-track{visibility:hidden}
-/* the arm: its canvas covers the whole screen, because its dots leave its box. The box stands where the hall film's arm stood */
-.v-live .v-own{position:absolute;inset:0;z-index:3;background:none;visibility:hidden;pointer-events:none}
-.v-live .v-sky{display:block;position:absolute;inset:0}
-.v-live .v-sky i{position:absolute;inset:0;display:block;opacity:0}
-.v-sky-white{background:#fff}
-.v-live .v-botbox{display:block;position:absolute;left:4.3vw;top:15svh;width:46vw;height:59svh}
-.v-live .v-bot{position:absolute;inset:0;width:100%;height:100%;padding:0;margin:0}
-.v-live .v-own-g{position:absolute;inset:0;width:100%;display:flex;align-items:center;justify-content:flex-end;padding-block:0}
-.v-live .v-beats{display:grid;gap:0;width:min(44%,520px);max-width:none;margin:0;align-items:center}
-.v-live .v-beat{grid-area:1/1;opacity:0;visibility:hidden}
-/* the ask stays reachable by keyboard: tabbing to its button brings the reader to it */
-.v-live .v-end{background:none;box-shadow:none;clip-path:none;margin:0;padding:0;visibility:visible}
-.v-live .v-end.on{pointer-events:auto}
 
 @media (max-width:820px){
  [data-page="vision.html"]{--gy:64svh;--rh:min(40svh,76vw)}
  .v-live .v-slot,.v-live .v-slot[data-extra]{--slot:88vw}
  .v-live .v-world{top:clamp(44px,9svh,96px);text-align:left}
  .v-live .v-world h2{margin-inline:0}
- .v-w-hall{top:auto;bottom:clamp(32px,6svh,56px);transform:none;align-items:flex-start}
- .v-hall .v-shade{background:linear-gradient(to top,#0e1626,rgba(14,22,38,0) 52%)}
- .v-hall .v-film{object-position:50% 50%}
- /* the arm above, the words below */
- .v-live .v-botbox{left:16px;width:calc(100vw - 32px);top:8svh;height:36svh}
- .v-live .v-own-g{align-items:flex-start;padding-top:49svh}
- .v-live .v-beats{width:100%}
- .v-pair{gap:12px;margin-top:12px}
- .v-pair span{font-size:var(--t-body);margin-top:2px}
+ .v-ag{grid-template-columns:minmax(0,1fr);row-gap:24px}
+ .v-ag h2,.v-ar{grid-column:1}
+ .v-steps{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:32px}
+ /* the phone cuts: the site is a full height crop with dark ground at its foot, the arm is a band with its words on ink under it */
+ .v-site{aspect-ratio:auto;min-height:0;height:min(100svh,177vw)}
+ .v-hall{aspect-ratio:auto;min-height:0;max-height:none}
+ .v-hall .v-film{position:relative;height:auto;aspect-ratio:720/518;object-position:50% 50%}
+ .v-hall .v-shade{background:none}
+ .v-w-hall{display:block;position:relative;bottom:auto;padding-block:24px 56px}
+ .v-hall .fp{top:calc(71.9vw - 60px);bottom:auto}
+ .v-path{padding-block:72px}.v-ask{padding-block:72px}
 }

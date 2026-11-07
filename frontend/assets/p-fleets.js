@@ -1,4 +1,4 @@
-// Robot companies page. Every section is one pinned screen, and FerraChain in site.js hands each to the next the way STORYBOARD.md plans it.
+// Robot companies page. One pinned scene, the robot that fills with rent, which scrolls away once it is full. Everything else sits in plain flow.
 // The sentence's fields stay in range, and every change goes straight to the answer. Further down, the same sentence sets the robot that fills with rent and the one month of rent split between the loan and the company.
 // Every "Ask what you could borrow" link on the page returns to the sentence. With reduced motion every section stands finished, in order.
 (() => {
@@ -6,10 +6,10 @@
   if (!ty) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches, $ = id => document.getElementById(id), usd = v => '$' + Math.round(v).toLocaleString('en-US');
   // the big figure stays on one line in its column whatever is typed: it steps down the same sizes the rest of the site uses
-  const big = $('f-big'), cost = $('f-cost'), mine = $('f-own'), the = $('f-the'), sr = $('f-sr'), SIZES = ['fig-96', 'fig-64', 'fig-44'];
+  const big = $('f-big'), pay = $('f-pay'), sr = $('f-sr'), SIZES = ['fig-96', 'fig-64', 'fig-44'];
   const fitBig = () => { if (!big) return; for (const c of SIZES) { big.classList.remove(...SIZES); big.classList.add(c); if (big.scrollWidth <= big.parentElement.clientWidth + 1) return; } };
   let tick0, shownV = 6250000;
-  const showMoney = V => { const lend = Math.round(V * .7), own = V - lend, one = val(n) === 1; big.textContent = usd(lend); fitBig(); cost.textContent = usd(V); mine.textContent = usd(own); the.textContent = one ? 'The robot costs' : 'The robots cost'; sr.textContent = 'You could borrow ' + usd(lend) + '. ' + the.textContent + ' ' + usd(V) + '. You pay ' + usd(own) + ' yourself.'; cancelAnimationFrame(tick0); if (still) { shownV = V; return; }
+  const showMoney = V => { const lend = Math.round(V * .7), own = V - lend, one = val(n) === 1, line = (one ? 'The robot costs ' : 'The robots cost ') + usd(V) + '. You pay ' + usd(own) + ' yourself.'; big.textContent = usd(lend); fitBig(); pay.textContent = line; sr.textContent = 'You could borrow ' + usd(lend) + '. ' + line; cancelAnimationFrame(tick0); if (still) { shownV = V; return; }
     const a = shownV, t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 300), e = 1 - Math.pow(1 - k, 3); shownV = a + (V - a) * e; big.textContent = usd(k === 1 ? V * .7 : shownV * .7); if (k < 1) tick0 = requestAnimationFrame(tick); }; tick0 = requestAnimationFrame(tick); };
   const digits = el => el.value.replace(/[^0-9]/g, ''), lim = el => [+el.dataset.min, +el.dataset.max], clamp = (el, v) => { const [lo, hi] = lim(el); return Math.min(hi, Math.max(lo, v)); };
   const last = new Map([[n, 50], [p, 125000]]), val = el => last.get(el);   // the last good value of each field: an empty field keeps the answer where it was
@@ -66,17 +66,18 @@
     load('arm');
     const nEl = $('f-read-n'), sEl = $('f-read-s'), ctx = pb.getContext('2d');
     let W = 0, H = 0, pitch = 0, ox = 0, oy = 0, shown = -1;
-    const size = () => { W = pb.clientWidth; H = pb.clientHeight || W * rows / data.w; const d = Math.min(2, devicePixelRatio || 1); pitch = Math.min(W / data.w, H / rows); ox = (W - pitch * data.w) / 2; oy = H - pitch * rows; pb.width = Math.round(W * d); pb.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); shown = -1; };
+    const size = () => { const xs = list.map(q => q.cx), x0 = Math.min(...xs), wide = Math.max(...xs) - x0 + 1; W = pb.clientWidth; H = pb.clientHeight || W * rows / wide; const d = Math.min(2, devicePixelRatio || 1); pitch = Math.min(W / wide, H / rows); ox = -x0 * pitch; oy = H - pitch * rows;   // the robot's own pixels start on the column's left edge and, where the height allows, end on its right edge
+      pb.width = Math.round(W * d); pb.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); shown = -1; };
     const paint = m => { const share = Math.min(1, m * rent / price), on = new Path2D(), off = new Path2D();
       for (const q of list) { const r = Math.max(.5, pitch * .5 * Math.max(.34, q.s)), X = ox + (q.cx + .5) * pitch, Y = oy + (q.cy - y0 + .5) * pitch, path = q.rank < share ? on : off; path.moveTo(X + r, Y); path.arc(X, Y, r, 0, 6.2832); }
       ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(40,71,206,.15)'; ctx.fill(off); ctx.fillStyle = '#2847ce'; ctx.fill(on); };
     const read = m => { nEl.textContent = usd(m * rent); sEl.textContent = m === 0 ? 'of rent on day one. You have paid ' + usd(price) + ' for the robot.' : m < months ? 'of rent after ' + m + (m === 1 ? ' month.' : ' months.') : 'of rent after ' + m + ' months. The robot has earned back its price.'; };
     const show = m => { if (m === shown) return; shown = m; paint(m); read(m); };
-    const fix = () => { if (still) pb.style.height = pb.clientWidth * rows / data.w + 'px'; size(); show(Math.round(Math.min(1, lastP / .86) * months)); };
+    const fix = () => { if (still) { const xs = list.map(q => q.cx); pb.style.height = pb.clientWidth * rows / (Math.max(...xs) - Math.min(...xs) + 1) + 'px'; } size(); show(Math.round(Math.min(1, lastP / .86) * months)); };
     setRent = p => { lastP = p; show(Math.round(Math.min(1, p / .86) * months)); };   // the fill takes 86% of the distance; the rest is the finished robot, held
     pb._fix = fix; addEventListener('resize', fix);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fix);
-    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); } $('f-w-p').textContent = usd(price); $('f-w-r').textContent = usd(rent); fix(); });
+    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); } $('f-w-t').textContent = 'Say it costs ' + usd(price) + ' and rents for ' + usd(rent) + ' a month, our example.'; fix(); });
     requestAnimationFrame(fix);
   }
   // one month: the bar fills from the left as the page scrolls. With reduced motion it stands finished
@@ -84,9 +85,10 @@
   const setBar = k => { bar.style.clipPath = `inset(0 ${((1 - k) * 100).toFixed(2)}% 0 0)`; };
   followers.push(st => { const N = st.n, one = N === 1, rent = rentOf(st.price), comes = N * rent, V = N * st.price, goes = V * ADV / TERM, left = comes - goes;
     mSec.style.setProperty('--pay', (goes / comes).toFixed(4));
-    $('f-m-lead').innerHTML = 'In one month of our example, <b class="num">' + usd(comes) + '</b> of rent comes in' + (one ? ' from your robot.' : ', ' + usd(rent) + ' from each robot.');
-    $('f-m-go').textContent = usd(goes); $('f-m-left').textContent = usd(left);
-    bar.setAttribute('aria-label', 'Of ' + usd(comes) + ' of rent, ' + usd(goes) + ' pays back the loan and ' + usd(left) + ' stays with you.'); });
+    $('f-m-lead').textContent = 'In one month of our example, ' + usd(comes) + ' of rent comes in' + (one ? ' from your robot.' : ', ' + usd(rent) + ' from each robot.');
+    const go100 = Math.round(goes / 100) * 100, left100 = comes - go100;   // the same rounding How it works prints
+    $('f-m-go').textContent = usd(go100); $('f-m-left').textContent = usd(left100);
+    bar.setAttribute('aria-label', 'Of ' + usd(comes) + ' of rent, ' + usd(go100) + ' pays back the loan and ' + usd(left100) + ' stays with you.'); });
   // the cobalt band: six moving robots assemble, 300ms apart, as the band arrives. They pause off screen and carry on where they were
   const bots = [...document.querySelectorAll('.f-bot canvas')];
   let botsOn = false;
@@ -94,20 +96,14 @@
   addEventListener('load', () => { if (window.FerraDots) bots.forEach(c => FerraDots.fetch(c)); });
   const botIo = new IntersectionObserver(es => es.forEach(en => { const c = en.target; if (!c._seen || !window.FerraDots) return; en.isIntersecting ? FerraDots.resume(c) : FerraDots.pause(c); }), { rootMargin: '80px' }); bots.forEach(c => botIo.observe(c));
 
-  // ------------------------------------------------------------ the chain
+  // ------------------------------------------------------------ the one pinned scene, and the things that start on arrival
   const page = document.querySelector('[data-page="fleets.html"]');
+  const arrive = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; arrive.unobserve(en.target); if (en.target === bar.nextElementSibling) setBar(1); else startBots(); }), { threshold: .3 });
   if (still) { setRent(1); startBots(); return; }
-  page.classList.add('sc-on'); setBar(0);
-  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
-  // a phone shortens every distance to 70%. These two scenes are only holds, and a hold stays what it is. Registered before the chain, so a resize sets them before it lays out
-  const holds = [$('sc-hero'), $('sc-keep')], baseHold = holds.map(s => +s.dataset.hold), setHolds = () => holds.forEach((s, i) => { s.dataset.hold = Math.ceil(baseHold[i] / (innerWidth <= 720 ? .7 : 1)); });
-  setHolds(); addEventListener('resize', setHolds);
-  // white to ink gets a full 100vh (70vh on a phone) at an even rate: the chain in site.js does that for any fade between those two grounds
-  const why = $('sc-why'), mon = $('sc-month');
-  // the old words leave in the first 40% of a fade and the new ones arrive from 35% to 75%, so the two are never readable together and no frame stands empty. Runs just after the chain has drawn the frame
-  const words = (s, then) => (p, top) => { if (then) then(p, top); queueMicrotask(() => { const l = s._l, y = -top, k = l.out === 'gf' ? clamp01((y - l.inH - l.over - l.hold) / l.outH) : 0, w = Math.min(clamp01((y / l.inH - .35) / .4), 1 - clamp01(k / .4));
-    l.kids.forEach(c => { c.style.opacity = w.toFixed(3); }); }); };
-  const relay = FerraChain({ runs: { 'sc-why': words(why, p => setRent(p)), 'sc-month': words(mon, p => setBar(clamp01(p * 130 / 100))), 'sc-fleet': words($('sc-fleet')) }, arrive: { 'sc-fleet': startBots }, after: () => { if (pb && pb._fix) pb._fix(); } });
-  // the form opening changes the first screen's height
-  new ResizeObserver(relay).observe(document.querySelector('.f-hero'));
+  page.classList.add('f-live'); setBar(0); arrive.observe(bar.nextElementSibling); arrive.observe(document.querySelector('.f-yard'));
+  const runEl = $('sc-why'), pin = runEl.querySelector('.f-wpin'), clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+  let queued = false;
+  const tick = () => { queued = false; const h = runEl.offsetHeight - pin.offsetHeight; setRent(clamp01(-runEl.getBoundingClientRect().top / Math.max(1, h))); };
+  const ask = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
+  addEventListener('scroll', ask, { passive: true }); addEventListener('resize', ask); tick();
 })();

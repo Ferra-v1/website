@@ -1,5 +1,5 @@
 // The Resolve: a pixel robot swells into its real photo, holds, then breaks back into dots. Dots swell 1400ms, hold 1000ms, 1400ms back.
-// It runs in four places only: the Home row, the start of the Home film, the Vision parade once, and the nav card on hover. tools/system.cjs fails it anywhere else.
+// It runs in three places only: the Home row, the start of the Home film and the Vision parade once. tools/system.cjs fails it anywhere else.
 //
 // Markup. Put data-resolve="<loop name>" on the robot's box, with the robot's canvas inside it:
 //   <figure data-resolve="hero-cobot-loop"><canvas class="dotbot" data-bot="hero-cobot-loop" data-tone="ink"></canvas></figure>
