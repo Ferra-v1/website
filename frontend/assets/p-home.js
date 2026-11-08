@@ -232,12 +232,12 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     } else {
       // the words stand on the first five columns. The arm's pixels and the chart's plot stand on the last six, ending on the header's right edge. Below 1060 the words take 40% and the arm has what is left.
       const wide = W > 1060, colR = b3.querySelector('.h-bt').getBoundingClientRect().right + gg, x6 = gL + 6 * (gc + gg), fy = Math.round(H * .9), p0 = Math.min((fy - 56) / rows, ((wide ? gR - x6 : W - colR - 24)) / cols);
-      // One spot for the dot arm, the photo arm and the listing dots. Side to side: the arm's drawn shape is centred in the space from the words' real right edge (the widest of the three beats) to the grid's right edge.
+      // One spot for the dot arm, the photo arm and the listing dots. Side to side: the arm's drawn shape ends on the grid's right edge; its size keeps it at least two grid gaps clear of the words' real right edge (the widest of the three beats).
       // Up and down: its drawn shape is centred on the middle of the words beside it, which stand centred in the screen. It keeps its old size unless it needs to shrink to stay a grid column clear of the words or below the header.
       hPairs();
       const tr = Math.max(hInk(moat.querySelector('.h-mct')), hInk(b0.querySelector('.h-bt')), hInk(b1.querySelector('.h-bt'))) - sr0.left, hd = b0.querySelector('h2'), cy = hd.offsetTop + hd.offsetHeight / 2, top0 = 88;
       const p = Math.max(1, Math.min(p0, (gR - tr - 2 * gc) / ARM_W, (cy - top0) / ARM_H, (H - 16 - cy) / ARM_H));
-      floorY = cy + ARM_H * p; cam = { p, l: (tr + gR) / 2 - ARM_CX * p };
+      floorY = cy + ARM_H * p; cam = { p, l: gR - (ARM_CX + ARM_W / 2 - 1.3) * p };   // the arm's drawn edge ends on the grid's right edge, as the words start on its left edge (Praj, 2026-11-07: centred by its box it read too far left)
       // the chart: its price labels stay at least one grid column clear of the words and the controls in both chart beats. The chart narrows for that, never the words.
       const b2t = b2.querySelector('.h-bt'), b3t = b3.querySelector('.h-bt'); b2t.style.minHeight = b3t.offsetHeight + 'px';
       const wr = Math.max(hInk(b2t), hInk(b3t)) - sr0.left, lw = Math.max(...[...axis.querySelectorAll('.h-yl')].map(s => s.offsetWidth));
@@ -255,7 +255,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     labs = null; endDirty = true;   // the chart's labels find their clean spots again
     if (R) { const pb = cam.p;
       for (let j = 0; j < R.n; j++) { const q = D.rows[j], g = rad(q[2]); R.x0[j] = cam.l + q[6] * cam.p; R.y0[j] = floorY - (BY1 - q[7]) * cam.p;
-        R.r0[j] = pb * .94 * g; R.x1[j] = X(q[5]); R.y1[j] = Y(q[2]); R.r1[j] = (phone ? 2.8 : 4.8) * Math.pow(g, .8); }
+        R.r0[j] = pb * .94 * g; R.x1[j] = X(Math.max(q[5], .4)); R.y1[j] = Y(q[2]); R.r1[j] = q[5] > 30 || q[2] < LO * 1.3 || q[2] > HI ? 0 : (phone ? 2.8 : 4.8) * Math.pow(g, .8); }   // a listing past the chart's own ages or prices is left off it, and a new robot sits just off the axis (Praj, 2026-11-07)
       drain(); }
     flatFine();
     pt = null; dirty = true; if (lens) lens.mark();
@@ -411,7 +411,10 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       const ex = clamp(ax, best[0], best[0] + w), ey = ay < best[1] ? best[1] - 3 : ay > best[1] + h ? best[1] + h + 3 : best[1] + h / 2;
       if (Math.hypot(ex - ax, ey - ay) > 10) labs.push([ex, ey, ax, ay]); };
     const last = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m);
-    put1(lblC, X(26), Y(D.curve[26]) - 2, true); put1(lblU, X(last[5]), Y(last[1])); };
+    // the line's and the auction squares' names sit as a small key in the chart's empty bottom right, so no joining line runs through the dots (Praj, 2026-11-07)
+    { const kw = Math.max(lblC.offsetWidth, lblU.offsetWidth), kx = gR - kw, ky = C.b - lblC.offsetHeight * 2 - 8 - 12; void last; [lblC, lblU].forEach(el => { el.style.visibility = ''; });
+      lblC.style.transform = `translate(${kx.toFixed(1)}px,${ky.toFixed(1)}px)`; lblU.style.transform = `translate(${kx.toFixed(1)}px,${(ky + lblC.offsetHeight + 8).toFixed(1)}px)`;
+      taken.push([kx, ky, kw, lblC.offsetHeight * 2 + 8]); } };
 
   // the last two labels: what sellers ask and the likely sale. Each takes the free spot nearest its own marker, clear of the line, both markers and the other label, so any robot and any year keeps them clean. Same side and same left edge when there is room.
   const placeEnds = () => { endDirty = false; const tx = X(age), ay = Y(ask), sy = Y(sale), marks = [], pad = 7, hit = (x, y, w, h, list) => { for (const [dx, dy, r] of list) if (dx > x - pad - r && dx < x + w + pad + r && dy > y - pad - r && dy < y + h + pad + r) return true; return false; };

@@ -272,3 +272,7 @@
  .h-up,.h-dots i,.h-bot figcaption,.h-pv b,.h-fb,.h-bl::after,.h-pw,.h-ctrls,.h-axis,.h-axis span,.h-vcap,.h-mct{transition:none!important}
  .h-up,.h-dots i{opacity:1;transform:none}
 }
+/* the chart's key: a line swatch for what sellers usually ask, a square for an auction sale (Praj, 2026-11-07) */
+.h-axis .h-cl,.h-axis .h-al{display:inline-flex;align-items:center;gap:10px;white-space:nowrap}
+.h-axis .h-cl::before{content:"";width:20px;height:2px;background:#fff;flex:none}
+.h-axis .h-al::before{content:"";width:7px;height:7px;margin-inline:6.5px;background:var(--ink);flex:none}

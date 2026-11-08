@@ -29,13 +29,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 :where(p) a:where(:not(.btn,.tlink)){color:var(--c);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-:where(.w,.on-dark,.band,.foot,.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb) :where(p) a:where(:not(.btn,.tlink)){color:#fff;font-weight:500}
+:where(.w,.on-dark,.band,.foot,.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel) :where(p) a:where(:not(.btn,.tlink)){color:#fff;font-weight:500}
 :where(p) a:where(:not(.btn,.tlink)):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 /* Methodology and Privacy draw their links' line themselves */
 .d-sec p a,.d-pr p a{text-decoration:none}
 /* the one focus ring: a cobalt line with a white line inside it, so one of the two shows on every ground, film included */
 :is(a,button,summary,[tabindex],input,select,textarea):focus-visible{outline:2px solid var(--c);outline-offset:2px;box-shadow:0 0 0 2px #fff}
-:where(.g-dark,.g-ink,.g-cobalt,.ink-panel,.cb,.g-grad,.foot,.on-dark,.mn,.np,.np-on) :is(a,button,summary,[tabindex],input,select,textarea):focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+:where(.g-dark,.g-ink,.g-cobalt,.ink-panel,.g-grad,.foot,.on-dark,.mn,.np,.np-on) :is(a,button,summary,[tabindex],input,select,textarea):focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
 .btn:focus-visible,.tlink:focus-visible{outline-style:solid;outline-width:2px;outline-offset:2px}
 /* the skip link: the first thing the keyboard reaches on every page */
 .skip{position:fixed;left:16px;top:12px;z-index:90;display:inline-flex;align-items:center;height:48px;padding:0 18px;background:var(--ink);color:#fff;font:500 16px/1 var(--sans);border-radius:2px;transform:translateY(-200%)}
@@ -90,18 +90,18 @@ canvas.dotbot{display:block;width:100%}
 .btn:hover{background:#2140bf}
 .btn:active{background:#1e339b}
 .btn-c{background:var(--c);color:#fff}.btn-c:hover{background:#2140bf}.btn-c:active{background:#1e339b}
-.btn-w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)){background:#fff;color:var(--c)}
-.btn-w:hover,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):hover{background:#e6ebf8}
-.btn-w:active,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):active{background:#cfd8f2}
+.btn-w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)){background:#fff;color:var(--c)}
+.btn-w:hover,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):hover{background:#e6ebf8}
+.btn-w:active,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):active{background:#cfd8f2}
 .btn.btn-o{background:transparent;color:var(--c);border-color:var(--c)}.btn.btn-o:hover{background:rgba(40,71,206,.08)}.btn.btn-o:active{background:rgba(40,71,206,.16)}
-:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn.btn-o{color:#fff;border-color:rgba(255,255,255,.72);background:transparent}
-:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn.btn-o:hover{background:rgba(255,255,255,.12)}
-:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn.btn-o:active{background:rgba(255,255,255,.2)}
+:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.on-dark,.foot,.np-on,.mn) .btn.btn-o{color:#fff;border-color:rgba(255,255,255,.72);background:transparent}
+:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.on-dark,.foot,.np-on,.mn) .btn.btn-o:hover{background:rgba(255,255,255,.12)}
+:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.on-dark,.foot,.np-on,.mn) .btn.btn-o:active{background:rgba(255,255,255,.2)}
 .btn:disabled,.btn[aria-disabled="true"]{opacity:.55;cursor:default;pointer-events:none}
 .nav-b .btn,.mn-foot .btn{font-size:var(--t-btn-bar)}
 /* the one arrow link: 16px 600, cobalt on light, white on dark. Write the arrow in the text with &rarr; */
 .tlink{display:inline-flex;align-items:center;min-height:44px;font:500 16px/1.25 var(--sans);color:var(--c);text-decoration:none;margin:0}
-.tlink.w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np) .tlink{color:#fff}
+.tlink.w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.on-dark,.foot,.np) .tlink{color:#fff}
 .tlink:active{opacity:.72}
 .tlink:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .hlinks{display:flex;gap:12px 22px;flex-wrap:wrap;align-items:center;margin:18px 0 0}
@@ -124,11 +124,11 @@ canvas.dotbot{display:block;width:100%}
 .fl input:disabled,.fl select:disabled,.fl textarea:disabled,.pf:disabled{opacity:.55;cursor:default;background-color:var(--paper)}
 .fl select:required:invalid{color:#757f90}.fl select option{color:var(--ink)}
 .pf{height:46px;border:0;border-radius:var(--r-field);padding:0 16px;font:400 16px var(--sans);color:var(--ink);background:#f4f5f7;min-width:0}
-.pf.w,:where(.g-grad,.g-cobalt,.ink-panel,.cb,.g-ink,.g-dark) .pf{background:#fff}
+.pf.w,:where(.g-grad,.g-cobalt,.ink-panel,.g-ink,.g-dark) .pf{background:#fff}
 .pf:hover{box-shadow:inset 0 0 0 1px #b7bfcd}
 .pf:focus-visible,.fl input:focus,.fl select:focus,.fl textarea:focus{outline:2px solid var(--c);outline-offset:2px}
-:where(.g-grad,.g-cobalt,.ink-panel,.cb,.g-ink,.g-dark,.on-dark) .pf:focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
-:where(.g-grad,.g-cobalt,.ink-panel,.cb,.g-ink,.g-dark,.on-dark) .fl :is(input,select,textarea):focus{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+:where(.g-grad,.g-cobalt,.ink-panel,.g-ink,.g-dark,.on-dark) .pf:focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+:where(.g-grad,.g-cobalt,.ink-panel,.g-ink,.g-dark,.on-dark) .fl :is(input,select,textarea):focus{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
 /* select boxes: a drawn chevron in place of the browser arrow (the price tool's year stepper keeps its own) */
 .page select:not([multiple]):not(.pp-yr *){-webkit-appearance:none;appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230e1626' stroke-opacity='.6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;background-size:10px 6px;cursor:pointer}
 
@@ -177,9 +177,8 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .np-on .lk:not(.open) > a[aria-current]::after{transform:scaleX(0)}
 .np-in{--np-h:256px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1fr);column-gap:var(--gut);height:min(calc(var(--np-h) + 56px),calc(100vh - var(--np-top,72px)));padding:28px var(--gl)}
 .np-l{grid-column:1 / span 4;display:grid;grid-auto-rows:minmax(0,1fr);min-height:0;margin-top:-8px;padding-top:8px;overflow-y:auto;scrollbar-width:none}
-.np-l a{display:block;padding:14px 0 0;min-height:44px;border-bottom:1px solid rgba(255,255,255,.2)}
-.np-l a:first-child{padding-top:0}
-.np-l a:first-child b{margin-top:-.27em}
+/* each row centres its words between its lines (Praj, 2026-11-07) */
+.np-l a{display:flex;flex-direction:column;justify-content:center;padding:12px 0;min-height:44px;border-bottom:1px solid rgba(255,255,255,.2)}
 .np.on .np-l a{animation:np-rise .36s var(--m-ease) both;animation-delay:calc(var(--i,0) * 40ms + 80ms)}
 @keyframes np-rise{from{opacity:0;transform:translateY(8px)}}
 .np-l b{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font:700 var(--t-lead)/1.25 var(--serif);letter-spacing:-.02em;color:rgba(255,255,255,.72);transition:color .15s ease}
@@ -264,11 +263,11 @@ html:has(.fbar.on) .d-tocx{top:80px}
 /* .tb, the one toolbar a section may have: every control in one row, 46px tall (44px buttons inside the border), one border, one radius. Children: select (inside a label or bare), .tb-seg (a segmented switch of buttons with aria-pressed),
    .tb-step (button, output, button), and at most one .tlink at the end. On white the pressed segment is ink; inside an ink, cobalt or dark ground it turns white automatically */
 .tb{--tb-h:46px;--tb-b:#cfd5e0;--tb-bg:#fff;--tb-fg:var(--ink);--tb-on-bg:var(--ink);--tb-on-fg:#fff;--tb-hov:#f2f4f8;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 16px/1 var(--sans)}
-:where(.g-ink,.g-dark,.g-cobalt,.g-grad,.ink-panel,.cb,.on-dark) .tb,.tb.on-dark{--tb-b:rgba(255,255,255,.34);--tb-bg:transparent;--tb-fg:#fff;--tb-on-bg:#fff;--tb-on-fg:var(--ink);--tb-hov:rgba(255,255,255,.1)}
+:where(.g-ink,.g-dark,.g-cobalt,.g-grad,.ink-panel,.on-dark) .tb,.tb.on-dark{--tb-b:rgba(255,255,255,.34);--tb-bg:transparent;--tb-fg:#fff;--tb-on-bg:#fff;--tb-on-fg:var(--ink);--tb-hov:rgba(255,255,255,.1)}
 .tb label{display:flex;margin:0;min-width:0}
 .page .tb select:not([multiple]),.tb select{height:var(--tb-h);margin:0;padding:0 38px 0 14px;border:1px solid var(--tb-b);border-radius:var(--r-field);background-color:var(--tb-bg);color:var(--tb-fg);font:400 16px/1 var(--sans);min-width:0;max-width:100%;cursor:pointer}
 .tb select option{color:var(--ink);background:#fff}
-.page :where(.g-ink,.g-dark,.g-cobalt,.g-grad,.ink-panel,.cb,.on-dark) .tb select:not([multiple]),.page .tb.on-dark select:not([multiple]){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-opacity='.8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.page :where(.g-ink,.g-dark,.g-cobalt,.g-grad,.ink-panel,.on-dark) .tb select:not([multiple]),.page .tb.on-dark select:not([multiple]){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-opacity='.8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .tb select:hover{background-color:var(--tb-hov)}
 .tb-seg,.tb-step{display:inline-flex;align-items:stretch;height:var(--tb-h);border:1px solid var(--tb-b);border-radius:var(--r-field);overflow:hidden;background:var(--tb-bg)}
 .tb-seg button,.tb-step button{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:100%;margin:0;padding:0 16px;border:0;border-radius:0;background:transparent;color:var(--tb-fg);font:400 16px/1 var(--sans);white-space:nowrap;cursor:pointer;transition:background .15s ease,color .15s ease}
@@ -310,31 +309,28 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .card-f.big b{font-size:var(--t-title);letter-spacing:-.028em;color:var(--c)}
 .card-f + .card-f{margin-left:auto;text-align:right;align-items:flex-end}
 
-/* .cb, the closing band (spec 20): one full-width ink band right above the footer. Heading in columns 1 to 5, the form or the button in 7 to 12, the heading's capitals level with the first thing on the right.
+/* .cb, the closing band (spec 20, made white by Praj 2026-11-07 so it stands apart from the navy sections): one full-width white band right above the footer, a hairline on top. Heading in columns 1 to 5, the form or the button in 7 to 12, the heading's capitals level with the first thing on the right.
    .cb-j is the same thing inside a navy section that is already there (Home's "What if a loan goes bad?"): a thin line across the grid, one section gap, then the band's two columns */
-.cb{background:var(--g-ink);color:#fff;padding-block:var(--sec)}
-.cb.cb-j{background:none;padding-block:var(--sec) 0}
-.cb-j .cb-g{border-top:1px solid rgba(255,255,255,.22);padding-top:var(--sec)}
+.cb{background:#fff;color:var(--ink);padding-block:var(--sec);border-top:1px solid rgba(14,22,38,.12)}
+.cb.cb-j{margin-top:var(--sec)}
+
 .cb-g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);row-gap:32px;align-items:start}
-.page .cb-h{grid-column:1 / 6;margin:0;color:#fff}
+.page .cb-h{grid-column:1 / 6;margin:0;color:var(--ink)}
 @media (min-width:761px){.page .cb-h{margin-top:-.06em}}
 .cb-r{grid-column:7 / -1;min-width:0}
 .cb-r > :first-child{margin-top:0}
-.cb-why{margin:0 0 24px;font:400 var(--t-lead)/1.45 var(--sans);color:rgba(255,255,255,.88)}
+.cb-why{margin:0 0 24px;font:400 var(--t-lead)/1.45 var(--sans);color:#3e4656}
 .cb form.lead{max-width:none;margin:0}
+.cb .fl :is(input,select,textarea){background-color:#f4f5f7;border-color:transparent}   /* the light field, as on Price */
 .cb .lf{grid-template-columns:minmax(0,1fr);gap:16px}
-.cb .fl{color:rgba(255,255,255,.82)}
-.cb .fl :is(input,select,textarea){border-color:transparent;background-color:#fff;color:var(--ink)}
 .cb .fl select:required:invalid{color:#757f90}
-.cb .fl [aria-invalid="true"]{border-color:#ffd2cc;outline:2px solid #ffd2cc;outline-offset:0}
 .cb .la{margin-top:24px}
-.cb .lerr{color:#fff}
 /* sent: the thanks and the next steps take the form's place, on the band */
-.cb .ldone{padding:0;background:none;border:0;border-radius:0;color:#fff}
-.cb .ldone b{color:#fff}
-.cb .ldone span{color:rgba(255,255,255,.72);margin:16px 0 0}
-.cb .ldone ol{list-style:none;margin:8px 0 0;padding:0;color:rgba(255,255,255,.88);border-top:1px solid rgba(255,255,255,.22)}
-.cb .ldone li{margin:0;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.22)}
+.cb .ldone{padding:0;background:none;border:0;border-radius:0;color:var(--ink)}
+.cb .ldone b{color:var(--ink)}
+.cb .ldone span{color:#3e4656;margin:16px 0 0}
+.cb .ldone ol{list-style:none;margin:8px 0 0;padding:0;color:#3e4656;border-top:1px solid rgba(14,22,38,.12)}
+.cb .ldone li{margin:0;padding:12px 0;border-bottom:1px solid rgba(14,22,38,.12)}
 .ldone:has(ol:empty) span,.ldone ol:empty{display:none}
 @media (max-width:760px){.cb-g{grid-template-columns:minmax(0,1fr);row-gap:24px}.page .cb-h,.cb-r{grid-column:auto}.page .cb .cb-h{text-wrap:balance}.cb .btn{width:100%}}
 

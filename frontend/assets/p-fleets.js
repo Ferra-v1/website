@@ -77,7 +77,7 @@
     setRent = p => { lastP = p; show(Math.round(Math.min(1, p / .86) * months)); };   // the fill takes 86% of the distance; the rest is the finished robot, held
     pb._fix = fix; addEventListener('resize', fix);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fix);
-    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); } $('f-w-t').textContent = 'Say it costs ' + usd(price) + ' and rents for ' + usd(rent) + ' a month, our example.'; fix(); });
+    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); } $('f-w-t').textContent = 'Say it costs ' + usd(price) + ' and rents for ' + usd(rent) + ' a month.'; fix(); });
     requestAnimationFrame(fix);
   }
   // one month: the bar fills from the left as the page scrolls. With reduced motion it stands finished

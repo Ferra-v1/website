@@ -103,7 +103,7 @@
 .pr-dots path{fill:none;stroke:var(--c);stroke-width:3.2;stroke-linecap:round}
 .pr-dots circle{fill:var(--ink);stroke:#fff;stroke-width:1}
 .pr-say{line-height:23px;color:var(--muted);white-space:nowrap}
-.pr-say.b{color:var(--ink);font-weight:500}
+.pr-say.b{color:var(--muted)}  /* few and very few read alike; the words carry the difference */
 .pr-tw{position:relative}
 .pr-dtip{z-index:4;box-shadow:0 0 0 1px var(--line)}
 .pr-all .pr-nm a{color:var(--ink)}
@@ -208,3 +208,6 @@
 .pr-srcs .h2{text-wrap:balance}
 /* the closing band's long heading takes columns 1 to 9 so it holds two lines; the button sits from column 10 */
 @media (min-width:761px){.page .cb.cb-wide .cb-h{grid-column:1 / 10}.page .cb.cb-wide .cb-r{grid-column:10 / -1}}
+
+/* the list beside the chart lines up with it: the top rule on the $100,000 line, the source note's last line on the age axis (Praj, 2026-11-07) */
+@media (min-width:1200px){.pr-stage .pr-side{padding-top:clamp(27px,2.33vw,35px);padding-bottom:40px}.pr-stage{padding-bottom:calc(var(--sec) - 40px)}}

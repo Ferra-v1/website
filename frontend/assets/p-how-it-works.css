@@ -115,7 +115,7 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 
 /* the closing band: a white gap between the stage's ink and the band's, so the two read as two blocks */
 /* Round 5: the navy run meets the navy closing band with no white strip between them */
-.page .cb.hw-cb{margin-top:0;border-top:1px solid rgba(255,255,255,.12)}
+.page .cb.hw-cb{margin-top:0}
 /* Round 5: no loan exists in steps 1 and 2, so the paid and owed figures and the payment row wait for step 3 */
 .hw-low{transition:opacity .5s var(--m-ease,ease)}
 .hw-run:has(.hw-ch.hw-live:is([data-ch="1"],[data-ch="2"])) .hw-low{opacity:0}
