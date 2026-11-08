@@ -5,7 +5,7 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 .hw-pin{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px}
 .hw-hero{padding-top:clamp(40px,5.6vh,56px);padding-bottom:clamp(24px,4.4vh,44px)}
 .hw-hero .h1{margin:0}
-.page .hw-hero h1.h1,.page .hw-end h2.h2,.page .hw-ask h2.h2{text-wrap:balance}
+
 .hw-ld{margin:16px 0 0;max-width:690px;color:#3e4656;text-wrap:pretty}
 
 /* the steps and the stage */
@@ -66,14 +66,9 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 .hw-pay.made i{background:#5f7fe6;box-shadow:none}
 .hw-pay.made i.paid{background:#fff;transition-delay:0s}
 
-/* the ending: a heading, its line, two links, together in one column */
-.hw-end h2{margin:0}
-.hw-end .t-lead{margin:16px 0 0;max-width:690px;color:#3e4656;text-wrap:pretty}
-.hw-ls{display:flex;flex-wrap:wrap;gap:8px 32px;margin:20px 0 0}
-.hw-end .tlink:focus-visible{outline-color:var(--c);box-shadow:none}
-
-/* the final ask: the shared shape from site.css, the line and then the form. The ending above is white too, so the top padding goes */
-.page .hw-ask{position:relative;padding-top:0}
+/* the page's two ways on, at the end of the last step: the price tool and the failure story on Lenders. They stay cobalt while the step's words dim */
+.hw-ls{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin:20px 0 0}
+.hw-ls .tlink:focus-visible{outline-color:var(--c);box-shadow:none}
 
 @media (max-width:720px){.hw-hero{padding-bottom:24px}}
 /* a phone or small tablet: the stage on top, and the steps pass under it */
@@ -117,3 +112,12 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
  .hw-p,.hw-h,.hw-nd,.hw-lab,.hw-n,.hw-t,.hw-tx,.hw-pay i{transition:none}
 }
 @media print{.hw-on .hw-ch,.hw-on .hw-ch:first-child,.hw-on .hw-ch:last-child{height:auto;padding:0 0 24px}.hw-pin{display:block}.hw-stage{display:none}.hw-on .hw-ch:not(.hw-live) :is(.hw-n,.hw-t,.hw-tx){color:var(--ink)}.hw-on .hw-ch:last-child .hw-cw{position:static}}
+
+/* the closing band: a white gap between the stage's ink and the band's, so the two read as two blocks */
+/* Round 5: the navy run meets the navy closing band with no white strip between them */
+.page .cb.hw-cb{margin-top:0;border-top:1px solid rgba(255,255,255,.12)}
+/* Round 5: no loan exists in steps 1 and 2, so the paid and owed figures and the payment row wait for step 3 */
+.hw-low{transition:opacity .5s var(--m-ease,ease)}
+.hw-run:has(.hw-ch.hw-live:is([data-ch="1"],[data-ch="2"])) .hw-low{opacity:0}
+/* a phone: the top heading and the band heading never end on one word */
+@media (max-width:720px){.page .hw-hero h1.h1,.page .hw-cb .cb-h{text-wrap:balance}}

@@ -128,18 +128,14 @@
     addEventListener('scroll', () => { if (!npCur || !npBar) return; const b = npBar.getBoundingClientRect().bottom; if (b <= 0) closePanel(); else { np.style.setProperty('--np-top', b + 'px'); if (npDim) npDim.style.top = b + 'px'; } }, { passive: true });
     addEventListener('resize', closePanel);
   }
-  // the footer: robots assemble, 300ms apart, once the page has lifted 40% of the way off it. A sticky footer always counts as on screen, so they start and pause from here, and stop while the page covers them
-  const foot = document.querySelector('.foot'), lift = document.querySelector('.lift');
-  if (foot && lift) { const bots = [...foot.querySelectorAll('.ff-bot canvas')], dots = () => window.FerraDots; let H = 0, flow = false, near = false, started = false, live = false;
-    const shown = () => flow ? innerHeight - foot.getBoundingClientRect().top : innerHeight - lift.getBoundingClientRect().bottom;
-    const measure = () => { foot.classList.remove('flow'); H = foot.offsetHeight; flow = reduce || H > innerHeight; foot.classList.toggle('flow', flow); };
-    const check = () => { const s = shown(), d = dots(); if (!d) return;
+  // the footer: an ordinary block at the end of the page (no longer pinned). Its robots assemble, 300ms apart, once 40% of it is on screen, and pause while it is off screen
+  const foot = document.querySelector('.foot');
+  if (foot) { const bots = [...foot.querySelectorAll('.ff-bot canvas')], dots = () => window.FerraDots; let near = false, started = false, live = false;
+    const check = () => { const r = foot.getBoundingClientRect(), s = innerHeight - r.top, d = dots(); if (!d) return;
       if (!near && s > -1400) { near = true; bots.forEach(c => d.fetch(c)); }
-      if (!started && (s >= H * .4)) { started = true; live = true; bots.forEach((c, i) => setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; d.draw(c); if (!live) d.pause(c); }, reduce ? 0 : i * 300)); }
-      else if (started) { const on = s > 0; if (on !== live) { live = on; bots.forEach(c => { if (c._seen && c.classList.contains('dotbot')) on ? d.resume(c) : d.pause(c); }); } } };
-    // a sticky footer always counts as on screen, so the browser never scrolls to a link the page is still covering. Focus inside the footer lifts the page off it
-    foot.addEventListener('focusin', () => { if (!flow && lift.getBoundingClientRect().bottom > innerHeight - H + 1) scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); });
-    measure(); check(); addEventListener('scroll', check, { passive: true }); addEventListener('resize', () => { measure(); check(); }); addEventListener('load', () => { measure(); check(); }); }
+      if (!started && s >= Math.min(r.height, innerHeight) * .4) { started = true; live = true; bots.forEach((c, i) => setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; d.draw(c); if (!live) d.pause(c); }, reduce ? 0 : i * 300)); }
+      else if (started) { const on = s > 0 && r.bottom > 0; if (on !== live) { live = on; bots.forEach(c => { if (c._seen && c.classList.contains('dotbot')) on ? d.resume(c) : d.pause(c); }); } } };
+    check(); addEventListener('scroll', check, { passive: true }); addEventListener('resize', check); addEventListener('load', check); }
   // phone menu: full screen, the page behind it inert, Escape or any link closes it, focus goes back where it was
   const mn = document.getElementById('mn');
   if (mn) { let back = null, later = 0; const btns = document.querySelectorAll('.menu'), pg = document.querySelector('.page'), bots = [...mn.querySelectorAll('.mn-bots canvas')];

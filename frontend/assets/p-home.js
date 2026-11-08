@@ -3,6 +3,14 @@ const hClamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, hSeg = (s, a, b) 
 const hMix = (a, b, t) => `rgb(${Math.round(hLerp(a[0], b[0], t))},${Math.round(hLerp(a[1], b[1], t))},${Math.round(hLerp(a[2], b[2], t))})`;
 const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
 
+// The words' real ink: the right edge of every line of text (and every control) inside an element, and the widest line of a heading. Hidden helper text (.sr) does not count.
+const hInk = el => { let r = -1e9; const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) { if (!n.nodeValue.trim() || n.parentElement.closest('.sr')) continue; const g = document.createRange(); g.selectNodeContents(n); for (const q of g.getClientRects()) if (q.width) r = Math.max(r, q.right); }
+  el.querySelectorAll('select,.btn').forEach(c => { if (!c.closest('.sr')) r = Math.max(r, c.getBoundingClientRect().right); }); return r; };
+const hLines = el => { const by = new Map(), w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) { if (!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n); for (const q of g.getClientRects()) { if (!q.width) continue; const k = Math.round((q.top + q.bottom) / 2 / 8); const o = by.get(k) || [1e9, -1e9]; by.set(k, [Math.min(o[0], q.left), Math.max(o[1], q.right)]); } } return Math.max(0, ...[...by.values()].map(v => v[1] - v[0])); };
+// A heading is always at least as long as the line under it (desktop): the line under a marked heading wraps at the heading's longest line.
+const hPairs = () => document.querySelectorAll('.page[data-page="index.html"] [data-pair]').forEach(h => { const p = h.nextElementSibling; if (!p || p.tagName !== 'P') return; p.style.maxWidth = ''; if (innerWidth <= 720) return; const w = hLines(h); if (w > 40) p.style.maxWidth = Math.floor(w) + 'px'; });
+hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); if (document.fonts && document.fonts.ready) document.fonts.ready.then(hPairs);
+
 // The first film scrolls away like any page, and rests once it has gone. Reduced motion: site.js stops the video and the poster stays.
 (() => {
   const top = document.querySelector('.h-top'), v = top && top.querySelector('video'); if (!v) return;
@@ -144,6 +152,8 @@ const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
 
   // ---------------------------------------------------------------- the price box: the only numbers baked into the page
   const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
+  // the arm's drawn shape on its grid, measured from the fine dots (h-arm.js): x 5 to 106, y 9 to 118. Its width, its half height and its centre across.
+  const ARM_W = 101, ARM_H = 54.5, ARM_CX = 55.5;
   let W = 0, H = 0, FH = 0, dpr = 1, phone = false, fineD = null, fineFlat = null, D = null, R = null, dirty = true, on = true, photo = null, photoOK = false;
   let cam = { p: 6, l: 300 }, floorY = 800, axisY = 800, lineL = 0, C = { l: 0, r: 1000, t: 0, b: 800 }, age = 10, ask = 14700, sale = 6100, pt = null, slot = null, tgt = null;
   const X = a => C.l + a / 30 * (C.r - C.l), Y = u => C.t + (Math.log(HI) - Math.log(u)) / (Math.log(HI) - Math.log(LO)) * (C.b - C.t);
@@ -204,32 +214,44 @@ const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
   const docTop = el => el.getBoundingClientRect().top + scrollY;
   let storyTop = 0, gL = 0, gR = 0;
   // where the row's arm stands now, in the stage. Its sprite can arrive after the layout, and its offsets arrive with it, so this runs again then: the big arm must start exactly on the row's.
-  const placeSlot = () => { if (!armB.p) return; const sr = stage.getBoundingClientRect(), ar = armB.cv.getBoundingClientRect(); slot = { p: armB.p, x: ar.left - sr.left + (armB.dx || 0) * armB.p, y: ar.top - sr.top + (armB.dy || 0) * armB.p }; dirty = true; };
+  const placeSlot = () => { if (!armB.p) return; const sr = stage.getBoundingClientRect(), ar = armB.cv.getBoundingClientRect(); slot = { p: armB.p, x: ar.left - sr.left + (armB.dx || 0) * armB.p, y: ar.top - sr.top + (armB.dy || 0) * armB.p + (vis._dk || 0) * FH }; dirty = true; };   // measured at rest: the row may be part way up when the sprite arrives
   function layout() {
     W = stage.clientWidth; FH = stage.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 720 && !(FH < 500 && W > FH); U = W <= 720 ? .7 : .85; buildT();   // a phone held sideways stands the arm beside the words, as a wide screen does
    
     story.style.height = (T.end * H + FH).toFixed(0) + 'px'; storyTop = docTop(story);
     cv.width = Math.round(W * dpr); cv.height = Math.round(FH * dpr);
-    const cols = BX1 - BX0 + 1, rows = BY1 - BY0 + 1, gi = b0.querySelector('.in'), gs_ = getComputedStyle(gi), gx = gi.getBoundingClientRect(); gL = gx.left + parseFloat(gs_.paddingLeft); gR = gx.right - parseFloat(gs_.paddingRight); const gg = phone ? 16 : 24, gc = (gR - gL - 11 * gg) / 12;   // the grid: the header's own edges, 12 columns
+    b2.querySelector('.h-bt').style.minHeight = '';   // the chart beats share one top; measured fresh each time, after the arm's own sizes
+    const sr0 = stage.getBoundingClientRect(), cols = BX1 - BX0 + 1, rows = BY1 - BY0 + 1, gi = b0.querySelector('.in'), gs_ = getComputedStyle(gi), gx = gi.getBoundingClientRect(); gL = gx.left + parseFloat(gs_.paddingLeft); gR = gx.right - parseFloat(gs_.paddingRight); const gg = phone ? 16 : 24, gc = (gR - gL - 11 * gg) / 12;   // the grid: the header's own edges, 12 columns
     if (phone) {
       // the arm stands over the words: as big as the width and the words allow, centred in what is left
       const wh = Math.max(...[...story.querySelectorAll('.h-mct,.h-b0 .h-bt,.h-b1 .h-bt,.h-b2 .h-bt')].map(el => el.getBoundingClientRect().height)), room = H - wh - 28 - 52, p = Math.min((W - 12) / cols, room / rows);
       floorY = Math.round(52 + rows * p + Math.max(0, room - rows * p) / 2); cam = { p, l: (W - cols * p) / 2 - BX0 * p };
       const bh = b3.querySelector('.h-bt').getBoundingClientRect().height, bottom = H - bh - 68;
-      C = { l: gL + 70, r: gR - 4, t: 64, b: bottom }; axisY = bottom + 8; lineL = 0;
+      C = { l: gL + 70, r: gR - 4, t: 100, b: bottom }; axisY = bottom + 8; lineL = 0;   // the top leaves room for the price axis's title under the header
+      b2.querySelector('.h-bt').style.minHeight = bh + 'px';
     } else {
       // the words stand on the first five columns. The arm's pixels and the chart's plot stand on the last six, ending on the header's right edge. Below 1060 the words take 40% and the arm has what is left.
-      const wide = W > 1060, colR = b3.querySelector('.h-bt').getBoundingClientRect().right + gg, x6 = gL + 6 * (gc + gg), fy = Math.round(H * .9), p = Math.min((fy - 56) / rows, ((wide ? gR - x6 : W - colR - 24)) / cols);
-      floorY = fy; cam = { p, l: gR - (BX1 + 1) * p };
-      C = { l: wide ? x6 : colR + 84, r: gR - 4, t: Math.max(56, H * .09), b: fy - 8 }; axisY = fy; lineL = colR;
+      const wide = W > 1060, colR = b3.querySelector('.h-bt').getBoundingClientRect().right + gg, x6 = gL + 6 * (gc + gg), fy = Math.round(H * .9), p0 = Math.min((fy - 56) / rows, ((wide ? gR - x6 : W - colR - 24)) / cols);
+      // One spot for the dot arm, the photo arm and the listing dots. Side to side: the arm's drawn shape is centred in the space from the words' real right edge (the widest of the three beats) to the grid's right edge.
+      // Up and down: its drawn shape is centred on the middle of the words beside it, which stand centred in the screen. It keeps its old size unless it needs to shrink to stay a grid column clear of the words or below the header.
+      hPairs();
+      const tr = Math.max(hInk(moat.querySelector('.h-mct')), hInk(b0.querySelector('.h-bt')), hInk(b1.querySelector('.h-bt'))) - sr0.left, hd = b0.querySelector('h2'), cy = hd.offsetTop + hd.offsetHeight / 2, top0 = 88;
+      const p = Math.max(1, Math.min(p0, (gR - tr - 2 * gc) / ARM_W, (cy - top0) / ARM_H, (H - 16 - cy) / ARM_H));
+      floorY = cy + ARM_H * p; cam = { p, l: (tr + gR) / 2 - ARM_CX * p };
+      // the chart: its price labels stay at least one grid column clear of the words and the controls in both chart beats. The chart narrows for that, never the words.
+      const b2t = b2.querySelector('.h-bt'), b3t = b3.querySelector('.h-bt'); b2t.style.minHeight = b3t.offsetHeight + 'px';
+      const wr = Math.max(hInk(b2t), hInk(b3t)) - sr0.left, lw = Math.max(...[...axis.querySelectorAll('.h-yl')].map(s => s.offsetWidth));
+      C = { l: Math.max(wide ? x6 : colR + 84, wr + gc + lw + 14), r: gR - 4, t: Math.max(112, H * .12), b: fy - 8 };   // the top leaves room for the price axis's title under the header axisY = fy; lineL = colR;
     }
     // the row's arm, and the spot it grows into
     bots.forEach(size);
     const sr = stage.getBoundingClientRect();
     tgt = { p: cam.p, x: cam.l, y: floorY - BY1 * cam.p };
     placeSlot();
-        axis.querySelectorAll('.h-xl').forEach(s => { const a = +s.dataset.age, x = X(a); s.style.transform = `translate(${(a === 0 ? x - 4 : a === 30 ? x - s.offsetWidth + 4 : x - s.offsetWidth / 2).toFixed(1)}px,${(axisY + 10).toFixed(1)}px)`; });
-    axis.querySelectorAll('.h-yl').forEach(s => { s.style.transform = `translate(${(C.l - s.offsetWidth - (phone ? 6 : 14)).toFixed(1)}px,${(Y(+s.dataset.usd) - s.offsetHeight / 2).toFixed(1)}px)`; });
+        axis.classList.toggle('h-tight', !phone && C.r - C.l < 600);   // a narrow chart says "years old" once, on its last label
+    axis.querySelectorAll('.h-xl').forEach(s => { const a = +s.dataset.age, x = X(a); s.style.transform = `translate(${(a === 0 ? x - 4 : a === 30 ? x - s.offsetWidth + 4 : x - s.offsetWidth / 2).toFixed(1)}px,${(axisY + 10).toFixed(1)}px)`; });
+    axis.querySelectorAll('.h-yl').forEach(s => { s.style.transform = `translate(${(C.l - s.offsetWidth - (phone ? 10 : 14)).toFixed(1)}px,${(Y(+s.dataset.usd) - s.offsetHeight / 2).toFixed(1)}px)`; });
+    { const yt = axis.querySelector('.h-yt'); yt.style.transform = `translate(${(C.l - yt.offsetWidth / 2).toFixed(1)}px,${(C.t - 14 - yt.offsetHeight).toFixed(1)}px)`; }
     labs = null; endDirty = true;   // the chart's labels find their clean spots again
     if (R) { const pb = cam.p;
       for (let j = 0; j < R.n; j++) { const q = D.rows[j], g = rad(q[2]); R.x0[j] = cam.l + q[6] * cam.p; R.y0[j] = floorY - (BY1 - q[7]) * cam.p;
@@ -288,7 +310,8 @@ const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
     const edge = FH * (1 - dk); rowA = dk < 1 ? 1 : 0;
     if (dk !== vis._dk) { vis._dk = dk; vis.style.transform = dk ? `translateY(${(-dk * FH).toFixed(1)}px)` : ''; vis.style.visibility = dk >= 1 ? 'hidden' : ''; vis.style.pointerEvents = dk ? 'none' : ''; vis.classList.toggle('h-going', dk > 0); gi.style.transform = `translateY(${edge.toFixed(1)}px)`; gi.style.visibility = dk > 0 ? 'visible' : 'hidden'; }
     // the words and the neighbours in the growing arm's path step aside before it reaches them, so no dot ever runs through a word or another robot
-    { const st = dk > .12; if (st !== vis._st) { vis._st = st; vis.classList.toggle('h-step', st); } const s2 = dk > .2; if (s2 !== vis._s2) { vis._s2 = s2; vis.classList.toggle('h-step2', s2); } }
+    // the hand-off: the other robots, their prices and the note stay whole until the factory arm starts to move off (dk .25, where paintBig starts to grow it), then fade as it leaves
+    { const hf = (1 - seg(dk, .25, .42)).toFixed(3); if (hf !== vis._hf) { vis._hf = hf; vis.style.setProperty('--hf', hf); } }
     const isFree = dk > 0; if (isFree !== free) { free = isFree; armFig.classList.toggle('h-free', free); if (free) { fFrom = armB.f; pausedAt = now; } else { if (armB.t0) armB.t0 += now - pausedAt; armB.stale = true; } }
     // the arm turns to the pose the footage is waiting on, the short way round the loop, tied to the scroll
     if (free && armB.frames) { const n = armB.n, d = ((POSE - fFrom + n + n / 2) % n) - n / 2; armB.f = (fFrom + Math.round(d * soft(seg(dk, .05, .55))) + n) % n; if (armB.cv._rz) armB.cv._rz.f = armB.f; }
@@ -314,7 +337,9 @@ const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
 
     // the chart, the dots on it and the price stay until the reader has scrolled them off
     const axisA = seg(fly, .66, .74);
-    if (axisA > 0) { ctx.fillStyle = `rgba(255,255,255,${(.42 * axisA).toFixed(3)})`; ctx.fillRect(C.l, axisY, C.r - C.l, 1); }
+    if (axisA > 0) { ctx.fillStyle = `rgba(255,255,255,${(.42 * axisA).toFixed(3)})`; ctx.fillRect(C.l, axisY, C.r - C.l, 1);
+      // the price axis: one thin line in the same white, from its title down to the age axis at "New", with a tick at each price label
+      ctx.fillRect(C.l, C.t - 8, 1, axisY - C.t + 9); [1000, 10000, 100000].forEach(v => ctx.fillRect(C.l - (phone ? 5 : 7), Math.round(Y(v)), phone ? 5 : 7, 1)); }
     let hitOK = false; const mx = X(age), my = Y(sale);
     if (!pt) pt = { x: mx, y: my, a: Y(ask) };
     pt.x += (mx - pt.x) * .22; pt.y += (my - pt.y) * .22; pt.a += (Y(ask) - pt.a) * .22; if (Math.abs(mx - pt.x) + Math.abs(my - pt.y) + Math.abs(Y(ask) - pt.a) > .3) dirty = true; else { pt.x = mx; pt.y = my; pt.a = Y(ask); }

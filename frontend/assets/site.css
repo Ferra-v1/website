@@ -1,5 +1,7 @@
 /* ================================================================ one system, used by every page. Fonts first, then tokens, then the classes pages use.
-   Type: three sizes and no more (Praj). Large 60/36 for every heading and big figure, medium 22/20 for leads, small headings and smaller figures, small 16 for everything else. Sizes are desktop/phone. The giant 0 on Fleets and paper documents are the only exceptions. */
+   Type: three sizes (Praj). Large 60/36 for every heading and big figure, medium 22/20 for leads, small headings and smaller figures, small 16 for everything else. Sizes are desktop/phone.
+   A fourth size, --t-hero (80/40), is for the top heading of Home, Vision and Lenders and Fleets' "0%" only (Round 5 spec section 9). Paper documents are the only other exception.
+   Content width: the grid's edges sit --gl in from the screen, and the content between them is at most 1320 wide (1200 and under at 1440 and below). The footer keeps its own margins. */
 /* self-hosted, subset to Latin with arrows, cut from the Google Fonts source. Each fallback is Arial reshaped to the real face's width and line box, measured in the browser against the same sentence at the same weight, so the swap does not move the text. A bold word falls back on Arial Bold, never on a thickened Arial */
 @font-face{font-family:'Inter';src:url(fonts/inter.woff2) format('woff2');font-weight:500 700;font-style:normal;font-display:swap}
 @font-face{font-family:'Geist';src:url(fonts/geist.woff2) format('woff2');font-weight:400 600;font-style:normal;font-display:swap}
@@ -9,9 +11,9 @@
 @font-face{font-family:'Geist Fallback';src:local('Arial'),local('ArialMT'),local('Helvetica Neue'),local('Helvetica');font-weight:400;font-style:normal;size-adjust:102%;ascent-override:98.53%;descent-override:28.92%;line-gap-override:0%}
 @font-face{font-family:'Geist Fallback';src:local('Arial'),local('ArialMT'),local('Helvetica Neue'),local('Helvetica');font-weight:500 600;font-style:normal;size-adjust:104.3%;ascent-override:96.36%;descent-override:28.28%;line-gap-override:0%}
 :root{color-scheme:light only;
- --ink:#0e1626;--c:#2847ce;--deep:#1e339b;--mist:#f4f5f7;--paper:#f8fafd;--muted:#5b6474;--line:#e2e6ee;--cap:#6b7383;--w:none;--gl:max(clamp(20px,8.34vw,120px),calc((100vw - 1200px) / 2));--sec:clamp(48px,5vw,72px);
+ --ink:#0e1626;--c:#2847ce;--deep:#1e339b;--mist:#f4f5f7;--paper:#f8fafd;--muted:#5b6474;--line:#e2e6ee;--cap:#6b7383;--w:none;--gl:max(clamp(20px,8.34vw,120px),calc((100vw - 1320px) / 2));--gut:24px;--sec:clamp(48px,5vw,72px);
  --serif:'Inter','Inter Fallback',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--sans:'Geist','Geist Fallback',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--doc:'Source Serif 4',Georgia,'Times New Roman',serif;
- --t-title:clamp(36px,4.17vw,60px);--t-display:var(--t-title);--t-section:var(--t-title);--t-statement:var(--t-title);--t-sub:clamp(20px,1.53vw,22px);--t-smallh:16px;
+ --t-hero:clamp(40px,5.5556vw,80px);--t-title:clamp(36px,4.17vw,60px);--t-display:var(--t-title);--t-section:var(--t-title);--t-statement:var(--t-title);--t-sub:clamp(20px,1.53vw,22px);--t-smallh:16px;
  --t-lead:var(--t-sub);--t-body:16px;--t-small:16px;--t-btn:16px;--t-btn-bar:16px;--t-film:var(--t-section);
  --m-fade:600ms;--m-ease:cubic-bezier(.2,.7,.2,1);
  --g-white:#fff;--g-pale:#fff;--g-ink:#0e1626;--g-dark:#0e1626;--g-grad:linear-gradient(215deg,#0fa9e8 0%,#0394e0 18.8%,#027dda 38.8%,#0b64d8 57.5%,#2847ce 77.5%,#233db5 100%);--g-foot:#2847ce;--g-cobalt:#2847ce;
@@ -27,13 +29,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 :where(p) a:where(:not(.btn,.tlink)){color:var(--c);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-:where(.w,.on-dark,.band,.foot,.g-dark,.g-ink,.g-grad,.g-cobalt) :where(p) a:where(:not(.btn,.tlink)){color:#fff;font-weight:500}
+:where(.w,.on-dark,.band,.foot,.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb) :where(p) a:where(:not(.btn,.tlink)){color:#fff;font-weight:500}
 :where(p) a:where(:not(.btn,.tlink)):hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 /* Methodology and Privacy draw their links' line themselves */
 .d-sec p a,.d-pr p a{text-decoration:none}
 /* the one focus ring: a cobalt line with a white line inside it, so one of the two shows on every ground, film included */
 :is(a,button,summary,[tabindex],input,select,textarea):focus-visible{outline:2px solid var(--c);outline-offset:2px;box-shadow:0 0 0 2px #fff}
-:where(.g-dark,.g-ink,.g-cobalt,.g-grad,.foot,.on-dark,.mn,.np,.np-on) :is(a,button,summary,[tabindex],input,select,textarea):focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+:where(.g-dark,.g-ink,.g-cobalt,.ink-panel,.cb,.g-grad,.foot,.on-dark,.mn,.np,.np-on) :is(a,button,summary,[tabindex],input,select,textarea):focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
 .btn:focus-visible,.tlink:focus-visible{outline-style:solid;outline-width:2px;outline-offset:2px}
 /* the skip link: the first thing the keyboard reaches on every page */
 .skip{position:fixed;left:16px;top:12px;z-index:90;display:inline-flex;align-items:center;height:48px;padding:0 18px;background:var(--ink);color:#fff;font:500 16px/1 var(--sans);border-radius:2px;transform:translateY(-200%)}
@@ -46,8 +48,10 @@ a{color:inherit;text-decoration:none}
 canvas.dotbot{display:block;width:100%}
 
 /* type classes */
-.t-display,.t-title,.t-statement,.t-section,.t-sub,.fig-96,.fig-64,.fig-44,.fig-24,.h1,.h2,.h3{font-family:var(--serif);font-weight:700;text-wrap:pretty;margin:0}
+.t-hero,.t-display,.t-title,.t-statement,.t-section,.t-sub,.fig-96,.fig-64,.fig-44,.fig-24,.h1,.h2,.h3{font-family:var(--serif);font-weight:700;text-wrap:pretty;margin:0}
 .t-display,.fig-96{font-size:var(--t-display);line-height:1;letter-spacing:-.033em}
+/* the hero size: Home, Vision and Lenders top headings, and Fleets' 0%. Nothing else */
+.t-hero{font-size:var(--t-hero);line-height:1;letter-spacing:-.036em;font-variant-numeric:lining-nums tabular-nums}
 .t-title,.h1{font-size:var(--t-title);line-height:1.02;letter-spacing:-.033em}
 .t-statement,.fig-64{font-size:var(--t-statement);line-height:1.04;letter-spacing:-.028em}
 .t-section,.fig-44,.h2{font-size:var(--t-section);line-height:1.08;letter-spacing:-.028em}
@@ -60,8 +64,9 @@ canvas.dotbot{display:block;width:100%}
 .big-num{font-family:var(--serif);font-weight:700;font-size:var(--t-statement);line-height:1;letter-spacing:-.028em}
 /* headings take the scale by their tag; a class chooses another allowed size. These win over page styles on purpose: a page that sets its own heading size is how every section came to shout. */
 .page :is(h1,h2,h3,h4,h5,h6):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-family:var(--serif);font-weight:700;text-wrap:pretty}
-.page h1:not(.t-display,.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-title)!important;line-height:1.02;letter-spacing:-.033em}
+.page h1:not(.t-display,.t-hero,.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-title)!important;line-height:1.02;letter-spacing:-.033em}
 .page h1.t-display{font-size:var(--t-display)!important;line-height:1;letter-spacing:-.033em}
+.page :is(h1,h2,p,b,span).t-hero{font-size:var(--t-hero)!important;line-height:1;letter-spacing:-.036em}
 .page h2:not(.t-statement,.t-sub,.t-smallh,.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-section)!important;line-height:1.08;letter-spacing:-.028em}
 .page :is(h2,h3).t-statement{font-size:var(--t-statement)!important;line-height:1.04;letter-spacing:-.028em}
 .page h3:not(.t-statement,.t-section,.t-smallh,.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-sub)!important;line-height:1.2;letter-spacing:-.02em}
@@ -85,18 +90,18 @@ canvas.dotbot{display:block;width:100%}
 .btn:hover{background:#2140bf}
 .btn:active{background:#1e339b}
 .btn-c{background:var(--c);color:#fff}.btn-c:hover{background:#2140bf}.btn-c:active{background:#1e339b}
-.btn-w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)){background:#fff;color:var(--c)}
-.btn-w:hover,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):hover{background:#e6ebf8}
-.btn-w:active,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):active{background:#cfd8f2}
+.btn-w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)){background:#fff;color:var(--c)}
+.btn-w:hover,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):hover{background:#e6ebf8}
+.btn-w:active,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn:where(:not(.btn-c)):active{background:#cfd8f2}
 .btn.btn-o{background:transparent;color:var(--c);border-color:var(--c)}.btn.btn-o:hover{background:rgba(40,71,206,.08)}.btn.btn-o:active{background:rgba(40,71,206,.16)}
-:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn.btn-o{color:#fff;border-color:rgba(255,255,255,.72);background:transparent}
-:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn.btn-o:hover{background:rgba(255,255,255,.12)}
-:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.on-dark,.foot,.np-on,.mn) .btn.btn-o:active{background:rgba(255,255,255,.2)}
+:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn.btn-o{color:#fff;border-color:rgba(255,255,255,.72);background:transparent}
+:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn.btn-o:hover{background:rgba(255,255,255,.12)}
+:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np-on,.mn) .btn.btn-o:active{background:rgba(255,255,255,.2)}
 .btn:disabled,.btn[aria-disabled="true"]{opacity:.55;cursor:default;pointer-events:none}
 .nav-b .btn,.mn-foot .btn{font-size:var(--t-btn-bar)}
 /* the one arrow link: 16px 600, cobalt on light, white on dark. Write the arrow in the text with &rarr; */
 .tlink{display:inline-flex;align-items:center;min-height:44px;font:500 16px/1.25 var(--sans);color:var(--c);text-decoration:none;margin:0}
-.tlink.w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.on-dark,.foot,.np) .tlink{color:#fff}
+.tlink.w,:where(.g-dark,.g-ink,.g-grad,.g-cobalt,.ink-panel,.cb,.on-dark,.foot,.np) .tlink{color:#fff}
 .tlink:active{opacity:.72}
 .tlink:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .hlinks{display:flex;gap:12px 22px;flex-wrap:wrap;align-items:center;margin:18px 0 0}
@@ -119,10 +124,11 @@ canvas.dotbot{display:block;width:100%}
 .fl input:disabled,.fl select:disabled,.fl textarea:disabled,.pf:disabled{opacity:.55;cursor:default;background-color:var(--paper)}
 .fl select:required:invalid{color:#757f90}.fl select option{color:var(--ink)}
 .pf{height:46px;border:0;border-radius:var(--r-field);padding:0 16px;font:400 16px var(--sans);color:var(--ink);background:#f4f5f7;min-width:0}
-.pf.w,:where(.g-grad,.g-cobalt,.g-ink,.g-dark) .pf{background:#fff}
+.pf.w,:where(.g-grad,.g-cobalt,.ink-panel,.cb,.g-ink,.g-dark) .pf{background:#fff}
 .pf:hover{box-shadow:inset 0 0 0 1px #b7bfcd}
 .pf:focus-visible,.fl input:focus,.fl select:focus,.fl textarea:focus{outline:2px solid var(--c);outline-offset:2px}
-:where(.g-grad,.g-cobalt,.g-ink,.g-dark,.on-dark) .pf:focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+:where(.g-grad,.g-cobalt,.ink-panel,.cb,.g-ink,.g-dark,.on-dark) .pf:focus-visible{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+:where(.g-grad,.g-cobalt,.ink-panel,.cb,.g-ink,.g-dark,.on-dark) .fl :is(input,select,textarea):focus{outline-color:#fff;box-shadow:0 0 0 2px var(--ink)}
 /* select boxes: a drawn chevron in place of the browser arrow (the price tool's year stepper keeps its own) */
 .page select:not([multiple]):not(.pp-yr *){-webkit-appearance:none;appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230e1626' stroke-opacity='.6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;background-size:10px 6px;cursor:pointer}
 
@@ -159,7 +165,7 @@ canvas.dotbot{display:block;width:100%}
 html:has(.fbar.on) .d-tocx{top:80px}
 /* reaching the very top on the way up: the bar sits exactly over the page's own one, and fades into it */
 .fbar.at-top{transform:none;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility 0s linear .2s}
-/* the panels: one full-width ink layer under the bar, on the page's 12 columns, between the bar's own edges. Links take columns 1 to 4, the live picture columns 5 to 12, and nothing passes the right margin.
+/* the panels: one full-width ink layer under the bar, on the page's 12 columns, between the bar's own edges. Links take columns 1 to 4, column 5 stays empty, the live picture takes columns 6 to 12, and nothing passes the right margin.
    The first link's capitals and the picture's top share a line; the last link's rule and the picture's rule share a line (--np-h apart). Figures stand on that rule with the picture.
    It eases down over 400ms and the links arrive 40ms apart. Closing is a quicker, gentler fade. Its top reaches 14px up over the bar's lower edge, so the pointer never leaves it on the way down. assets/np-scenes.js draws the pictures */
 .np{position:fixed;z-index:55;left:0;right:0;top:var(--np-top,72px);background:var(--g-ink);color:#fff;border-bottom:1px solid rgba(255,255,255,.14);overflow-x:clip;opacity:0;transform:translateY(-4px);transition:opacity .22s ease,transform .22s ease}
@@ -169,7 +175,7 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .np-dim{position:fixed;inset:0;z-index:40;background:rgba(14,22,38,.3);opacity:0;pointer-events:none;transition:opacity .22s ease}
 .np-dim.on{opacity:1;transition-duration:.4s}
 .np-on .lk:not(.open) > a[aria-current]::after{transform:scaleX(0)}
-.np-in{--np-h:256px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1fr);column-gap:24px;height:min(calc(var(--np-h) + 56px),calc(100vh - var(--np-top,72px)));padding:28px var(--gl)}
+.np-in{--np-h:256px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1fr);column-gap:var(--gut);height:min(calc(var(--np-h) + 56px),calc(100vh - var(--np-top,72px)));padding:28px var(--gl)}
 .np-l{grid-column:1 / span 4;display:grid;grid-auto-rows:minmax(0,1fr);min-height:0;margin-top:-8px;padding-top:8px;overflow-y:auto;scrollbar-width:none}
 .np-l a{display:block;padding:14px 0 0;min-height:44px;border-bottom:1px solid rgba(255,255,255,.2)}
 .np-l a:first-child{padding-top:0}
@@ -183,13 +189,13 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .np-l a.sel b::after,.np-l a:hover b::after,.np-l a:focus-visible b::after{opacity:1;transform:none}
 .np-l a.sel span,.np-l a:hover span,.np-l a:focus-visible span{color:rgba(255,255,255,.86)}
 .np-l a:focus-visible{outline-offset:-2px}
-.np-card{grid-column:5 / -1;position:relative;min-width:0;overflow:hidden;cursor:pointer}
+.np-card{grid-column:6 / -1;position:relative;min-width:0;overflow:hidden;cursor:pointer}
 .np-card canvas.np-cv{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .16s ease}
 .np-card.off > *{opacity:0}
 .np-fig{position:absolute;margin:0;color:#fff;transition:opacity .16s ease}
 .np-fig b{display:block;white-space:nowrap;font:700 var(--t-section)/1.04 var(--serif);letter-spacing:-.028em;font-variant-numeric:lining-nums tabular-nums}
 .np-fig.up b{margin-top:-.157em}
-.np-fig span{display:block;margin-top:8px;font:400 var(--t-small)/1.4 var(--sans);color:rgba(255,255,255,.72)}
+.np-fig span{display:block;margin-top:8px;font:400 var(--t-small)/1.4 var(--sans);color:rgba(255,255,255,.72);text-wrap:balance}
 .np-row{position:absolute;inset:0;transition:opacity .16s ease}
 .np-rb{position:absolute;bottom:1px;left:0;will-change:transform}
 .np-rb canvas{display:block;width:100%;aspect-ratio:var(--ar)}
@@ -245,6 +251,92 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .nextl{list-style:none;margin:0;padding:0;font:400 var(--t-body)/1.5 var(--sans);color:var(--ink)}
 .nextl li{padding:8px 0}
+
+/* ================================================================ Round 5 shared building blocks. core.py prints their markup; the note at each function there says how to call it.
+   .g12: the page's 12 columns between the grid edges, 24px gutters (--gut). Children pick columns with grid-column */
+.g12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut)}
+/* a hand-picked break in a top heading that only holds on desktop: core.BR prints " <br class=brd>", so the phone wraps the words naturally */
+@media (max-width:720px){br.brd{display:none}}
+/* the up-right arrow after a button's words (core.ARW): 12px, on the text's middle, in the button's own colour */
+.arw{flex:none;display:inline-block;width:12px;height:12px;margin-left:10px;vertical-align:-1px}
+.btn .arw{margin-right:-2px}
+
+/* .tb, the one toolbar a section may have: every control in one row, 46px tall (44px buttons inside the border), one border, one radius. Children: select (inside a label or bare), .tb-seg (a segmented switch of buttons with aria-pressed),
+   .tb-step (button, output, button), and at most one .tlink at the end. On white the pressed segment is ink; inside an ink, cobalt or dark ground it turns white automatically */
+.tb{--tb-h:46px;--tb-b:#cfd5e0;--tb-bg:#fff;--tb-fg:var(--ink);--tb-on-bg:var(--ink);--tb-on-fg:#fff;--tb-hov:#f2f4f8;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 16px/1 var(--sans)}
+:where(.g-ink,.g-dark,.g-cobalt,.g-grad,.ink-panel,.cb,.on-dark) .tb,.tb.on-dark{--tb-b:rgba(255,255,255,.34);--tb-bg:transparent;--tb-fg:#fff;--tb-on-bg:#fff;--tb-on-fg:var(--ink);--tb-hov:rgba(255,255,255,.1)}
+.tb label{display:flex;margin:0;min-width:0}
+.page .tb select:not([multiple]),.tb select{height:var(--tb-h);margin:0;padding:0 38px 0 14px;border:1px solid var(--tb-b);border-radius:var(--r-field);background-color:var(--tb-bg);color:var(--tb-fg);font:400 16px/1 var(--sans);min-width:0;max-width:100%;cursor:pointer}
+.tb select option{color:var(--ink);background:#fff}
+.page :where(.g-ink,.g-dark,.g-cobalt,.g-grad,.ink-panel,.cb,.on-dark) .tb select:not([multiple]),.page .tb.on-dark select:not([multiple]){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-opacity='.8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.tb select:hover{background-color:var(--tb-hov)}
+.tb-seg,.tb-step{display:inline-flex;align-items:stretch;height:var(--tb-h);border:1px solid var(--tb-b);border-radius:var(--r-field);overflow:hidden;background:var(--tb-bg)}
+.tb-seg button,.tb-step button{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:100%;margin:0;padding:0 16px;border:0;border-radius:0;background:transparent;color:var(--tb-fg);font:400 16px/1 var(--sans);white-space:nowrap;cursor:pointer;transition:background .15s ease,color .15s ease}
+.tb-seg button + button{border-left:1px solid var(--tb-b)}
+.tb-seg button:hover,.tb-step button:hover{background:var(--tb-hov)}
+.tb-seg button[aria-pressed="true"],.tb-seg button[aria-checked="true"],.tb-seg button.on{background:var(--tb-on-bg);color:var(--tb-on-fg);font-weight:500}
+.tb-step button{padding:0;width:44px;font-size:18px}
+.tb-step button:first-child{border-right:1px solid var(--tb-b)}.tb-step button:last-child{border-left:1px solid var(--tb-b)}
+.tb-step output,.tb-step .tb-v{display:inline-flex;align-items:center;justify-content:center;min-width:72px;padding:0 12px;color:var(--tb-fg);font:500 16px/1 var(--sans);font-variant-numeric:lining-nums tabular-nums}
+.tb :is(.tb-seg,.tb-step) button:focus-visible{outline-offset:-3px}
+.tb-seg button:is([aria-pressed="true"],[aria-checked="true"],.on):focus-visible{outline-color:var(--tb-on-fg)}
+.tb .tlink{min-height:var(--tb-h);margin-left:8px}
+@media (max-width:720px){.tb{gap:8px}.tb > label,.tb > select{flex:1 1 140px}.tb > label select{width:100%}}
+
+/* .ink-panel: a flat ink panel with the card radius, no border, no shadow, white words. Buttons in it are white with cobalt words, form fields white */
+.ink-panel{background:var(--g-ink);color:#fff;border:0;border-radius:var(--r-card);box-shadow:none;padding:clamp(24px,2.8vw,40px)}
+.ink-panel .fl{color:rgba(255,255,255,.82)}
+.ink-panel .fl :is(input,select,textarea){border-color:transparent;background-color:#fff;color:var(--ink)}
+.ink-panel .lerr{color:#fff}
+@media (max-width:720px){.ink-panel{padding:24px 20px}.ink-panel .btn{width:100%}}
+
+/* .card: the clean summary card (spec 8). One thin border, the site radius, white, site fonts only. core.loan_card() prints the example loan with it.
+   .card-top (mark left, "Example" right), .card-t the title, .card-rs holding the rows (.card-r, label and value; it grows so the card can be any height), .card-hr the one divider, .card-figs two figures side by side (.card-f, .card-f.big for the large cobalt one).
+   The card is a column: give it a height and the divider and figures sit at its foot */
+.card{display:flex;flex-direction:column;min-width:0;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);padding:clamp(20px,1.67vw,24px);font:400 16px/1.5 var(--sans);font-variant-numeric:lining-nums tabular-nums;box-shadow:none}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:16px;font:400 16px/1 var(--sans);color:var(--muted)}
+.card-mk{display:inline-flex;width:24px;height:24px;color:var(--c)}.card-mk svg{display:block;width:100%;height:100%}
+.page .card-t,.card-t{margin:24px 0 12px;font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.card-r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:8px 0;margin:0}
+.card-r span{color:#3e4656}.card-r b{font-weight:500;text-align:right}
+.card-rs{flex:1 0 auto;padding-bottom:16px}
+.card-hr{border:0;border-top:1px solid var(--line);margin:0;padding:0;height:0}
+/* both labels on one line, both figures on one baseline (the small figure lifts by the difference in the two sizes' descent at line-height 1). Below about 480px wide the fee wraps under the loan rather than overflow */
+.card-figs{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:space-between;gap:12px 16px;margin-top:20px}
+.card-f{display:flex;flex-direction:column;justify-content:space-between;margin:0;min-width:0}
+.card-f span{display:block;margin-bottom:8px;color:var(--muted)}
+.card-f b{display:block;font:700 var(--t-sub)/1 var(--serif);letter-spacing:-.02em;white-space:nowrap;padding-bottom:calc((var(--t-title) - var(--t-sub)) * .137)}
+.card-f.big b{padding-bottom:0}
+.card-f.big b{font-size:var(--t-title);letter-spacing:-.028em;color:var(--c)}
+.card-f + .card-f{margin-left:auto;text-align:right;align-items:flex-end}
+
+/* .cb, the closing band (spec 20): one full-width ink band right above the footer. Heading in columns 1 to 5, the form or the button in 7 to 12, the heading's capitals level with the first thing on the right.
+   .cb-j is the same thing inside a navy section that is already there (Home's "What if a loan goes bad?"): a thin line across the grid, one section gap, then the band's two columns */
+.cb{background:var(--g-ink);color:#fff;padding-block:var(--sec)}
+.cb.cb-j{background:none;padding-block:var(--sec) 0}
+.cb-j .cb-g{border-top:1px solid rgba(255,255,255,.22);padding-top:var(--sec)}
+.cb-g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);row-gap:32px;align-items:start}
+.page .cb-h{grid-column:1 / 6;margin:0;color:#fff}
+@media (min-width:761px){.page .cb-h{margin-top:-.06em}}
+.cb-r{grid-column:7 / -1;min-width:0}
+.cb-r > :first-child{margin-top:0}
+.cb-why{margin:0 0 24px;font:400 var(--t-lead)/1.45 var(--sans);color:rgba(255,255,255,.88)}
+.cb form.lead{max-width:none;margin:0}
+.cb .lf{grid-template-columns:minmax(0,1fr);gap:16px}
+.cb .fl{color:rgba(255,255,255,.82)}
+.cb .fl :is(input,select,textarea){border-color:transparent;background-color:#fff;color:var(--ink)}
+.cb .fl select:required:invalid{color:#757f90}
+.cb .fl [aria-invalid="true"]{border-color:#ffd2cc;outline:2px solid #ffd2cc;outline-offset:0}
+.cb .la{margin-top:24px}
+.cb .lerr{color:#fff}
+/* sent: the thanks and the next steps take the form's place, on the band */
+.cb .ldone{padding:0;background:none;border:0;border-radius:0;color:#fff}
+.cb .ldone b{color:#fff}
+.cb .ldone span{color:rgba(255,255,255,.72);margin:16px 0 0}
+.cb .ldone ol{list-style:none;margin:8px 0 0;padding:0;color:rgba(255,255,255,.88);border-top:1px solid rgba(255,255,255,.22)}
+.cb .ldone li{margin:0;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.22)}
+.ldone:has(ol:empty) span,.ldone ol:empty{display:none}
+@media (max-width:760px){.cb-g{grid-template-columns:minmax(0,1fr);row-gap:24px}.page .cb-h,.cb-r{grid-column:auto}.page .cb .cb-h{text-wrap:balance}.cb .btn{width:100%}}
 
 /* sections */
 .sec{padding-block:var(--sec)}
@@ -313,10 +405,10 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .page .notes.full li{margin-bottom:14px;scroll-margin-top:100px}
 .page .notes.full h2{margin:0 0 16px;color:var(--ink)}
 
-/* the Reveal: the page is one opaque layer (.lift) over a sticky footer, so the page lifts off it as the reader reaches the end. The footer is at least 70vh tall, which makes that lift about 70vh of scroll. A footer taller than the screen just flows (.flow, site.js) */
+/* the page (main.lift) and under it the footer, an ordinary block that scrolls up after the last section (Round 5 spec section 10: it is no longer pinned). Its look is unchanged: at least 70vh tall, cobalt, its own margins.
+   .lift stays a stacking layer so nothing inside the page can rise over the bar, the panels or the menu */
 .lift{position:relative;z-index:1;background:#fff}
-.foot{--gl:clamp(16px,2.8vw,40px);position:sticky;bottom:0;z-index:0;display:flex;flex-direction:column;min-height:70vh;background:var(--g-foot);color:#fff;padding-block:clamp(48px,5vw,72px) 28px;overflow:hidden}
-.foot.flow{position:relative}
+.foot{--gl:clamp(16px,2.8vw,40px);position:relative;display:flex;flex-direction:column;min-height:70vh;background:var(--g-foot);color:#fff;padding-block:clamp(48px,5vw,72px) 28px;overflow:hidden}
 .foot > .in{display:flex;flex-direction:column;flex:1;width:100%}
 .fg{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px clamp(48px,8vw,120px);align-items:start}
 .fbrand{display:flex;flex-direction:column;align-items:flex-start}
@@ -337,7 +429,7 @@ html:has(.fbar.on) .d-tocx{top:80px}
 /* reveal */
 .rv{opacity:0;transform:translateY(18px);transition:opacity var(--m-fade) ease,transform var(--m-fade) var(--m-ease)}
 .rv.in-view{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.fbar,.fbar.on,.fbar.at-top,.mn,.mn.on,.mn.on .mn-links > *,.mn.on .mn-bots,.mn.on .mn-foot,.np,.nav{transition:none;animation:none}.mn-g::details-content{transition:none}.foot{position:relative}.nt::details-content{transition:none}.rv{opacity:1;transform:none;transition:none}.chart .line{stroke-dashoffset:0}.chart .dots circle,.chart .end{opacity:1}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.fbar,.fbar.on,.fbar.at-top,.mn,.mn.on,.mn.on .mn-links > *,.mn.on .mn-bots,.mn.on .mn-foot,.np,.nav{transition:none;animation:none}.mn-g::details-content{transition:none}.nt::details-content{transition:none}.rv{opacity:1;transform:none;transition:none}.chart .line{stroke-dashoffset:0}.chart .dots circle,.chart .end{opacity:1}html{scroll-behavior:auto}}
 @media (max-width:1060px){.howg{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:680px){.lf{grid-template-columns:minmax(0,1fr)}}
 

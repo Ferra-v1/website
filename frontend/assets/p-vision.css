@@ -87,9 +87,8 @@ html:has(.page[data-page="vision.html"]){scroll-behavior:auto}
  .v-slot .rs-bot,.v-slot figcaption{grid-column:1}
  .v-slot figcaption{grid-row:2}
  .v-steps{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:32px}
- /* the phone cuts: the site film is tall, near black at its head and empty at its foot, so it is cut just over the drone and just under the figures; the arm film is a band */
+ /* the phone cut: the site film is tall, near black at its head and empty at its foot, so it is cut just over the drone and just under the figures */
  .v-site .v-frame{aspect-ratio:390/450;max-height:none}
  .v-site .v-film{object-position:50% 29%}
- .v-hall .v-frame{aspect-ratio:720/518;max-height:none}
  .v-below br,.v-pg h2 br{display:none}
 }

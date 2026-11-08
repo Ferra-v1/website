@@ -149,7 +149,7 @@
       read.querySelector('.r-ry').textContent = y;
       read.querySelector('.r-rv').textContent = thin ? `${money(c[0])} to ${money(c[2])}` : money(c[1]);
       // the same count, by the same band, as this robot's card on the shelf. When few listings set the price, the sentence says how many first.
-      const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1), F = D.fit, count = near ? `${near} for sale near this age.` : 'None for sale near this age. Our guess from other ages.';
+      const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1), F = D.fit, count = near ? `${near} for sale near this age.` : 'None for sale near this age. Worked out from other ages.';
       read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this. ${count}` : `Most ask ${money(c[0])} to ${money(c[2])}. ${count}`;
       read.querySelector('.r-rl').href = `price.html#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
@@ -194,7 +194,8 @@
     layout(); reading(); kick();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); kick(); });
     // the long lists start short
-    document.querySelectorAll('[data-listings]').forEach(tbl => { const rows = [...tbl.tBodies[0].rows], keep = +(matchMedia('(max-width:760px)').matches ? tbl.dataset.keepM : tbl.dataset.keep); if (rows.length > keep + 2) { const step = (rows.length - 1) / (keep - 1), show = new Set(Array.from({ length: keep }, (_, i) => Math.round(i * step))); rows.forEach((r, i) => { if (!show.has(i)) r.hidden = true; }); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${rows.length} listings \u2192`; tbl.after(b); b.addEventListener('click', () => { rows.forEach(r => { r.hidden = false; }); b.remove(); }); } });
+    // one button opens the whole list: the rows held back, and the listings with no build year waiting beside the table ([data-more]), which show whole
+    document.querySelectorAll('[data-listings]').forEach(tbl => { if (tbl.closest('[data-more]')) return; const rows = [...tbl.tBodies[0].rows], keep = +(matchMedia('(max-width:760px)').matches ? tbl.dataset.keepM : tbl.dataset.keep), more = tbl.parentElement ? [...tbl.parentElement.querySelectorAll(':scope > [data-more]')] : [], cut = rows.length > keep + 2; if (!cut && !more.length) return; if (cut) { const step = (rows.length - 1) / (keep - 1), show = new Set(Array.from({ length: keep }, (_, i) => Math.round(i * step))); rows.forEach((r, i) => { if (!show.has(i)) r.hidden = true; }); } const extra = more.reduce((n, m) => n + m.querySelectorAll('tbody tr').length, 0); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${rows.length + extra} listings \u2192`; tbl.after(b); b.addEventListener('click', () => { rows.forEach(r => { r.hidden = false; }); more.forEach(m => { m.hidden = false; }); b.remove(); }); });
   }
 
   // ---------------------------------------------------------------- find a model: type any part of its name. The list opens as a solid panel under the field, on focus, and closes when focus leaves it or on Escape.
@@ -293,7 +294,7 @@
     // one age for the whole shelf: every robot reprices from its own curve, and each figure is set at the size its listings near that age earn. robots.py prints the opening state by the same rule.
     const dial = shelf.querySelector('.r-dial');
     if (dial) {
-      const CUR = JSON.parse(shelf.querySelector('.r-cur').textContent), inp = dial.querySelector('input'), out = dial.querySelector('output'), cells = [...shelf.querySelectorAll('.r-cell')];
+      const CUR = JSON.parse(shelf.querySelector('.r-cur').textContent), inp = dial.querySelector('input[type=range]'), out = dial.querySelector('output'), cells = [...shelf.querySelectorAll('.r-cell')];
       const yrs = a => a === 1 ? '1 year' : `${a} years`, dots = n => `${n} dot${n === 1 ? '' : 's'}`;
       dial.hidden = false; shelf.classList.add('aged');
       inp.addEventListener('input', () => {
@@ -303,7 +304,7 @@
           const list = DOTS[ce.dataset.k] || [], n = list.length, nr = list.filter(d => Math.abs(d[7] - a) <= NEAR).length, ct = ce.querySelector('.r-c-ct'), f = CUR[ce.dataset.k];
           const short = nr ? `${nr} for sale near this age` : 'None for sale near this age';
           ct.firstChild.textContent = ct.dataset.n ? short + '.' + ct.dataset.n : short;
-          ct.lastChild.textContent = (nr ? `${nr} of ${n} for sale near this age.` : `None of its ${dots(n)} are near this age, so this is a rough guess.`) + ct.dataset.n;
+          ct.lastChild.textContent = (nr ? `${nr} of ${n} for sale near this age.` : `None of its ${dots(n)} are near this age, so this price is rough.`) + ct.dataset.n;
           if (!f) continue;
           const c = f.c[a], thin = f.t === 'thin', big = f.t === 'big', pr = ce.querySelector('.r-c-pr'), at = ce.querySelector('.r-c-at');
           const sz = thin || !nr ? 't' : big && nr >= 5 ? 'b' : 'm';

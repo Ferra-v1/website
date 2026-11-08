@@ -1,11 +1,11 @@
 {
  "name": "Ferra",
  "short_name": "Ferra",
- "description": "Fair prices for robots, and loans to come.",
+ "description": "Fair prices and loans for robots.",
  "start_url": "/",
  "scope": "/",
  "display": "minimal-ui",
- "theme_color": "#ffffff",
+ "theme_color": "#2847ce",
  "background_color": "#ffffff",
  "icons": [
   {

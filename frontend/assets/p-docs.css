@@ -215,3 +215,68 @@ html{scroll-behavior:auto}
   .d-ln{left:0!important;right:auto;top:0;bottom:auto;white-space:nowrap}
 }
 @media (min-width:901px){.d-sec .d-rl{max-width:440px}.d-cold p{max-width:440px}}
+
+/* ---------- Round 5 (ROUND-5-SPEC section 18): three columns across the grid. Section headings pinned in columns 1 to 3, the words in 4 to 10, the contents in 11 and 12 ---------- */
+.d-art{grid-column:1 / span 10}
+.d-sec{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:var(--d-gut);align-items:start;padding-top:calc(2 * 1.65em)}
+.d-sec > .d-sh,.d-one > h2.d-sh{grid-column:1 / span 3;position:sticky;top:96px;margin:0;padding-right:8px;font-size:var(--t-sub)!important;line-height:1.2!important;letter-spacing:-.02em!important}
+.d-sec > .d-sb{grid-column:4 / -1;min-width:0}
+.d-sec p,.d-sec .d-ld,.d-pr p,.d-cold p,.d-sec .d-rl,.d-sec .d-note{max-width:95ch!important}
+.d-sec p{margin:0 0 1.65em}
+.d-sb > :last-child{margin-bottom:0}
+.d-sb h3{margin:calc(2 * 1.65em) 0 12px}
+.d-sb > h3:first-child,.d-bars h3:first-child{margin-top:0}
+.d-bars,.d-lots,.d-tw,.d-sheet{max-width:none!important}
+@media (min-width:1061px){.d-bars li{grid-template-columns:calc(2 * var(--dc) + var(--d-gut)) minmax(0,1fr)!important}}
+.d-sec .d-gapl{margin-bottom:1.65em}
+/* the one loud moment: its statement runs across the document, its words in the reading column */
+.d-unk{padding-top:var(--sec)}
+.d-unk > h2{grid-column:1 / -1;margin:0 0 24px}
+.d-unk .d-ung{grid-template-columns:repeat(7,minmax(0,1fr))}
+.d-unk .d-ung > div:nth-child(n){grid-column:span 7;display:block;margin-top:24px}
+.d-part{padding-top:var(--sec)}
+.d-part-e{padding-top:0}
+.d-part + .d-sec{padding-top:calc(2 * 1.65em)}
+.d-gl div{grid-template-columns:repeat(7,minmax(0,1fr))}
+.d-gl dt{grid-column:span 2}.d-gl dd{grid-column:span 5;max-width:none}
+/* where the numbers come from: a bold label, one or two sentences, a link to where the number is used */
+.d-src{margin:0}
+.d-src div{padding:0 0 1.65em}
+.d-src dt{font:500 var(--t-body)/1.55 var(--sans);color:var(--ink)}
+.d-src dd{margin:2px 0 0;font-size:var(--t-body);line-height:1.65;color:#3e4656;max-width:95ch}
+.d-src a{color:var(--c);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;white-space:nowrap}
+/* the shared notes block repeats the list above, so it stays out of sight here */
+.page[data-page="methodology.html"] .notes.full{display:none}
+.d-body{padding-bottom:var(--sec)}
+@media (max-width:1060px){
+  .d-sec{display:block}
+  .d-sec > .d-sh,.d-one > h2.d-sh{position:static;margin:0 0 14px;padding:0}
+  .d-gl div{grid-template-columns:minmax(0,1fr)}
+  .d-gl dt,.d-gl dd{grid-column:1 / -1}
+}
+.d-unk .d-ung{display:block;margin-top:0}
+.d-unk .d-ung > div:nth-child(n){margin-top:1.65em}
+.d-unk .d-ung h3{margin:0 0 6px}
+.d-sb .d-pl{margin:-1em 0 1.65em}
+/* the closing band's long heading takes columns 1 to 9 so it holds two lines; the button sits from column 10 */
+@media (min-width:761px){.page .cb.cb-wide .cb-h{grid-column:1 / 10}.page .cb.cb-wide .cb-r{grid-column:10 / -1}}
+/* what we do not know: the statement and its line across the document, then each unknown with its heading at left */
+.d-unk > .d-sb{grid-column:1 / -1}
+.d-unk .d-uns{margin:0}
+.d-unk .d-ung > div:nth-child(n){display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:var(--d-gut);margin-top:calc(2 * 1.65em)}
+.d-unk .d-ung h3{grid-column:1 / span 3;margin:0}
+.d-unk .d-ung p{grid-column:4 / -1}
+/* big numbers sit on the column lines of the reading column */
+.d-sb .d-nums{grid-template-columns:repeat(7,minmax(0,1fr))}
+.d-sb .d-nums > div{grid-column:span 2}
+.d-src div:last-child{padding-bottom:0}
+@media (max-width:1060px){
+  .d-unk .d-ung > div:nth-child(n){display:block;margin-top:24px}
+  .d-unk .d-ung h3{margin:0 0 6px}
+  .d-sb .d-nums{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .d-sb .d-nums > div{grid-column:auto}
+}
+@media (min-width:1061px){.d-sec .d-sb p,.d-src dd{max-width:min(100%,620px)!important}}
+/* the sources list's links are the site's arrow link: cobalt, weight 500, no line at rest, kept on the end of their sentence */
+.d-src a.tlink{display:inline;min-height:0;margin:0;font-family:var(--sans);font-weight:500;font-size:var(--t-body);line-height:inherit;color:var(--c);text-decoration:none;white-space:nowrap}
+.d-src a.tlink:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}

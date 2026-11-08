@@ -473,3 +473,97 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 
 .pp-scs .lab:not(.ttl){transition:opacity .5s ease}
 .pp-scw:has(.pp-tip:not([hidden])) .pp-scs .lab:not(.ttl){opacity:0}
+
+/* ---------- Round 5 (ROUND-5-SPEC section 19): one question, one answer panel, then two sections. These rules come last and win. ---------- */
+/* what the frozen script still writes but this page does not show: in the page, drawn at full width, no height, out of sight */
+.pp-keep{position:absolute;left:0;right:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none;contain:layout paint}
+.pp-off{display:none!important}
+.pp-hero{padding-block:clamp(32px,3.4vw,48px) var(--sec);overflow:visible}
+.pp-tool{align-items:stretch;row-gap:24px}
+.pp-lft{grid-column:1 / span 6;padding:0;display:flex;flex-direction:column}
+.pp-head{margin-bottom:clamp(24px,2.4vw,32px)}
+.pp-lede{margin-top:12px}
+.pp-flds{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px var(--pp-gut)}
+.pp-flds > .pp-f:nth-child(n){grid-column:auto}
+.pp-more{margin-top:4px}
+.pp-more summary{color:var(--c)}
+.pp-mg{display:flex;flex-direction:column;align-items:flex-start;gap:16px;margin:8px 0 4px}
+.pp-mg .pp-f{gap:8px;width:100%}
+.pp-mg .pp-lab,.pp-mg .pp-f > label{font:500 var(--t-small)/1.4 var(--sans);color:var(--txt)}
+/* the choices inside the fold are toolbar switches: one height, one border, one radius */
+.tb .pp-seg{display:inline-flex;flex-wrap:nowrap;gap:0}
+.tb .pp-seg button{min-height:0;border-bottom:0;padding:0 14px;color:var(--tb-fg);font:400 16px/1 var(--sans);text-align:center}
+.tb .pp-seg button[aria-checked="true"],.tb .pp-seg button[aria-checked="true"]:hover{color:var(--tb-on-fg);background:var(--tb-on-bg);border-bottom:0;font-weight:500}
+.tb .pp-seg button:hover{color:var(--tb-fg)}
+.pp-use .tb .pp-seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));height:auto}
+.pp-use .tb .pp-seg button{height:44px;grid-column:auto!important;justify-self:stretch}
+.pp-use .tb .pp-seg button:nth-child(n+3){border-top:1px solid var(--tb-b)}
+.pp-use .tb .pp-seg button:nth-child(3){border-left:0}
+.pp-use .tb{width:100%}.pp-use .tb .pp-seg{width:100%}
+.pp-cnt{width:calc((100% - var(--pp-gut)) / 2)}
+/* the answer: one flat navy panel, as tall as the question */
+.pp-ans{grid-column:7 / -1;padding:clamp(24px,2.8vw,40px);display:flex;flex-direction:column;justify-content:flex-start}
+.pp-ans::before{display:none}
+.pp-ans .pp-al{color:rgba(255,255,255,.82)}
+.pp-a[data-k="o"]{margin-top:clamp(20px,2.2vw,28px);padding-top:clamp(20px,2.2vw,28px)}
+.pp-ans .pp-av{margin:8px 0 6px}
+.pp-ans .pp-ac{font-size:var(--t-small)}
+.pp-src{margin-top:auto;padding-top:20px;align-self:flex-start;gap:6px}
+.pp-src .arw{width:12px;height:12px}
+/* section A: three figures in a row, then the dots */
+.pp-h2{margin:0 0 clamp(28px,3vw,40px)}
+.pp-lad{grid-template-columns:repeat(12,minmax(0,1fr));margin-bottom:clamp(32px,3.4vw,48px)}
+.pp-lad .pp-ladh,.pp-lad .pp-rung p,.pp-lad .pp-dr{display:none}
+.pp-rung{grid-column:span 4;padding-top:14px}
+.pp-rung > b{margin:8px 0 0}
+.pp-tb{display:flex;flex-wrap:wrap;align-items:center;gap:12px var(--pp-gut);margin-bottom:20px}
+.pp-scl{margin:0;font-size:var(--t-small);line-height:1.45;color:var(--txt)}
+/* section B: the rate and its one sentence, then the chart with three lines only */
+.pp-vtop{grid-template-columns:repeat(12,minmax(0,1fr));align-items:end;margin-bottom:clamp(28px,3vw,40px)}
+.pp-rate{grid-column:1 / span 5}
+.pp-rate .pp-av{margin:0 0 8px;color:var(--ink)}
+.pp-rate .pp-al{color:var(--txt)}
+.pp-val .pp-covn{grid-column:7 / -1;margin:0 0 6px;max-width:none}
+.pp-covs .gl2,.pp-covs .arm,.pp-covs .bl.al,.pp-covs .bar,.pp-covs .c2,.pp-covs .gr{display:none}
+@media (max-width:1000px){
+  .pp-lft,.pp-ans{grid-column:1 / -1}
+  .pp-rate,.pp-val .pp-covn{grid-column:1 / -1}
+  .pp-vtop{row-gap:16px}
+}
+@media (max-width:600px){
+  .pp-hero{padding-top:20px}
+  .pp-flds{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px var(--pp-gut)}
+  .pp-flds > .pp-f.pp-robot:nth-child(n),.pp-flds > .pp-f.pp-year:nth-child(n){grid-column:1 / -1}
+  .pp-ans{padding:24px 20px}
+  .pp-rung{grid-column:1 / -1;padding-top:12px}
+  .pp-lad{gap:16px}
+  .tb .pp-seg button{padding:0 10px}
+  .pp-mg .tb .pp-seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);width:100%}
+  .pp-use .tb .pp-seg{grid-auto-flow:row}
+  .pp-mg .tb{width:100%}
+}
+.pp-hero{padding-bottom:0}
+.pp-lad .pp-acc{display:none}
+.pp-scs .lab.ttl{display:none}
+/* the panel's words start on the column 8 line; its flat ground reaches one padding left of it and stops on the grid's right edge (Round 5) */
+@media (min-width:1001px){
+  .pp-lft{grid-column:1 / span 6}
+  .pp-ans{grid-column:8 / -1;--pp-pad:clamp(24px,2.8vw,40px);padding:var(--pp-pad);margin-inline:calc(-1 * var(--pp-pad)) 0}
+}
+.pp-keep p,.pp-keep .pp-hc{max-width:60ch}
+@media (max-width:1000px){
+  .pp-ans{--pp-pad:clamp(16px,4vw,24px);padding:24px var(--pp-pad);margin-inline:calc(-1 * var(--pp-pad));border-radius:0}
+}
+.pp-keep p,.pp-keep li,.pp-keep dd{display:none}
+.page[data-page="price.html"] .cb-h{text-wrap:balance!important}
+.pp-src{margin-top:16px;padding-top:0}
+
+/* every switch on this page is a 44px touch target: the switch grows by its two border pixels instead of squeezing its buttons to 42 */
+.tb .pp-seg.tb-seg{height:auto;min-height:var(--tb-h)}
+.tb .pp-seg.tb-seg button{height:44px;min-height:44px}
+/* the focus ring stays visible on a pressed (ink) button and on any dark ground: white there, cobalt on white */
+.tb .pp-seg button[aria-checked="true"]:focus-visible,:where(.g-ink,.g-dark,.g-cobalt,.ink-panel,.on-dark) .pp-seg button:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+/* under 1001px the panel runs to the window's edges, never past them: its overhang is the page's own side margin, so nothing scrolls sideways (200% zoom at 720 wide overflowed by 4px) */
+@media (max-width:1000px){
+  .pp-ans{--pp-pad:min(clamp(16px,4vw,24px),var(--gl))}
+}

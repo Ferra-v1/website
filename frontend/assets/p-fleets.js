@@ -6,10 +6,10 @@
   if (!ty) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches, $ = id => document.getElementById(id), usd = v => '$' + Math.round(v).toLocaleString('en-US');
   // the big figure stays on one line in its column whatever is typed: it steps down the same sizes the rest of the site uses
-  const big = $('f-big'), pay = $('f-pay'), sr = $('f-sr'), SIZES = ['fig-96', 'fig-64', 'fig-44'];
+  const big = $('f-big'), cost = $('f-cost'), costL = $('f-cost-l'), own = $('f-own'), sr = $('f-sr'), SIZES = ['fig-96', 'fig-64', 'fig-44'];
   const fitBig = () => { if (!big) return; for (const c of SIZES) { big.classList.remove(...SIZES); big.classList.add(c); if (big.scrollWidth <= big.parentElement.clientWidth + 1) return; } };
   let tick0, shownV = 6250000;
-  const showMoney = V => { const lend = Math.round(V * .7), own = V - lend, one = val(n) === 1, line = (one ? 'The robot costs ' : 'The robots cost ') + usd(V) + '. You pay ' + usd(own) + ' yourself.'; big.textContent = usd(lend); fitBig(); pay.textContent = line; sr.textContent = 'You could borrow ' + usd(lend) + '. ' + line; cancelAnimationFrame(tick0); if (still) { shownV = V; return; }
+  const showMoney = V => { const lend = Math.round(V * .7), mine = V - lend, one = val(n) === 1, line = (one ? 'The robot costs ' : 'The robots cost ') + usd(V) + '. You pay ' + usd(mine) + ' yourself.'; big.textContent = usd(lend); fitBig(); costL.textContent = one ? 'Robot costs' : 'Robots cost'; cost.textContent = usd(V); own.textContent = usd(mine); sr.textContent = 'You could borrow ' + usd(lend) + '. ' + line; cancelAnimationFrame(tick0); if (still) { shownV = V; return; }
     const a = shownV, t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 300), e = 1 - Math.pow(1 - k, 3); shownV = a + (V - a) * e; big.textContent = usd(k === 1 ? V * .7 : shownV * .7); if (k < 1) tick0 = requestAnimationFrame(tick); }; tick0 = requestAnimationFrame(tick); };
   const digits = el => el.value.replace(/[^0-9]/g, ''), lim = el => [+el.dataset.min, +el.dataset.max], clamp = (el, v) => { const [lo, hi] = lim(el); return Math.min(hi, Math.max(lo, v)); };
   const last = new Map([[n, 50], [p, 125000]]), val = el => last.get(el);   // the last good value of each field: an empty field keeps the answer where it was
@@ -46,9 +46,9 @@
   comma(n); comma(p); fitAll(); fitBig();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitAll(); fitBig(); });
   let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitAll(); fitBig(); }, 150); });
-  // once the request is in, the fields are gone, so their small lines go too
-  const done = form.querySelector('.ldone'), used = form.querySelector('.f-used');
-  new MutationObserver(() => { if (!done.hidden) { msg.hidden = true; used.hidden = true; } }).observe(done, { attributes: true, attributeFilter: ['hidden'] });
+  // once the request is in, the range message has nothing left to say
+  const done = form.querySelector('.ldone');
+  new MutationObserver(() => { if (!done.hidden) msg.hidden = true; }).observe(done, { attributes: true, attributeFilter: ['hidden'] });
   const toForm = smooth => { scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' }); let tries = 0; const wait = () => { if (scrollY < 40 || ++tries > 240) n.focus({ preventScroll: true }); else requestAnimationFrame(wait); }; wait(); };   // the sentence is the first screen of the page. A faded screen cannot take focus, so the cursor goes there on arrival
   document.querySelectorAll('a[href="#quote"]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); history.replaceState(null, '', '#quote'); toForm(!still); }));
   if (location.hash === '#quote') addEventListener('load', () => setTimeout(() => toForm(false), 60));
@@ -85,7 +85,7 @@
   const setBar = k => { bar.style.clipPath = `inset(0 ${((1 - k) * 100).toFixed(2)}% 0 0)`; };
   followers.push(st => { const N = st.n, one = N === 1, rent = rentOf(st.price), comes = N * rent, V = N * st.price, goes = V * ADV / TERM, left = comes - goes;
     mSec.style.setProperty('--pay', (goes / comes).toFixed(4));
-    $('f-m-lead').textContent = 'In one month of our example, ' + usd(comes) + ' of rent comes in' + (one ? ' from your robot.' : ', ' + usd(rent) + ' from each robot.');
+    $('f-m-lead').textContent = 'One month of our example: ' + usd(comes) + ' of rent' + (one ? ' from your robot.' : ', ' + usd(rent) + ' from each robot.');
     const go100 = Math.round(goes / 100) * 100, left100 = comes - go100;   // the same rounding How it works prints
     $('f-m-go').textContent = usd(go100); $('f-m-left').textContent = usd(left100);
     bar.setAttribute('aria-label', 'Of ' + usd(comes) + ' of rent, ' + usd(go100) + ' pays back the loan and ' + usd(left100) + ' stays with you.'); });

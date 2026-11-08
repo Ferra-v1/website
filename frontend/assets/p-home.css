@@ -13,12 +13,12 @@
 .h-tw{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + clamp(32px,6.4vh,64px));z-index:2;animation:h-rise .7s cubic-bezier(.2,.7,.2,1) both}
 @keyframes h-rise{from{opacity:0;transform:translateY(18px)}}
 .h-h1{color:#fff}
-.h-tl{margin:clamp(14px,2.4vh,24px) 0 0;max-width:32em;color:#fff;text-wrap:pretty}
+.h-tl{margin:clamp(16px,2.6vh,28px) 0 0;max-width:32em;color:#fff;text-wrap:balance}
 .h-ta{margin-top:clamp(18px,3vh,28px)}
 .h-ta .btn{justify-content:center;min-width:max-content;width:calc((100% - 11 * var(--gg)) / 12 * 2 + 2 * var(--gg))}
 
 /* headings take the fewest lines, and never end on one short word */
-.page[data-page="index.html"] :is(.h-h1,.h-rh h2,.h-mct h2,.h-bt h2,.h-pq,.h-qh h2,.h-cg h2,h2.h-up){text-wrap:balance}
+.page[data-page="index.html"] :is(.h-rh h2,.h-mct h2,.h-bt h2,.h-pq,.h-qh h2,h2.h-up){text-wrap:balance}
 
 /* the stage: everything from the row to the price is one pinned scene, painted from the scroll position by p-home.js, which also sets the story's height. It then scrolls away, with the proof directly under it. */
 .h-story{position:relative;z-index:2}
@@ -59,13 +59,10 @@
 .h-bot span{display:block;color:#3e4656;margin-top:2px}
 .h-bot.h-wait figcaption{opacity:0;transform:translateY(18px)}
 .h-bot.h-on figcaption{opacity:1;transform:none;transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+/* the hand-off: every robot, price and the note stay whole until the factory arm starts to move off, then fade as it leaves. --hf comes from the scroll (p-home.js) */
+.h-going .h-bot :is(.h-bs,.h-bl,figcaption),.h-going .h-vcap{transition:none!important}
+.h-going .h-bot:not(:last-child) :is(.h-bs,.h-bl,figcaption),.h-going .h-bot:last-child :is(.h-bl,figcaption),.h-going .h-vcap{opacity:var(--hf,1)!important}
 .h-bot.h-on .h-bl::after{transform:none;transition:transform .7s linear}
-.h-going figcaption{transition:opacity .35s ease!important}
-.h-step .h-bot:nth-child(n+7) figcaption{opacity:0!important}
-/* the arm's neighbours and its stand clear out before it grows, so it never runs through another robot */
-.h-bot:nth-child(n+7) :is(.h-bs,.h-bl){transition:opacity .5s ease}
-.h-step2 .h-bot:nth-child(n+7) :is(.h-bs,.h-bl){opacity:0}
-.h-vcap{transition:opacity .5s ease}
 .h-free .h-bc{visibility:hidden!important}
 .h-free .rz{display:none!important}
 .h-vcap{margin-top:24px;color:#3e4656;width:calc((100% - 11 * var(--gg)) / 12 * 6 + 5 * var(--gg))}
@@ -91,19 +88,22 @@
 .h-bt .t-lead{margin:16px 0 0;color:#fff}
 .page .h-pq{margin:0;color:#fff}
 .h-pv{margin:6px 0 0;color:#fff}.h-pv b{font-weight:700!important;transition:opacity .7s ease}
-.h-pw{margin:14px 0 0;color:#fff;text-wrap:pretty}
+.h-pw{margin:14px 0 0;color:#fff;text-wrap:balance}
 /* the rest of the box rises after the price has ticked */
-.h-pw,.h-ctrls,.h-b3 .tlink{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
-.h-told .h-pw,.h-told .h-ctrls,.h-told .tlink{opacity:1;transform:none}
+.h-pw,.h-ctrls{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.h-told .h-pw,.h-told .h-ctrls{opacity:1;transform:none}
 .h-b3:not(.h-told) *{pointer-events:none!important}
-.h-ctrls{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gg);margin-top:20px;pointer-events:auto}
-.h-sel{display:block;min-width:0}.h-sel-r{grid-column:span 3}.h-sel-y{grid-column:span 2}
-.h-sel select{display:block;width:100%;font-weight:500;cursor:pointer;text-overflow:ellipsis;padding-left:16px;background-position:right 14px center}
-.h-bt .tlink{margin-top:8px;pointer-events:auto}
+/* the robot, the year and the one link: one toolbar row (site.css .tb) */
+.h-ctrls{margin-top:24px;pointer-events:auto;flex-wrap:nowrap;width:max-content}
+.h-ctrls > label{flex:none}
+.page[data-page="index.html"] [data-pair] + p,.page[data-page="index.html"] .cb-h{text-wrap:balance}
+.h-ctrls .tlink{white-space:nowrap}
 .h-axis{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;z-index:1;transition:opacity .5s ease,visibility 0s .5s}
 .h-axis.h-on{opacity:1;visibility:visible;transition:opacity .5s ease}
 .h-axis span{position:absolute;left:0;top:0;font:400 16px/1.2 var(--sans);color:rgba(255,255,255,.92);white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
 .h-xl i{font-style:normal}
+.h-tight .h-xl:not([data-age="30"]) i{display:none}
+.h-axis .h-yt{font-size:14px;color:rgba(255,255,255,.92)}
 .h-axis .h-al,.h-axis .h-cl,.h-axis .h-pa,.h-axis .h-ps{color:#fff;font-weight:500;opacity:0;transition:opacity .5s ease}
 .h-axis .h-lon{opacity:1}
 .h-tip{position:absolute;left:0;top:0;z-index:4;width:280px;background:#fff;color:var(--ink);border-radius:4px;padding:12px 14px 6px;box-shadow:0 10px 30px rgba(14,22,38,.22);font:400 16px/1.35 var(--sans);pointer-events:auto}
@@ -113,39 +113,25 @@
 .h-tip a:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 
 /* 6. then, loans: plain flow, directly under the proof. The heading runs over both; the 50 dots and the ticket stand side by side, tops and bottoms level; one line under both says what they mean. The dots settle in their column on arrival. */
-.h-loans{position:relative;z-index:2;padding-block:0 var(--sec);color:var(--ink);overflow-x:clip}
+.h-loans{position:relative;z-index:2;padding-block:var(--sec);color:var(--ink);overflow-x:clip}
 .h-lg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gg)}
-.h-ll,.h-lk,.h-go{grid-column:1 / -1}
+.h-ll,.h-go{grid-column:1 / -1}
 .h-ll h2{margin:0}
 .h-lp{margin:16px 0 0;color:#3e4656;text-wrap:pretty}
 .h-up{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
 .h-near .h-up{opacity:1;transform:none}
-.h-dots{grid-column:1 / span 5;margin-top:32px;display:grid;grid-template-columns:repeat(10,24px);justify-content:space-between;align-content:space-between}
-.h-lr{grid-column:7 / -1;margin-top:32px}
+/* the 50 dots and the card share one row: the card's top meets the dots' top row and its height is the dot grid's */
+.h-dots{grid-column:1 / span 5;margin-top:40px;display:grid;grid-template-columns:repeat(10,24px);justify-content:space-between;align-content:space-between}
+.h-lr{grid-column:7 / -1;margin-top:40px;display:flex}
+.h-lr .card{flex:1}
+.h-card .card-f.big b{color:var(--c);font-size:var(--t-title);letter-spacing:-.033em;padding-bottom:0}
 .h-dots i{display:block;width:24px;height:24px;border-radius:50%;background:#c9d3e6;opacity:0;transform:translate(calc(var(--dx) * 2px),calc(var(--dy) * 3px)) scale(.5);transition:opacity .7s ease calc(var(--k) * 26ms),transform .7s cubic-bezier(.2,.7,.2,1) calc(var(--k) * 26ms)}
 .h-dots i.h-l{background:var(--c)}
 .h-land .h-dots i{opacity:1;transform:none}
-.h-lk{margin:24px 0 0;color:#3e4656;text-wrap:pretty}
-.h-go{justify-self:start;margin-top:4px}
-/* the example loan as a ticket */
-.h-tk{display:flex;width:100%;filter:drop-shadow(0 0 1px rgba(14,22,38,.4));font:400 16px/1.4 var(--doc);font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
-.h-tk-m{flex:1;min-width:0;background:#fff;padding:28px 28px 16px;-webkit-mask-image:radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);-webkit-mask-composite:source-in;mask-composite:intersect}
-.h-tk .sh-t{margin:16px 0 6px}
-.h-tk-m .dr:last-child{border-bottom:0}
-.h-tk-s{flex:none;width:188px;background:var(--c);color:#fff;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;gap:18px;position:relative;-webkit-mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px);-webkit-mask-composite:source-in;mask-composite:intersect}
-.h-tk-s::before{content:"";position:absolute;left:0;top:18px;bottom:18px;border-left:2px dashed rgba(255,255,255,.65)}
-.h-tk-s .dr{display:block;padding:0;border:0}.h-tk-s .dr span{display:block;color:rgba(255,255,255,.85)}.h-tk-s .dr b{color:#fff;display:block;text-align:left}
-.h-tk-s .h-tk-l{font:600 24px/1.1 var(--doc)}
-
-/* 5b. the proof, directly after the film: one row of the real counts. */
-.h-proof{position:relative;z-index:2;padding-block:var(--sec)}
-.h-pg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gg)}
-.h-pg p{margin:0;grid-column:span 3}
-.h-pg b{display:block;color:var(--ink)}
-.h-pg span{display:block;margin-top:10px;color:#3e4656;max-width:13em;text-wrap:pretty}
-
+.h-go{justify-self:start;margin-top:24px}
 /* 7. what if a loan goes bad: the navy band, ported from the previous site. One line of heading, one short line, then the arms. Everything on one centre line. It arrives with a plain edge, is pinned for its scene, then scrolls away with the form directly under it. */
-.h-inkw{position:relative;z-index:2;height:365vh;height:365lvh}
+.h-inkb{position:relative;z-index:2;color:#fff;padding-bottom:var(--sec)}
+.h-inkw{position:relative;height:365vh;height:365lvh}
 .h-ink{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden;display:flex;align-items:center}
 .h-defs{position:absolute;width:0;height:0;overflow:hidden}
 .h-ic{width:100%}
@@ -179,12 +165,6 @@
 .h-split.h-dr .h-sl{position:static;opacity:1}
 .h-split.h-dr .h-sl + .h-sl{margin-top:8px}
 
-/* 8. the form: the heading on one line, the fields and the button directly under it. The form's own layout is the shared final ask in site.css. */
-.h-close{position:relative;z-index:3;padding-block:var(--sec)}
-.h-cg{display:block}
-.h-cg h2{margin:0}
-.h-cg > .rv:last-child{margin-top:28px}
-
 /* phone and small tablet: one column. The picture stands above, the words sit below it. */
 @media (max-width:720px){
  .page[data-page="index.html"]{--gg:16px}
@@ -193,7 +173,6 @@
  /* three by three */
  .h-vis{--px:min(calc((100vw - 40px) / 3 / 196),max(.34px,calc((100svh - 540px) / 540)));padding-block:16px;box-sizing:border-box}
  .h-rw{margin-top:clamp(12px,2.4vh,20px)}
- .h-step figcaption,.h-step .h-vcap{opacity:0!important}
  .h-six{grid-template-columns:repeat(3,minmax(0,1fr))}
  .h-bot{grid-column:auto}
  .h-bc{width:calc(var(--cp) * var(--px));height:calc(var(--hp) * var(--px))}
@@ -208,21 +187,14 @@
  .h-mct{width:auto}
  .h-bt,.h-b3 .h-bt{width:auto}
  .h-beat .in{justify-content:flex-end;padding-bottom:12px}
- .h-ctrls{margin-top:10px;grid-template-columns:repeat(12,minmax(0,1fr))}.h-sel-r,.h-sel-y{grid-column:span 6}.h-sel select{padding-left:12px;padding-right:26px;background-position:right 10px center}
+ .h-ctrls{margin-top:12px;flex-wrap:wrap;gap:8px;width:auto}.h-ctrls > label{flex:1 1 0}.h-ctrls select{width:100%;padding-left:12px;padding-right:30px;background-position:right 10px center}.h-ctrls .tlink{margin-left:0;min-height:44px;flex-basis:100%}
  .h-pv{margin-top:2px}.h-pw{margin-top:8px}
  .h-tip{width:min(280px,calc(100vw - 32px))}.h-tip a{min-height:44px}
  .h-xl i{display:none}
- .h-pg{row-gap:28px}.h-pg p{grid-column:span 6}
  .h-lg{grid-template-columns:minmax(0,1fr)}
- .h-ll,.h-lk,.h-go,.h-dots,.h-lr{grid-column:auto}
- .h-lk{order:1;margin-top:16px}.h-lr{order:2;margin-top:24px}.h-go{order:3;margin-top:12px}
+ .h-ll,.h-go,.h-dots,.h-lr{grid-column:auto}
+ .h-lr{margin-top:28px}.h-go{margin-top:16px}
  .h-dots{grid-template-columns:repeat(10,18px);margin-top:24px;gap:10px 0}.h-dots i{width:18px;height:18px;transform:translate(calc(var(--dx) * 1px),calc(var(--dy) * 2px)) scale(.5)}
- .h-tk{flex-direction:column;max-width:none}
- .h-tk-m{padding:20px 20px 10px;-webkit-mask-image:radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 0 100%,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 100%,transparent 13.5px,#000 14px)}
- .h-tk-s{width:100%;flex-direction:row;justify-content:space-between;align-items:end;gap:14px;-webkit-mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px);mask-image:radial-gradient(circle 14px at 0 0,transparent 13.5px,#000 14px),radial-gradient(circle 14px at 100% 0,transparent 13.5px,#000 14px)}
- .h-tk-s::before{left:18px;right:18px;top:0;bottom:auto;border-left:0;border-top:2px dashed rgba(255,255,255,.65)}
- .h-tk-s .dr span{font-size:15px}
- .h-tk .sh-h span{font-size:15px}
  /* the loan's 35 stand seven across, the company's 15 stand five across under them, all on one centre line */
  .h-inkw{height:350vh;height:350lvh}
  .h-ink{align-items:flex-start;padding-top:40px}
@@ -253,15 +225,13 @@
  .h-bot figcaption{padding-bottom:14px;margin-right:0}
  .h-vcap{width:auto}
  .h-bot b:empty{display:none}
- .h-step figcaption,.h-step .h-vcap{opacity:0!important}
 }
 @media (min-width:721px) and (max-width:1060px){
  .h-xl i{display:none}
- .h-ctrls{grid-template-columns:minmax(0,1fr);row-gap:8px}.h-sel-r,.h-sel-y{grid-column:auto}
+ .h-ctrls{flex-wrap:wrap;width:auto}
  .h-lg{grid-template-columns:minmax(0,1fr)}
- .h-ll,.h-lk,.h-go,.h-dots,.h-lr{grid-column:auto}
- .h-dots{gap:16px 0;max-width:640px}.h-lk{order:1}.h-lr{order:2;margin-top:32px}.h-go{order:3;margin-top:16px}
- .h-pg p{grid-column:span 6}.h-pg{row-gap:28px}
+ .h-ll,.h-go,.h-dots,.h-lr{grid-column:auto}
+ .h-dots{gap:16px 0;max-width:640px}.h-lr{margin-top:32px;max-width:640px}
  .h-mct{width:40vw}
  .h-bt,.h-b3 .h-bt{width:40vw}
 }
@@ -280,8 +250,8 @@
  .h-bot span{margin-top:0}
  .h-moat .in,.h-beat .in{justify-content:center;padding-bottom:0}
  .h-mct,.h-bt,.h-b3 .h-bt{width:40vw}
- .h-ctrls{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:6px;row-gap:0}.h-sel-r,.h-sel-y{grid-column:span 6}.h-sel select{padding-left:12px;padding-right:26px;background-position:right 10px center}
- .h-pv{margin-top:0}.h-pw{margin-top:4px}.h-bt .tlink{margin-top:0}
+ .h-ctrls{margin-top:6px;--tb-h:36px}
+ .h-pv{margin-top:0}.h-pw{margin-top:4px}
  .h-inkw{height:365vh;height:365lvh}
  .h-ink{align-items:center;padding-block:8px}
  .h-split{display:grid;grid-template-columns:7fr 1fr 3fr;container-type:inline-size;margin-top:8px}
@@ -299,6 +269,6 @@
 /* reduced motion: a finished still of each part. The stage steps from rest to rest, and nothing moves on a timer. */
 @media (prefers-reduced-motion:reduce){
  .h-tw{animation:none}
- .h-up,.h-dots i,.h-bot figcaption,.h-pv b,.h-fb,.h-bl::after,.h-pw,.h-ctrls,.h-b3 .tlink,.h-axis,.h-axis span,.h-vcap,.h-mct{transition:none!important}
+ .h-up,.h-dots i,.h-bot figcaption,.h-pv b,.h-fb,.h-bl::after,.h-pw,.h-ctrls,.h-axis,.h-axis span,.h-vcap,.h-mct{transition:none!important}
  .h-up,.h-dots i{opacity:1;transform:none}
 }

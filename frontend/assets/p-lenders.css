@@ -7,11 +7,14 @@
 .l-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,22,38,.78) 0,rgba(14,22,38,.66) 9%,rgba(14,22,38,.1) 26%,rgba(14,22,38,.12) 38%,rgba(14,22,38,.9) 100%),linear-gradient(90deg,rgba(14,22,38,.82) 0,rgba(14,22,38,.62) 38%,rgba(14,22,38,0) 66%);pointer-events:none}
 .l-hero .nav{z-index:3}
 .l-hc{position:relative;z-index:2;width:100%;margin-top:auto;padding-top:100px;padding-bottom:100px}
-.l-hc .lede{max-width:46ch;margin:18px 0 32px;color:#fff}
+.l-hc .t-hero{color:#fff}
+.l-hc .lede{max-width:46ch;margin:24px 0 32px;color:#fff}
 
 /* a heading with its short line directly under it, together, in one column */
 .l-lh h2{margin:0}
 .l-lh p{margin:16px 0 0;max-width:690px;color:#3e4656;text-wrap:pretty}
+/* on a wide screen the line under a heading never runs wider than the heading (spec 11): the block is as wide as its heading, and the line adds no width of its own */
+@media (min-width:721px){.l-lh{width:fit-content;max-width:100%}.l-lh p{container-type:inline-size}}
 .l-bad .l-lh p{color:rgba(255,255,255,.92)}
 
 /* the proof: three numbers in a row, each with a thin bar where the full width is what sellers ask */
@@ -31,12 +34,9 @@
 .l-sg th{padding:24px 0 8px;font-size:var(--t-small);line-height:1.45;font-weight:500;color:var(--ink);text-align:left;border-bottom:1px solid var(--ink)}
 .l-sg th span{font-weight:400;color:#3e4656}
 .l-led tbody tr:not(.l-sg) > *{padding:0 20px 0 0;height:44px;border-bottom:var(--hair);font-weight:400;text-align:left}
-.l-led th a{display:inline-block;padding-block:12px;font-weight:500;color:var(--ink)}
-.l-led th a span[aria-hidden]{display:inline-block;color:var(--c);transition:transform .15s ease}
-.l-led th a:hover{color:var(--c)}.l-led th a:hover span[aria-hidden]{transform:translateX(3px)}
+.l-led tbody th[scope="row"]{padding-block:12px;font-weight:500;color:var(--ink)}
 .l-led .l-sp{font-weight:500;white-space:nowrap}
-.l-n{color:var(--c);font-weight:500}
-.l-nb{white-space:nowrap}
+.l-n{font-weight:500}
 .l-led td.l-sw{color:var(--muted);white-space:nowrap}
 .l-led tbody tr:not(.l-sg) > td.l-st{padding-right:0;width:27%}
 .l-st{white-space:nowrap}
@@ -49,29 +49,26 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
 .l-led tfoot td{padding:20px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--muted);max-width:90ch}
 
 /* the slider against the loan: the heading and its line, then across the whole width the figures, the slider and the chart, so sliding always shows what it changes */
-.l-dc{--l-th:32px;margin:clamp(32px,3.4vw,48px) 0 0;min-width:0}
+.l-dc{margin:clamp(32px,3.4vw,48px) 0 0;min-width:0}
 .l-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
 .l-fig b{display:block;white-space:nowrap;color:var(--ink)}
 .l-fig:first-child b{color:var(--c)}
 .l-fig > span{display:block;margin-top:8px;color:#3e4656;text-wrap:pretty}
 .l-fig span span{display:inline;margin:0;font-variant-numeric:lining-nums tabular-nums;font-weight:500;color:var(--ink)}
 
-.l-sl{position:relative;margin:clamp(20px,2vw,28px) 0 0}
-.l-adv{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:pointer;touch-action:pan-y}
+/* the one toolbar (spec 22): three real shares as a segmented switch, then the slider in a box of the same height, border and radius */
+.l-tb{margin-top:clamp(24px,2.4vw,32px);flex-wrap:nowrap}
+.l-stop{gap:8px;-webkit-tap-highlight-color:transparent}
+.l-stop b{font-weight:600;font-variant-numeric:lining-nums tabular-nums}
+.l-stop[aria-pressed="true"] b{font-weight:600}
+.l-slw{flex:1 1 240px;align-items:center;height:var(--tb-h);padding:0 16px;border:1px solid var(--tb-b);border-radius:var(--r-field);background:var(--tb-bg)}
+.l-adv{-webkit-appearance:none;appearance:none;display:block;width:100%;height:100%;margin:0;background:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
 .l-adv::-webkit-slider-runnable-track{height:4px;border-radius:0;background:linear-gradient(90deg,var(--c) calc(var(--p,68.75) * 1%),#cdd8ec calc(var(--p,68.75) * 1%))}
 .l-adv::-moz-range-track{height:4px;border-radius:0;background:#cdd8ec}
 .l-adv::-moz-range-progress{height:4px;border-radius:0;background:var(--c)}
-.l-adv::-webkit-slider-thumb{-webkit-appearance:none;width:var(--l-th);height:var(--l-th);margin-top:-14px;border-radius:2px;background:var(--c);border:0}
-.l-adv::-moz-range-thumb{width:32px;height:32px;border-radius:2px;background:var(--c);border:0}
-.l-adv:focus-visible,.l-stop:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:2px;box-shadow:none}
-/* the three real shares, each under its own place on the track */
-.l-stops{position:relative;height:52px;margin:2px calc(var(--l-th) / 2) 0}
-.l-stop{position:absolute;left:calc(var(--p) * 1%);top:0;transform:translateX(-50%);min-width:44px;min-height:44px;padding:4px 6px;border:0;background:none;cursor:pointer;color:var(--muted);line-height:1.3;text-align:center;width:max-content;transition:color .15s ease}
-.l-stop,.l-adv{-webkit-tap-highlight-color:transparent}
-.l-stop:first-child{transform:translateX(-22px);text-align:left}
-.l-stop b{display:block;font-weight:500;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
-.l-stop span{display:block}
-.l-stop:hover,.l-stop:hover b,.l-stop[aria-pressed="true"] b,.l-stop[aria-pressed="true"]{color:var(--c)}
+.l-adv::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-8px;border-radius:var(--r-field);background:var(--c);border:0}
+.l-adv::-moz-range-thumb{width:20px;height:20px;border-radius:var(--r-field);background:var(--c);border:0}
+.l-adv:focus-visible{outline:2px solid var(--c);outline-offset:4px;border-radius:2px;box-shadow:none}
 
 /* the chart: solid shapes, one calm line. Its labels sit in the clean space to the left, level with where each shape starts, each tied to its shape by a thin line. Nothing is written on the shapes. */
 .l-chart{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;margin-top:24px}   /* the month tag sits in this gap, clear of the slider labels */
@@ -134,29 +131,24 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
 
 /* the heading, then the three documents beside the term sheet, which is on paper with each term in plain words. The list shares the sheet's height, so neither column ends in empty space */
 .l-recv h2{margin:0}
-.l-rg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:stretch;margin-top:clamp(32px,3.4vw,48px)}
+.l-rg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start;margin-top:clamp(32px,3.4vw,48px)}
 .l-docs{grid-column:1 / 5;display:flex;flex-direction:column;list-style:none;margin:0;padding:0;border-top:1px solid rgba(14,22,38,.16)}
 .l-pap{grid-column:5 / -1}
-.l-docs li{flex:1;padding:16px 0;border-bottom:1px solid rgba(14,22,38,.16)}
+.l-docs li{padding:16px 0;border-bottom:1px solid rgba(14,22,38,.16)}
 .l-docs b{display:block;font-weight:600;color:var(--ink)}
 .l-docs span{display:block;margin-top:4px;color:#3e4656}
-.l-sheet{padding:clamp(24px,2.5vw,36px) clamp(20px,3vw,44px) clamp(20px,1.6vw,24px)}
-.l-sheet .sh-h span{font-size:var(--t-small)}
-.l-sheet .sh-t{text-wrap:pretty;font-size:var(--t-sub);margin:16px 0 4px}
-.l-dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,auto);grid-auto-flow:column;column-gap:32px;margin:0}
-.l-dl > div{padding:10px 0;border-bottom:1px solid var(--line)}
-.l-dl > div:nth-child(4n){border-bottom:0}
-.l-dl dt{font-weight:500;color:var(--ink)}
-.l-dl dt span{margin-left:8px;font-weight:400;font-size:var(--t-small);line-height:1.35;color:var(--muted)}
-.l-dl dd{margin:0;color:#2f3747}
-.l-sheet .sh-f{margin:8px 0 0;padding-top:0;font-size:var(--t-small);line-height:1.45;text-align:left;color:var(--muted)}
+.l-sheet .card-t{margin-bottom:8px}
+.l-dl{margin:0;padding:4px 0 12px}
+.l-dl + .card-hr + .l-dl{padding:12px 0 0}
+.l-dl > .card-r{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:2px 24px;align-items:baseline}
+.l-dl dt{color:#3e4656}
+.l-dl dt span{display:block;color:var(--muted)}
+.l-dl dd{margin:0;font-weight:500;color:var(--ink)}
+.l-shf{margin:16px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--muted)}
 
-/* the final ask: the shared shape from site.css, the line and then the form. The sheet above already ends in white, so the top padding halves */
-.page .l-contact{position:relative;padding-top:calc(var(--sec) * .5)}
-.page .l-contact h2.h2{text-wrap:balance}
 
-/* below this the three stop labels would touch on one line, so each wraps */
-@media (max-width:1240px){.l-stops{height:76px}.l-stop{max-width:96px}.l-stop:last-child{max-width:none;white-space:nowrap}}
+/* below this the switch's words no longer leave the slider room: the switch keeps its figures only */
+@media (max-width:1100px){.l-stop span{display:none}}
 @media (max-width:1060px){
  .l-rg{display:flex;flex-direction:column;gap:24px}
  .l-pap{max-width:720px}
@@ -179,9 +171,9 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
  .l-figs{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}
  .l-fig:first-child{grid-column:1 / -1;display:flex;align-items:baseline;gap:12px}
  .l-fig:first-child > span{margin-top:0}
- .l-stop span{display:none}
- .l-stops{height:44px}
- .l-stop b{line-height:36px}
+ .l-tb{flex-wrap:wrap}
+ .l-stops{flex:1 1 100%}.l-stop{flex:1}
+ .l-slw{flex:1 1 100%}
  .l-chart{display:block;margin-top:36px}
  .l-gut{display:none}
  .l-loan{padding-bottom:24px}
@@ -197,10 +189,7 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
  .l-film{object-position:50% 0}
  .l-hero::after{background:linear-gradient(180deg,rgba(14,22,38,.78) 0,rgba(14,22,38,.62) 9%,rgba(14,22,38,.05) 22%,rgba(14,22,38,.1) 34%,rgba(14,22,38,.92) 58%)}
  .l-hc .btn{width:100%}
- .l-dl{display:block}
- .l-dl > div:nth-child(4n){border-bottom:1px solid var(--line)}
- .l-dl > div:last-child{border-bottom:0}
- .l-dl dt span{display:block;margin-left:0}
+ .l-dl > .card-r{grid-template-columns:minmax(0,1fr)}
  .l-hc{padding-top:0;padding-bottom:28px}
  .l-hc .lede{margin:16px 0 20px}
  .l-led thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -224,9 +213,11 @@ td.l-st b{display:inline-block;width:76px;text-align:right;font-weight:500;verti
 /* whatever the keyboard reaches is already in view */
 .rv:focus-within{opacity:1;transform:none;transition:none}
 @media (prefers-reduced-motion:reduce){
- .l-svg,.l-plot > :not(.l-svg),.l-bv i,.l-tk i,.l-pb i,.l-stop{transition:none}
+ .l-svg,.l-plot > :not(.l-svg),.l-bv i,.l-tk i,.l-pb i{transition:none}
  .l-js .rv:not(.in-view) .l-tk i{left:calc(var(--r) - 4px)}.l-js .rv:not(.in-view) .l-bv i,.l-js .rv:not(.in-view) .l-pb i{transform:none}
 }
 /* a tablet held upright: keep the arm in the picture */
 @media (min-width:721px) and (max-aspect-ratio:1/1){.l-film{object-position:74% 50%}}
-@media print{.l-hero{height:auto;min-height:0;color:var(--ink);background:none}.l-hero::after{display:none}.l-hc .lede{color:var(--ink)}.l-hc .h1{color:var(--ink)}.l-hc{padding-top:24px}.l-sl,.l-now{display:none}}
+@media print{.l-hero{height:auto;min-height:0;color:var(--ink);background:none}.l-hero::after{display:none}.l-hc .lede{color:var(--ink)}.l-hc .t-hero{color:var(--ink)}.l-hc{padding-top:24px}.l-tb,.l-now{display:none}}
+/* the card ends in its own padding, so the section under it gives that back and the band arrives a normal gap after the last words */
+.page .l-recv{padding-bottom:calc(var(--sec) - 16px)}

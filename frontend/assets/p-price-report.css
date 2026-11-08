@@ -206,3 +206,5 @@
 .r-close{padding-bottom:calc(var(--sec) - 8px)}
 /* a heading that must break never leaves one word alone */
 .pr-srcs .h2{text-wrap:balance}
+/* the closing band's long heading takes columns 1 to 9 so it holds two lines; the button sits from column 10 */
+@media (min-width:761px){.page .cb.cb-wide .cb-h{grid-column:1 / 10}.page .cb.cb-wide .cb-r{grid-column:10 / -1}}

@@ -333,3 +333,44 @@ html:has(.fbar.on) .r-dial{top:72px}
 /* a heading that must break never leaves one word alone */
 [data-page^="robots"] .r-mdl .h2,[data-page^="robots"] .r-ch .h2{text-wrap:balance}
 @media (max-width:900px){.tlink.r-rl{min-height:44px}.r-c-subs a{display:inline-flex;align-items:center;min-height:44px}}
+/* the closing band's long heading takes columns 1 to 9 so it holds two lines; the button sits from column 10 */
+@media (min-width:761px){.page .cb.cb-wide .cb-h{grid-column:1 / 10}.page .cb.cb-wide .cb-r{grid-column:10 / -1}}
+.r-nb{white-space:nowrap}
+/* the shelf's one toolbar (spec 22): the model search and the age, one row on the white bar that rides at the top of the screen.
+   Both are 44px boxes with one border and one radius. The search's list opens as a panel under it. */
+.r-dial .tb{--tb-b:#cfd5e0;--tb-bg:#fff;--tb-fg:var(--ink);--tb-on-bg:var(--ink);--tb-on-fg:#fff;--tb-hov:#f2f4f8}
+.r-bar{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:center;min-height:64px;padding:10px var(--gl);gap:0 var(--g)}
+.r-bar .r-find{grid-column:1 / 5;position:relative;margin:0;padding:0;color:var(--ink)}
+.r-bar .r-find-in{margin:0;display:flex}
+.r-bar .r-find-in[hidden]{display:none}
+.r-bar .r-find-in input{height:var(--tb-h);width:100%;border:1px solid var(--tb-b);border-radius:var(--r-field);background:#fff;padding:0 14px}
+.r-bar .r-find-in input:hover{box-shadow:none;background:var(--tb-hov)}
+.r-bar .r-find-in input::placeholder{color:#5b6474}
+.r-bar .r-find:not(.live) .r-find-r{display:none}
+.r-bar .r-find.live .r-find-r{margin-top:6px}
+.r-agebox{grid-column:5 / 13;display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;column-gap:16px;height:var(--tb-h);padding:0 16px;border:1px solid var(--tb-b);border-radius:var(--r-field);background:#fff}
+.r-agebox .r-dial-k{grid-column:auto;color:#3e4656;white-space:nowrap}
+.r-agebox .r-dial-v{grid-column:auto;font:600 16px/1 var(--sans);color:var(--c);white-space:nowrap;min-width:4.6em}
+.r-dial .r-agebox input{grid-column:auto;height:42px}
+@media (max-width:760px){
+  .r-bar{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:8px;min-height:56px;padding:6px var(--gl)}
+  .r-bar .r-find{grid-column:auto;position:static}
+  .r-bar{position:relative}
+  .r-bar .r-find.live .r-find-r{left:var(--gl);right:var(--gl)}
+  .r-agebox{grid-column:auto;grid-template-columns:auto minmax(0,1fr);column-gap:10px;padding:0 10px}
+  .r-agebox .r-dial-k{display:none}
+  .r-agebox .r-dial-v{min-width:4.2em}
+}
+/* both boxes in the shelf's toolbar carry the same border and radius on their outer edge, with a full 44px inside for the finger */
+.r-bar .r-find,.r-agebox{box-sizing:content-box;height:44px;border:1px solid var(--tb-b);border-radius:var(--r-field);background:#fff}
+.r-bar .r-find-in input{height:44px;border:0;border-radius:0;background:transparent}
+.r-bar .r-find-in input:focus-visible{outline:2px solid var(--c);outline-offset:2px;box-shadow:none}
+.r-bar .r-find:hover{background:var(--tb-hov)}
+.r-dial .r-agebox input{height:44px}
+.r-bar .r-find:not(.live){height:auto;border:0;background:none}
+/* the line under "What buyers really paid." stays no wider than the heading (spec 11) */
+@media (min-width:1001px){.r-au-s .r-au-both{max-width:30em}}
+/* the search is a 46px tool field (the site's field rule), so both boxes hold 46px inside their one border */
+.r-bar .r-find,.r-agebox{height:46px}
+.r-bar .r-find-in input,.r-dial .r-agebox input{height:46px}
+.r-bar .r-find:not(.live){height:auto}
