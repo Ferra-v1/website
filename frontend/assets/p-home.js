@@ -241,7 +241,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       // the chart: its price labels stay at least one grid column clear of the words and the controls in both chart beats. The chart narrows for that, never the words.
       const b2t = b2.querySelector('.h-bt'), b3t = b3.querySelector('.h-bt'); b2t.style.minHeight = b3t.offsetHeight + 'px';
       const wr = Math.max(hInk(b2t), hInk(b3t)) - sr0.left, lw = Math.max(...[...axis.querySelectorAll('.h-yl')].map(s => s.offsetWidth));
-      C = { l: Math.max(wide ? x6 : colR + 84, wr + gc + lw + 14), r: gR - 4, t: 0, b: fy - 8 }; C.t = Math.max(112, H * .12, C.b - Math.max(C.r - C.l, 420) * .9);   // the price range runs from $900, just under the cheapest listing, and the plot is never taller than 0.9 of its width (Praj, 2026-11-07: empty space under $1,000)   // the top leaves room for the price axis's title under the header axisY = fy; lineL = colR;
+      C = { l: Math.max(wide ? x6 : colR + 84, wr + gc + lw + 14), r: gR - 4, t: 0, b: 0 }; { const t0 = Math.max(112, H * .12), b0 = fy - 8, ph = Math.min(b0 - t0, Math.max(C.r - C.l, 420) * .9); C.t = Math.min(b0 - ph, Math.max(t0, Math.round(cy - 7 - ph / 2))); C.b = C.t + ph; axisY = C.b + 8; }   // the plot plus its price title and year labels stand centred on the words beside them, as the arm does (Praj, 2026-11-07: sat too low)   // the price range runs from $900, just under the cheapest listing, and the plot is never taller than 0.9 of its width (Praj, 2026-11-07: empty space under $1,000)   // the top leaves room for the price axis's title under the header axisY = fy; lineL = colR;
     }
     // the row's arm, and the spot it grows into
     bots.forEach(size);
