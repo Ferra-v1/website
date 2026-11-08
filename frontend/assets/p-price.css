@@ -567,3 +567,5 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 @media (max-width:1000px){
   .pp-ans{--pp-pad:min(clamp(16px,4vw,24px),var(--gl))}
 }
+/* the listings link is empty until the tool writes it: hold its 44px from the first paint so nothing below moves (layout shift on desktop, Round 5) */
+.pp-ans .pp-src{min-height:44px}
