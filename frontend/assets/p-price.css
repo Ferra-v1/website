@@ -571,3 +571,4 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-ans .pp-src{min-height:44px}
 /* "Room to spare" shows only where the gap between the lines can hold it clear (Praj, 2026-11-07) */
 .pp-covs text.bl.cu[data-free=""]{display:none}
+.pp-ans .pp-src[hidden]{display:inline-flex!important;visibility:hidden}

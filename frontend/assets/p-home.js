@@ -151,7 +151,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
   })();
 
   // ---------------------------------------------------------------- the price box: the only numbers baked into the page
-  const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 220;
+  const BX0 = 5, BX1 = 106, BY0 = 9, BY1 = 118, HI = 125000, LO = 900;
   // the arm's drawn shape on its grid, measured from the fine dots (h-arm.js): x 5 to 106, y 9 to 118. Its width, its half height and its centre across.
   const ARM_W = 101, ARM_H = 54.5, ARM_CX = 55.5;
   let W = 0, H = 0, FH = 0, dpr = 1, phone = false, fineD = null, fineFlat = null, D = null, R = null, dirty = true, on = true, photo = null, photoOK = false;
@@ -227,7 +227,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       const wh = Math.max(...[...story.querySelectorAll('.h-mct,.h-b0 .h-bt,.h-b1 .h-bt,.h-b2 .h-bt')].map(el => el.getBoundingClientRect().height)), room = H - wh - 28 - 52, p = Math.min((W - 12) / cols, room / rows);
       floorY = Math.round(52 + rows * p + Math.max(0, room - rows * p) / 2); cam = { p, l: (W - cols * p) / 2 - BX0 * p };
       const bh = b3.querySelector('.h-bt').getBoundingClientRect().height, bottom = H - bh - 68;
-      C = { l: gL + 70, r: gR - 4, t: 100, b: bottom }; axisY = bottom + 8; lineL = 0;   // the top leaves room for the price axis's title under the header
+      C = { l: gL + 70, r: gR - 4, t: 168, b: bottom }; axisY = bottom + 8; lineL = 0;   // the top leaves room for the price axis's title under the header
       b2.querySelector('.h-bt').style.minHeight = bh + 'px';
     } else {
       // the words stand on the first five columns. The arm's pixels and the chart's plot stand on the last six, ending on the header's right edge. Below 1060 the words take 40% and the arm has what is left.
@@ -241,7 +241,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       // the chart: its price labels stay at least one grid column clear of the words and the controls in both chart beats. The chart narrows for that, never the words.
       const b2t = b2.querySelector('.h-bt'), b3t = b3.querySelector('.h-bt'); b2t.style.minHeight = b3t.offsetHeight + 'px';
       const wr = Math.max(hInk(b2t), hInk(b3t)) - sr0.left, lw = Math.max(...[...axis.querySelectorAll('.h-yl')].map(s => s.offsetWidth));
-      C = { l: Math.max(wide ? x6 : colR + 84, wr + gc + lw + 14), r: gR - 4, t: Math.max(112, H * .12), b: fy - 8 };   // the top leaves room for the price axis's title under the header axisY = fy; lineL = colR;
+      C = { l: Math.max(wide ? x6 : colR + 84, wr + gc + lw + 14), r: gR - 4, t: 0, b: fy - 8 }; C.t = Math.max(112, H * .12, C.b - Math.max(C.r - C.l, 420) * .9);   // the price range runs from $900, just under the cheapest listing, and the plot is never taller than 0.9 of its width (Praj, 2026-11-07: empty space under $1,000)   // the top leaves room for the price axis's title under the header axisY = fy; lineL = colR;
     }
     // the row's arm, and the spot it grows into
     bots.forEach(size);
@@ -255,7 +255,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     labs = null; endDirty = true;   // the chart's labels find their clean spots again
     if (R) { const pb = cam.p;
       for (let j = 0; j < R.n; j++) { const q = D.rows[j], g = rad(q[2]); R.x0[j] = cam.l + q[6] * cam.p; R.y0[j] = floorY - (BY1 - q[7]) * cam.p;
-        R.r0[j] = pb * .94 * g; R.x1[j] = X(Math.max(q[5], .4)); R.y1[j] = Y(q[2]); R.r1[j] = q[5] > 30 || q[2] < LO * 1.3 || q[2] > HI ? 0 : (phone ? 2.8 : 4.8) * Math.pow(g, .8); }   // a listing past the chart's own ages or prices is left off it, and a new robot sits just off the axis (Praj, 2026-11-07)
+        R.r0[j] = pb * .94 * g; R.x1[j] = X(Math.max(q[5], .4)); R.y1[j] = Y(q[2]); R.r1[j] = q[5] > 30 || q[2] < LO || q[2] > HI ? 0 : (phone ? 2.8 : 4.8) * Math.pow(g, .8); }   // a listing past the chart's own ages or prices is left off it, and a new robot sits just off the axis (Praj, 2026-11-07)
       drain(); }
     flatFine();
     pt = null; dirty = true; if (lens) lens.mark();
@@ -412,7 +412,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       if (Math.hypot(ex - ax, ey - ay) > 10) labs.push([ex, ey, ax, ay]); };
     const last = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m);
     // the line's and the auction squares' names sit as a small key in the chart's empty bottom right, so no joining line runs through the dots (Praj, 2026-11-07)
-    { const kw = Math.max(lblC.offsetWidth, lblU.offsetWidth), kx = gR - kw, ky = C.b - lblC.offsetHeight * 2 - 8 - 12; void last; [lblC, lblU].forEach(el => { el.style.visibility = ''; });
+    { const kw = Math.max(lblC.offsetWidth, lblU.offsetWidth), kx = gR - kw, ky = phone ? C.t - 14 - axis.querySelector('.h-yt').offsetHeight - 10 - lblC.offsetHeight * 2 - 8 : C.t;   // on a phone it sits above the plot, over the price title; the key sits top right, the one corner the listings leave empty void last; [lblC, lblU].forEach(el => { el.style.visibility = ''; });
       lblC.style.transform = `translate(${kx.toFixed(1)}px,${ky.toFixed(1)}px)`; lblU.style.transform = `translate(${kx.toFixed(1)}px,${(ky + lblC.offsetHeight + 8).toFixed(1)}px)`;
       taken.push([kx, ky, kw, lblC.offsetHeight * 2 + 8]); } };
 
