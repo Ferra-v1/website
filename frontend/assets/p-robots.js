@@ -151,7 +151,7 @@
       // the same count, by the same band, as this robot's card on the shelf. When few listings set the price, the sentence says how many first.
       const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1), F = D.fit, count = near ? `${near} for sale near this age.` : 'None for sale near this age. Worked out from other ages.';
       read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this. ${count}` : `Most ask ${money(c[0])} to ${money(c[2])}. ${count}`;
-      read.querySelector('.r-rl').href = `price.html#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
+      read.querySelector('.r-rl').href = `/price#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
       place();
@@ -217,7 +217,7 @@
       const toks = norm(inp.value).split(' ').filter(Boolean);
       if (!toks.length) { list.replaceChildren(...start); say.textContent = words; return; }
       const whole = toks.join(''), hit = ents.filter(r => toks.every(t => r.k.includes(t))).sort((a, b) => (b.k.includes(whole) - a.k.includes(whole)) || b[1] - a[1]);
-      if (!hit.length) { const a = document.createElement('a'); a.className = 'r-find-any'; a.href = 'price.html#r=any-arm'; a.textContent = 'Price it as an arm with no model named →'; list.replaceChildren(a); say.textContent = 'We have no listings by that name.'; return; }
+      if (!hit.length) { const a = document.createElement('a'); a.className = 'r-find-any'; a.href = '/price#r=any-arm'; a.textContent = 'Price it as an arm with no model named →'; list.replaceChildren(a); say.textContent = 'We have no listings by that name.'; return; }
       list.replaceChildren(...hit.slice(0, MAX).map(row));
       say.textContent = hit.length > MAX ? `${hit.length} match. Here are the ${MAX} with the most listings.` : hit.length === 1 ? 'One match.' : `${hit.length} match.`;
     });

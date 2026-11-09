@@ -165,7 +165,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     const f = tab.fam[rSel.value], y = +ySel.value; age = clamp(tab.now - y, 0, 30);
     const a = f.c[age], k = tab.sk[age < 10 ? 0 : 1];   // the price tool's Expected sale rule
     ask = r100(a); sale = r100(a * k);
-    tool.href = `price.html#y=${y}&r=${f.t}`;   // the robot and the year only
+    tool.href = `/price#y=${y}&r=${f.t}`;   // the robot and the year only
     const say = f.s.charAt(0).toUpperCase() + f.s.slice(1);
     putAll('[data-say]', say); putAll('[data-yr]', y); putAll('[data-a]', fmt(ask));
     // either of the two honest warnings when it applies, or the plain one

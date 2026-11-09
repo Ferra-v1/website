@@ -37,6 +37,11 @@
   // waitlist forms stay on the page
   // lead forms: insert-only into Supabase (row level security blocks reads with this public key)
   const SB = 'https://ybgspxfnjkehjskhrpne.supabase.co/rest/v1/leads', KEY = 'sb_publishable_256LqgO7hWqqhz2ZBvDLhQ_VsXwNgq3';
+  // after a saved lead, a copy goes by email to Praj's inbox through FormSubmit (the alias stands for his address); it never blocks or fails the form
+  const MAIL = 'https://formsubmit.co/ajax/1d426f2e99676be2e089b72bff1dffdf';
+  const alertPraj = row => { try { const L = { kind: 'Form', email: 'Work email', company: 'Company', role: 'Role', timeline: 'When they need the money', check_size: 'Check size', robot_type: 'Robot type', robot_count: 'Robots', price_per_robot: 'Price per robot', message: 'Message', page: 'Page' }, b = { _subject: 'New Ferra lead: ' + (row.kind || 'form') + (row.company ? ' from ' + row.company : ''), _template: 'table', _captcha: 'false' };
+    Object.keys(L).forEach(k => { if (row[k] != null && row[k] !== '') b[L[k]] = String(row[k]); }); if (row.utm) b['Came from'] = JSON.stringify(row.utm);
+    fetch(MAIL, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(b) }).catch(() => {}); } catch (x) {} };
   const COUNT = { '1 to 10': 10, '11 to 50': 50, '51 to 200': 200, 'More than 200': 201 };
   const utm = (() => { const q = new URLSearchParams(location.search), o = {}; q.forEach((v, k) => { if (k.startsWith('utm_')) o[k] = v.slice(0, 120); }); return Object.keys(o).length ? o : null; })();
   document.addEventListener('input', ev => { if (ev.target.getAttribute && ev.target.getAttribute('aria-invalid') === 'true' && ev.target.value.trim()) ev.target.setAttribute('aria-invalid', 'false'); });
@@ -57,7 +62,7 @@
     // three states after the check: sending (fields rest, the button says so), sent (the next steps, with focus moved to them), failed (the message, with everything typed still in place)
     btn.disabled = true; btn.setAttribute('aria-busy', 'true'); f.classList.add('sending'); const label = btn.textContent; btn.textContent = 'Sending';
     const settle = () => { btn.disabled = false; btn.removeAttribute('aria-busy'); f.classList.remove('sending'); btn.textContent = label; };
-    try { const r = await fetch(SB, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row) }); if (!r.ok) throw r.status; settle(); done(); const d = f.querySelector('.ldone'); if (d.focus) d.focus({ preventScroll: true }); }
+    try { const r = await fetch(SB, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row) }); if (!r.ok) throw r.status; alertPraj(row); settle(); done(); const d = f.querySelector('.ldone'); if (d.focus) d.focus({ preventScroll: true }); }
     catch (x) { settle(); err.textContent = 'That did not go through. Your details are still here, so please try again in a moment.'; err.hidden = false; }
   }));
   // the skip link moves focus past the header
