@@ -31,11 +31,16 @@
     const done = () => { if (++got < 2) return;
       const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d', { willReadFrequently: true });
       x.drawImage(im, 0, 0); const sz = x.getImageData(0, 0, c.width, c.height).data; x.clearRect(0, 0, c.width, c.height); x.drawImage(ia, 0, 0); const ac = x.getImageData(0, 0, c.width, c.height).data;
-      const per = m.per || Math.floor(im.width / m.w), rnd = new Float32Array(m.w * m.h).map(Math.random);
-      s.frames = [];
-      for (let f = 0; f < m.frames; f++) { const ox = (f % per) * m.w, oy = Math.floor(f / per) * m.h, pts = [];
-        for (let y = 0; y < m.h; y++) for (let X = 0; X < m.w; X++) { const i = ((oy + y) * c.width + ox + X) * 4, v = sz[i]; if (v) pts.push({ x: X, y, s: v / 252, acc: ac[i] > 127 ? 1 : 0, r: rnd[y * m.w + X] }); }
-        s.frames.push(pts); }
+      const per = m.per || Math.floor(im.width / m.w), rnd = new Float32Array(m.w * m.h).map(Math.random), W = c.width, N = W * c.height;
+      // one byte a pixel for the size and one for the accent; each frame becomes its list of dots the first time it is shown, so a robot arriving costs one frame, not all of them at once
+      const val = new Uint8Array(N), acc = new Uint8Array(N); for (let i = 0, j = 0; j < N; i += 4, j++) { val[j] = sz[i]; acc[j] = ac[i] > 127 ? 1 : 0; }
+      const decode = f => { const ox = (f % per) * m.w, oy = Math.floor(f / per) * m.h, pts = [];
+        for (let y = 0; y < m.h; y++) for (let X = 0; X < m.w; X++) { const j = (oy + y) * W + ox + X, v = val[j]; if (v) pts.push({ x: X, y, s: v / 252, acc: acc[j], r: rnd[y * m.w + X] }); }
+        return pts; };
+      s.frames = new Proxy(new Array(m.frames), { get: (t, k) => { if (typeof k === 'string' && k !== 'length') { const f = +k; if (Number.isInteger(f) && f >= 0 && f < m.frames) return t[f] || (t[f] = decode(f)); } return Reflect.get(t, k); } });
+      // the lowest dot row any frame reaches, read straight from the pixels: the sheet's rows repeat every frame height
+      let my = 0; for (let r = 0; r < c.height; r++) { const y = r % m.h; if (y <= my) continue; for (let X = 0, b = r * W, e = per * m.w; X < e; X++) if (val[b + X]) { my = y; break; } }
+      s.my = my;
       s.wait.forEach(f => f()); s.wait = []; };
     im.onload = ia.onload = done; im.onerror = ia.onerror = () => { delete Q[name]; s.wait.forEach(f => f()); };
     im.src = m.src; ia.src = m.acc;
@@ -95,6 +100,7 @@
     const assemble = cv.dataset.anim === 'assemble' && !reduce && !resume, scan = cv.dataset.scan && !reduce, play = sq && !reduce;
     const hov = fine && cv.closest('[data-dot-hover]');
     cv._st = { pitch, cw, ch, bot, tone, light };
+    cv._shown = null;   // a fresh draw (new size, back on screen) always paints its first frame
     // what assets/resolve.js reads to resolve this robot into its photo, and f says which frame is on screen
     if (sq) { const was = cv._rz; cv._rz = { frames: sq.frames, n: sq.n, w: sq.w, h: sq.h, p: pitch, dx: 0, dy: 0, f: was ? was.f : 0, rad: .44, style: (s, a) => { const b = a ? tone.acc : tone.base, al = light ? .55 + .45 * s : .45 + .55 * s; return `rgba(${b[0]},${b[1]},${b[2]},${al})`; } }; }
     // dot size: silhouette floor, then shading (bright plastic grows dots on blue, darker parts grow dots on paper), then outline boost
@@ -112,7 +118,19 @@
       const list = onLattice(all);
       c.clearRect(0, 0, cw, ch);
       const sy = scan ? ((el * .22) % 1.6 - .3) * bot.h : -99, ptr = hov && cv._ptr, ey = extScan();
-      let warm = false;
+      // settled (assembled, no scan line, no pointer warmth): every dot of one shade shares a colour and a size, so each shade is one path and one fill.
+      // The same picture as the loop below, at a small part of the cost: a phone was spending most of each frame on one fill per dot
+      if ((!assemble || el >= ASM) && !scan && ey === null && !ptr && !cv._hw) {
+        const memo = list._g || (list._g = {}), gk = (light ? 1 : 0) + '|' + rows + '|' + pitch + '|' + dot;
+        let groups = memo[gk];
+        if (!groups) { const by = new Map();
+          for (const p of list) { if (p.y >= rows) continue; const sz = size(p), k = (p.acc ? 'a' : 'b') + sz; let e = by.get(k); if (!e) by.set(k, e = { sz, acc: p.acc, xy: [] }); e.xy.push(L ? p.px : (p.x + .5) * pitch, L ? p.py : (p.y + .5) * pitch); }
+          groups = memo[gk] = [...by.values()].map(e => { const b = e.acc ? tone.acc : tone.base, al = light ? .55 + .45 * e.sz : .45 + .55 * e.sz;
+            return { style: `rgba(${b[0] | 0},${b[1] | 0},${b[2] | 0},${Math.min(1, al)})`, r: Math.max(.35, dot * .44 * e.sz), xy: Float32Array.from(e.xy) }; }); }
+        for (const e of groups) { const r = e.r, xy = e.xy; c.fillStyle = e.style; c.beginPath(); for (let i = 0; i < xy.length; i += 2) { c.moveTo(xy[i] + r, xy[i + 1]); c.arc(xy[i], xy[i + 1], r, 0, 6.283); } c.fill(); }
+        return false;
+      }
+      let warm = false; const shades = new Map();
       for (const p of list) {
         if (p.y >= rows) continue;
         const delay = assemble ? p.y / bot.h * .7 + p.r * .5 : 0, k = assemble ? ease(Math.min(1, Math.max(0, (el - delay) / .9))) : 1;
@@ -127,9 +145,12 @@
         const ox = (1 - k) * (p.r - .5) * pitch * 26, oy = (1 - k) * (p.r * 1.7 - 1.1) * pitch * 18;
         const b = p.acc ? tone.acc : tone.base, mix = Math.max(h, ey === null || p.acc ? 0 : Math.min(1, near * 1.3) * .85), cc = mix ? b.map((v, j) => v + (tone.hi[j] - v) * mix) : b;
         const al = (light ? .55 + .45 * sz : .45 + .55 * sz) * k;
-        c.fillStyle = `rgba(${cc[0] | 0},${cc[1] | 0},${cc[2] | 0},${Math.min(1, al + near * .4 + h * .3)})`;
-        c.beginPath(); c.arc((L ? p.px : (p.x + .5) * pitch) + ox, (L ? p.py : (p.y + .5) * pitch) + oy, Math.max(.35, rad), 0, 6.283); c.fill();
+        // dots that share a colour share one path: one fill per shade instead of one per dot (the alpha to two places, which the eye cannot tell apart)
+        const a100 = Math.round(Math.min(1, al + near * .4 + h * .3) * 100), gk = (((cc[0] | 0) << 16) | ((cc[1] | 0) << 8) | (cc[2] | 0)) * 128 + a100;
+        let g = shades.get(gk); if (!g) shades.set(gk, g = { style: `rgba(${cc[0] | 0},${cc[1] | 0},${cc[2] | 0},${a100 / 100})`, path: new Path2D() });
+        const X = (L ? p.px : (p.x + .5) * pitch) + ox, Y = (L ? p.py : (p.y + .5) * pitch) + oy, R = Math.max(.35, rad); g.path.moveTo(X + R, Y); g.path.arc(X, Y, R, 0, 6.283);
       }
+      for (const g of shades.values()) { c.fillStyle = g.style; c.fill(g.path); }
       return warm;
     };
     // a static robot on a crowded page: one cached bitmap per name, tone and size
@@ -147,7 +168,9 @@
       const fi = sq && play && !asmOn ? Math.floor(((cv._f0 || 0) + (el - (assemble ? ASM : 0)) * sq.fps) % sq.n) : 0;
       if (cv._rz) cv._rz.f = fi;
       const list = sq ? sq.frames[fi] : pts;
-      const warm = paint(ctx, el, list, dt);
+      // a moving robot changes picture 12 times a second: between changes, with nothing else moving on it, the canvas already shows the right frame
+      const still = !asmOn && !scan && !(hov && (cv._ptr || cv._hw)) && list === cv._shown && !(stg && sl && sl.style.opacity === '1');
+      const warm = still ? false : paint(ctx, el, list, dt); if (!still) cv._shown = list; cv._hw = warm;
       cv._live = asmOn || scan || play || warm || !!(hov && cv._ptr);
       if (cv._live && cv._vis !== false) cv._raf = requestAnimationFrame(frame);
     };
@@ -169,7 +192,8 @@
   // start the download of an own-file robot a screen or so early, so it is ready when it arrives
   const early = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; early.unobserve(en.target); fetchOwn(ownKey(en.target)); }), { rootMargin: '1200px' });
   const start = () => { all().forEach(cv => { io.observe(cv); if (OWN.test(cv.dataset.bot || '')) early.observe(cv); }); hover(); };
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => all().forEach(cv => { if (cv._seen) { cv.dataset.anim = 'static'; draw(cv); } }), 150); });
+  // a phone's toolbar sliding away as the page scrolls is a resize of the height only: the robots keep their size, so nothing redraws
+  let rt, rw = innerWidth; addEventListener('resize', () => { if (innerWidth === rw) return; rw = innerWidth; clearTimeout(rt); rt = setTimeout(() => all().forEach(cv => { if (cv._seen) { cv.dataset.anim = 'static'; draw(cv); } }), 150); });
   // for a canvas this script does not watch itself (the footer's robots: a sticky footer always counts as on screen, so site.js says when they show)
   const fetch = cv => { if (OWN.test(cv.dataset.bot || '')) fetchOwn(ownKey(cv)); };
   const pause = cv => { cv._vis = false; cancelAnimationFrame(cv._raf); };

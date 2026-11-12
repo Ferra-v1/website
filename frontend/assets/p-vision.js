@@ -85,17 +85,18 @@
   };
 
   // ------------------------------------------------------------ one frame
-  let eased = null, lastT = null;
-  const frame = () => { requestAnimationFrame(frame);
+  let eased = null, lastT = null, lastF = 0;
+  // the robots follow the scroll within about a sixth of a second, measured in time: a phone that drops frames does not leave them trailing further behind the finger
+  const frame = now => { requestAnimationFrame(frame); const dt = Math.min(100, lastF ? now - lastF : 16.7); lastF = now;
     const r = run.getBoundingClientRect(); if (r.bottom < -40 || r.top > innerHeight + 40) return;
     const want = clamp(-r.top / VH * 100, -110, T.end);
-    eased = eased === null ? want : eased + (want - eased) * .14; if (Math.abs(want - eased) < .02) eased = want; const t = eased;
+    eased = eased === null ? want : eased + (want - eased) * (1 - Math.pow(.75, dt / 16.7)); if (Math.abs(want - eased) < .02) eased = want; const t = eased;
     const waiting = !resolved && t >= ARRIVE && t < T.r0 + T.stop;   // the Resolve may still be waiting for its photo
     if (t === lastT && !waiting) return; lastT = t;   // nothing has moved: the robots carry on by themselves
     road(t);
   };
   const setup = () => { unsharpen(); lastT = null; VH = stage.offsetHeight; T = plan(); run.style.height = (T.end + 100) / 100 * VH + 'px'; L = null; };
-  addEventListener('resize', setup);
+  let sw = innerWidth; addEventListener('resize', () => { if (innerWidth !== sw || Math.abs(stage.offsetHeight - VH) > 1) { sw = innerWidth; setup(); } });   // a phone toolbar sliding away resizes nothing here
   setup();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { L = null; lastT = null; });
   requestAnimationFrame(frame);

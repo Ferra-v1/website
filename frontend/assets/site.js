@@ -183,7 +183,7 @@
     setTimeout(() => { heroNow = true; tick(); }, 80);
     const ask = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; tick(); }); };
     const relay = () => { layout(); tick(); if (after) after(); };
-    addEventListener('scroll', ask, { passive: true }); addEventListener('resize', relay);
+    let rw = innerWidth; addEventListener('scroll', ask, { passive: true }); addEventListener('resize', () => { if (innerWidth === rw && probe.offsetHeight === VH) { ask(); return; } rw = innerWidth; relay(); });   // a phone toolbar sliding away changes neither the width nor the large viewport, so the scenes keep their lengths
     relay();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(relay);
     return relay; };

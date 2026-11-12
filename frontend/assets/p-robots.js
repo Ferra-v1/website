@@ -262,7 +262,7 @@
     const run = cv => { if (reduce) { paint(cv, 1); cv.dataset.done = 1; return; } const now0 = performance.now(), below = cv.getBoundingClientRect().top > innerHeight, t0 = below ? now0 : Math.max(now0, nextAt), dur = below ? 1400 : 2200; if (!below) nextAt = t0 + 300; const step = now => { const t = clamp((now - t0) / dur); paint(cv, t); if (t < 1) requestAnimationFrame(step); else cv.dataset.done = 1; }; requestAnimationFrame(step); };
     const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { io.unobserve(en.target); run(en.target); } }), { rootMargin: '100% 0px' });
     cvs.forEach(cv => { paint(cv, 0); io.observe(cv); });
-    let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => cvs.forEach(cv => paint(cv, cv.dataset.done ? 1 : 0)), 120); });
+    let rt = 0, rw = innerWidth; addEventListener('resize', () => { if (innerWidth === rw) return; rw = innerWidth; clearTimeout(rt); rt = setTimeout(() => cvs.forEach(cv => paint(cv, cv.dataset.done ? 1 : 0)), 120); });
     // rest on or tap a dot to read its listing
     let hotCv = null, hot = null, wait = 0;
     const find = (cv, ev, reach) => { const b = cv.getBoundingClientRect(), x = ev.clientX - b.left, y = ev.clientY - b.top, g = geo(cv); let best = null, bd = reach * reach; for (const d of DOTS[cv.dataset.f] || []) { const [dx, dy] = dotXY(g, d), v = (dx - x) ** 2 + (dy - y) ** 2; if (v < bd) { bd = v; best = d; } } return best; };

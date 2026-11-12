@@ -45,7 +45,7 @@
   document.addEventListener('submit', ev => { if (ev.target !== form) return; clearTimeout(mt); msg.classList.remove('on'); msg.textContent = ''; [n, p].forEach(x => { x.removeAttribute('aria-invalid'); x.value = String(val(x)); }); setTimeout(() => [n, p].forEach(comma), 0); }, true);
   comma(n); comma(p); fitAll(); fitBig();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitAll(); fitBig(); });
-  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitAll(); fitBig(); }, 150); });
+  let rz, rzw = innerWidth; addEventListener('resize', () => { if (innerWidth === rzw) return; rzw = innerWidth; clearTimeout(rz); rz = setTimeout(() => { fitAll(); fitBig(); }, 150); });
   // once the request is in, the range message has nothing left to say
   const done = form.querySelector('.ldone');
   new MutationObserver(() => { if (!done.hidden) msg.hidden = true; }).observe(done, { attributes: true, attributeFilter: ['hidden'] });
@@ -75,7 +75,7 @@
     const show = m => { if (m === shown) return; shown = m; paint(m); read(m); };
     const fix = () => { if (still) { const xs = list.map(q => q.cx); pb.style.height = pb.clientWidth * rows / (Math.max(...xs) - Math.min(...xs) + 1) + 'px'; } size(); show(Math.round(Math.min(1, lastP / .86) * months)); };
     setRent = p => { lastP = p; show(Math.round(Math.min(1, p / .86) * months)); };   // the fill takes 86% of the distance; the rest is the finished robot, held
-    pb._fix = fix; addEventListener('resize', fix);
+    pb._fix = fix; let fw = innerWidth; addEventListener('resize', () => { if (innerWidth !== fw) { fw = innerWidth; fix(); } });   // a phone toolbar sliding away changes only the height
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fix);
     followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); } $('f-w-t').textContent = 'Say it costs ' + usd(price) + ' and rents for ' + usd(rent) + ' a month.'; fix(); });
     requestAnimationFrame(fix);

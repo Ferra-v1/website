@@ -14,11 +14,15 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
 // The first film scrolls away like any page, and rests once it has gone. Reduced motion: site.js stops the video and the poster stays.
 (() => {
   const top = document.querySelector('.h-top'), v = top && top.querySelector('video'); if (!v) return;
-  if (innerWidth <= 720) v.poster = 'media/film/hero-phone-poster.webp';   // the page's poster is the wide cut
+  if (innerWidth > 720) v.poster = 'media/film/hero-poster.webp';   // the markup names the phone cut's poster, so a phone fetches one picture
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let playing = true, held = false; const pb = top.querySelector('[data-film-pause]');
+  let ready = false, playing = false, held = false; const pb = top.querySelector('[data-film-pause]');
   if (pb) pb.addEventListener('click', () => { held = v.paused; });   // site.js has already acted on the press, so the film's state is the reader's choice
-  const check = () => { const on = scrollY < top.clientHeight * 1.02; if (on !== playing) { playing = on; if (on) { if (held) return; const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); } };
+  const go = () => { if (held) return; const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+  const check = () => { const on = scrollY < top.clientHeight * 1.02; if (on !== playing) { playing = on; if (!ready) return; if (on) go(); else v.pause(); } };
+  const start = () => { if (ready) return; ready = true; v.preload = 'auto'; if (playing) go(); };
+  // the film waits until the row of robots under it has its files (they start as the page loads), so on a slow connection the next screen is not starved by a film already on its poster. The poster is the film's first frame, so the wait does not show. Twelve seconds at most
+  addEventListener('ferra:row', start, { once: true }); setTimeout(start, 12000);
   addEventListener('scroll', check, { passive: true }); check();
 })();
 
@@ -57,13 +61,17 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     const done = () => { if (++got < 2) return;
       const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d', { willReadFrequently: true });
       x.drawImage(im, 0, 0); const sz = x.getImageData(0, 0, c.width, c.height).data; x.clearRect(0, 0, c.width, c.height); x.drawImage(ia, 0, 0); const ac = x.getImageData(0, 0, c.width, c.height).data;
-      const per = m.per || Math.floor(im.width / m.w), frames = []; let lo = 1e9, hi = 0, low = 0;
-      for (let f = 0; f < m.frames; f++) { const ox = (f % per) * m.w, oy = Math.floor(f / per) * m.h, base = [], trim = [];
-        for (let y = 0; y < m.h; y++) for (let X = 0; X < m.w; X++) { const i = ((oy + y) * c.width + ox + X) * 4, v = sz[i]; if (!v) continue; if (X < lo) lo = X; if (X > hi) hi = X; if (y > low) low = y;
-          const s = Math.pow(v / 252, .72); (ac[i] > 127 || s > .86 ? trim : base).push(X, y, s); }
-        const a = new Float32Array(base.length + trim.length); a.set(base); a.set(trim, base.length); a.n = base.length; frames.push(a); }
+      const per = m.per || Math.floor(im.width / m.w), W = c.width, N = W * c.height; let lo = 1e9, hi = 0, low = 0, top = 1e9;
+      const val = new Uint8Array(N), acc = new Uint8Array(N); for (let i = 0, j = 0; j < N; i += 4, j++) { val[j] = sz[i]; acc[j] = ac[i] > 127 ? 1 : 0; }   // one byte a pixel is all a frame needs, and a phone keeps nine of these
+      // the robot's reach over every frame, read from the pixels without building anything; each frame's dots are built the first time it is shown, so the row arrives without a long pause
+      for (let f = 0; f < m.frames; f++) { const ox = (f % per) * m.w, oy = Math.floor(f / per) * m.h;
+        for (let y = 0; y < m.h; y++) for (let X = 0, i = (oy + y) * W + ox; X < m.w; X++, i++) if (val[i]) { if (X < lo) lo = X; if (X > hi) hi = X; if (y > low) low = y; if (y < top) top = y; } }
+      const decodeF = f => { const ox = (f % per) * m.w, oy = Math.floor(f / per) * m.h, base = [], trim = [];
+        for (let y = 0; y < m.h; y++) for (let X = 0; X < m.w; X++) { const i = (oy + y) * W + ox + X, v = val[i]; if (!v) continue; const s = Math.pow(v / 252, .72); (acc[i] || s > .86 ? trim : base).push(X, y, s); }
+        const a = new Float32Array(base.length + trim.length); a.set(base); a.set(trim, base.length); a.n = base.length; return a; };
+      const frames = new Proxy(new Array(m.frames), { get: (t, k) => { if (typeof k === 'string' && k !== 'length') { const f = +k; if (Number.isInteger(f) && f >= 0 && f < m.frames) return t[f] || (t[f] = decodeF(f)); } return Reflect.get(t, k); } });
       { const f0 = frames[0]; let l0 = 1e9; for (let i = 0; i < f0.length; i += 3) if (f0[i] < l0) l0 = f0[i]; b.lo0 = l0; }
-      b.dx = (112 - (hi + lo + 1)) / 2; b.dy = b.rows - 1 - low; b.top = frames.reduce((q, a) => { for (let i = 1; i < a.length; i += 3) if (a[i] < q) q = a[i]; return q; }, 1e9); b.low = low; b.n = m.frames; b.fps = m.fps || 12; b.gridH = m.h; b.low = low; ok(frames); };
+      b.dx = (112 - (hi + lo + 1)) / 2; b.dy = b.rows - 1 - low; b.top = top; b.low = low; b.n = m.frames; b.fps = m.fps || 12; b.gridH = m.h; b.low = low; ok(frames); };
     im.onload = ia.onload = done; im.onerror = ia.onerror = () => ok(null); im.src = m.src; ia.src = m.acc; };
   const paintBot = (b, k) => { const { ctx: c, p, dpr } = b, a = b.frames[b.f], n = a.length, dx = b.dx + .5, dy = b.dy + .5; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, b.cv.width, b.cv.height);
     for (let part = 0; part < 2; part++) { c.fillStyle = part ? DEEP : COB; c.beginPath();
@@ -81,8 +89,9 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       b.f = f; if (b.cv._rz) b.cv._rz.f = f;
       if (fresh && rowA > 0 && !(b === armB && free) && !b.lensed) { b.stale = false; paintBot(b, k); } }
     return changed; };
+  let rowLeft = bots.length; const rowOne = () => { if (--rowLeft === 0) dispatchEvent(new Event('ferra:row')); };   // the first film waits for this on a slow connection
   const fetchRow = () => bots.forEach(b => { const s = document.createElement('script'); s.src = 'media/dots/loops/' + b.name + '-ink.js';
-    s.onload = () => (window.requestIdleCallback || setTimeout)(() => { const m = (window.FERRA_SEQ || {})[b.name + '-ink']; if (!m) return; decode(b, m, fr => { if (!fr) return; b.frames = fr; b.f = 0; size(b); if (b === armB) { armTop = b.top; armLow = b.low; placeSlot(); } if (reduce) b.on = 1; }); }, { timeout: 400 });
+    s.onerror = rowOne; s.onload = () => (rowOne(), window.requestIdleCallback || setTimeout)(() => { const m = (window.FERRA_SEQ || {})[b.name + '-ink']; if (!m) return; decode(b, m, fr => { if (!fr) return; b.frames = fr; b.f = 0; size(b); if (b === armB) { armTop = b.top; armLow = b.low; placeSlot(); } if (reduce) b.on = 1; }); }, { timeout: 400 });
     document.head.appendChild(s); });
   // from 60% visible: one robot at a time, left to right, 600ms apart, with 8s rest between rounds. A tap runs one robot (assets/resolve.js); a mouse gets the lens below, and the sweep rests while it is over the row.
   let lastS = -9, arrived = false, armTop = 0, armLow = 115;
@@ -193,8 +202,9 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     load('assets/h-arm.js', () => { fineD = window.FERRA_ARM.map(q => ({ x: q[0] + .5, y: q[1] + .5, s: q[2], acc: q[3], g: q[3] * 100 + Math.round(q[2] * 4), h: ((q[0] * 73 + q[1] * 151) % 97) / 97 })).sort((a, b) => a.g - b.g); seatFine(); flatFine(); dirty = true; });
     load('assets/h-film.js', () => { D = window.FERRA_FILM; prep(); seatFine(); layout(); });
   };
-  // the row comes at the first sign of a reader, or after six seconds, because it is one scroll away and the first screen should stay light. The price chapter's pieces wait until the row is arriving.
-  { let got = false; const go = () => { if (got) return; got = true; EV.forEach(n => removeEventListener(n, go)); clearTimeout(tm); fetchRow(); }, EV = ['scroll', 'wheel', 'pointermove', 'pointerdown', 'touchstart', 'keydown'], tm = setTimeout(go, 6000); EV.forEach(n => addEventListener(n, go, { passive: true })); }
+  // the row comes as soon as the page has loaded, or at the first sign of a reader if that is sooner: it is one scroll away, and on a slow connection a reader who waits for a scroll reaches empty cells. The first film waits for it (above). The price chapter's pieces wait until the row is arriving.
+  { let got = false; const go = () => { if (got) return; got = true; EV.forEach(n => removeEventListener(n, go)); fetchRow(); }, EV = ['scroll', 'wheel', 'pointerdown', 'touchstart', 'keydown'];
+    EV.forEach(n => addEventListener(n, go, { passive: true })); document.readyState === 'complete' ? go() : addEventListener('load', go, { once: true }); }
   let fetched = false;
   const fetchLate = () => { if (fetched) return; fetched = true; fetchFilm();  };
 
@@ -483,5 +493,5 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     f3.forEach((c, i) => { const l = .13 + .87 * lit(35 + i); put(c, l * (1 - part)); put(cy[i], l * part * (1 - .7 * dr)); });
     sp.style.setProperty('--sp', (1 - hIo3(part)).toFixed(3));
     put(s35, hSeg(part, .5, 1) * (1 - hSeg(dr, 0, .3))); put(sd, hSeg(dr, .7, 1)); put(sx, hSeg(part, .5, 1)); sd.style.visibility = dr > .7 ? '' : 'hidden'; }
-  layout(); addEventListener('scroll', paint, { passive: true }); addEventListener('resize', layout); addEventListener('load', layout); if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+  let lw2 = innerWidth; layout(); addEventListener('scroll', paint, { passive: true }); addEventListener('resize', () => { if (innerWidth !== lw2) { lw2 = innerWidth; layout(); } }); addEventListener('load', layout);   // the band keeps its scroll length while a phone toolbar slides if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 })();

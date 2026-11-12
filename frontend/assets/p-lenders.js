@@ -99,7 +99,7 @@
   plot.addEventListener('pointerdown', showMonth);
   plot.addEventListener('pointerleave', ev => { if (ev.pointerType === 'mouse') hideMonth(); });
   set(adv);
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(place, 120); });
+  let rt, rw = innerWidth; addEventListener('resize', () => { if (innerWidth === rw) return; rw = innerWidth; clearTimeout(rt); rt = setTimeout(place, 120); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
   addEventListener('load', place);
   // on arrival the shapes draw in from the left, then the slider moves once on its own, so the reader sees that it is a control
