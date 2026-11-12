@@ -519,7 +519,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-tb{display:flex;flex-wrap:wrap;align-items:center;gap:12px var(--pp-gut);margin-bottom:20px}
 .pp-scl{margin:0;font-size:var(--t-small);line-height:1.45;color:var(--txt)}
 /* section B: the rate and its one sentence, then the chart with three lines only */
-.pp-vtop{grid-template-columns:repeat(12,minmax(0,1fr));align-items:baseline;margin-bottom:clamp(28px,3vw,40px)}  /* the sentence sits on the rate's own line (Praj, 2026-11-07) */
+.pp-vtop{grid-template-columns:repeat(12,minmax(0,1fr));align-items:baseline;margin-bottom:clamp(28px,3vw,40px)}  /* the sentence sits on the rate's own line (2026-11-07) */
 .pp-rate{grid-column:1 / span 5}
 .pp-rate .pp-av{margin:0 0 8px;color:var(--ink)}
 .pp-rate .pp-al{color:var(--txt)}
@@ -569,6 +569,6 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 }
 /* the listings link is empty until the tool writes it: hold its 44px from the first paint so nothing below moves (layout shift on desktop, Round 5) */
 .pp-ans .pp-src{min-height:44px}
-/* "Room to spare" shows only where the gap between the lines can hold it clear (Praj, 2026-11-07) */
+/* "Room to spare" shows only where the gap between the lines can hold it clear (2026-11-07) */
 .pp-covs text.bl.cu[data-free=""]{display:none}
 .pp-ans .pp-src[hidden]{display:inline-flex!important;visibility:hidden}

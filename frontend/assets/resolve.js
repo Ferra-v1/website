@@ -79,7 +79,7 @@
         for (let y = 0; y < H; y++) for (let x = 0, i = y * W; x < W; x++, i++) {
           const a = sizeF[i], b = size0[i]; if (!a && !b) continue;
           const sz = a + (b - a) * m; if (sz <= 0) continue;
-          const g = 0, r0 = p * rad * sz, r = r0,   /* no swell: swollen dots on a square grid left a diamond lattice that read as broken (Praj, 2026-11-07); dots and photo crossfade instead */ cx = (x + .5 + dx) * p, cy = (y + .5 + dy) * p, ac = m > .5 ? acc0[i] : accF[i];
+          const g = 0, r0 = p * rad * sz, r = r0,   /* no swell: swollen dots on a square grid left a diamond lattice that read as broken (2026-11-07); dots and photo crossfade instead */ cx = (x + .5 + dx) * p, cy = (y + .5 + dy) * p, ac = m > .5 ? acc0[i] : accF[i];
           const key = ac * 10 + Math.round(sz * 9); let path = paths.get(key);
           if (!path) { path = new Path2D(); path.color = style(sz, ac); paths.set(key, path); }
           path.moveTo(cx + r, cy); path.arc(cx, cy, Math.max(.35, r), 0, 6.2832);

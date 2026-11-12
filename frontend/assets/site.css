@@ -1,5 +1,5 @@
 /* ================================================================ one system, used by every page. Fonts first, then tokens, then the classes pages use.
-   Type: three sizes (Praj). Large 60/36 for every heading and big figure, medium 22/20 for leads, small headings and smaller figures, small 16 for everything else. Sizes are desktop/phone.
+   Type: three sizes. Large 60/36 for every heading and big figure, medium 22/20 for leads, small headings and smaller figures, small 16 for everything else. Sizes are desktop/phone.
    A fourth size, --t-hero (80/40), is for the top heading of Home, Vision and Lenders and Fleets' "0%" only (Round 5 spec section 9). Paper documents are the only other exception.
    Content width: the grid's edges sit --gl in from the screen, and the content between them is at most 1320 wide (1200 and under at 1440 and below). The footer keeps its own margins. */
 /* self-hosted, subset to Latin with arrows, cut from the Google Fonts source. Each fallback is Arial reshaped to the real face's width and line box, measured in the browser against the same sentence at the same weight, so the swap does not move the text. A bold word falls back on Arial Bold, never on a thickened Arial */
@@ -177,7 +177,7 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .np-on .lk:not(.open) > a[aria-current]::after{transform:scaleX(0)}
 .np-in{--np-h:256px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1fr);column-gap:var(--gut);height:min(calc(var(--np-h) + 56px),calc(100vh - var(--np-top,72px)));padding:28px var(--gl)}
 .np-l{grid-column:1 / span 4;display:grid;grid-auto-rows:minmax(0,1fr);min-height:0;margin-top:-8px;padding-top:8px;overflow-y:auto;scrollbar-width:none}
-/* each row centres its words between its lines (Praj, 2026-11-07) */
+/* each row centres its words between its lines (2026-11-07) */
 .np-l a{display:flex;flex-direction:column;justify-content:center;padding:12px 0;min-height:44px;border-bottom:1px solid rgba(255,255,255,.2)}
 .np.on .np-l a{animation:np-rise .36s var(--m-ease) both;animation-delay:calc(var(--i,0) * 40ms + 80ms)}
 @keyframes np-rise{from{opacity:0;transform:translateY(8px)}}
@@ -309,7 +309,7 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .card-f.big b{font-size:var(--t-title);letter-spacing:-.028em;color:var(--c)}
 .card-f + .card-f{margin-left:auto;text-align:right;align-items:flex-end}
 
-/* .cb, the closing band (spec 20, made white by Praj 2026-11-07 so it stands apart from the navy sections): one full-width white band right above the footer, a hairline on top. Heading in columns 1 to 5, the form or the button in 7 to 12, the heading's capitals level with the first thing on the right.
+/* .cb, the closing band (spec 20, made white 2026-11-07 so it stands apart from the navy sections): one full-width white band right above the footer, a hairline on top. Heading in columns 1 to 5, the form or the button in 7 to 12, the heading's capitals level with the first thing on the right.
    .cb-j is the same thing inside a navy section that is already there (Home's "What if a loan goes bad?"): a thin line across the grid, one section gap, then the band's two columns */
 .cb{background:#fff;color:var(--ink);padding-block:var(--sec);border-top:1px solid rgba(14,22,38,.12)}
 .cb.cb-j{margin-top:var(--sec)}

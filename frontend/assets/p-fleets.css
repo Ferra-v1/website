@@ -43,7 +43,7 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 .f-whyt{grid-column:1 / 7;margin-top:16px}
 .f-run{grid-column:7 / 13;min-width:0}
 .f-whyt p{margin:0;color:#3e4656;max-width:30em;text-wrap:balance}
-@media (min-width:1200px){#f-w-t{white-space:nowrap;max-width:none}}  /* Praj: the example line sits on one line */
+@media (min-width:1200px){#f-w-t{white-space:nowrap;max-width:none}}  /* the example line sits on one line */
 .f-pay-bot{display:block;width:100%}
 .f-read{margin:clamp(28px,3.4vw,48px) 0 0!important;color:var(--ink)!important}
 .f-read b{display:block;color:var(--c);font-weight:700}
@@ -70,7 +70,7 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 
 /* one sentence across the grid (spec 12): "0%" at the hero size in cobalt in columns 1 and 2, the heading from the column 3 line on its baseline, and the line under the heading no wider than the heading (it gives the column no width of its own) */
 .f-keep{padding-block:var(--sec)}
-/* Praj, 2026-11-07: the 0% line sits centred on the page */
+/* 2026-11-07: the 0% line sits centred on the page */
 .f-keepg{display:grid;grid-template-columns:max-content max-content;column-gap:clamp(24px,3vw,48px);align-items:baseline;justify-content:center}
 .f-zero{grid-column:1;grid-row:1;margin:0;color:var(--c);font-variant-numeric:lining-nums tabular-nums}
 .f-keepg h2{grid-column:2;grid-row:1}

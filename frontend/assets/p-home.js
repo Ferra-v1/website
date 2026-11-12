@@ -237,11 +237,11 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       hPairs();
       const tr = Math.max(hInk(moat.querySelector('.h-mct')), hInk(b0.querySelector('.h-bt')), hInk(b1.querySelector('.h-bt'))) - sr0.left, hd = b0.querySelector('h2'), cy = hd.offsetTop + hd.offsetHeight / 2, top0 = 88;
       const p = Math.max(1, Math.min(p0, (gR - tr - 2 * gc) / ARM_W, (cy - top0) / ARM_H, (H - 16 - cy) / ARM_H));
-      floorY = cy + ARM_H * p; cam = { p, l: gR - (ARM_CX + ARM_W / 2 - 1.3) * p };   // the arm's drawn edge ends on the grid's right edge, as the words start on its left edge (Praj, 2026-11-07: centred by its box it read too far left)
+      floorY = cy + ARM_H * p; cam = { p, l: gR - (ARM_CX + ARM_W / 2 - 1.3) * p };   // the arm's drawn edge ends on the grid's right edge, as the words start on its left edge (2026-11-07: centred by its box it read too far left)
       // the chart: its price labels stay at least one grid column clear of the words and the controls in both chart beats. The chart narrows for that, never the words.
       const b2t = b2.querySelector('.h-bt'), b3t = b3.querySelector('.h-bt'); b2t.style.minHeight = b3t.offsetHeight + 'px';
       const wr = Math.max(hInk(b2t), hInk(b3t)) - sr0.left, lw = Math.max(...[...axis.querySelectorAll('.h-yl')].map(s => s.offsetWidth));
-      C = { l: Math.max(wide ? x6 : colR + 84, wr + gc + lw + 14), r: gR - 4, t: 0, b: 0 }; { const t0 = Math.max(112, H * .12), b0 = fy - 8, ph = Math.min(b0 - t0, Math.max(C.r - C.l, 420) * .9); C.t = Math.min(b0 - ph, Math.max(t0, Math.round(cy - 7 - ph / 2))); C.b = C.t + ph; axisY = C.b + 8; }   // the plot plus its price title and year labels stand centred on the words beside them, as the arm does (Praj, 2026-11-07: sat too low)   // the price range runs from $900, just under the cheapest listing, and the plot is never taller than 0.9 of its width (Praj, 2026-11-07: empty space under $1,000)   // the top leaves room for the price axis's title under the header axisY = fy; lineL = colR;
+      C = { l: Math.max(wide ? x6 : colR + 84, wr + gc + lw + 14), r: gR - 4, t: 0, b: 0 }; { const t0 = Math.max(112, H * .12), b0 = fy - 8, ph = Math.min(b0 - t0, Math.max(C.r - C.l, 420) * .9); C.t = Math.min(b0 - ph, Math.max(t0, Math.round(cy - 7 - ph / 2))); C.b = C.t + ph; axisY = C.b + 8; }   // the plot plus its price title and year labels stand centred on the words beside them, as the arm does (2026-11-07: sat too low)   // the price range runs from $900, just under the cheapest listing, and the plot is never taller than 0.9 of its width (2026-11-07: empty space under $1,000)   // the top leaves room for the price axis's title under the header axisY = fy; lineL = colR;
     }
     // the row's arm, and the spot it grows into
     bots.forEach(size);
@@ -255,7 +255,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     labs = null; endDirty = true;   // the chart's labels find their clean spots again
     if (R) { const pb = cam.p;
       for (let j = 0; j < R.n; j++) { const q = D.rows[j], g = rad(q[2]); R.x0[j] = cam.l + q[6] * cam.p; R.y0[j] = floorY - (BY1 - q[7]) * cam.p;
-        R.r0[j] = pb * .94 * g; R.x1[j] = X(Math.max(q[5], .4)); R.y1[j] = Y(q[2]); R.r1[j] = q[5] > 30 || q[2] < LO || q[2] > HI ? 0 : (phone ? 2.8 : 4.8) * Math.pow(g, .8); }   // a listing past the chart's own ages or prices is left off it, and a new robot sits just off the axis (Praj, 2026-11-07)
+        R.r0[j] = pb * .94 * g; R.x1[j] = X(Math.max(q[5], .4)); R.y1[j] = Y(q[2]); R.r1[j] = q[5] > 30 || q[2] < LO || q[2] > HI ? 0 : (phone ? 2.8 : 4.8) * Math.pow(g, .8); }   // a listing past the chart's own ages or prices is left off it, and a new robot sits just off the axis (2026-11-07)
       drain(); }
     flatFine();
     pt = null; dirty = true; if (lens) lens.mark();
@@ -411,7 +411,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       const ex = clamp(ax, best[0], best[0] + w), ey = ay < best[1] ? best[1] - 3 : ay > best[1] + h ? best[1] + h + 3 : best[1] + h / 2;
       if (Math.hypot(ex - ax, ey - ay) > 10) labs.push([ex, ey, ax, ay]); };
     const last = D.aucs.reduce((m, q) => q[5] > m[5] ? q : m);
-    // the line's and the auction squares' names sit as a small key in the chart's empty bottom right, so no joining line runs through the dots (Praj, 2026-11-07)
+    // the line's and the auction squares' names sit as a small key in the chart's empty bottom right, so no joining line runs through the dots (2026-11-07)
     { const kw = Math.max(lblC.offsetWidth, lblU.offsetWidth), kx = gR - kw, ky = phone ? C.t - 14 - axis.querySelector('.h-yt').offsetHeight - 10 - lblC.offsetHeight * 2 - 8 : C.t;   // on a phone it sits above the plot, over the price title; the key sits top right, the one corner the listings leave empty void last; [lblC, lblU].forEach(el => { el.style.visibility = ''; });
       lblC.style.transform = `translate(${kx.toFixed(1)}px,${ky.toFixed(1)}px)`; lblU.style.transform = `translate(${kx.toFixed(1)}px,${(ky + lblC.offsetHeight + 8).toFixed(1)}px)`;
       taken.push([kx, ky, kw, lblC.offsetHeight * 2 + 8]); } };
