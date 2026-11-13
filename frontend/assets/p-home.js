@@ -61,7 +61,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
   const snap = s => s < T.dark[0] + .4 ? 0 : s < T.turn[0] ? T.mHold[1] - .1 : s < T.res[1] ? (T.photo[0] + T.photo[1]) / 2 : s < T.fly[0] ? T.gather[1] : s < T.fall[0] ? T.fly[1] : T.box[0] + .2;
 
   // ---------------------------------------------------------------- the row: nine moving robots on one line. Each plays from its own sprite, repainted only when its frame changes (twelve a second), as one path per colour.
-  // A robot assembles when it arrives, 300ms after the one before it, and its caption rises after it. Reduced motion draws each robot's first frame, still.
+  // The robots assemble with the scroll (Praj, 2026-11-12): from when the row is a little over half on screen until partway into its hold, left to right, each robot's dots gather as the reader scrolls and scatter again on the way back up. Its caption rises once its robot is a third built. Once a robot is whole it plays its own loop. Reduced motion draws each robot's first frame, still.
   const figs = [...vis.querySelectorAll('.h-bot')], COB = '#2847ce', DEEP = '#1e339b', ASM = 2.2, POSE = +story.dataset.pose;   // the loop's frame that the fine dots and the photo were made from: measured, same grid, no offset
   const bots = figs.map(fig => { const c = fig.querySelector('canvas'); return { fig, cv: c, ctx: c.getContext('2d'), name: c.dataset.loop, frames: null, on: 0, f: 0, cols: 112, rows: +getComputedStyle(fig).getPropertyValue('--r'), dx: 0, dy: 0, n: 1, fps: 12, stale: false, t0: 0 }; });
   const armB = bots[bots.length - 1], armFig = armB.fig;
@@ -92,11 +92,14 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
         c.moveTo(x + r, y); c.arc(x, y, r, 0, 6.2832); }
       c.fill(); } };
   let rowA = 1, free = false;
+  const kOf = i => { if (reduce) return 1; const K = seg(lastS, -.6, T.row ? T.row[0] + (T.row[1] - T.row[0]) * .6 : .3), st = i / bots.length * .45; return clamp((K - st) / .55); };
   const rowTick = now => { let changed = false;
-    for (const b of bots) { if (!b.frames || !b.on) continue; if (!b.t0) b.t0 = now;
+    bots.forEach((b, i) => { b.k = kOf(i); const cap = b.k > .33; if (cap !== b.cap) { b.cap = cap; b.fig.classList.toggle('h-on', cap); b.fig.classList.toggle('h-wait', !cap); } });
+    for (const b of bots) { if (!b.frames) continue; b.on = 1;
       if (b === armB && free) continue;   // its pose belongs to the scroll now: see paint
-      const el = (now - b.t0) / 1000, k = reduce ? 1 : Math.min(1, el / ASM), f = reduce ? 0 : k < 1 ? 0 : Math.floor((el - ASM) * b.fps) % b.n;
-      const fresh = k < 1 || f !== b.f || b.stale;
+      const k = b.k; if (k >= 1) { if (!b.t0) b.t0 = now; } else b.t0 = 0; const f = reduce || k < 1 ? 0 : Math.floor((now - b.t0) / 1000 * b.fps) % b.n;
+      if (k !== b.kDrawn) b.stale = true; b.kDrawn = k;
+      const fresh = f !== b.f || b.stale;   // a half-built robot repaints only when the scroll moves it
       if (b === armB && f !== b.f) changed = true;
       b.f = f; if (b.cv._rz) b.cv._rz.f = f;
       if (fresh && rowA > 0 && !(b === armB && free) && !b.lensed) { b.stale = false; paintBot(b, k); } }
@@ -108,9 +111,9 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
   // from 60% visible: one robot at a time, left to right, 600ms apart, with 8s rest between rounds. A tap runs one robot (assets/resolve.js); a mouse gets the lens below, and the sweep rests while it is over the row.
   let lastS = -9, arrived = false, armTop = 0, armLow = 115;
   const rowOn = () => lastS > -.4 && lastS < T.row[1] - .02 && !document.hidden;
-  const sweep = async () => { await wait(ASM * 1000 + 300 * bots.length); const R = window.FerraResolve; if (!R) return; const items = figs.map(R.get);
-    for (;;) { for (const r of items) { while (!rowOn() || (lens && lens.over())) await wait(300); if (r.ready()) { await r.run(); await wait(600); } } await wait(8000); } };
-  const arrive = () => { if (arrived) return; arrived = true; bots.forEach((b, i) => { if (reduce) { b.on = 1; b.fig.classList.add('h-on'); return; } setTimeout(() => { b.on = 1; b.t0 = 0; b.fig.classList.remove('h-wait'); b.fig.classList.add('h-on'); }, i * 300); }); if (!reduce) sweep(); };
+  const sweep = async () => { await wait(300 * bots.length); const R = window.FerraResolve; if (!R) return; const items = figs.map(R.get);
+    for (;;) { for (const r of items) { while (!rowOn() || (lens && lens.over()) || bots.some(b => b.frames && b.k < 1)) await wait(300); if (r.ready()) { await r.run(); await wait(600); } } await wait(8000); } };
+  const arrive = () => { if (arrived) return; arrived = true; if (reduce) bots.forEach(b => { b.on = 1; b.fig.classList.add('h-on'); }); else sweep(); };   // the build itself follows the scroll: see rowTick
   figs.forEach(f => f.classList.add(reduce ? 'h-on' : 'h-wait'));
 
   // ---------------------------------------------------------------- the Flashlight. With a mouse, the cursor carries a soft round lens over the row: inside it each pixel robot shows its real photo, from the aligned stills the Resolve uses. Its edge is the Resolve's own: a dot swells until it joins its neighbours, with the photo cut to the swollen dots. A robot holds its first frame, the one its photo was cut from, while the lens is on it, and the dots close again behind the lens. It replaces hover and click for a mouse; touch keeps the tap Resolve, and reduced motion gets neither.
@@ -154,7 +157,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
       let held = 0;
       for (const b of bots) { if (!b.frames || !b.p) continue; const z = prep(b), bx0 = b.lx + z.x0 * b.p, bx1 = b.lx + (z.x1 + 1) * b.p, by0 = b.ly + z.y0 * b.p, by1 = b.ly + (z.y1 + 1) * b.p;
         const near = live && Math.hypot(Math.max(bx0 - lx, 0, lx - bx1), Math.max(by0 - ly, 0, ly - by1)) < rn + 36, loose = b === armB && free;
-        if (!b.lensed) { if (!near) continue; const R0 = window.FerraResolve && window.FerraResolve.get(b.fig); if (!b.on || !b.t0 || (now - b.t0) / 1000 < ASM || (R0 && R0.running) || loose) continue; b.lensed = true; b.fig.classList.add('h-lensed'); z.m = 0; z.f = -1; }
+        if (!b.lensed) { if (!near) continue; const R0 = window.FerraResolve && window.FerraResolve.get(b.fig); if (!b.on || (b.k || 0) < 1 || (R0 && R0.running) || loose) continue; b.lensed = true; b.fig.classList.add('h-lensed'); z.m = 0; z.f = -1; }
         z.m = clamp(z.m + (near ? dt / 240 : -dt / 320)); if (z.m > 0 && z.m < 1) busy = true;
         const moving = paintOne(b, z, near ? rn : 0, dt, loose); busy = busy || moving;
         if (near || moving || z.m > 0) held++; else if (!loose) release(b); else { b.lensed = false; b.fig.classList.remove('h-lensed'); b.stale = true; } }

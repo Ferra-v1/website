@@ -13,6 +13,7 @@ Judge everything on a cheap phone, never on this Mac: 390 wide, processor slowed
 2. **Holds are rare, short and listed.** A pause where nothing moves is allowed only where a reader must read (a chart, a price), at most half a screen, and it is added by name to the "Allowed holds" list in the speed end condition. More than half a screen of scrolling where nothing visible changes fails the gate (`evenpace`).
 3. **Words in a pinned scene still hold at least 60vh**, so they can be read (`hold`). Make the change faster, never the words.
 4. **Nothing is left half finished when the reader stops.** A word swap tied to the scroll finishes on its own when scrolling stops (`hSettle` in `p-home.js`, word swaps only). Longer changes follow the scroll exactly and are never auto-finished, because an auto-finished picture makes the next bit of scrolling do nothing.
+4b. **Build-ups follow the scroll (Praj, 2026-11-12).** When something assembles or builds as the reader arrives (the Home robot row is the model), it moves forward as they scroll down and back as they scroll up, never on its own clock after a trigger. Only a finished robot's own loop runs on time. A short fade on a label that has fully arrived is fine.
 5. **Shortening a scene never changes what it shows.** Same pictures, words and order; only the scroll length changes.
 
 ### Drawing and animation
