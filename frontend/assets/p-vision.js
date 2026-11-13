@@ -15,8 +15,8 @@
   // ------------------------------------------------------------ the timeline, in hundredths of a screen, from the moment the stage pins. Phone: a move takes 70% of the distance, a hold stays what it is
   let T = null, VH = 1;
   const plan = () => { const m = innerWidth <= 720 ? .7 : 1, t = { m };
-    // six stops, each a caption held 65 and a move of 30, then the pull back, then the point holds. The robot only leaves once its caption has been read for 60
-    t.move = 30 * m; t.stop = 65 + t.move; t.r0 = 0; t.r1 = t.r0 + 6 * t.stop; t.z1 = t.r1 + 100 * m; t.end = t.z1 + 60;
+    // six stops, each a caption held 35 and a move of 30, then the pull back, then the point holds
+    t.move = 30 * m; t.stop = 35 + t.move; t.r0 = 0; t.r1 = t.r0 + 6 * t.stop; t.z1 = t.r1 + 100 * m; t.end = t.z1 + 35;   // captions hold 35 and the end 35 (were 65 and 60), so the road moves at about the pace of plain scrolling (Praj, 2026-11-12, SPEED-END-CONDITION.md 2b)
     return t; };
   // the first robot's Resolve starts once the whole of it has risen into view
   const ARRIVE = -25;
@@ -55,7 +55,7 @@
   // a scaled down canvas beats against the screen's pixels and shows a checker. So as the camera pulls back each robot is redrawn in steps at about its size on screen, and the transform only makes up the small difference
   const STEPS = [1, .7, .5, .35, .25];
   const sharpen = (s, Sc) => { const k = STEPS.find(v => v <= Sc / .72) || .25; if (s._k === k || (s._k === undefined && k === 1)) return; s._k = k; const b = s.querySelector('.rs-bot'), c = b.querySelector('canvas');
-    if (k === 1) b.style.cssText = ''; else b.style.cssText = `height:calc(var(--rh) * ${k});width:${k * 100}%;margin-top:calc(var(--rh) * ${1 - k});transform:scale(${1 / k});transform-origin:50% 100%;flex:none`;
+    if (k === 1) b.style.cssText = ''; else b.style.cssText = `height:calc(var(--rh) * ${k});width:${k * 100}%;margin-bottom:calc(var(--rh) * ${1 - k});transform:scale(${1 / k});transform-origin:50% 0;flex:none`;
     if (c._rz && window.FerraDots) { c._f0 = c._rz.f; FerraDots.draw(c, true); } };
   const unsharpen = () => slots.forEach(s => { if (s._k && s._k !== 1) { s.querySelector('.rs-bot').style.cssText = ''; } s._k = undefined; });
   const road = t => {
@@ -95,7 +95,9 @@
     if (t === lastT && !waiting) return; lastT = t;   // nothing has moved: the robots carry on by themselves
     road(t);
   };
-  const setup = () => { unsharpen(); lastT = null; VH = stage.offsetHeight; T = plan(); run.style.height = (T.end + 100) / 100 * VH + 'px'; L = null; };
+  // a robot whose dots have not arrived yet already takes the size it will draw at (its shape is known from data-a), so nothing jumps when it lands on a slow connection
+  const reserve = () => slots.forEach((sl, i) => { const b = sl.querySelector('.rs-bot'), c = b && b.querySelector('canvas'); if (!c || c._rz || !asp[i]) return; const bh = b.clientHeight, bw = b.clientWidth; if (!bh || !bw) return; const h = Math.min(bh, bw / asp[i]); c.style.height = h + 'px'; c.style.width = h * asp[i] + 'px'; });
+  const setup = () => { reserve(); unsharpen(); lastT = null; VH = stage.offsetHeight; T = plan(); run.style.height = (T.end + 100) / 100 * VH + 'px'; L = null; };
   let sw = innerWidth; addEventListener('resize', () => { if (innerWidth !== sw || Math.abs(stage.offsetHeight - VH) > 1) { sw = innerWidth; setup(); } });   // a phone toolbar sliding away resizes nothing here
   setup();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { L = null; lastT = null; });

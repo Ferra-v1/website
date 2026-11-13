@@ -92,7 +92,7 @@
   // the six moving robots: drawn while the row is still a screen away, so all six are finished as it arrives, when they come in together in 500ms (p-fleets.css). They pause off screen and carry on where they were
   const bots = [...document.querySelectorAll('.f-bot canvas')];
   let botsOn = false;
-  const startBots = () => { if (botsOn || !window.FerraDots) return; botsOn = true; bots.forEach(c => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; FerraDots.draw(c); }); };
+  const startBots = () => { if (botsOn || !window.FerraDots) return; botsOn = true; bots.forEach((c, i) => setTimeout(() => { c.classList.add('dotbot'); c._seen = 1; c._vis = true; FerraDots.draw(c); }, i * 60)); };   // one robot every 60ms, so a slow phone never pays for the whole yard in one frame
   addEventListener('load', () => { if (window.FerraDots) bots.forEach(c => FerraDots.fetch(c)); });
   const botIo = new IntersectionObserver(es => es.forEach(en => { const c = en.target; if (!c._seen || !window.FerraDots) return; en.isIntersecting ? FerraDots.resume(c) : FerraDots.pause(c); }), { rootMargin: '80px' }); bots.forEach(c => botIo.observe(c));
 

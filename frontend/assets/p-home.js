@@ -3,6 +3,18 @@ const hClamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, hSeg = (s, a, b) 
 const hMix = (a, b, t) => `rgb(${Math.round(hLerp(a[0], b[0], t))},${Math.round(hLerp(a[1], b[1], t))},${Math.round(hLerp(a[2], b[2], t))})`;
 const H_WHITE = [255, 255, 255], H_COB = [40, 71, 206], H_DEEP = [30, 51, 155];
 
+// Settle: a picture tied to the scroll never freezes halfway. When the reader stops inside a stretch that changes the picture (a word swap, the dots turning into a photo, the arms lighting), the picture finishes that stretch on its own, in the direction the reader was going, in about a third of a second. It stays finished while the reader keeps going the same way, so it never runs back to meet a slow scroller. Scrolling the other way lets go. wins() returns the stretches as [start, end] in the scene's own scroll units; onIdle repaints.
+const hSettle = (wins, onIdle) => {
+  let lastY = scrollY, dir = 1, idle = false, latch = null, t = 0;
+  addEventListener('scroll', () => { const y = scrollY; if (y !== lastY) { const d = y > lastY ? 1 : -1; if (d !== dir) latch = null; dir = d; } lastY = y; idle = false; clearTimeout(t); t = setTimeout(() => { idle = true; onIdle(); }, 150); }, { passive: true });
+  return raw => {
+    if (latch && (raw >= latch[1] || raw <= latch[0])) latch = null;
+    if (latch) return dir > 0 ? latch[1] : latch[0];
+    if (!idle) return raw;
+    for (const w of wins()) if (raw > w[0] + 1e-4 && raw < w[1] - 1e-4) { latch = w; return dir > 0 ? w[1] : w[0]; }
+    return raw; };
+};
+
 // The words' real ink: the right edge of every line of text (and every control) inside an element, and the widest line of a heading. Hidden helper text (.sr) does not count.
 const hInk = el => { let r = -1e9; const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) { if (!n.nodeValue.trim() || n.parentElement.closest('.sr')) continue; const g = document.createRange(); g.selectNodeContents(n); for (const q of g.getClientRects()) if (q.width) r = Math.max(r, q.right); }
   el.querySelectorAll('select,.btn').forEach(c => { if (!c.closest('.sr')) r = Math.max(r, c.getBoundingClientRect().right); }); return r; };
@@ -14,7 +26,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
 // The first film scrolls away like any page, and rests once it has gone. Reduced motion: site.js stops the video and the poster stays.
 (() => {
   const top = document.querySelector('.h-top'), v = top && top.querySelector('video'); if (!v) return;
-  if (innerWidth > 720) v.poster = 'media/film/hero-poster.webp';   // the markup names the phone cut's poster, so a phone fetches one picture
+  if (innerWidth > 720) v.poster = 'media/film/hero-poster.webp?v=e9364287f7';   // the markup names the phone cut's poster, so a phone fetches one picture
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   let ready = false, playing = false, held = false; const pb = top.querySelector('[data-film-pause]');
   if (pb) pb.addEventListener('click', () => { held = v.paused; });   // site.js has already acted on the press, so the film's state is the reader's choice
@@ -35,18 +47,18 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
   const b0 = $('.h-b0'), b1 = $('.h-b1'), b2 = $('.h-b2'), b3 = $('.h-b3'), axis = $('.h-axis'), tipEl = $('.h-tip'), lblA = $('.h-pa'), lblS = $('.h-ps'), lblC = $('.h-cl'), lblU = $('.h-al');
   const clamp = hClamp, seg = hSeg, lerp = hLerp, io3 = hIo3, out3 = hOut3, in2 = t => t * t, soft = hSoft, wait = ms => new Promise(r => setTimeout(r, ms));
 
-  // ---------------------------------------------------------------- the timeline, in screens since the stage pinned. A change takes 85vh, or 70vh on a phone; words hold at least 60vh; a swap of words takes 20% of a change.
+  // ---------------------------------------------------------------- the timeline, in screens since the stage pinned. A change takes 65vh, or 55vh on a phone, and holds are short, so the story moves at about the pace of plain scrolling and never feels stuck (Praj, 2026-11-12, SPEED-END-CONDITION.md 2b); a swap of words takes 20% of a change.
   let T = {}, U = 1;
   const buildT = () => { const u = U; let t = 0; const next = d => { const a = t; t += d; return [a, t]; };
-    T = {}; T.row = next(u + .1);         // the row holds while it assembles and sweeps
-    T.dark = next(1); T.mHold = next(.45);    // the row scrolls up as any section does, one screen for one screen, with the ink ground directly under it, while the arm grows into the big dot arm. Then the moat's words hold
-    T.turn = next(1); T.photo = next(.3); T.res = next(u);          // the film's ground comes up under the moat as the ink did, one screen for one screen, while the dots turn into the arm photo. The photo holds, then breaks back into the fine dots
+    T = {}; T.row = next(u);         // the row holds while it assembles and sweeps
+    T.dark = next(1); T.mHold = next(.25);    // the row scrolls up as any section does, one screen for one screen, with the ink ground directly under it, while the arm grows into the big dot arm. Then the moat's words hold
+    T.turn = next(1); T.photo = next(.15); T.res = next(u);          // the film's ground comes up under the moat as the ink did, one screen for one screen, while the dots turn into the arm photo. The photo holds, then breaks back into the fine dots
     T.sw1 = next(.2 * u); T.gather = next(u + .1);                  // into the 433 listing dots: the change fills its stretch, so nothing sits still before the words swap
-    T.sw2 = next(.2 * u); T.fly = next(u + .4);                     // onto the chart, then the chart holds with its two labels
-    next(.3); T.fall = next(u + .1);                                          // into one price, with the chart's words still up. The price's own sentence only comes when the price has landed
-    T.sw3 = next(.2 * u); T.box = next(.45); T.end = t; };          // the box holds. The stage then scrolls away with a plain edge, the proof directly under it
+    T.sw2 = next(.2 * u); T.fly = next(u + .25);                     // onto the chart, then the chart holds with its two labels
+    next(.05); T.fall = next(u + .1);                                          // into one price, with the chart's words still up. The price's own sentence only comes when the price has landed
+    T.sw3 = next(.2 * u); T.box = next(.3); T.end = t; };          // the box holds. The stage then scrolls away with a plain edge, the proof directly under it
   // reduced motion: the stage steps between finished stills
-  const snap = s => s < T.dark[0] + .4 ? 0 : s < T.turn[0] ? T.mHold[1] - .1 : s < T.res[1] ? T.photo[0] + .2 : s < T.fly[0] ? T.gather[1] : s < T.fall[0] ? T.fly[1] : T.box[0] + .2;
+  const snap = s => s < T.dark[0] + .4 ? 0 : s < T.turn[0] ? T.mHold[1] - .1 : s < T.res[1] ? (T.photo[0] + T.photo[1]) / 2 : s < T.fly[0] ? T.gather[1] : s < T.fall[0] ? T.fly[1] : T.box[0] + .2;
 
   // ---------------------------------------------------------------- the row: nine moving robots on one line. Each plays from its own sprite, repainted only when its frame changes (twelve a second), as one path per colour.
   // A robot assembles when it arrives, 300ms after the one before it, and its caption rises after it. Reduced motion draws each robot's first frame, still.
@@ -198,9 +210,9 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
   const seatFine = () => { if (!fineD || !D) return; const rows = D.rows;
     for (const p of fineD) { let bd = 1e9, bi = 0; for (let j = 0; j < rows.length; j++) { const dx = rows[j][6] - p.x, dy = rows[j][7] - p.y, d = dx * dx + dy * dy; if (d < bd) { bd = d; bi = j; } } p.to = bi; p.dd = Math.min(1, Math.sqrt(bd) / 4); } };
   const fetchFilm = () => {
-    const pic = new Image(); pic.onload = () => { const c = document.createElement('canvas'); c.width = pic.naturalWidth; c.height = pic.naturalHeight; const x = c.getContext('2d'); x.translate(c.width, 0); x.scale(-1, 1); x.drawImage(pic, 0, 0); photo = c; photoOK = true; dirty = true; }; pic.src = 'media/robots/arm-film.webp';   // the file is mirrored for an arm that faced left; every arm on this stage now faces right, as the footage's does
-    load('assets/h-arm.js', () => { fineD = window.FERRA_ARM.map(q => ({ x: q[0] + .5, y: q[1] + .5, s: q[2], acc: q[3], g: q[3] * 100 + Math.round(q[2] * 4), h: ((q[0] * 73 + q[1] * 151) % 97) / 97 })).sort((a, b) => a.g - b.g); seatFine(); flatFine(); dirty = true; });
-    load('assets/h-film.js', () => { D = window.FERRA_FILM; prep(); seatFine(); layout(); });
+    const pic = new Image(); pic.onload = () => { const c = document.createElement('canvas'); c.width = pic.naturalWidth; c.height = pic.naturalHeight; const x = c.getContext('2d'); x.translate(c.width, 0); x.scale(-1, 1); x.drawImage(pic, 0, 0); photo = c; photoOK = true; dirty = true; }; pic.src = 'media/robots/arm-film.webp?v=82da75c50b';   // the file is mirrored for an arm that faced left; every arm on this stage now faces right, as the footage's does
+    load('assets/h-arm.js?v=16f94bde4b', () => { fineD = window.FERRA_ARM.map(q => ({ x: q[0] + .5, y: q[1] + .5, s: q[2], acc: q[3], g: q[3] * 100 + Math.round(q[2] * 4), h: ((q[0] * 73 + q[1] * 151) % 97) / 97 })).sort((a, b) => a.g - b.g); seatFine(); flatFine(); dirty = true; });
+    load('assets/h-film.js?v=68fd2a0e00', () => { D = window.FERRA_FILM; prep(); seatFine(); layout(); });
   };
   // the row comes as soon as the page has loaded, or at the first sign of a reader if that is sooner: it is one scroll away, and on a slow connection a reader who waits for a scroll reaches empty cells. The first film waits for it (above). The price chapter's pieces wait until the row is arriving.
   { let got = false; const go = () => { if (got) return; got = true; EV.forEach(n => removeEventListener(n, go)); fetchRow(); }, EV = ['scroll', 'wheel', 'pointerdown', 'touchstart', 'keydown'];
@@ -226,7 +238,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
   // where the row's arm stands now, in the stage. Its sprite can arrive after the layout, and its offsets arrive with it, so this runs again then: the big arm must start exactly on the row's.
   const placeSlot = () => { if (!armB.p) return; const sr = stage.getBoundingClientRect(), ar = armB.cv.getBoundingClientRect(); slot = { p: armB.p, x: ar.left - sr.left + (armB.dx || 0) * armB.p, y: ar.top - sr.top + (armB.dy || 0) * armB.p + (vis._dk || 0) * FH }; dirty = true; };   // measured at rest: the row may be part way up when the sprite arrives
   function layout() {
-    W = stage.clientWidth; FH = stage.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 720 && !(FH < 500 && W > FH); U = W <= 720 ? .7 : .85; buildT();   // a phone held sideways stands the arm beside the words, as a wide screen does
+    W = stage.clientWidth; FH = stage.clientHeight; H = probe.clientHeight || FH; dpr = Math.min(2, devicePixelRatio || 1); phone = W <= 720 && !(FH < 500 && W > FH); U = W <= 720 ? .55 : .65; buildT();   // a phone held sideways stands the arm beside the words, as a wide screen does
    
     story.style.height = (T.end * H + FH).toFixed(0) + 'px'; storyTop = docTop(story);
     cv.width = Math.round(W * dpr); cv.height = Math.round(FH * dpr);
@@ -273,7 +285,8 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
 
   // ---------------------------------------------------------------- painting
   const rawScroll = () => (scrollY - storyTop) / (H || 1);
-  const scroll = () => { let s = rawScroll(); if (reduce) return s < 0 ? 0 : snap(s); return s; };
+  const settle = hSettle(() => T ? [T.sw1, T.sw2, T.sw3] : [], () => { dirty = true; });   // only the word swaps (a seventh of a screen each): longer changes follow the scroll exactly, so a reader never scrolls into a picture that already finished
+  const scroll = () => { let s = rawScroll(); if (reduce) return s < 0 ? 0 : snap(s); return settle(s); };
   const put = (el, a) => { const s = a.toFixed(3); if (el._a !== s) { el._a = s; el.style.opacity = s; } };
   const show = (el, a, dy) => { const v = a > .002; if (el._v !== v) { el._v = v; el.style.visibility = v ? 'visible' : 'hidden'; } put(el, a); if (dy !== undefined) el.style.transform = dy ? `translateY(${dy.toFixed(1)}px)` : ''; };
   // words in over one stretch of scroll, out over another; 18px on the way in, as a Rise is
@@ -483,6 +496,7 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return sp.classList.add('h-dr');
   const f7 = [...sp.querySelectorAll('.h-f7 .h-fb canvas')], f3 = [...sp.querySelectorAll('.h-f3 .h-fb canvas:not(.h-cy)')], cy = [...sp.querySelectorAll('.h-f3 .h-cy')], s35 = sp.querySelector('.h-s35'), sd = sp.querySelector('.h-sd'), sx = sp.querySelector('.h-sx');
   const put = (el, a) => { const s = a.toFixed(3); if (el._a !== s) { el._a = s; el.style.opacity = s; } };
+  [s35, sd, sx].forEach(e => { e.style.transition = 'opacity .5s ease'; });
   let top = 0, H = 1, U = 1, was = null;
   new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { sp.classList.add('in-view'); io.disconnect(); } }, { threshold: .15 }).observe(sp);
   const layout = () => { H = innerHeight; U = innerWidth <= 720 ? .7 : .75; top = w.getBoundingClientRect().top + scrollY; was = null; paint(); };
@@ -492,6 +506,6 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     f7.forEach((c, k) => { const l = .13 + .87 * lit(k), dl = (34 - k) / 34 * .5, q = hSeg(dr, dl, dl + .5); put(c, k < 2 ? l : hLerp(l, k < 12 ? .46 : .13, q)); });
     f3.forEach((c, i) => { const l = .13 + .87 * lit(35 + i); put(c, l * (1 - part)); put(cy[i], l * part * (1 - .7 * dr)); });
     sp.style.setProperty('--sp', (1 - hIo3(part)).toFixed(3));
-    put(s35, hSeg(part, .5, 1) * (1 - hSeg(dr, 0, .3))); put(sd, hSeg(dr, .7, 1)); put(sx, hSeg(part, .5, 1)); sd.style.visibility = dr > .7 ? '' : 'hidden'; }
+    put(s35, part >= .75 && dr < .15 ? 1 : 0); put(sd, dr >= .85 ? 1 : 0); put(sx, part >= .75 ? 1 : 0); sd.style.visibility = dr > .7 ? '' : 'hidden'; }   // the three labels come in whole once their moment is reached (a 0.5s fade, the site's shortest), so a reader who stops mid-band never sees words half faded
   let lw2 = innerWidth; layout(); addEventListener('scroll', paint, { passive: true }); addEventListener('resize', () => { if (innerWidth !== lw2) { lw2 = innerWidth; layout(); } }); addEventListener('load', layout);   // the band keeps its scroll length while a phone toolbar slides if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 })();

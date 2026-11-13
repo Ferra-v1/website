@@ -6,3 +6,5 @@ Ferra's website, live at https://www.ferra.company.
 - `backend/`: APIs and data (nothing yet).
 
 Deploys go out from the `site` branch.
+
+- Every change follows `SPEED-RULES.md`: even scroll pace, no stuck stretches, words before heavy files, fingerprinted files.

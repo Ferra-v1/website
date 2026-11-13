@@ -62,7 +62,7 @@
   // a name this page's dot file does not hold (a script swapped it in): load the full sets once, then draw again, so no canvas stays blank
   let fulls = null; const waiting = new Set();
   function full(cv) { waiting.add(cv); if (fulls) return; fulls = 0;
-    ['assets/dots.js', 'assets/dots-l.js'].forEach(src => { const s = document.createElement('script'); s.src = src;
+    ['assets/dots.js?v=fb4ca23f0f', 'assets/dots-l.js?v=4cad7c7499'].forEach(src => { const s = document.createElement('script'); s.src = src;
       s.onload = s.onerror = () => { if (++fulls < 2) return; Object.assign(D, window.FERRA_DOTS || {}); window.FERRA_DOTS = D; const w = [...waiting]; waiting.clear(); w.forEach(c => draw(c)); };
       document.head.appendChild(s); }); }
 

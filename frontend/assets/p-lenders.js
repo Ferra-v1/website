@@ -6,7 +6,7 @@
   // the film: the phone has its own still. Once it has scrolled away, it rests until the reader comes back. The pause control (site.js) wins: a paused film stays paused.
   const hero = document.querySelector('.l-hero'), film = hero && hero.querySelector('.l-film'), fp = hero && hero.querySelector('[data-film-pause]');
   if (film) {
-    if (matchMedia('(max-width:720px)').matches) film.poster = 'assets/p-lenders.dock-phone.webp';
+    if (matchMedia('(max-width:720px)').matches) film.poster = 'assets/p-lenders.dock-phone.webp?v=d36ee4434d';
     if (reduce) { film.removeAttribute('autoplay'); film.pause(); }
     else {
       let tick = 0, off = false;

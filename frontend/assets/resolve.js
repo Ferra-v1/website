@@ -9,7 +9,7 @@
 // From a script:
 //   const r = FerraResolve.get(el);   r.run() plays the whole thing and returns a promise (Vision: call it once at stop one).   r.set(k) draws it at k, 0 dots to 1 photo, for scroll-tied use.
 //   FerraResolve.sweep(box) starts a sweep by hand.
-// The film draws its own arm: FerraResolve.photo('media/robots/arm-film.webp') returns a promise of the image, then, inside the film's paint:
+// The film draws its own arm: FerraResolve.photo('media/robots/arm-film.webp?v=82da75c50b') returns a promise of the image, then, inside the film's paint:
 //   FerraResolve.draw(ctx, { photo, x, y, w, h, dots: [cx, cy, r, cx, cy, r, ...], p, k, color });   x y w h are the photo's box and dots its dots, in that context's pixels; p is the distance between dots; k is 0 dots to 1 photo.
 //
 // The robot's canvas comes in two kinds. A canvas.dotbot needs nothing more: dotbot.js publishes what this script reads. A page with its own painter (the old .h-bc row) sets cv._rz to an object with:
