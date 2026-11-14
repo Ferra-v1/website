@@ -1,0 +1,218 @@
+/* Robot Index page (pages/robot_index.py, assets/p-index.js). White grounds, cobalt accents, the site's 12 columns and three sizes.
+   One block per section, so a section's pick can be swapped alone: lookup, statement, note, board, thin data, accuracy, print. */
+
+/* two white sections in a row share one section gap */
+.ri-noteS,.ri-board,.ri-thin,.ri-acc{padding-top:0}
+
+/* ---------------------------------------------------------------- 1. lookup: picker, likely auction price, the wear-down robot */
+.ri-head h1,.ri-nh h2,.ri-bh h2,.ri-th h3,.ri-al h3{margin:0}
+.ri-look .ri-head .t-lead{color:#3e4656;margin:12px 0 0}
+.ri-tb{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);row-gap:8px;margin-top:32px}
+.ri-tb label{grid-column:span 2}
+.page .ri-tb select{width:100%}
+.ri-tb .ri-in{height:var(--tb-h);margin:0;padding:0 14px;width:100%;min-width:0;border:1px solid var(--tb-b);border-radius:var(--r-field);background:#fff;color:var(--ink);font:400 16px/1 var(--sans);font-variant-numeric:lining-nums tabular-nums}
+.ri-tb .ri-in::placeholder{color:#5b6474;opacity:1}
+.ri-tb .ri-in:hover{background-color:var(--tb-hov)}
+.ri-tb .ri-in:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.ri-lg{margin-top:clamp(32px,4vw,48px);align-items:start}
+.ri-figs{grid-column:1 / span 5}
+.ri-lab{margin:0;font:400 16px/1.4 var(--sans);color:var(--muted)}
+.ri-big{margin:8px 0 0;font:700 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
+.ri-rg{margin:12px 0 0;color:#4a5262}
+.ri-stage{grid-column:7 / span 6;margin:0;min-width:0}
+.ri-cvw{position:relative}
+#ri-cv{display:block;width:100%;aspect-ratio:136/86}
+.ri-tag{position:absolute;left:0;top:0;transform:translate(-50%,-100%);font:600 16px/1.2 var(--sans);color:var(--deep);white-space:nowrap;pointer-events:none}
+.ri-tag.ri-lost{color:var(--muted)}
+.ri-age{margin-top:8px}
+.ri-agel{display:flex;justify-content:space-between;gap:16px;font:500 16px/1.3 var(--sans);color:var(--ink)}
+#ri-age{-webkit-appearance:none;appearance:none;display:block;width:100%;height:46px;margin:0;background:none;cursor:pointer}
+#ri-age::-webkit-slider-runnable-track{height:2px;background:var(--line)}
+#ri-age::-moz-range-track{height:2px;background:var(--line)}
+#ri-age::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-11px;border:0;border-radius:2px;background:var(--c)}
+#ri-age::-moz-range-thumb{width:24px;height:24px;border:0;border-radius:2px;background:var(--c)}
+#ri-age:focus-visible{outline-offset:4px}
+.ri-ticks{display:flex;justify-content:space-between;margin-top:-6px;font:400 16px/1.3 var(--sans);color:var(--muted)}
+
+/* the statement: asking estimate x auction share = likely auction price */
+.ri-stmt{margin-top:32px}
+.ri-stmt tbody th{font-weight:500}
+.ri-stmt .sub{display:block;margin-top:4px;font-weight:400;color:var(--muted)}
+.ri-stmt .op{color:var(--muted);font-weight:400;margin-right:6px}
+.ri-stmt td.r{vertical-align:top;font-weight:500}
+.ri-stmt tr.tot th,.ri-stmt tr.tot td{border-top:3px double var(--ink);border-bottom:0;color:var(--c);padding-top:16px}
+.ri-stmt tr.tot th{font-weight:600}
+.ri-stmt tr.tot td b{font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em}
+
+@media (max-width:980px){
+ .ri-tb label{grid-column:span 3}
+ .ri-figs,.ri-stage{grid-column:1 / -1}
+ .ri-stage{grid-row:2;margin-top:28px}
+ .ri-figs{grid-row:3;margin-top:32px}
+}
+@media (max-width:720px){
+ .ri-tb{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:8px}.ri-tb label{grid-column:auto}
+ .ri-ticks span:nth-child(even){visibility:hidden}
+ .ri-figs{grid-row:2;margin-top:0}.ri-stage{grid-row:3;margin-top:32px}
+}
+
+/* ---------------------------------------------------------------- 2. the valuation note: a credit memo on one Letter page */
+.ri-noteS .ri-nh{grid-column:1 / -1}
+.ri-nh .t-lead{color:#3e4656;margin:12px 0 0}
+.ri-nh .btn{margin-top:24px}
+.ri-note{grid-column:1 / -1;margin-top:clamp(32px,4vw,48px);background:#fff;border:1px solid var(--line);border-radius:4px;box-shadow:var(--sh-doc);padding:48px 56px 36px;color:var(--ink);font:400 15px/1.5 var(--sans);min-width:0}
+.vn-h{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.vn-lk{color:var(--ink)}
+.vn-lk .ilock{display:inline-flex;align-items:center;line-height:1;white-space:nowrap;font-size:24px}.vn-lk .imk{display:inline-flex;flex:none}.vn-lk svg{display:block;width:100%;height:100%}
+.vn-r{margin:0;text-align:right;color:var(--muted);font-size:14px;line-height:1.55}
+.vn-r b{color:var(--ink);font-weight:600}
+.page .ri-note .vn-t{font:700 34px/1.08 var(--serif);letter-spacing:-.028em;margin:34px 0 4px;text-wrap:balance}
+.vn-s{font:400 18px/1.4 var(--sans);color:#3e4656;margin:0 0 24px}
+.vn-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)}
+.vn-facts div{padding:10px 14px 12px 0}
+.vn-facts div+div{padding-left:14px;border-left:1px solid var(--line)}
+.vn-facts dt{font-size:13px;color:var(--muted)}
+.vn-facts dd{margin:2px 0 0;font-weight:500}
+.vn-g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;margin-top:28px}
+.page .ri-note h4{font:600 16px/1.35 var(--serif);letter-spacing:-.01em;margin:0 0 10px}
+.vn-st,.vn-ct,.vn-yt{width:100%;border-collapse:collapse}
+.vn-st{border-top:2px solid var(--ink)}
+.vn-st td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+.vn-st td:first-child{padding-left:18px;position:relative}
+.vn-st td:last-child{text-align:right;white-space:nowrap;padding-left:16px;font-weight:500;width:1%}
+.vn-st .op{position:absolute;left:0;color:var(--muted)}
+.vn-st .sub{display:block;color:var(--muted);font-size:13px}
+.vn-st tr.tot td{border-bottom:3px double var(--ink);padding-top:14px;padding-bottom:12px;font-weight:600}
+.vn-st tr.tot td:last-child{font:700 34px/1 var(--serif);letter-spacing:-.02em;color:var(--c)}
+.vn-st tr.rng td:last-child{color:var(--c)}
+.vn-cv svg{display:block;width:100%;height:auto}
+.vn-cv .ax{font:400 15px var(--sans);fill:var(--muted)}
+.vn-cv .lb{font:600 16px var(--sans);fill:var(--c)}
+.vn-cv{aspect-ratio:520/230}
+.vn-yt{margin-top:10px;font-size:14px}
+.vn-yt th{font-weight:400;color:var(--muted);text-align:right;padding:6px 0;border-bottom:1px solid var(--ink)}
+.vn-yt th:first-child,.vn-yt td:first-child{text-align:left}
+.vn-yt td{padding:5px 0;border-bottom:1px solid var(--line);text-align:right}
+.vn-yt tbody tr:first-child td{color:var(--c);font-weight:600}
+.vn-ct{border-top:2px solid var(--ink);font-size:14.5px}
+.vn-ct td{padding:7px 0;border-bottom:1px solid var(--line)}
+.vn-ct td:last-child{text-align:right;font-weight:500;padding-left:14px;width:1%}
+.vn-ct tr.thin td{color:var(--c)}
+.vn-src p{margin:0 0 10px;font-size:14px;line-height:1.5}
+.vn-src b{font-weight:600}
+.vn-f{display:flex;justify-content:space-between;gap:16px;margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+@media (max-width:720px){
+ .ri-nh .btn{width:100%}
+ .ri-note{padding:28px 20px 24px}
+ .vn-h{flex-direction:column;gap:14px}.vn-r{text-align:left}
+ .page .ri-note .vn-t{font-size:28px;margin-top:22px}
+ .vn-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .vn-facts div:nth-child(3){padding-left:0;border-left:0}
+ .vn-facts div:nth-child(n+3){border-top:1px solid var(--line)}
+ .vn-g{grid-template-columns:minmax(0,1fr);gap:28px}
+ .vn-st tr.tot td:last-child{font-size:28px}
+ .vn-f{flex-direction:column}
+}
+
+/* ---------------------------------------------------------------- 3. the monthly board: round-dot figures, robots, the quote */
+.ri-bh .t-lead{color:#3e4656;margin:12px 0 0;max-width:36ch}
+.ri-tbl{margin-top:clamp(32px,4vw,48px)}
+.ri-tbl thead th{white-space:nowrap}
+.ri-tbl tbody th,.ri-tbl tbody td{vertical-align:middle;padding-top:18px;padding-bottom:18px}
+.ri-tbl .rb,.ri-ttbl .rb{width:96px;padding-right:16px}
+.rbw{width:80px;height:64px;display:flex;align-items:flex-end;justify-content:center}
+.rbw canvas{display:block}
+.ri-tbl .nm,.ri-ttbl .nm{display:block;font-weight:600}
+.ri-tbl .ct,.ri-ttbl .ct{display:block;color:var(--muted);font-weight:400;margin-top:2px}
+canvas.mx{display:block}
+.ri-tbl .chw .lb{display:block;margin-top:6px;color:var(--muted)}
+.ri-tbl .pxv{display:block;font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em;color:var(--ink)}
+.ri-tbl .spw{min-width:180px;width:22%}
+.ri-tbl .ax{display:flex;justify-content:space-between;margin-top:6px;color:var(--muted)}
+.ri-tbl tfoot td{font-weight:400;color:#4a5262}
+.ri-q{margin-top:32px;align-items:end;row-gap:16px}
+.ri-qt{grid-column:1 / span 6}
+.ri-qs{margin:6px 0 0;color:var(--ink)}
+.ri-qtb{grid-column:7 / span 3}.ri-qtb label{width:100%}.page .ri-qtb select{width:100%}
+#ri-cp{grid-column:10 / span 3;width:100%}
+@media (max-width:1100px){
+ .ri-tbl,.ri-tbl tbody,.ri-tbl tfoot,.ri-tbl tr,.ri-ttbl,.ri-ttbl tbody,.ri-ttbl tr{display:block}
+ .ri-tbl thead,.ri-ttbl thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+ .ri-tbl tbody tr{display:grid;grid-template-columns:80px minmax(0,1fr) auto;grid-template-areas:"r n p" "l l c" "s s s";column-gap:16px;row-gap:12px;padding:20px 0;border-bottom:1px solid var(--line)}
+ .ri-tbl tbody tr:first-child{border-top:2px solid var(--ink)}
+ .ri-tbl tbody :is(th,td){display:block;padding:0;border:0;width:auto;min-width:0}
+ .ri-tbl .rb{grid-area:r}.ri-tbl tbody th{grid-area:n}.ri-tbl .px{grid-area:p}.ri-tbl tbody td:nth-child(3){grid-area:l;align-self:center}.ri-tbl .chw{grid-area:c;text-align:right}.ri-tbl .chw canvas{display:none}.ri-tbl .spw{grid-area:s}
+ .ri-tbl tfoot td{display:block;padding:14px 0;border-bottom:3px double var(--ink)}
+ .ri-ttbl tbody tr{display:grid;grid-template-columns:80px minmax(0,1fr) minmax(0,1fr);grid-template-areas:"r n n" "a b c";column-gap:16px;row-gap:12px;padding:20px 0;border-bottom:1px solid var(--line)}
+ .ri-ttbl tbody tr:first-child{border-top:2px solid var(--ink)}
+ .ri-ttbl tbody :is(th,td){display:block;padding:0;border:0;text-align:left;min-width:0}
+ .ri-ttbl .rb{grid-area:r}.ri-ttbl tbody th{grid-area:n;align-self:center}
+ .ri-ttbl tbody td:nth-child(3){grid-area:a}.ri-ttbl tbody td:nth-child(4){grid-area:b}.ri-ttbl tbody td:nth-child(5){grid-area:c}
+}
+@media (max-width:720px){
+ .ri-qt,.ri-qtb,#ri-cp{grid-column:1 / -1}
+ .ri-ttbl tbody tr{grid-template-areas:"r n n" "a a b" "c c c"}
+}
+
+/* ---------------------------------------------------------------- 4. thin data */
+.ri-th p{margin:12px 0 0;color:#4a5262;max-width:46ch}
+.ri-ttbl{margin-top:24px}
+.ri-ttbl tbody th,.ri-ttbl tbody td{vertical-align:middle;padding-top:16px;padding-bottom:16px}
+.slots{display:flex;gap:6px;align-items:center}
+.slots i{display:block;width:14px;height:14px;border-radius:50%;border:1.5px solid #9aa7c4}
+.slots i.on{background:var(--c);border-color:var(--c)}
+.ri-ttbl .slots + .ct{margin-top:6px}
+
+/* ---------------------------------------------------------------- 5. accuracy */
+.ri-acc .g12{align-items:start;row-gap:32px}
+.ri-al{grid-column:1 / span 5}
+.ri-al p{margin:12px 0 0;color:#4a5262}
+.ri-al .tlink{margin-top:8px}
+.ri-af{grid-column:span 3}
+.ri-af:first-of-type{grid-column:7 / span 3}
+.ri-afb{margin:0;font:700 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
+.ri-afb + p{margin:12px 0 0;color:#4a5262}
+@media (max-width:980px){.ri-al{grid-column:1 / -1}.ri-af,.ri-af:first-of-type{grid-column:span 6}}
+@media (max-width:560px){.ri-af,.ri-af:first-of-type{grid-column:1 / -1}}
+
+/* ---------------------------------------------------------------- print: the note alone, on one Letter page */
+@media print{
+ @page{size:letter;margin:.5in}
+ .page .lift > :not(.ri-noteS),.page .lift > .nav,.foot,.ri-nh{display:none!important}
+ .page .ri-noteS{padding:0!important}
+ .page .ri-noteS .in{padding:0!important;max-width:none!important;display:block!important}
+ .page .ri-note{border:0!important;padding:0!important;margin:0!important;font-size:13px!important}
+ .page .ri-note :is(p,td,th,dd,dt,b,span){font-size:inherit!important;line-height:1.4!important}
+ .page .ri-note .vn-lk .ilock{font-size:21px!important}
+ .page .ri-note .vn-r{font-size:12px!important}
+ .page .ri-note .vn-t{font-size:26px!important;margin:18px 0 2px!important}
+ .page .ri-note .vn-s{font-size:14px!important;margin-bottom:12px!important}
+ .page .ri-note .vn-facts dt{font-size:11px!important}
+ .page .ri-note .vn-facts dd{font-size:12.5px!important}
+ .page .ri-note .vn-facts div{padding:6px 10px 7px 0}
+ .page .ri-note .vn-facts div+div{padding-left:10px}
+ .page .ri-note .vn-g{gap:26px;margin-top:16px}
+ .page .ri-note h4{font-size:13.5px!important;margin-bottom:6px!important}
+ .page .ri-note .vn-st td{padding:5px 0;font-size:12.5px!important}
+ .page .ri-note .vn-st td:first-child{padding-left:16px}
+ .page .ri-note .vn-st .sub{font-size:11px!important}
+ .page .ri-note .vn-st tr.tot td{padding:8px 0 7px}
+ .page .ri-note .vn-st tr.tot td:last-child{font-size:26px!important}
+ .page .ri-note :is(.vn-st tr.tot td:last-child,.vn-st tr.rng td:last-child,.vn-yt tbody tr:first-child td,.vn-ct tr.thin td){color:#2847ce!important;-webkit-text-fill-color:#2847ce!important}
+ .page .ri-note .vn-yt{font-size:11.5px!important}.page .ri-note .vn-yt :is(td,th){padding:2px 0;font-size:11.5px!important}
+ .page .ri-note .vn-ct :is(td){padding:4px 0;font-size:12px!important}
+ .page .ri-note .vn-src p{font-size:11.5px!important;margin-bottom:5px}
+ .page .ri-note .vn-f{margin-top:12px;font-size:10.5px!important}
+ .page .ri-note .vn-f span{font-size:10.5px!important}
+ .page .ri-note :is(.vn-r b,.vn-t,h4){color:#0e1626!important;-webkit-text-fill-color:#0e1626!important}
+ .page .ri-note :is(.vn-r,.vn-facts dt,.vn-st .sub,.vn-st .op,.vn-yt th,.vn-f,.vn-f span){color:#5b6474!important;-webkit-text-fill-color:#5b6474!important}
+ .page .ri-note .vn-cv{max-height:160px}
+ .page .ri-note .vn-cv svg{max-height:160px}
+}
+
+/* phone rows for the two tables: after the desktop cell rules above, so these win */
+@media (max-width:1100px){
+ .ri-tbl tbody :is(th,td),.ri-ttbl tbody :is(th,td){padding:0}
+ .ri-tbl .spw{width:auto;min-width:0}
+ .ri-ttbl tbody td.r{text-align:left}
+}
