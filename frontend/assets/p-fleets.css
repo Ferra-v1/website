@@ -25,30 +25,39 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 /* the range message has its own line, so showing it moves nothing */
 .f-msg{margin:0;min-height:24px;color:#fff;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s ease}
 .f-msg.on{opacity:1}
-.f-out p{margin:0;color:#fff}
-/* the answer (redrawn 2026-11-13; Praj the same night: no navy box): set straight on the cobalt, under one thin rule across the grid that parts it from the sentence.
-   Everything starts on a grid line. The loan, then the fields and the button, run to the end of column 7; the sum behind the loan runs from the start of column 8 to the grid's right edge */
-.f-panel{--fl:7;margin-top:calc(var(--sec) - 44px);padding:clamp(32px,3.4vw,48px) 0 0;border-top:1px solid rgba(255,255,255,.3);color:#fff;display:grid;grid-template-columns:calc(var(--fl) * var(--col) + var(--fl) * var(--gut)) calc((12 - var(--fl)) * var(--col) + (11 - var(--fl)) * var(--gut));column-gap:0;align-items:start}
+.f-out p{margin:0;color:var(--ink)}
+/* the answer (Praj 2026-11-13: no navy box; 2026-11-14: not the same blue as everything else either): one white card on the cobalt, full grid width, the shared card radius, no border and no shadow.
+   Left, the loan in cobalt, then the fields and the button. Right, the sum behind the loan. Inside the card everything is ink on white, and the button is the filled cobalt one */
+.f-panel{margin-top:calc(var(--sec) - 44px);padding:clamp(28px,2.8vw,40px);border:0;background:#fff;color:var(--ink);display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:clamp(32px,5vw,72px);align-items:start}
 .f-out{display:contents}
-.f-o1,.f-panel > .lf,.f-panel > .la,.f-panel > .ldone{grid-column:1;padding-right:var(--gut)}
+.f-o1,.f-panel > .lf,.f-panel > .la,.f-panel > .ldone{grid-column:1}
 .f-o2{grid-column:2;grid-row:1;align-self:start;padding-top:2px}
 .f-panel > .f-cav{grid-column:2;grid-row:2 / span 3;align-self:start}
-/* between a tablet and a laptop the sum needs half the panel, and the two fields stack */
-@media (min-width:901px) and (max-width:1279px){.f-panel{--fl:6}}
-.f-l{color:rgba(255,255,255,.82)!important}
-.f-big{white-space:nowrap;margin-top:8px!important}
+/* between a tablet and a laptop the sum needs half the card */
+@media (min-width:901px) and (max-width:1279px){.f-panel{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.f-l{color:var(--muted)!important}
+.f-big{white-space:nowrap;margin-top:8px!important;color:var(--c)!important}
 .f-row{display:flex;align-items:baseline;justify-content:space-between;gap:4px 16px;white-space:nowrap}
-.f-row span{color:rgba(255,255,255,.82)}
-.f-row b,.f-legs b{color:#fff;font-variant-numeric:lining-nums tabular-nums}
+.f-row span{color:#3e4656}
+.f-row b,.f-legs b{color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 .f-row b{flex:1;text-align:right}
 .f-split{display:grid;grid-template-columns:calc(var(--adv) * 100%) minmax(0,1fr);gap:3px;height:12px;margin-top:14px}
-.f-split i{display:block;background:#fff;border-radius:1px}
-.f-split i + i{background:rgba(255,255,255,.34)}
+.f-split i{display:block;background:var(--c);border-radius:1px}
+.f-split i + i{background:#cfd8f2}
 .f-legs{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 16px;margin-top:10px}
-.f-legs p{color:rgba(255,255,255,.82)}
+.f-legs p{color:#3e4656}
 .f-legs p:last-child{margin-left:auto;text-align:right;white-space:nowrap}
 .f-legs b{font-weight:500}
-.f-cav{margin:24px 0 0!important;color:rgba(255,255,255,.82)!important;text-wrap:pretty}
+.f-cav{margin:24px 0 0!important;color:var(--muted)!important;text-wrap:pretty}
+.f-panel .f-cav a{color:var(--c)}
+/* the card is a light surface inside the cobalt band: fields, errors, focus rings and the thanks read as they do on white */
+.f-quote .f-panel .fl{color:var(--muted)}
+.f-quote .f-panel .fl input{border-color:var(--line)}
+.f-quote .f-panel .fl input:focus{outline-color:var(--c);box-shadow:none}
+.f-quote .f-panel .fl [aria-invalid="true"]{border-color:#b42318;outline:1px solid #b42318;outline-offset:-2px}
+.f-quote .f-panel .lerr{color:#b42318}
+.f-quote .f-panel :is(a,button):focus-visible{outline-color:var(--c);box-shadow:none}
+.f-panel .ldone{padding:0;border:0;background:none;border-radius:0}
 .f-panel .lf{display:block}
 .f-who{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:24px}
 .f-who[hidden],.f-quote .lf[hidden],.f-quote .la[hidden]{display:none}
@@ -140,7 +149,7 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 /* phone: "0%" above, then the heading, then its line, all on the left */
 @media (max-width:720px){.f-left{--gut:16px}.f-keepg{grid-template-columns:minmax(0,1fr)}.page[data-page="fleets.html"] .f-keepg h2{grid-column:1;grid-row:2;margin-top:8px}.f-keepl{grid-column:1;grid-row:3;width:auto}}
 /* narrower than a laptop the panel is one column: the loan, the sum behind it, then the fields and the button */
-@media (max-width:900px){.f-panel{grid-template-columns:minmax(0,1fr);padding:28px 0 0}.f-o1,.f-o2,.f-panel > .lf,.f-panel > .la,.f-panel > .ldone,.f-panel > .f-cav{grid-column:1;grid-row:auto;padding-right:0}.f-o2{margin-top:24px}.f-cav{margin-top:20px!important}}
+@media (max-width:900px){.f-panel{grid-template-columns:minmax(0,1fr);padding:24px 20px}.f-o1,.f-o2,.f-panel > .lf,.f-panel > .la,.f-panel > .ldone,.f-panel > .f-cav{grid-column:1;grid-row:auto}.f-o2{margin-top:24px}.f-cav{margin-top:20px!important}}
 @media (max-width:720px){.f-live .f-wrun{height:calc(100lvh + 120vh)}}
 @media (max-width:680px){
  .f-who{grid-template-columns:minmax(0,1fr)}.f-panel .btn{width:100%}.f-say .pf{padding:0 16px}.f-say{line-height:52px}.f-say label:has(#sz-type){display:block}
