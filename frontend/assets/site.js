@@ -45,6 +45,9 @@
   const COUNT = { '1 to 10': 10, '11 to 50': 50, '51 to 200': 200, 'More than 200': 201 };
   const utm = (() => { const q = new URLSearchParams(location.search), o = {}; q.forEach((v, k) => { if (k.startsWith('utm_')) o[k] = v.slice(0, 120); }); return Object.keys(o).length ? o : null; })();
   document.addEventListener('input', ev => { if (ev.target.getAttribute && ev.target.getAttribute('aria-invalid') === 'true' && ev.target.value.trim()) ev.target.setAttribute('aria-invalid', 'false'); });
+  // the closing band's two picks (core.close_pick): the button's link follows the robot and the year
+  document.querySelectorAll('[data-cbp]').forEach(b => { const r = b.querySelector('[data-r]'), y = b.querySelector('[data-y]'), a = b.querySelector('a.btn'); if (!r || !y || !a) return;
+    const set = () => { a.href = a.href.split('#')[0] + '#r=' + r.value + '&y=' + y.value; }; r.addEventListener('change', set); y.addEventListener('change', set); });
   document.querySelectorAll('form.lead').forEach(f => f.addEventListener('submit', async ev => {
     ev.preventDefault(); const err = f.querySelector('.lerr'), btn = f.querySelector('button[type=submit]'); err.hidden = true;
     const isBad = el => !el.value.trim() || (el.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(el.value.trim()));

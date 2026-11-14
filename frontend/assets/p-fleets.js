@@ -6,10 +6,10 @@
   if (!ty) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches, $ = id => document.getElementById(id), usd = v => '$' + Math.round(v).toLocaleString('en-US');
   // the big figure stays on one line in its column whatever is typed: it steps down the same sizes the rest of the site uses
-  const big = $('f-big'), cost = $('f-cost'), costL = $('f-cost-l'), own = $('f-own'), sr = $('f-sr'), SIZES = ['fig-96', 'fig-64', 'fig-44'];
+  const big = $('f-big'), cost = $('f-cost'), costL = $('f-cost-l'), own = $('f-own'), sr = $('f-sr'), SIZES = ['fig-96'];
   const fitBig = () => { if (!big) return; for (const c of SIZES) { big.classList.remove(...SIZES); big.classList.add(c); if (big.scrollWidth <= big.parentElement.clientWidth + 1) return; } };
   let tick0, shownV = 6250000;
-  const showMoney = V => { const lend = Math.round(V * .7), mine = V - lend, one = val(n) === 1, line = (one ? 'The robot costs ' : 'The robots cost ') + usd(V) + '. You pay ' + usd(mine) + ' yourself.'; big.textContent = usd(lend); fitBig(); costL.textContent = one ? 'Robot costs' : 'Robots cost'; cost.textContent = usd(V); own.textContent = usd(mine); sr.textContent = 'You could borrow ' + usd(lend) + '. ' + line; cancelAnimationFrame(tick0); if (still) { shownV = V; return; }
+  const showMoney = V => { const lend = Math.round(V * .7), mine = V - lend, one = val(n) === 1, line = (one ? 'The robot costs ' : 'The robots cost ') + usd(V) + '. You pay ' + usd(mine) + ' yourself.'; big.textContent = usd(lend); fitBig(); costL.textContent = one ? 'The robot costs' : 'The robots cost'; cost.textContent = usd(V); own.textContent = usd(mine); sr.textContent = 'You could borrow ' + usd(lend) + '. ' + line; cancelAnimationFrame(tick0); if (still) { shownV = V; return; }
     const a = shownV, t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 300), e = 1 - Math.pow(1 - k, 3); shownV = a + (V - a) * e; big.textContent = usd(k === 1 ? V * .7 : shownV * .7); if (k < 1) tick0 = requestAnimationFrame(tick); }; tick0 = requestAnimationFrame(tick); };
   const digits = el => el.value.replace(/[^0-9]/g, ''), lim = el => [+el.dataset.min, +el.dataset.max], clamp = (el, v) => { const [lo, hi] = lim(el); return Math.min(hi, Math.max(lo, v)); };
   const last = new Map([[n, 50], [p, 125000]]), val = el => last.get(el);   // the last good value of each field: an empty field keeps the answer where it was
@@ -23,7 +23,7 @@
   const fitSel = s => widthOf(s, s.selectedOptions[0] ? s.selectedOptions[0].textContent : '', pad), fitNum = el => widthOf(el, el.value || '0', pad);
   const fitAll = () => { [ty, wh].forEach(fitSel); [n, p].forEach(fitNum); };
   // one robot reads as one robot in the sentence
-  const say1 = c => { [...ty.options].forEach(o => { o.textContent = c === 1 ? o.dataset.one : o.dataset.many; }); fitSel(ty); };
+  const each = $('f-each'), say1 = c => { [...ty.options].forEach(o => { o.textContent = c === 1 ? o.dataset.one : o.dataset.many; }); fitSel(ty); if (each) each.hidden = c === 1; };
   // what happens further down when the sentence changes: filled in below
   const followers = [], state = () => ({ rid: ty.value, n: val(n), price: val(p) });
   let lastKey = '50|125000|arm';

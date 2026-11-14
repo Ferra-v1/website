@@ -334,6 +334,32 @@ html:has(.fbar.on) .d-tocx{top:80px}
 .cb .ldone li{margin:0;padding:12px 0;border-bottom:1px solid rgba(14,22,38,.12)}
 .ldone:has(ol:empty) span,.ldone ol:empty{display:none}
 @media (max-width:760px){.cb-g{grid-template-columns:minmax(0,1fr);row-gap:24px}.page .cb-h,.cb-r{grid-column:auto}.page .cb .cb-h{text-wrap:balance}.cb .btn{width:100%}}
+/* .cb2, the closing band redrawn (2026-11-13). The band stays white and full width; inside it one soft panel runs the grid's width, and everything in it sits one column in, on the grid's own lines.
+   cb-k-form: the heading with what happens next under it in columns 2 to 6, the form in 7 to 11, the list's foot level with the form's. cb-k-pick: the heading across, then the price tool's two picks and its button on one row. cb-k-btn: heading left, button right */
+.cb.cb2{border-top:0;padding-top:0;padding-bottom:32px}   /* the white section above already ends on one section gap */
+:is(.g-ink,.g-dark,.g-cobalt,.g-grad,.hw-run) + .cb.cb2{padding-top:28px}   /* after a dark section the band brings its own gap */
+.cb2 .cb-g{position:relative;isolation:isolate;padding-block:clamp(40px,4vw,56px) clamp(36px,3.2vw,44px);row-gap:36px}
+.cb2 .cb-g::before{content:"";position:absolute;inset:0;z-index:-1;background:#f1f4fa;border-radius:var(--r-card)}
+.cb2 .cb-l{grid-column:2 / 7;min-width:0;display:flex;flex-direction:column;margin-left:calc(-1 * var(--gut))}   /* one column in from the panel's edge, on a grid line */
+.cb2 .cb-r{grid-column:7 / 12}
+.cb2.cb-k-form .cb-g{align-items:stretch}
+.cb2.cb-k-btn .cb-l{grid-column:2 / 9}
+.cb2.cb-k-btn .cb-r{grid-column:9 / 12;align-self:center;justify-self:end}
+.cb2 .fl :is(input,select,textarea){background-color:#fff;border-color:#dde2ec}
+.cb-steps{list-style:none;margin:auto 0 0;padding:40px 0 0}
+.cb-steps li{display:flex;gap:16px;margin:0;padding:13px 0;border-top:1px solid rgba(14,22,38,.1);font:400 16px/1.45 var(--sans);color:#2a3344}
+.cb-steps li:last-child{padding-bottom:0}
+.cb-steps b{flex:none;width:12px;font-weight:500;color:var(--c);font-variant-numeric:tabular-nums}
+.cb2.cb-st .ldone :is(span,ol){display:none}   /* the steps already stand beside the form */
+.cb2.cb-k-pick .cb-l,.cb2.cb-k-pick .cb-r{grid-column:2 / 12}
+.cb2.cb-k-pick .cb-r{margin-left:calc(-1 * var(--gut))}
+.cb-pick{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.cb-pick .tb{--tb-h:48px;--tb-b:#dde2ec;flex:0 1 660px;flex-wrap:nowrap;gap:12px}
+.cb-pick .tb > label{flex:1 1 0;min-width:0}
+.cb-pick .tb select{width:100%}
+.cb-pick .btn{flex:none}
+@media (max-width:760px){.cb.cb2{padding-bottom:24px}:is(.g-ink,.g-dark,.g-cobalt,.g-grad,.hw-run) + .cb.cb2{padding-top:24px}.cb2 .cb-g{padding:28px calc((100% - 176px) / 12);row-gap:28px}.cb2 .cb-l,.cb2 .cb-r,.cb2.cb-k-pick .cb-l,.cb2.cb-k-pick .cb-r,.cb2.cb-k-btn .cb-l,.cb2.cb-k-btn .cb-r{grid-column:auto;justify-self:stretch;margin-left:0}
+ .cb-steps{padding-top:24px}.cb-pick{flex-direction:column;align-items:stretch}.cb-pick .tb{flex:none;flex-wrap:wrap}.cb-pick .tb > label{flex:1 1 100%}}
 
 /* sections */
 .sec{padding-block:var(--sec)}
