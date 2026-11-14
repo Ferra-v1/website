@@ -54,7 +54,7 @@
     const req = [...f.querySelectorAll('[required]')]; req.forEach(el => el.setAttribute('aria-invalid', isBad(el)));
     const bads = req.filter(isBad), bad = bads[0];
     if (bad) { const name = el => el.closest('label').querySelector('span').textContent.toLowerCase();
-      err.textContent = bad.type === 'email' && bad.value.trim() ? 'Enter a full work email, like name@company.com.' : 'Please fill in ' + (bads.length > 1 ? bads.slice(0, -1).map(name).join(', ') + ' and ' + name(bads[bads.length - 1]) : name(bad)) + '.'; err.hidden = false; bad.focus(); return; }
+      err.textContent = bad.type === 'email' && bad.value.trim() ? 'Enter a full work email, like name@company.com.' : 'Please fill in ' + (bads.length > 1 ? bads.slice(0, -1).map(name).join(', ') + ' and ' + name(bads[bads.length - 1]) : name(bad)).replace(/[?.!]+$/, '') + '.'; err.hidden = false; bad.focus(); return; }
     const done = () => { f.querySelector('.lf').hidden = true; f.querySelector('.la').hidden = true; f.querySelector('.ldone').hidden = false; };
     if (f.website.value) return done();   // decoy field filled: a bot
     const v = n => (f.elements[n] ? f.elements[n].value.trim() : '') || null;

@@ -520,14 +520,15 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-scl{margin:0;font-size:var(--t-small);line-height:1.45;color:var(--txt)}
 /* section B: the rate and its one sentence, then the chart with three lines only */
 .pp-vtop{grid-template-columns:repeat(12,minmax(0,1fr));align-items:baseline;margin-bottom:clamp(28px,3vw,40px)}  /* the sentence sits on the rate's own line (2026-11-07) */
-.pp-rate{grid-column:1 / span 5}
-.pp-rate .pp-av{margin:0 0 8px;color:var(--ink)}
-.pp-rate .pp-al{color:var(--txt)}
+.pp-end{grid-column:1 / span 5}
+.pp-end .pp-av{margin:8px 0 0;color:var(--ink)}
+.pp-end .pp-al{color:var(--txt)}
+.pp-end[hidden] + .pp-covn{grid-column:1 / -1}
 .pp-val .pp-covn{grid-column:7 / -1;margin:0 0 6px;max-width:none}
 .pp-covs .gl2,.pp-covs .arm,.pp-covs .bl.al,.pp-covs .bar,.pp-covs .c2,.pp-covs .gr{display:none}
 @media (max-width:1000px){
   .pp-lft,.pp-ans{grid-column:1 / -1}
-  .pp-rate,.pp-val .pp-covn{grid-column:1 / -1}
+  .pp-end,.pp-val .pp-covn{grid-column:1 / -1}
   .pp-vtop{row-gap:16px}
 }
 @media (max-width:600px){
@@ -572,3 +573,70 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 /* "Room to spare" shows only where the gap between the lines can hold it clear (2026-11-07) */
 .pp-covs text.bl.cu[data-free=""]{display:none}
 .pp-ans .pp-src[hidden]{display:inline-flex!important;visibility:hidden}
+/* 2026-11-14: the yearly rate sits with the three prices, four across on the page's twelve columns, beside the dots whose line falls at that rate */
+.pp-ladw{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px var(--pp-gut);margin-bottom:clamp(32px,3.4vw,48px)}
+.pp-ladw .pp-lad{display:contents}
+.pp-ladw .pp-rung{grid-column:span 3}
+.pp-ladw .pp-rate{grid-column:10 / span 3;grid-row:1}
+@media (max-width:600px){
+  .pp-ladw{gap:16px}
+  .pp-ladw .pp-rung,.pp-ladw .pp-rate{grid-column:1 / -1;grid-row:auto}
+}
+/* section B: the sentence rests on the figure's baseline */
+.pp-vtop:has(.pp-end:not([hidden])){align-items:end}
+.pp-vtop:has(.pp-end:not([hidden])) .pp-covn{margin-bottom:.5em}
+/* the listings link closes the toolbar over the dots; it holds its room before the tool writes it */
+.pp-tb .pp-src{margin:0 0 0 auto;padding:0;min-height:44px;flex:none;white-space:nowrap;min-width:calc((100% - 11 * var(--pp-gut)) / 4 + 2 * var(--pp-gut))}  /* three columns wide, so it starts on the tenth column's line, under the yearly rate */
+.pp-tb .pp-src[hidden]{display:inline-flex!important;visibility:hidden}
+/* with More options open the answer keeps its own height and stays at the top */
+@media (min-width:1001px){.pp-tool:has(.pp-more[open]) .pp-ans{align-self:start}}
+@media (max-width:600px){
+  .pp-tb .pp-src{margin-left:0}
+}
+@media (max-width:1000px){.pp-tb .pp-src{margin-left:0;min-width:0;flex-basis:100%}}
+/* a robot with no listings has no dots to explain */
+.pp-gen .pp-scl{display:none}
+/* round 2 (2026-11-14) */
+.pp-ans .pp-ac{text-wrap:balance}
+/* dots the tool placed outside the plot are not drawn */
+.pp-scs .pp-out{display:none}
+/* no loan: the chart draws the value alone, and the panel has already said why */
+.pp-noloan .pp-covs :is(.cush,.bal,.after),.pp-noloan .pp-covn{display:none}
+/* the sections sit an even distance apart */
+.pp-hero{padding-bottom:24px}
+.pp-val{padding-top:24px}
+/* More options: every switch runs the full width of the two fields above it */
+.pp-mg .tb{width:100%}
+.pp-mg .tb .pp-seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);width:100%}
+.pp-use .tb .pp-seg{grid-auto-flow:row}
+/* a robot with no listings: the chart's own line says so once, and the rate sits beside the value */
+.pp-gen .pp-thin{display:none}
+.pp-gen .pp-ladw .pp-rate{grid-column:4 / span 3}
+@media (max-width:600px){
+  /* the answer reaches both screen edges */
+  .pp-ans{--pp-pad:var(--gl)}
+  .pp-scs .ax.at{transform:translateY(8px)}
+  .pp-scs .ul.pp-short text:not(.uv){display:block}  /* the short name ("All set up") shows on a phone; the long arm-alone line stays off, as before */
+  .pp-gen .pp-ladw .pp-rate{grid-column:1 / -1}
+}
+/* plates leave with their labels while a tip is open */
+.pp-scs .pp-pl{transition:opacity .5s ease}
+.pp-scw:has(.pp-tip:not([hidden])) .pp-scs .pp-pl{opacity:0}
+/* flow study (2026-11-14) */
+.pp-st{touch-action:manipulation}
+.pp-st[aria-disabled="true"]{opacity:.3;cursor:default}
+.pp-lall,.pp-tb:has([data-v="all"][aria-checked="true"]) .pp-lfam{display:none}
+.pp-tb:has([data-v="all"][aria-checked="true"]) .pp-lall{display:inline}
+.pp-in > .pp-hint{display:block;margin:10px 0 0;font:500 var(--t-small)/1.4 var(--sans);color:#b42318}
+.pp-in > .pp-hint[hidden]{display:none}
+@media (max-width:360px){.pp-flds{align-items:end}}
+/* phone frame study (2026-11-14) */
+/* a figure being worked out dims at once and comes back quickly; the worth figure, which is ready at once, never dims */
+.pp-a.busy .pp-av,.pp-a.busy .pp-ac{transition:none}
+.pp-ans .pp-av,.pp-ans .pp-ac{transition:opacity .3s var(--m-ease)}
+/* the line under the loan holds two lines of room on narrow screens, so the panel never changes height when its words wrap */
+@media (max-width:600px){.pp-ans #ac-o{min-height:calc(2 * 1.45em)}}
+/* a tapped year button does not stay dark on a touch screen */
+@media (hover:none){.pp-st:hover{color:var(--c)}}
+/* nothing the page keeps out of sight asks for the paper typeface */
+.pp-keep,.pp-keep *{font-family:var(--sans)!important}

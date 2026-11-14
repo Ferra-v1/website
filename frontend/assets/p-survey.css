@@ -1,0 +1,53 @@
+/* The two report surveys (pages/survey.py). One reading column, plain answer rows, every tap target 48px tall. Built from site.css tokens only. */
+.sv{padding-block:var(--sec) calc(var(--sec) + 24px)}
+.sv-col{max-width:720px;margin:0 auto}
+.sv-t{text-wrap:balance}
+.sv-intro{margin:20px 0 0;font:400 18px/1.6 var(--sans);color:var(--muted);max-width:62ch}
+.sv-form{margin-top:48px}
+.sv-q{min-width:0;margin:36px 0 0;padding:36px 0 0;border:0;border-top:var(--hair)}
+.sv-body > .sv-q:first-child{margin-top:0;padding-top:0;border-top:0}
+/* a legend sits on its fieldset's top border by default; floated, it sits below the padding like any other line */
+.sv-l{float:left;width:100%;margin:0 0 8px;padding:0;font:600 20px/1.35 var(--sans);letter-spacing:-.01em;color:var(--ink)}
+.sv-l + *{clear:left}
+.sv-l + :not(.sv-h){padding-top:8px}
+.sv-n{color:var(--muted);font-variant-numeric:tabular-nums}
+.sv-h{margin:0;font:400 16px/1.5 var(--sans);color:var(--muted)}
+.sv-bad .sv-h{color:#b42318;font-weight:500}
+.sv-opts{display:grid;gap:8px;margin-top:16px}
+.sv-o{display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 14px;border:var(--hair);border-radius:var(--r-field);background:#fff;font:400 16px/1.35 var(--sans);color:var(--ink);cursor:pointer;transition:border-color .15s ease,background-color .15s ease}
+.sv-o:hover{border-color:#b7bfcd}
+.sv-o:has(input:checked){border-color:var(--c);background:#f5f7fd}
+.sv-o input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--c);cursor:pointer}
+.sv-o.off{opacity:.5;cursor:default}
+.sv-o.off input{cursor:default}
+.sv-other{display:block;margin-top:8px}
+.sv-other input,.sv-ml input{display:block;width:100%;min-width:0;height:48px;padding:0 14px;border:var(--hair);border-radius:var(--r-field);background:#fff;font:400 16px var(--sans);color:var(--ink)}
+.sv-other input:hover,.sv-ml input:hover{border-color:#b7bfcd}
+.sv-lim{margin:8px 0 0;font:400 16px/1.5 var(--sans);color:var(--muted)}
+/* a question in parts (a share and a term), and the payment grid */
+.sv-p,.sv-gr{min-width:0;margin:24px 0 0;padding:0;border:0}
+.sv-pl,.sv-gl{padding:0;font:500 16px/1.45 var(--sans);color:var(--ink)}
+.sv-gr{margin-top:20px}
+.sv-grid{margin-top:4px}
+.sv-seg{display:flex;margin-top:10px;border:var(--hair);border-radius:var(--r-field);overflow:hidden;background:#fff}
+.sv-seg label{position:relative;flex:1 1 0;min-width:0;display:flex}
+.sv-seg label + label{border-left:var(--hair)}
+.sv-seg input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.sv-seg span{flex:1;display:flex;align-items:center;justify-content:center;min-height:48px;padding:4px 6px;text-align:center;font:400 15px/1.15 var(--sans);color:var(--ink);transition:background-color .15s ease,color .15s ease}
+.sv-seg label:hover span{background:var(--mist)}
+.sv-seg input:checked + span{background:var(--c);color:#fff}
+.sv-seg input:focus-visible + span{outline:2px solid var(--c);outline-offset:-4px}
+.sv-seg input:checked:focus-visible + span{outline-color:#fff}
+/* the last box, the button and the thanks */
+.sv-ml{display:grid;gap:10px;font:500 16px/1.5 var(--sans);color:var(--ink)}
+.sv-act{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:40px}
+.sv-err{flex-basis:100%;margin:0;font:500 16px/1.5 var(--sans);color:#b42318}
+.sv-done{padding:28px 24px;border:var(--hair);border-radius:var(--r-card);background:var(--paper)}
+.sv-done p{margin:0}
+.sv-done:focus{outline:0}
+@media (max-width:600px){
+  .sv-form{margin-top:36px}
+  .sv-q{margin-top:28px;padding-top:28px}
+  .sv-l{font-size:19px}
+  .sv-act .btn{width:100%}
+}

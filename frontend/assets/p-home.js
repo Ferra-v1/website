@@ -476,8 +476,8 @@ hPairs(); addEventListener('resize', hPairs); addEventListener('load', hPairs); 
     tipEl.addEventListener('pointerenter', () => { overTip = true; clearTimeout(tipT); }); tipEl.addEventListener('pointerleave', () => { overTip = false; });
   }
   stage.addEventListener('click', ev => { if (fine || !R || !hit || ev.target.closest('a,.h-tip,select')) return; const p = stPos(ev), n = nearest(p.x, p.y, 20); if (n) openTip(n.kind, n.j); else closeTip(); });
-  // keyboard: tabbing into the box brings the box on screen
-  b3.addEventListener('focusin', () => { const r = rawScroll(); if (r < T.box[0] || r > T.box[1]) scrollTo({ top: storyTop + (T.box[0] + .2) * H, behavior: 'instant' }); });
+  // keyboard: tabbing into the box brings the box on screen. A finger or mouse does not, or the page moves under the tap and the tap is lost (2026-11-14)
+  b3.addEventListener('focusin', ev => { if (!ev.target.matches(':focus-visible')) return; const r = rawScroll(); if (r < T.box[0] || r > T.box[1]) scrollTo({ top: storyTop + (T.box[0] + .2) * H, behavior: 'instant' }); });
 
   // ---------------------------------------------------------------- run
   layout();
