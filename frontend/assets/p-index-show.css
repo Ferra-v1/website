@@ -1,0 +1,204 @@
+/* Robot Index, the show under the lookup (pages/robot_index.py auction() to finale(), assets/p-index-show.js): scenes 5 to 10 of design/ANIMATED-JOURNEY.md.
+   Terminal blocks on dark ink: every picture is drawn by the script in shade cells on one grid; this file lays the scenes out and holds every word.
+   One block per scene, so a scene can be swapped alone: shared, auction, note, board, thin data, drop test, finale, print.
+   Signal orange lives in three tokens on .rs only (value lost, the reader's robot, the one main button). The site already uses --sec for the section gap, so the tokens are --sig. */
+.rs{--sky:#0fa9e8;--sig:#FF6B1A;--sig-tint:#FFE6D6;--sig-deep:#B8470A;--rs-ink:#0e1626;--rs-mut:#aab6d3;position:relative;background-color:var(--rs-ink);color:#fff}
+.rs,.rs-pin{background-image:var(--rs-tex,none);image-rendering:pixelated}
+.rs :is(h2,h3){margin:0;color:#fff;text-wrap:balance!important}
+.rs .t-lead{margin:12px 0 0;color:#d3dbee}
+/* words stand on a clear plate of the ground colour: the screen pattern stops short of every word */
+.rs-plate{width:fit-content;max-width:100%;background:var(--rs-ink);box-shadow:0 0 0 10px var(--rs-ink)}
+.rs-pin{position:relative;display:flex;flex-direction:column;min-height:min(100vh,760px);overflow:clip;background-color:var(--rs-ink)}
+.rs-cv{position:absolute;left:0;top:0;z-index:0;display:block;width:100%;height:100%;image-rendering:pixelated}
+.rs .rs-in{flex:1;display:flex;flex-direction:column;width:100%;min-height:0;padding-top:clamp(36px,7vh,72px);padding-bottom:24px;box-sizing:border-box}
+.rs-hd{position:relative;z-index:1}
+/* a figure's caption: the script sets where it stands (under its block figure) and shows it once the figure has arrived */
+.rs-cap{display:none;position:absolute;left:0;top:0;z-index:1;margin:0;font:400 16px/1.3 var(--sans);color:var(--rs-mut);white-space:nowrap;opacity:0;transition:opacity .5s ease}
+.rs-on .rs-cap{display:block}
+.rs-cap.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.rs-cap,.rs-nm,.sn-stamp{transition:none!important}}
+/* with motion allowed, on a screen tall enough, each scene pins for its run of scrolling. Heights are set here, before the first paint, so nothing below moves when the script starts */
+@media (prefers-reduced-motion:no-preference) and (min-height:520px){
+ .rs-auc{height:290vh;height:calc(100lvh + 190vh)}
+ .rs-brd .rs-run{height:225vh;height:calc(100lvh + 125vh)}
+ .rs-drop{height:270vh;height:calc(100lvh + 170vh)}
+ .rs-fin{height:210vh;height:calc(100lvh + 110vh)}
+ .rs-pin{position:sticky;top:0;height:100vh;height:100lvh;min-height:0}
+}
+
+/* ---------------------------------------------------------------- 6. the valuation note: white paper on the dark ground, fed out of a slot */
+.rs-noteS{padding-bottom:clamp(56px,7vw,96px)}
+.rs-nrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:24px}
+.rs .rs-main{background:#fff;border-color:#fff;color:var(--rs-ink)}
+.rs .rs-main:hover{background:var(--sig-tint);border-color:var(--sig-tint)}
+.rs-ntb{background:var(--rs-ink);box-shadow:0 0 0 10px var(--rs-ink)}
+.rs-ntb .rs-inp{height:var(--tb-h);width:170px;margin:0;padding:0 14px;border:1px solid var(--tb-b);border-radius:var(--r-field);background:transparent;color:#fff;font:400 16px/1 var(--sans);font-variant-numeric:lining-nums tabular-nums}
+.rs-ntb .rs-inp::placeholder{color:var(--rs-mut);opacity:1}
+.rs-ntb .rs-inp:hover{background-color:var(--tb-hov)}
+.rs-ntb .rs-inp:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.rs-feed{margin-top:clamp(32px,4vw,48px)}
+.rs-slotcv{display:block;width:100%;height:36px;image-rendering:pixelated}
+.rs-paperw{position:relative;overflow:clip}
+/* the part of the note not yet printed lies under a cover of the ground; the cover slides down ahead of the page (a transform, so nothing on the page moves) with the print head on its top edge */
+.rs-cover{display:none;position:absolute;left:0;right:0;top:0;height:100%;background:var(--rs-ink) var(--rs-tex,none);border-top:4px solid var(--sky);will-change:transform}
+.rs-live .rs-cover{display:block}.rs-live .rs-cover.off{display:none}
+.rs-note{image-rendering:auto;background:#fff;color:var(--ink);padding:44px 56px 36px;font:400 15px/1.5 var(--sans);min-width:0}
+.sn-h{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.sn-lk{color:var(--ink)}
+.sn-lk .ilock{display:inline-flex;align-items:center;line-height:1;white-space:nowrap;font-size:24px}.sn-lk .imk{display:inline-flex;flex:none}.sn-lk svg{display:block;width:100%;height:100%}
+.sn-hr{display:flex;align-items:flex-start;gap:24px}
+.sn-r{margin:0;text-align:right;color:var(--muted);font-size:14px;line-height:1.55}
+.sn-r b{color:var(--ink);font-weight:600}
+/* the dated stamp: pressed down once the whole note is out */
+.sn-stamp{margin:0;padding:5px 12px 6px;border:2px solid var(--c);border-radius:2px;color:var(--c);font:600 12.5px/1.3 var(--sans);text-align:center;white-space:nowrap;transform:rotate(-4deg)}
+.sn-stamp b{display:block;font:700 15px/1.25 var(--serif);letter-spacing:-.01em}
+.rs-live .sn-stamp{opacity:0;transform:rotate(-4deg) scale(1.6);transition:opacity .5s ease,transform .5s cubic-bezier(.3,1.5,.5,1)}
+.rs-live .sn-stamp.on{opacity:1;transform:rotate(-4deg)}
+.page .rs-note .sn-t{font:700 34px/1.08 var(--serif);letter-spacing:-.028em;margin:30px 0 4px;text-wrap:balance;color:var(--ink)}
+.sn-s{font:400 18px/1.4 var(--sans);color:#3e4656;margin:0 0 24px}
+.sn-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)}
+.sn-facts div{padding:10px 14px 12px 0}
+.sn-facts div+div{padding-left:14px;border-left:1px solid var(--line)}
+.sn-facts dt{font-size:13px;color:var(--muted)}
+.sn-facts dd{margin:2px 0 0;font-weight:500}
+.sn-g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;margin-top:28px}
+.page .rs-note h4{font:600 16px/1.35 var(--serif);letter-spacing:-.01em;margin:0 0 10px;color:var(--ink)}
+.sn-st,.sn-ct,.sn-yt{width:100%;border-collapse:collapse}
+.sn-st{border-top:2px solid var(--ink)}
+.sn-st td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+.sn-st td:first-child{padding-left:18px;position:relative}
+.sn-st td:last-child{text-align:right;white-space:nowrap;padding-left:16px;font-weight:500;width:1%}
+.sn-st .op{position:absolute;left:0;color:var(--muted)}
+.sn-st .sub{display:block;color:var(--muted);font-size:13px}
+.sn-st tr.tot td{border-bottom:3px double var(--ink);padding-top:14px;padding-bottom:12px;font-weight:600}
+.sn-st tr.tot td:last-child{font:700 34px/1 var(--serif);letter-spacing:-.02em;color:var(--c)}
+.sn-st tr.rng td:last-child{color:var(--c)}
+/* the robot's portrait, read in by the scan line: the sheet's main picture, about half its height, with the tables under it */
+.sn-pt{position:relative;overflow:hidden;margin-top:24px;height:clamp(240px,34vw,440px);border-bottom:1px solid var(--line)}
+.sn-pt canvas{display:block;height:100%;width:auto;max-width:100%;margin:0 auto;object-fit:contain;image-rendering:pixelated}
+/* the portrait is always drawn whole; the part not yet read lies under a white sheet with the scan line on its top edge, and the sheet slides down (a transform) */
+.sn-scan{display:none;position:absolute;left:0;top:0;width:100%;height:100%;background:#fff;border-top:2px solid var(--sky);will-change:transform}
+.rs-live .sn-scan{display:block}.rs-live .sn-scan.off{display:none}
+.sn-cv{aspect-ratio:520/230}
+.sn-cv svg{display:block;width:100%;height:auto;overflow:visible}
+.sn-cv .ax{font:400 15px var(--sans);fill:var(--muted)}
+.sn-cv .lb{font:600 16px var(--sans);fill:var(--c)}
+.sn-cv .end{opacity:0;transition:opacity .5s ease}
+.sn-cv .end.on{opacity:1}
+.sn-yt{margin-top:10px;font-size:14px}
+.sn-yt th{font-weight:400;color:var(--muted);text-align:right;padding:6px 0;border-bottom:1px solid var(--ink)}
+.sn-yt th:first-child,.sn-yt td:first-child{text-align:left}
+.sn-yt td{padding:5px 0;border-bottom:1px solid var(--line);text-align:right}
+.sn-yt tbody tr:first-child td{color:var(--c);font-weight:600}
+.sn-ct{border-top:2px solid var(--ink);font-size:14.5px}
+.sn-ct td{padding:7px 0;border-bottom:1px solid var(--line)}
+.sn-ct td:last-child{text-align:right;font-weight:500;padding-left:14px;width:1%}
+.sn-ct tr.thin td{color:var(--c)}
+.sn-src p{margin:0 0 10px;font-size:14px;line-height:1.5}
+.sn-src b{font-weight:600}
+.sn-f{display:flex;justify-content:space-between;gap:16px;margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+@media (max-width:720px){
+ .rs-ntb{flex:1 1 100%;flex-wrap:nowrap}.rs-ntb label{flex:1 1 0}.rs-ntb .rs-inp,.page .rs-ntb select{width:100%}
+ .rs-nh .rs-main{width:100%}
+ .rs-note{padding:28px 20px 24px}
+ .sn-h{flex-direction:column;gap:16px}.sn-hr{flex-direction:row-reverse;justify-content:flex-end;align-items:center}.sn-r{text-align:left}
+ .page .rs-note .sn-t{font-size:28px;margin-top:22px}
+ .sn-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sn-facts div:nth-child(3){padding-left:0;border-left:0}
+ .sn-facts div:nth-child(n+3){border-top:1px solid var(--line)}
+ .sn-g{grid-template-columns:minmax(0,1fr);gap:28px}
+ .sn-st tr.tot td:last-child{font-size:28px}
+ .sn-f{flex-direction:column}
+}
+
+/* ---------------------------------------------------------------- 7. the parade and the board: one lane a class; the script draws the robot and the block figures in each row's empty boxes */
+.rs-rows{position:relative;z-index:1;list-style:none;flex:1;display:grid;grid-auto-rows:minmax(0,1fr);min-height:0;margin:clamp(12px,2.4vh,28px) 0 0;padding:0}
+.rs-rows li{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:center;min-height:0}
+.rs-nm{margin:0}
+.rs-rows .rs-nm{grid-column:1 / span 3}
+.rs-nm span{display:block;margin-top:4px;font:400 16px/1.35 var(--sans);color:var(--rs-mut)}
+.rs-slot{grid-column:4 / span 2;align-self:stretch}
+.rs-dg{grid-column:6 / -1;align-self:stretch}
+.rs-rows li:has(.rs-lv) .rs-dg{grid-column:6 / span 4}
+.rs-lv{grid-column:10 / span 2;align-self:stretch}.rs-ch{grid-column:12;align-self:stretch}
+.rs-q{display:flex;flex-wrap:wrap;align-items:center;gap:20px 32px;padding-top:clamp(28px,3vw,40px);padding-bottom:var(--sec)}
+.rs-qs{flex:1 1 420px;margin:0}
+.rs .rs-qs{margin:0;color:#fff}
+.rs-qtb{flex:none;flex-wrap:nowrap;background:var(--rs-ink);box-shadow:0 0 0 10px var(--rs-ink)}
+.rs-ft{flex:1 1 100%;width:fit-content;margin:0;color:var(--rs-mut);background:var(--rs-ink);box-shadow:0 0 0 10px var(--rs-ink)}
+@media (max-width:860px){
+ .rs-rows li,.rs-rows li:has(.rs-lv){grid-template-columns:104px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"n n" "s d";column-gap:16px;row-gap:4px;padding:8px 0 0}
+ .rs-rows .rs-nm{grid-area:n;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 12px}.rs-rows .rs-nm span{margin:0}
+ .rs-slot{grid-area:s}.rs-dg,.rs-rows li:has(.rs-lv) .rs-dg{grid-area:d}.rs-lv,.rs-ch{display:none}
+ .rs-qtb{flex:1 1 100%}.rs-qtb label{flex:1 1 0}.page .rs-qtb select{width:100%}
+}
+
+/* ---------------------------------------------------------------- 8. thin data, under construction */
+.rs-thin{padding-top:clamp(8px,2vw,24px)}
+.rs-th p{margin:12px 0 0;color:#d3dbee;max-width:46ch}
+.rs-tg{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:40px var(--gut);margin:clamp(32px,4vw,48px) 0 0;padding:0}
+.rs-tg li{min-width:0}
+.rs-tc{display:block;width:100%;aspect-ratio:10/9;image-rendering:pixelated}
+.rs-tg .rs-nm{margin-top:18px}
+.rs-tg .rs-nm .rs-n{color:#fff}
+.rs-tk{margin:14px 0 0;color:#fff;white-space:nowrap}
+@media (max-width:860px){.rs-tg{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px}}
+
+/* ---------------------------------------------------------------- 9. the drop test: the words and the true figures on the left, the peg board beside them */
+.rs-figs{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut)}
+.rs-figs .rs-fig{grid-column:span 5}
+@media (max-width:1100px){.rs-figs .rs-fig{grid-column:span 6}}
+.rs-fig{display:flex;align-items:baseline;gap:16px;margin:clamp(12px,2vh,20px) 0 0}
+.rs-fig b{flex:none;min-width:2.5ch;font:700 var(--t-title)/1 "Inter",system-ui,sans-serif;letter-spacing:-.033em;color:#fff}
+.rs-fig span{font:400 16px/1.4 var(--sans);color:#d3dbee;max-width:30ch}
+.rs-drop .tlink{margin-top:4px;color:#fff}
+@media (max-width:860px){
+ .rs .rs-in{padding-top:28px}
+ .rs-figs .rs-fig{grid-column:1 / -1}
+ .rs-fig{gap:12px;margin-top:10px}
+ .rs-fig span{max-width:none}
+ .rs-drop .tlink{margin-top:0}
+}
+
+/* ---------------------------------------------------------------- print: the note alone, on one Letter page, whole (never part fed, part scanned or unstamped) */
+@media print{
+ @page{size:letter;margin:.5in}
+ .page .lift > :not(.rs-noteS),.page .lift > .nav,.foot,.rs-nh,.rs-slotcv,.rs-cover,.sn-scan{display:none!important}
+ .page .rs-noteS{padding:0!important;background:#fff!important}
+ .page .rs-noteS .in{padding:0!important;max-width:none!important;display:block!important}
+ .page .rs-feed{margin:0!important}.page .rs-paperw{padding:0!important;overflow:visible!important}
+ .page .rs-note{border:0!important;padding:0!important;margin:0!important;font-size:13px!important}
+ .page .rs-note :is(p,td,th,dd,dt,b,span){font-size:inherit!important;line-height:1.4!important}
+ .page .rs-note .sn-lk .ilock{font-size:21px!important}
+ .page .rs-note .sn-r{font-size:12px!important}
+ .page .rs-note .sn-stamp{opacity:1!important;transform:rotate(-4deg)!important;font-size:11px!important;padding:3px 9px 4px!important}
+ .page .rs-note .sn-stamp b{font-size:12.5px!important}
+ .page .rs-note .sn-t{font-size:26px!important;margin:16px 0 2px!important}
+ .page .rs-note .sn-s{font-size:14px!important;margin-bottom:12px!important}
+ .page .rs-note .sn-facts dt{font-size:11px!important}
+ .page .rs-note .sn-facts dd{font-size:12.5px!important}
+ .page .rs-note .sn-facts div{padding:6px 10px 7px 0}
+ .page .rs-note .sn-facts div+div{padding-left:10px}
+ .page .rs-note .sn-g{gap:26px;margin-top:16px}
+ .page .rs-note h4{font-size:13.5px!important;margin-bottom:6px!important}
+ .page .rs-note .sn-st td{padding:5px 0;font-size:12.5px!important}
+ .page .rs-note .sn-st td:first-child{padding-left:16px}
+ .page .rs-note .sn-st .sub{font-size:11px!important}
+ .page .rs-note .sn-st tr.tot td{padding:8px 0 7px}
+ .page .rs-note .sn-st tr.tot td:last-child{font-size:26px!important}
+ .page .rs-note :is(.sn-st tr.tot td:last-child,.sn-st tr.rng td:last-child,.sn-yt tbody tr:first-child td,.sn-ct tr.thin td,.sn-stamp,.sn-stamp b){color:#2847ce!important;-webkit-text-fill-color:#2847ce!important}
+ .page .rs-note .sn-yt{font-size:11.5px!important}.page .rs-note .sn-yt :is(td,th){padding:2px 0;font-size:11.5px!important}
+ .page .rs-note .sn-ct :is(td){padding:4px 0;font-size:12px!important}
+ .page .rs-note .sn-src p{font-size:11.5px!important;margin-bottom:5px}
+ .page .rs-note .sn-f{margin-top:12px;font-size:10.5px!important}
+ .page .rs-note .sn-f span{font-size:10.5px!important}
+ .page .rs-note :is(.sn-r b,.sn-t,h4){color:#0e1626!important;-webkit-text-fill-color:#0e1626!important}
+ .page .rs-note :is(.sn-r,.sn-facts dt,.sn-st .sub,.sn-st .op,.sn-yt th,.sn-f,.sn-f span){color:#5b6474!important;-webkit-text-fill-color:#5b6474!important}
+ .page .rs-note .sn-cv{max-height:160px}
+ .page .rs-note .sn-cv svg{max-height:160px}
+ .page .rs-note .sn-cv .end,.page .rs-note .sn-cv .band{opacity:1!important}
+ .page .rs-note .sn-cv .ln{stroke-dashoffset:0!important}
+ .page .rs-note .sn-pt{height:1.9in!important;margin-top:10px!important}
+ .page .rs-note .sn-cv{display:none!important}   /* on paper the year table carries the next six years; the curve gives its room to the robot */
+ .page .rs-note .sn-pt canvas{display:block!important}   /* the site's print rules hide every canvas; the portrait is part of the note */
+}

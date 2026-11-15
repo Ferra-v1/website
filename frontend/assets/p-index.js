@@ -1,368 +1,401 @@
-// Robot Index page (pages/robot_index.py). One function per section, so a section's pick can be swapped alone:
-//   opening()  every price as a dot, sorted by the scroll, poured into the robot picked and carried down into the lookup (design/ANIMATED-JOURNEY.md scenes 1 and 2);
-//   lookup()  the picker, the wear-down robot and the statement, a pick's burst (scene 4) and the age drag (scene 5);
-//   note()  the valuation note and its print;  board()  the monthly board's dot figures and the quote;  thin rows draw with board().
-// Numbers: est() is the price tool's asking formula, median asking = exp(level + model effect - slope x age) with its 8 in 10 band, times the one auction share from index-data.json.
-// The likely auction range is likely x exp(-/+ 1.2816 x the share's spread). pages/robot_index.py est() mirrors this for the first paint, so the page reads right before this script runs.
-// Drawing follows the site's speed rules: one path and one fill per shade, a repaint only when the picture changes, resize only on a real width change. The opening and the robot's
-// way down follow the scroll both ways and the wear-down follows the slider; the only two clocks answer a click: a pick's burst (about half a second) and the slider settling on a whole year.
-// With reduced motion nothing pins and nothing runs on a clock: the opening stands sorted in plain flow and every pick lands at once.
+// Robot Index page, the stage (pages/robot_index.py opening() and lookup(); scenes 1 to 4 of design/ANIMATED-JOURNEY.md). The note, the board and the scenes below the tool
+// are assets/p-index-show.js.
+// One canvas in the opening's pinned box draws every cell on the graphics chip (point sprites), from one list of cells worked out here each time the picture changes; without
+// the graphics chip the same list is drawn on a plain canvas. Every price the index holds is one cell.
+//   1. The swarm: the cells stand as the robot picked and drift on a clock, parting around the pointer or a finger. Scrolling sorts them into a skyline of all prices,
+//      lowest to highest (auction sales at the foot of each column), then rushes the skyline together into the robot.
+//   2. The robot is alive: it runs its work film, and a sideways drag turns it on its turntable (a squeeze where a shape has no turntable yet).
+//   3. A pick bursts the robot into its cells, swirls them with trails and slams them together as the new robot, while the price rolls like a counter.
+//   4. Age: the cells about to go heat to signal orange, break off, tumble, bounce and settle on the pile along paths worked out ahead, so the drag runs them forwards and
+//      backwards exactly. The built year rolls in its own band over the pile, the robot's own motion slows with age, and letting go stamps the price (a short swell, kept
+//      small so it never reaches the words around it) and ripples the pile.
+// Numbers: est() is the price tool's asking formula, median asking = exp(level + model effect - slope x age), times the one auction share. pages/robot_index.py est() mirrors it.
+// Speed rules: everything that builds follows the scroll or a control, both ways. Three things run on a clock: the swarm's drift, a finished robot's own film, and a short
+// answer to a click, tap or release (under 0.6 seconds). A frame is drawn only when the picture changed; a resize only counts when the width changed.
+// With reduced motion nothing pins and nothing runs on a clock: the finished robot stands in the tool and every pick lands at once.
 (() => {
-  const data = document.getElementById('ri-data'); if (!data) return;
-  const { L, bots, P } = JSON.parse(data.textContent);
-  const $ = id => document.getElementById(id), Z = 1.2816, MIN_USED = 8;
+  const data = document.getElementById('ri-data'), sdEl = document.getElementById('ri-stage-data'); if (!data || !sdEl) return;
+  const { L, P } = JSON.parse(data.textContent), SD = JSON.parse(sdEl.textContent);
+  const $ = id => document.getElementById(id), Z = 1.2816;
   const usd = v => '$' + (Math.floor(v / 100 + .5) * 100).toLocaleString('en-US');
-  const pct = v => Math.round(v * 100) + '%';
-  const plural = (n, one, many) => n.toLocaleString('en-US') + ' ' + (n === 1 ? one : (many || one + 's'));
   const ageTxt = a => a === 0 ? 'New' : `${a} year${a === 1 ? '' : 's'} old`;
   const byId = Object.fromEntries(L.models.map(m => [m.id, m]));
-  const CLASS = { arm: 'Factory arm', cobot: 'Cobot', palletizer: 'Palletizer', amr: 'Warehouse mobile robot' };
   const set = (k, t) => document.querySelectorAll(`[data-v="${k}"]`).forEach(el => { if (el.textContent !== t) el.textContent = t; });
-  const dpr = () => Math.min(2, window.devicePixelRatio || 1);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v, ease = t => t * t * (3 - 2 * t), mix = (a, b, t) => a + (b - a) * t;
+  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v, ease = t => t * t * (3 - 2 * t), mix = (a, b, t) => a + (b - a) * t, smooth = (a, b, v) => ease(clamp01((v - a) / (b - a)));
   // a fixed seed gives the same picture on every visit
   const rng = seed => () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-  const css = getComputedStyle(document.documentElement), SERIF = css.getPropertyValue('--serif').trim() || 'Inter, sans-serif', SANS = css.getPropertyValue('--sans').trim() || 'Geist, sans-serif';
-  const COB = '#2847ce', INK = '#0e1626', PALE = '#b8c3ea';
+  const hash2 = (x, y) => { let h = Math.imul(x + 374761393 | 0, 668265263) ^ Math.imul(y + 1013904223 | 0, 2246822519); h = Math.imul(h ^ h >>> 13, 1274126177); return ((h ^ h >>> 16) >>> 0) / 4294967296; };
+
+  const root = $('prices'), pin = root && root.querySelector('.ri-opin'), cv = $('ri-ocv'), lab = $('ri-lab'), ohead = root && root.querySelector('.ri-ohead');
+  const look = $('lookup'), tool = look && look.querySelector('.ri-tool'), stageEl = $('ri-stage'), pxb = $('ri-pxb'), mk = $('ri-mk'), md = $('ri-md'), sl = $('ri-age'), ticksEl = $('ri-ticks');
+  if (!pin || !cv || !tool || !stageEl || !sl) return;
+  const lgd = $('ri-lgd'), pcap = $('ri-pcap'), tk = $('ri-kept'), tl = $('ri-lost');
+  // colours: sky and white for what is kept, cobalt for depth, ink for the outline; signal orange comes from the section's own tokens
+  const hex = h => { h = h.trim().replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); const n = parseInt(h, 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
+  const tok = getComputedStyle(root), SIG = hex(tok.getPropertyValue('--sig')), SIGT = hex(tok.getPropertyValue('--sig-tint')), SIGD = hex(tok.getPropertyValue('--sig-deep'));
+  const WHITE = [1, 1, 1], SKY = hex('#0fa9e8'), COB = hex('#2847ce'), INK = hex('#0e1626');
+  const mixc = (a, b, t, o) => { o[0] = a[0] + (b[0] - a[0]) * t; o[1] = a[1] + (b[1] - a[1]) * t; o[2] = a[2] + (b[2] - a[2]) * t; return o; };
+  // a cell's shade: 0 full, 1 half, 2 light, 3 trim. [colour, pattern]: pattern 0 is a solid tile, 1 a tile with holes, 2 a tile of small squares
+  const SHADE = [[SKY, 0], [SKY, 1], [COB, 1], [WHITE, 0]];
 
   // ------------------------------------------------------------ the numbers
   function est(id, age) {
     const m = byId[id], f = L.fams[m.fam], se = m.se != null ? m.se : f.se;
     const at = a => { const ask = Math.exp(f.level + m.fe - f.b * a), s = Math.sqrt(f.sd * f.sd + se * se + Math.pow((a - f.am) * f.bse, 2)), likely = ask * L.share, w = Math.exp(Z * L.sd);
       return { age: a, ask, alo: ask * Math.exp(-Z * s), ahi: ask * Math.exp(Z * s), likely, llo: likely / w, lhi: likely * w }; };
-    return Object.assign(at(age), { m, f, at, kept: Math.exp(-f.b * age) });
+    return Object.assign(at(age), { m, f, at });
   }
-  const askWhy = (e, year) => { const { m, f } = e;
-    if (m.any) return `Any ${f.label} built ${year}, from ${plural(f.n, 'listing')}`;
-    if (m.own && m.fit >= MIN_USED) return `A ${m.label} built ${year}, from ${plural(m.fit, 'listing')}`;
-    if (m.own) return `Thin data: ${plural(m.fit, 'listing')} of this model, leaning on ${f.n.toLocaleString('en-US')} ${f.label} listings`;
-    return `Thin data: ${plural(m.fit, 'listing')} of this model, so it takes the ${f.label} level from ${plural(f.n, 'listing')}`; };
-  const shareWhy = f => L.saleCls.includes(f.cls) ? `Share of asking, from ${L.nSales} auction sales` : `Learned from ${L.nSales} factory arm auction sales`;
-  const shareNote = f => `Median of ${L.nSales} auction sales of factory arms matched to listings` + (L.saleCls.includes(f.cls) ? '' : '; cobots take the same share');
-
+  const limOf = id => SD.lim[id] || [0, 30];
   // the reader's robot, from the address when it names one (#r=kuka-kr-210&y=2020), else the site's default
-  const st = { id: L.default.id, age: L.now - L.default.year, hours: '', cond: L.default.cond };
-  { const h = new URLSearchParams(location.hash.slice(1)), r = h.get('r'), y = +h.get('y'); if (r && byId[r]) st.id = r; if (y && y <= L.now && y >= L.now - 30) st.age = L.now - y; }
+  const st = { id: L.default.id, age: L.now - L.default.year, spin: 0 };
+  { const h = new URLSearchParams(location.hash.slice(1)), r = h.get('r'), y = +h.get('y'); if (r && byId[r]) st.id = r; if (y && y <= L.now && y >= L.now - 30) st.age = L.now - y; const [lo, hi] = limOf(st.id); st.age = Math.max(lo, Math.min(hi, st.age)); }
+  let E = est(st.id, st.age);
 
-  // ------------------------------------------------------------ the dot robots, unpacked from 3 bytes a dot
-  const BOTS = {};
-  function bot(n) {
-    if (BOTS[n]) return BOTS[n]; const b = bots[n]; if (!b) return null; const s = atob(b.p), pts = [];
-    for (let i = 0; i < s.length; i += 3) { const v = s.charCodeAt(i + 2); pts.push({ x: s.charCodeAt(i), y: s.charCodeAt(i + 1), s: (v & 127) / 100, acc: v >> 7 }); }
-    return (BOTS[n] = { w: b.w, h: b.h, pts });
+  // ------------------------------------------------------------ the renderer: one list of square cells, drawn as point sprites (or as plain rectangles without the graphics chip)
+  // a cell is 9 numbers: x, y (its centre, in the pinned box's own pixels), side, turn (radians), pattern, red, green, blue, alpha
+  const F = 9, MAX = 20000, buf = new Float32Array(MAX * F); let nS = 0;
+  const push = (x, y, s, rot, pat, c, a) => { if (nS >= MAX || !(s > .3) || !(a > .02)) return; const o = nS++ * F; buf[o] = x; buf[o + 1] = y; buf[o + 2] = s; buf[o + 3] = rot; buf[o + 4] = pat; buf[o + 5] = c[0]; buf[o + 6] = c[1]; buf[o + 7] = c[2]; buf[o + 8] = a; };
+  const texts = [];   // every figure drawn in cells this frame, as a box: the no-cuts check reads these beside the page's own words
+  let gl = null, glU = null, c2 = null, CW = 0, CH = 0, DPR = 1;
+  function startRenderer() {
+    try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' }); } catch (x) { gl = null; }
+    if (gl) {
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return gl.getShaderParameter(o, gl.COMPILE_STATUS) ? o : null; };
+      const vs = sh(gl.VERTEX_SHADER, 'attribute vec2 p;attribute vec3 q;attribute vec4 c;uniform vec3 u;varying vec4 vc;varying vec3 vq;void main(){gl_Position=vec4(p.x/u.x*2.-1.,1.-p.y/u.y*2.,0.,1.);float k=q.y!=0.?1.4143:1.;gl_PointSize=max(1.,q.x*u.z*k);vc=c;vq=vec3(q.y,q.z,k);}');
+      const fs = sh(gl.FRAGMENT_SHADER, 'precision mediump float;varying vec4 vc;varying vec3 vq;void main(){vec2 t=(gl_PointCoord-.5)*vq.z;if(vq.x!=0.){float s=sin(vq.x),o=cos(vq.x);t=vec2(t.x*o+t.y*s,-t.x*s+t.y*o);}if(abs(t.x)>.5||abs(t.y)>.5)discard;if(vq.y>.5){vec2 g=fract((t+.5)*3.);float h=step(.3,g.x)*step(g.x,.7)*step(.3,g.y)*step(g.y,.7);if(vq.y<1.5){if(h>.5)discard;}else if(h<.5)discard;}gl_FragColor=vec4(vc.rgb*vc.a,vc.a);}');
+      const pr = vs && fs && gl.createProgram(); if (pr) { gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr); }
+      if (!pr || !gl.getProgramParameter(pr, gl.LINK_STATUS)) gl = null;
+      else { gl.useProgram(pr); gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); const B = Float32Array.BYTES_PER_ELEMENT * F;
+        [['p', 2, 0], ['q', 3, 2], ['c', 4, 5]].forEach(([n, k, o]) => { const l = gl.getAttribLocation(pr, n); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, k, gl.FLOAT, false, B, o * 4); });
+        glU = gl.getUniformLocation(pr, 'u'); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.clearColor(0, 0, 0, 0);
+        cv.addEventListener('webglcontextlost', e => { e.preventDefault(); }); cv.addEventListener('webglcontextrestored', () => { startRenderer(); dirty = true; kick(); }); }
+    }
+    if (!gl) c2 = cv.getContext('2d');
   }
-  // dots grouped by fill: one path and one fill() per group
-  function batch() { const g = new Map(); return { add(k, x, y, r) { let p = g.get(k); if (!p) g.set(k, p = new Path2D()); p.moveTo(x + r, y); p.arc(x, y, r, 0, 6.2832); }, draw(c) { g.forEach((p, k) => { c.fillStyle = k; c.fill(p); }); } }; }
-  function fit(cv, w, h) { const d = dpr(), W = Math.round(w * d), H = Math.round(h * d); if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; } return d; }
+  const px = v => Math.max(1, Math.floor(v * DPR)) / DPR;   // a cell pitch in whole device pixels, so the gaps between cells are even
+  function sizeCanvas() { const w = Math.round(CW * DPR), h = Math.round(CH * DPR); if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } }
+  function flush() {
+    cv._cells = { buf, n: nS, F }; cv._texts = texts;
+    if (gl) { gl.viewport(0, 0, cv.width, cv.height); gl.clear(gl.COLOR_BUFFER_BIT); if (!nS) return; gl.uniform3f(glU, CW, CH, DPR); gl.bufferData(gl.ARRAY_BUFFER, buf.subarray(0, nS * F), gl.DYNAMIC_DRAW); gl.drawArrays(gl.POINTS, 0, nS); return; }
+    if (!c2) return; c2.setTransform(DPR, 0, 0, DPR, 0, 0); c2.clearRect(0, 0, CW, CH);
+    // plain canvas: one path and one fill per shade, in the order the shades first appear (the outline is first)
+    const g = new Map(); for (let i = 0; i < nS; i++) { const o = i * F, a = buf[o + 8] * (buf[o + 4] > 1.5 ? .3 : buf[o + 4] > .5 ? .8 : 1), k = `rgba(${Math.round(buf[o + 5] * 255)},${Math.round(buf[o + 6] * 255)},${Math.round(buf[o + 7] * 255)},${(Math.round(a * 10) / 10)})`;
+      let p = g.get(k); if (!p) g.set(k, p = new Path2D()); const s = buf[o + 2]; p.rect(buf[o] - s / 2, buf[o + 1] - s / 2, s, s); }
+    g.forEach((p, k) => { c2.fillStyle = k; c2.fill(p); });
+  }
 
-  // ============================================================ 1. lookup: the wear-down robot
-  const mk = $('ri-mk'), md = $('ri-md'), hr = $('ri-hr'), cd = $('ri-cd'), sl = $('ri-age'), cv = $('ri-cv');
-  let E, plan = null, lastKey = '', pourFor = '';
-  const fillModels = () => { const m = mk.value; md.innerHTML = L.models.filter(x => L.fams[x.fam].maker === m).map(x => `<option value="${x.id}">${x.short.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</option>`).join(''); };
+  // ------------------------------------------------------------ the shapes: a first frame from the page, the films when they arrive
+  // cells of one frame: columns, rows and shade, in the shape's own grid
+  function cellsOf(w, h, k, gray, trim) { const x = [], y = [], s = [], min = k === 2 ? 4 : 2; for (let Y = 0; Y < h; Y++) for (let X = 0; X < w; X++) { const g = gray(X, Y); if (g < min) continue; x.push(X); y.push(Y); s.push(trim(X, Y) ? 3 : g >= 12 ? 0 : g >= 8 ? 1 : 2); }
+    return { n: x.length, x: Uint8Array.from(x), y: Uint8Array.from(y), s: Uint8Array.from(s) }; }
+  const SHAPES = {};
+  function shape(name) { let s = SHAPES[name]; if (s) return s; const d = SD.shapes[name]; if (!d) return null;
+    s = SHAPES[name] = { name, k: d.k, w: d.w, h: d.h, bb: d.bb, ub: d.ub, work: d.work ? Object.assign({ state: 0 }, d.work) : null, turn: d.turn ? Object.assign({ state: 0 }, d.turn) : null };
+    s.f0 = cellsOf(d.w, d.h, d.k, (X, Y) => parseInt(d.d[Y * d.w + X], 16), (X, Y) => d.a[Y * d.w + X] === '1');
+    let x0 = 255, x1 = 0, y0 = 255, y1 = 0; for (let i = 0; i < s.f0.n; i++) { x0 = Math.min(x0, s.f0.x[i]); x1 = Math.max(x1, s.f0.x[i] + 1); y0 = Math.min(y0, s.f0.y[i]); y1 = Math.max(y1, s.f0.y[i] + 1); } s.fb = [x0, y0, x1, y1];
+    return s; }
+  // a film file sets window.FERRA_SEQ[key] = {w, h, frames, fps, per, src, acc}: one sheet whose red channel is each cell's dot size, and a second marking the trim
+  function loadFilm(S, kind) { const f = S && S[kind]; if (!f || f.state) return; f.state = 1; const tag = document.createElement('script'); tag.src = f.src;
+    tag.onload = () => { const m = (window.FERRA_SEQ || {})[f.key]; if (!m) return; const im = new Image(), ia = new Image(); let got = 0;
+      im.onload = ia.onload = () => { if (++got < 2) return; const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d', { willReadFrequently: true });
+        x.drawImage(im, 0, 0); const sz = x.getImageData(0, 0, c.width, c.height).data; x.clearRect(0, 0, c.width, c.height); x.drawImage(ia, 0, 0); const ac = x.getImageData(0, 0, c.width, c.height).data;
+        const N = c.width * c.height, val = new Uint8Array(N), acc = new Uint8Array(N); for (let i = 0, j = 0; j < N; i += 4, j++) { val[j] = sz[i]; acc[j] = ac[i] > 127 ? 1 : 0; }
+        Object.assign(f, { val, acc, W: c.width, per: m.per || 8, fw: m.w, fh: m.h, n: m.frames, fps: m.fps || 12, cache: [], state: 2 }); dirty = true; kick(); };
+      im.src = m.src; ia.src = m.acc; };
+    document.head.appendChild(tag); }
+  // frame i of a shape's film, read the way the page's first frame was: k film cells a side to one stage cell. Decoded the first time it is shown
+  function frameOf(S, kind, i) { const f = S[kind]; if (!f || f.state !== 2) return S.f0; if (f.cache[i]) return f.cache[i]; const k = S.k, ox = (i % f.per) * f.fw, oy = Math.floor(i / f.per) * f.fh, kk = k * k;
+    const sum = (a, X, Y) => { let v = 0; for (let yy = 0; yy < k; yy++) for (let xx = 0; xx < k; xx++) { const fx = X * k + xx, fy = Y * k + yy; if (fx < f.fw && fy < f.fh) v += a[(oy + fy) * f.W + ox + fx]; } return v; };
+    return (f.cache[i] = cellsOf(S.w, S.h, k, (X, Y) => Math.min(15, Math.floor((sum(f.val, X, Y) * 15 + 126 * kk) / (252 * kk))), (X, Y) => sum(f.acc, X, Y) * 2 >= kk)); }
+
+  // ------------------------------------------------------------ the plan for the robot picked: which cells go first, when, and along which path
+  let plan = null, LAY = null;
+  const shapeName = id => { const m = byId[id], f = L.fams[m.fam], n = SD.fam[m.fam]; return n && SD.shapes[n] ? n : f.cls === 'cobot' && SD.shapes.cobot ? 'cobot' : 'arm'; };
+  // the order a frame's cells wear away in: its outer layer first, then the next layer in, with some chance in it and the top a little sooner. So at any age the robot
+  // stands whole but thinner inside the faint outline of what it was, in every frame of its film. Worked out once a frame, the first time the frame is shown.
+  function wearOrder(S, FR) { if (FR._w) return FR._w; const w = S.w, h = S.h, n = FR.n, g = new Int16Array(w * h).fill(-1), dep = new Uint8Array(n); for (let i = 0; i < n; i++) g[FR.y[i] * w + FR.x[i]] = i;
+    let left = n; for (let d = 1; left > 0 && d < 40; d++) { const peel = []; for (let i = 0; i < n; i++) { if (dep[i]) continue; const x = FR.x[i], y = FR.y[i], out = j => j < 0 || (dep[j] && dep[j] < d);
+        if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1 || out(g[y * w + x - 1]) || out(g[y * w + x + 1]) || out(g[(y - 1) * w + x]) || out(g[(y + 1) * w + x])) peel.push(i); }
+      if (!peel.length) { for (let i = 0; i < n; i++) if (!dep[i]) dep[i] = d; break; } peel.forEach(i => { dep[i] = d; }); left -= peel.length; }
+    const key = new Float32Array(n); for (let i = 0; i < n; i++) key[i] = dep[i] + 1.5 * hash2(FR.x[i], FR.y[i]) + .6 * FR.y[i] / h;
+    const ord = Array.from({ length: n }, (_, i) => i).sort((a, b) => key[a] - key[b]), pos = new Int32Array(n); ord.forEach((i, r) => { pos[i] = r; });
+    return (FR._w = { ord, pos }); }
   function makePlan() {
-    const name = L.fams[E.m.fam].cls === 'cobot' ? 'cobot' : 'arm';
-    if (plan && plan.id === E.m.id) return;
-    const B = bot(name), N = B.pts.length, f = E.f;
-    let cx = 0, cy = 0, far = 0, mx = 0; B.pts.forEach(p => { cx += p.x; cy += p.y; if (p.x > mx) mx = p.x; }); cx /= N; cy /= N;
-    B.pts.forEach(p => { p.d = Math.hypot(p.x - cx, (p.y - cy) * .8); if (p.d > far) far = p.d; });
-    // the top and outer dots fall first; a fixed seed so every visit draws the same
-    const rnd = rng(7);
-    const ord = B.pts.map((p, i) => ({ i, k: .55 * p.d / far + .55 * (1 - p.y / B.h) + .3 * rnd() })).sort((a, b) => b.k - a.k).map(o => o.i);
-    const rank = new Int32Array(N); ord.forEach((pi, k) => { rank[pi] = k; });
-    const keep = []; for (let a = 0; a <= 31; a++) keep.push(Math.exp(-f.b * a));
-    // the pile: a mound big enough for the dots lost at 30 years
-    const need = Math.ceil(N * (1 - keep[30])) + 1, P = Math.max(40, Math.ceil((Math.sqrt(8 * need + 1) - 1) / 2) + 1), GAP = 4, X0 = mx + 1 + GAP, slots = [];
-    for (let row = 0; row < P; row++) for (let j = 0; j < P - row; j++) { const x = X0 + row * .5 + j, dx = x - (X0 + (P - 1) / 2), y = row * .87; slots.push({ x, y, k: y + Math.abs(dx) * 1.6 }); }
-    slots.sort((a, b) => a.k - b.k);
-    plan = { id: E.m.id, B, N, rank, keep, slots, X0, P, cols: X0 + P };
-    lastKey = ''; pourFor = '';
+    const S = shape(shapeName(st.id)), f = E.f; if (!S) return; if (plan && plan.S === S && plan.b === f.b) return;
+    const R = S.f0, N = R.n, ord = wearOrder(S, R).ord;
+    // each year's cells leave while the age crosses that year, so the fall follows the age both ways
+    const keep = []; for (let a = 0; a <= 31; a++) keep.push(Math.exp(-f.b * a)); const start = new Float32Array(N).fill(99);
+    for (let n = 0; n < 30; n++) { const s = Math.floor(N * (1 - keep[n])), e = Math.floor(N * (1 - keep[n + 1])); for (let k = s; k < e; k++) start[k] = n + .5 * (k - s) / Math.max(1, e - s); }
+    plan = { S, b: f.b, N, ord, start, need: Math.floor(N * (1 - keep[30])) + 1, film: 0, frame: R, kind: 'work', fi: 0 };
+    fitPlan();
   }
-  // how far a dot has fallen at a (fractional) age: each year's dots fall while the slider crosses that year and land by its end, so the drop follows the slider both ways
-  function prog(k, a) {
-    const { keep, N } = plan;
-    for (let n = 0; n < 30; n++) { const s = Math.floor(N * (1 - keep[n])), e = Math.floor(N * (1 - keep[n + 1]));
-      if (k < s) return 1; if (k < e) { const sg = (k - s) / Math.max(1, e - s); return Math.max(0, Math.min(1, (a - n - .5 * sg) / .5)); } }
-    return 0;
-  }
-  const keepAt = a => { const n = Math.min(29, Math.floor(a)), f = a - n, k = plan.keep; return Math.exp(Math.log(k[n]) * (1 - f) + Math.log(k[n + 1]) * f); };
-  // the wear-down picture in the canvas's own CSS pixels. wearDot says where dot i sits at an age, how big and which shade: on the robot (k 0), mid fall (1) or in the pile (2).
-  // The opening's flight and a pick's burst read the same function, so every dot they carry lands exactly where the canvas draws it.
-  const SH = Array.from({ length: 21 }, (_, i) => `rgba(30,51,155,${i / 20})`);
-  const shadeOf = (s, dim) => SH[Math.round(Math.round((.45 + .55 * s) * 10) / 10 * dim * 20)];
-  const dimAt = a => 1 - .4 * Math.min(1, a / 30);   // the dots a robot keeps dim as it ages
-  // the stage keeps one shape for every robot (the canvas's own 136 by 86), so a pick never moves the page under it; the robot and its pile are fitted inside
-  function wearG() { const cw = cv.clientWidth; if (!cw || !plan) return null; const { B, cols } = plan, ch = cw * 86 / 136, pitch = Math.min(cw / cols, ch / (B.h + 10)), base = ch - 2; return { cw, ch, pitch, base, top: base - B.h * pitch, rad: pitch * .44 }; }
-  const yearBox = G => { const w = plan.B.w * G.pitch, fs = Math.min(w * .3, G.ch * .3), lh = fs * 1.06, cy = G.top + plan.B.h * G.pitch * .52; return { w, fs, lh, cy, top: cy - lh * .6 }; };
-  function wearDot(i, a, G, dim, o) {
-    const p = plan.B.pts[i], k = plan.rank[i], t = prog(k, a), x0 = (p.x + .5) * G.pitch, y0 = G.top + (p.y + .5) * G.pitch;
-    o.bx = x0; o.by = y0; o.br = Math.max(.35, G.rad * Math.max(p.s, .46));
-    if (t <= 0) { o.x = x0; o.y = y0; o.r = o.br; o.c = shadeOf(p.s, dim); o.k = 0; return o; }
-    const slot = plan.slots[k], x1 = (slot.x + .5) * G.pitch, y1 = G.base - (slot.y + .5) * G.pitch;
-    if (t >= 1) { o.x = x1; o.y = y1; o.r = G.rad * .82; o.c = PALE; o.k = 2; return o; }
-    const ez = t * t * (3 - 2 * t); o.x = x0 + (x1 - x0) * ez; o.y = y0 + (y1 - y0) * t * t - Math.sin(Math.PI * t) * 6 * G.pitch; o.r = G.rad; o.c = COB; o.k = 1; return o;
-  }
-  // the year the robot was built, large and faint behind it, rolling past like a counter as the age moves
-  function yearBehind(c, G) {
-    const n = Math.min(29, Math.floor(st.age)), f = st.age - n, { w, fs, lh, cy } = yearBox(G), cx = w / 2;
-    c.save(); c.beginPath(); c.rect(0, cy - lh * .6, w, lh * 1.2); c.clip();
-    c.font = `700 ${fs}px ${SERIF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = 'rgba(40,71,206,.11)';
-    c.fillText(String(L.now - n), cx, cy + f * lh); if (f > 0) c.fillText(String(L.now - n - 1), cx, cy + (f - 1) * lh);
-    c.restore();
-  }
-  let ghost = false;   // true while the robot's dots are in the air (on their way down from the opening, or mid burst): the canvas keeps its floor and waits
-  function drawWear() {
-    const G = wearG(); if (!G) return;
-    const key = G.cw + ':' + st.age.toFixed(2) + ':' + plan.id + ':' + (ghost ? 1 : 0); if (key === lastKey) return; lastKey = key;
-    const { B } = plan, d = fit(cv, G.cw, G.ch), c = cv.getContext('2d'), bt = batch(), o = {}, dim = dimAt(st.age);
-    c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, G.cw, G.ch);
-    if (!ghost) yearBehind(c, G);
-    if (!ghost) for (let i = 0; i < plan.N; i++) { wearDot(i, st.age, G, dim, o); bt.add(o.c, o.x, o.y, o.r); }
-    bt.draw(c); c.fillStyle = INK; c.fillRect(0, G.base, G.cw, 1);
-    // the two labels, in their own band under the floor line (no falling dot ever crosses a word): under the robot what it keeps, under the pile what it lost
-    const kept = keepAt(st.age), cp = G.pitch, tk = $('ri-kept'), tl = $('ri-lost'), fallen = Math.floor(plan.N * (1 - kept));
-    tk.textContent = `Kept ${pct(kept)}`; tk.style.left = (B.w / 2 * cp) + 'px'; tk.style.top = (G.ch + 6) + 'px';
-    tl.textContent = `Lost ${pct(1 - kept)}`; tl.style.left = ((plan.X0 + plan.P / 2) * cp) + 'px'; tl.style.top = (G.ch + 6) + 'px';
-    tl.hidden = fallen < 1; cv.parentNode.classList.toggle('ri-ghost', ghost);
-  }
-  let raf = 0; const paint = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; drawWear(); }); };
+  const FALL = .5;   // years of age a cell's fall takes
 
-  // the words: one pass for the lookup and the note, run when the robot or its whole-year age changes
-  function words() {
-    const a = Math.round(st.age), y = L.now - a; E = est(st.id, a);
-    const { m, f } = E, lr = `${usd(E.llo)} to ${usd(E.lhi)}`;
-    set('likely', usd(E.likely)); set('lrange', `8 in 10 sell for ${lr}`); set('lrange2', lr);
-    set('ask', usd(E.ask)); set('arange', `${usd(E.alo)} to ${usd(E.ahi)}`);
-    set('askwhy', askWhy(E, y)); set('sharewhy', shareWhy(f)); set('sharewhy2', shareNote(f));
-    set('agetxt', `${ageTxt(a)}, built ${y}`); sl.setAttribute('aria-valuetext', `${ageTxt(a)}, built ${y}`);
-    note(y); openKey = '';
+  // ------------------------------------------------------------ where everything stands, in the pinned box's own pixels. Run again only when the width changes
+  const PR = P.a.map(v => ({ v, sale: 0 })).concat(P.s.map(v => ({ v, sale: 1 }))).filter(q => q.v > 0).sort((a, b) => a.v - b.v || b.sale - a.sale), M = PR.length;
+  const nice = (v, up) => { const k = Math.pow(10, Math.floor(Math.log10(v))), m = v / k; return (up ? (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) : (m >= 5 ? 5 : m >= 2 ? 2 : 1)) * k; };
+  const LO = M ? nice(PR[0].v, false) : 1, HI = M ? Math.max(nice(PR[M - 1].v, true), LO * 10) : 10, uOf = v => clamp01(Math.log(v / LO) / Math.log(HI / LO));
+  const moving = !reduce && getComputedStyle(pin).position === 'sticky';
+  let tickEls = [];
+  const place = (el, x, y) => { el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px'; };
+  function layout() {
+    CW = pin.clientWidth; CH = pin.clientHeight; DPR = Math.min(2, window.devicePixelRatio || 1); if (!CW || !CH) { LAY = null; return; }
+    tool.style.setProperty('--oh', ohead.offsetHeight + 'px');
+    const pr = pin.getBoundingClientRect(), tr = tool.getBoundingClientRect(), hr = ohead.getBoundingClientRect(), rel = el => { const r = el.getBoundingClientRect(); return { x: r.left - tr.left, y: r.top - tr.top, w: r.width, h: r.height }; };
+    const ST = rel(stageEl), PX = rel(pxb), X0 = hr.left - pr.left, X1 = CW - X0, one = CW <= 980, floor = Math.round(ST.y + ST.h);
+    const head = { r: hr.right - pr.left + 28, b: hr.bottom - pr.top + 16 };
+    const pileW = Math.round(ST.w * .22), gap = one ? 8 : 28, zone = { x: ST.x, w: ST.w - pileW - gap }, pileX = ST.x + ST.w - pileW;
+    // the built year: its own band over the pile
+    const cy = px(pileW / 23), YR = { x: pileX, y: ST.y, c: cy, h: cy * 7 };
+    // the price: sized so the dearest robot at its youngest still fits its box
+    let top = 1; for (const m of L.models) top = Math.max(top, est(m.id, limOf(m.id)[0]).likely);
+    const dg = String(Math.round(top / 100) * 100).length, cols = 6 + dg * 6 - 1 + Math.floor((dg - 1) / 3) * 3, cp = px(Math.min(PX.w / cols, PX.h / 7));
+    const PXB = { x: PX.x, y: PX.y + (PX.h - cp * 7) / 2, c: cp };
+    // the skyline: one column a price step, lowest to highest, auction sales at the foot of each column; the largest cell at which the tallest column still clears the heading
+    const maxH = floor - head.b - 14; let d = one ? 7 : 13, C = 1, cnt;
+    for (; d >= 2.5; d -= 1 / DPR) { C = Math.max(1, Math.floor((X1 - X0) / d)); cnt = new Int16Array(C); let pk = 0; for (const q of PR) { const k = Math.min(C - 1, Math.floor(uOf(q.v) * C)); if (++cnt[k] > pk) pk = cnt[k]; } if (pk * d <= maxH) break; }
+    const cw = (X1 - X0) / C, nA = new Int16Array(C), nSl = new Int16Array(C); for (const q of PR) if (q.sale) nSl[Math.min(C - 1, Math.floor(uOf(q.v) * C))]++;
+    for (const q of PR) q.k = Math.min(C - 1, Math.floor(uOf(q.v) * C));
+    const rowS = new Int16Array(C);
+    for (const q of PR) { const row = q.sale ? rowS[q.k]++ : nSl[q.k] + nA[q.k]++; q.sx = X0 + (q.k + .5) * cw; q.sy = floor - (row + .5) * d; q.top = 0; }
+    for (const q of PR) if (!q.sale && q.sy <= floor - (nSl[q.k] + nA[q.k] - .5) * d + .01) q.top = 1;
+    LAY = { ST, X0, X1, one, floor, head, zone, pileW, pileX, gap, YR, PXB, d, cw, C, tight: X1 - X0 < 300 };
+    // the picture's labels: the price steps under the skyline, its key, the price's caption and the two labels under the floor
+    tickEls.forEach(e => e.remove()); tickEls = [];
+    for (let t = Math.pow(10, Math.ceil(Math.log10(LO) - 1e-9)); t <= HI * 1.0001; t *= 10) { const x = X0 + uOf(t) * (X1 - X0), e = document.createElement('span'), edge = x < X0 + 30 ? '' : x > X1 - 30 ? ' r' : ' c';
+      e.className = 'ri-tk' + edge; e.textContent = one ? (t >= 1e6 ? '$' + t / 1e6 + 'M' : t >= 1e3 ? '$' + t / 1e3 + 'k' : '$' + t) : '$' + t.toLocaleString('en-US'); place(e, edge === ' r' ? X1 : edge ? x : X0, floor + 16); e._x = x; lab.appendChild(e); tickEls.push(e); }
+    place(lgd, X0, floor + 16 + 32); place(pcap, PXB.x, PXB.y + cp * 7 + 12); place(tk, zone.x, floor + 14); place(tl, X1, floor + 14);
+    fitPlan(); lastKey = '';
   }
-  // the three lines of the sum follow the slider between whole years too; letting go settles them on the year
-  const figures = e => { const lr = `${usd(e.llo)} to ${usd(e.lhi)}`; set('likely', usd(e.likely)); set('lrange', `8 in 10 sell for ${lr}`); set('lrange2', lr); set('ask', usd(e.ask)); };
-  const live = () => figures(est(st.id, st.age));
+  // the robot's place and size on the stage, its pile, and every lost cell's path: after a layout or a pick
+  function fitPlan() {
+    if (!plan || !LAY) return; const { S, N } = plan, { ST, zone, floor, pileW, pileX, YR, one, X0, X1, head } = LAY, bb = S.bb, ub = S.ub, fb = S.fb;
+    const c = px(Math.min(ST.h / (bb[3] - bb[1]), zone.w / (bb[2] - bb[0]))), ox = zone.x + (zone.w - (bb[2] - bb[0]) * c) / 2 - bb[0] * c, oy = floor - bb[3] * c;
+    // room to turn: the turntable's frames reach wider than the work film's, so the robot steps back to turn (zoom k1) and comes forward again
+    const k1 = Math.min(1, zone.w / ((ub[2] - ub[0]) * c), ST.h / ((ub[3] - ub[1]) * c)), ox1 = zone.x + (zone.w - (ub[2] - ub[0]) * c * k1) / 2 - ub[0] * c * k1, oy1 = floor - ub[3] * c * k1;
+    // the first screen: the same robot, larger, in the room beside (or under) the heading
+    const hx0 = one ? X0 : Math.max(ST.x, head.r + 16), hw = X1 - hx0, hy0 = one ? head.b + 8 : ST.y - 8, hyT = one ? head.b : 8, ch = px(Math.min((floor - hy0) / (fb[3] - fb[1]), hw / (fb[2] - fb[0]), (floor - hyT) / (bb[3] - bb[1]), hw / (bb[2] - bb[0]))), hoy = floor - fb[3] * ch,
+      hox = Math.min(X1 - bb[2] * ch, Math.max(hx0 - bb[0] * ch, hx0 + (hw - (fb[2] - fb[0]) * ch) / 2 - fb[0] * ch));   // sized to the first frame, and small enough that any frame of the film still stands inside the room
+    // the pile: a mound of the lost cells, never taller than the room under the year
+    const room = ST.h - YR.h - 24, cq = px(Math.min(c, Math.sqrt(pileW * room * .78 / plan.need))), pc = Math.max(3, Math.floor(pileW / cq)), rows = Math.max(1, Math.floor(room / cq) - 2), slots = [];
+    for (let r = 0; r < rows; r++) for (let j = 0; j < pc; j++) slots.push({ j, r, k: r + Math.abs(j - (pc - 1) / 2) * .55 + .001 * j }); slots.sort((a, b) => a.k - b.k);
+    const px0 = pileX + (pileW - pc * cq) / 2, fl = new Float32Array(N * 7), rnd = rng(7), R = S.f0;
+    for (let r = 0; r < N; r++) { const i = plan.ord[r], sl = slots[Math.min(r, slots.length - 1)], x0 = ox + (R.x[i] + .5) * c, y0 = oy + (R.y[i] + .5) * c, x1 = px0 + (sl.j + .5) * cq, y1 = floor - (sl.r + .5) * cq, o = r * 7, up = (floor - y1) / ST.h;
+      fl[o] = x0; fl[o + 1] = y0; fl[o + 2] = x1; fl[o + 3] = y1; fl[o + 4] = (.14 + .14 * rnd()) * ST.h * (1 - .8 * up); fl[o + 5] = (rnd() - .25) * 2.4 * c; fl[o + 6] = (rnd() < .5 ? -1 : 1) * Math.PI / 2 * (2 + Math.floor(rnd() * 3)); }
+    Object.assign(plan, { c, ox, oy, k1, ox1, oy1, ch, hox, hoy, cq, fl, px0, pc }); swarmFor = null;
+  }
+  // where lost cell r is at progress t of its fall (0 still on the robot, 1 at rest on the pile): a drop to the floor, then two bounces across to its place, turning as it goes
+  function fallAt(r, t, o) { const f = plan.fl, i = r * 7, x0 = f[i], y0 = f[i + 1], x1 = f[i + 2], y1 = f[i + 3], h = f[i + 4], dr = f[i + 5], gy = LAY.floor - plan.cq * .5;
+    if (t >= 1) { o.x = x1; o.y = y1; o.r = 0; return o; }
+    if (t < .4) { const u = t / .4; o.x = x0 + dr * u; o.y = y0 + (gy - y0) * u * u; }
+    else { const u = (t - .4) / .6, base = mix(gy, y1, u); o.x = mix(x0 + dr, x1, u); if (u < .62) { const v = u / .62; o.y = base - h * 4 * v * (1 - v); } else { const v = (u - .62) / .38; o.y = base - Math.min(.3 * h, 1.5 * plan.cq) * 4 * v * (1 - v); } }
+    o.r = f[i + 6] * (1 - (1 - t) * (1 - t)); return o; }
 
-  // ---- a pick (scene 4): the old robot bursts into its dots, they swirl and land as the new robot while the pile rebuilds, and the figures roll in step. One clock, about half a second, once per pick.
-  let anim = 0;
-  function snapshot() { const G = wearG(); if (!G) return null; const o = {}, dim = dimAt(st.age), out = []; for (let i = 0; i < plan.N; i++) { wearDot(i, st.age, G, dim, o); out.push([o.x, o.y, o.r, o.k]); } return out; }
-  function burst(from, was) {
-    const G = wearG(), o = {}, N = plan.N, M = from.length, dim = dimAt(st.age), rnd = rng(11), dots = [], cx = plan.B.w / 2 * G.pitch, cy = G.top + plan.B.h * G.pitch * .55, now = E;
-    for (let i = 0; i < N; i++) { wearDot(i, st.age, G, dim, o); const a = from[N === M ? i : Math.floor(i * M / N)], dx = a[0] - cx, dy = a[1] - cy, len = Math.hypot(dx, dy) || 1;
-      dots.push({ ax: a[0], ay: a[1], ar: a[2], bx: o.x, by: o.y, br: o.r, c: o.c, nx: dx / len, ny: dy / len, amp: (a[3] === 2 ? 2 + 3 * rnd() : 5 + 9 * rnd()) * G.pitch, dl: .2 * rnd() }); }
-    cancelAnimationFrame(anim); ghost = true; drawWear(); figures(was);
-    const t0 = performance.now(), step = t1 => { const t = clamp01((t1 - t0) / 560), r = cv.getBoundingClientRect(), c = flyBegin(), bt = batch();
-      for (const q of dots) { const tt = clamp01((t - q.dl) / (1 - q.dl)), e = ease(tt), sw = Math.sin(Math.PI * tt) * q.amp, an = 2.4 * tt, cs = Math.cos(an), sn = Math.sin(an);
-        bt.add(tt > .6 ? q.c : COB, r.left + mix(q.ax, q.bx, e) + (q.nx * cs - q.ny * sn) * sw, r.top + mix(q.ay, q.by, e) + (q.nx * sn + q.ny * cs) * sw, mix(q.ar, q.br, e)); }
-      bt.draw(c); const e = ease(t), at = k => mix(was[k], now[k], e); figures({ likely: at('likely'), llo: at('llo'), lhi: at('lhi'), ask: at('ask') });
-      if (t < 1) anim = requestAnimationFrame(step); else { anim = 0; words(); sync(); } };
-    anim = requestAnimationFrame(step);
-  }
-  function lookup() {
-    let snap = 0;
-    mk.value = L.fams[byId[st.id].fam].maker; fillModels(); md.value = st.id; sl.value = st.age; cd.value = st.cond;
-    const remember = () => { try { history.replaceState(null, '', `#r=${st.id}&y=${L.now - Math.round(st.age)}`); } catch (x) {} };
-    const robot = () => { const r = cv.getBoundingClientRect(), seen = r.bottom > 0 && r.top < innerHeight, from = !reduce && !ghost && !anim && seen ? snapshot() : null, was = E;
-      cancelAnimationFrame(snap); snap = 0; st.age = Math.round(st.age); sl.value = st.age; E = est(st.id, st.age); makePlan(); words(); remember();
-      if (from) return burst(from, was); if (anim) { cancelAnimationFrame(anim); anim = 0; } sync(); };
-    mk.addEventListener('change', () => { fillModels(); st.id = md.value; robot(); });
-    md.addEventListener('change', () => { st.id = md.value; robot(); });
-    cd.addEventListener('change', () => { st.cond = cd.value; note(L.now - Math.round(st.age)); });
-    hr.addEventListener('input', () => { const v = hr.value.replace(/[^0-9]/g, ''); st.hours = v ? (+v).toLocaleString('en-US') : ''; note(L.now - Math.round(st.age)); });
-    // dragging: the picture and the figures follow the thumb; the words change on each whole year
-    sl.addEventListener('input', () => { cancelAnimationFrame(snap); snap = 0; const was = Math.round(st.age); st.age = +sl.value; if (Math.round(st.age) !== was) words(); live(); paint(); });
-    // letting go: the thumb settles on the whole year (a short glide; at once with reduced motion)
-    const land = to => { st.age = to; sl.value = to; words(); paint(); remember(); };
-    sl.addEventListener('change', () => { const from = +sl.value, to = Math.round(from); cancelAnimationFrame(snap); snap = 0; if (reduce || Math.abs(to - from) < .02) return land(to);
-      const t0 = performance.now(), step = t1 => { const t = clamp01((t1 - t0) / 160); if (t >= 1) { snap = 0; return land(to); } st.age = mix(from, to, 1 - Math.pow(1 - t, 3)); sl.value = st.age; live(); drawWear(); snap = requestAnimationFrame(step); };
-      snap = requestAnimationFrame(step); });
-    // arrow keys move a whole year at a time
-    sl.addEventListener('keydown', ev => { const d = /Right|Up|PageUp/.test(ev.key) ? 1 : /Left|Down|PageDown/.test(ev.key) ? -1 : 0; if (!d && !/Home|End/.test(ev.key)) return; ev.preventDefault(); cancelAnimationFrame(snap); snap = 0;
-      land(ev.key === 'Home' ? 0 : ev.key === 'End' ? 30 : Math.max(0, Math.min(30, Math.round(st.age) + d))); });
-    E = est(st.id, Math.round(st.age)); makePlan(); words(); paint();
-  }
-
-  // ============================================================ 2. the valuation note (credit memo)
-  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const today = () => { try { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).map(x => [x.type, x.value])); return `${+p.day} ${MON[+p.month - 1]} ${p.year}`; } catch (x) { return ''; } };
-  function curveSVG(rows) {
-    const W = 520, H = 230, l = 56, r = 100, t = 14, b = 34, top = Math.max(...rows.map(p => p.hi)) * 1.04;
-    const step = [1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000].find(s => top / s <= 4) || 100000;
-    const X = k => l + (W - l - r) * k / 6, Y = v => t + (H - t - b) * (1 - v / top), ln = f => rows.map((p, i) => `${i ? 'L' : 'M'}${X(p.k).toFixed(1)} ${Y(f(p)).toFixed(1)}`).join('');
-    let g = ''; for (let v = 0; v <= top; v += step) g += `<line x1="${l}" x2="${W - r}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="#e5e9f1"/><text x="${l - 8}" y="${(Y(v) + 5).toFixed(1)}" text-anchor="end" class="ax">${v ? '$' + (v / 1000) + 'k' : '$0'}</text>`;
-    rows.forEach(p => { if (p.k % 2 === 0) g += `<text x="${X(p.k).toFixed(1)}" y="${H - 8}" text-anchor="middle" class="ax">${p.k === 0 ? 'Now' : p.year}</text>`; });
-    const band = `<path d="${ln(p => p.hi)}${rows.slice().reverse().map(p => `L${X(p.k).toFixed(1)} ${Y(p.lo).toFixed(1)}`).join('')}Z" fill="rgba(40,71,206,.1)"/>`;
-    const e = rows[6], s = rows[0];
-    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Likely auction price falls from ${usd(s.likely)} now to ${usd(e.likely)} in ${e.year}">${g}${band}<path d="${ln(p => p.likely)}" fill="none" stroke="#2847ce" stroke-width="2.5"/>`
-      + `<circle cx="${X(0)}" cy="${Y(s.likely).toFixed(1)}" r="4.5" fill="#2847ce"/><circle cx="${X(6)}" cy="${Y(e.likely).toFixed(1)}" r="4.5" fill="#fff" stroke="#2847ce" stroke-width="2"/>`
-      + `<text x="${X(6) + 12}" y="${(Y(e.likely) - 2).toFixed(1)}" class="lb">${usd(e.likely)}</text><text x="${X(6) + 12}" y="${(Y(e.likely) + 16).toFixed(1)}" class="ax">likely</text></svg>`;
-  }
-  function note(y) {
-    if (!E) return; const { m, f } = E, a = L.now - y, thin = m.fit < MIN_USED && !m.any;
-    set('today', today()); set('title', `${m.label}, built ${y}.`); set('sub', `Likely auction price ${usd(E.likely)}, from public listings and auction results.`);
-    set('cls', CLASS[f.cls] || 'Robot'); set('age', ageTxt(a)); set('hours', st.hours ? `${st.hours}, as entered` : 'Not given');
-    set('cond', st.cond === 'Not given' ? 'Not given' : `${st.cond}, as entered`);
-    const rows = []; for (let k = 0; k <= 6; k++) { const q = Math.exp(-f.b * k); rows.push({ k, year: L.now + k, likely: E.likely * q, lo: E.llo * q, hi: E.lhi * q });
-      set('y' + k, k ? String(L.now + k) : 'Now'); set('a' + k, String(a + k)); set('l' + k, usd(E.likely * q)); set('r' + k, `${usd(E.llo * q)} to ${usd(E.lhi * q)}`); }
-    const cvh = $('vn-curve'); if (cvh) cvh.innerHTML = curveSVG(rows);
-    set('cfound', `${m.any ? f.label : m.short} listings found`); set('nfound', m.n.toLocaleString('en-US')); set('npriced', m.priced.toLocaleString('en-US'));
-    set('cfit', thin ? 'in the estimate, thin data' : 'in the estimate'); set('nfit', m.fit.toLocaleString('en-US'));
-    const tr = document.querySelector('[data-v="thinrow"]'); if (tr) tr.classList.toggle('thin', thin);
-    set('cfam', `${f.label} listings setting the level`); set('nfam', f.n.toLocaleString('en-US')); set('nsell', f.sellers.toLocaleString('en-US'));
-    set('srcs', f.src.map(([k, v]) => `${k} ${v}`).join(', '));
-  }
-  function printing() { const b = $('ri-print'); if (b) b.addEventListener('click', () => window.print()); }
-
-  // ============================================================ 3. the monthly board: round-dot figures, the robots, the quote
-  const F57 = { '0': ['01110', '10001', '10001', '10001', '10001', '10001', '01110'], '1': ['00100', '01100', '00100', '00100', '00100', '00100', '01110'], '2': ['01110', '10001', '00001', '00010', '00100', '01000', '11111'],
+  // ------------------------------------------------------------ figures in cells: a counter whose digits roll (the price, the built year)
+  const G57 = { '0': ['01110', '10001', '10001', '10001', '10001', '10001', '01110'], '1': ['00100', '01100', '00100', '00100', '00100', '00100', '01110'], '2': ['01110', '10001', '00001', '00010', '00100', '01000', '11111'],
     '3': ['11110', '00001', '00001', '01110', '00001', '00001', '11110'], '4': ['00010', '00110', '01010', '10010', '11111', '00010', '00010'], '5': ['11111', '10000', '11110', '00001', '00001', '10001', '01110'],
     '6': ['00110', '01000', '10000', '11110', '10001', '10001', '01110'], '7': ['11111', '00001', '00010', '00100', '01000', '01000', '01000'], '8': ['01110', '10001', '10001', '01110', '10001', '10001', '01110'],
-    '9': ['01110', '10001', '10001', '01111', '00001', '00010', '01100'], '.': ['0', '0', '0', '0', '0', '0', '1'], '+': ['00000', '00100', '00100', '11111', '00100', '00100', '00000'], '-': ['00000', '00000', '00000', '11111', '00000', '00000', '00000'] };
-  // columns of a text in the 5 by 7 face, right-aligned in n columns; unlit cells stay faint so the board shows where a number will be
-  function cellsOf(t, n) { const cols = []; for (const ch of t) { const g = F57[ch]; if (!g) continue; if (cols.length) cols.push(Array(7).fill(0)); for (let x = 0; x < g[0].length; x++) cols.push(g.map(r => +r[x])); }
-    while (cols.length < n) cols.unshift(Array(7).fill(0)); return cols.slice(-n); }
-  function sparkCols(v, n) { return Array.from({ length: n }, (_, i) => { const c = Array(7).fill(0); if (i < v.length) c[Math.max(0, Math.min(6, Math.round(3 - (v[i] - 100))))] = 1; return c; }); }
-  function drawMx(cv) {
-    const n = +cv.dataset.cells, p = +cv.dataset.p, sp = cv.classList.contains('sp'), W = sp ? cv.parentNode.clientWidth : n * p, pw = W / n, H = 7 * p;
-    if (!W) return; if (cv._w === W) return; cv._w = W;
-    cv.style.width = W + 'px'; cv.style.height = H + 'px'; const d = fit(cv, W, H), c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, W, H);
-    const cols = sp ? sparkCols(cv.dataset.sp.split(',').map(Number), n) : cellsOf(cv.dataset.t || '', n), bt = batch();
-    cols.forEach((col, x) => col.forEach((v, y) => { const cx = (x + .5) * pw, cy = (y + .5) * p; if (v) bt.add('#2847ce', cx, cy, p * .42); else bt.add('rgba(40,71,206,.14)', cx, cy, p * .2); }));
-    bt.draw(c);
-  }
-  // a small dot robot standing on the bottom of its box: ink for a class with a level, pale for one without
-  function drawBot(cv) {
-    const b = bot(cv.dataset.b), box = cv.parentNode; if (!b) return; const bw = box.clientWidth, bh = box.clientHeight; if (!bw) return;
-    const key = bw + 'x' + bh; if (cv._k === key) return; cv._k = key;
-    const pitch = Math.min(bh / b.h, bw / b.w), W = pitch * b.w, H = pitch * b.h, pale = cv.dataset.tone === 'pale';
-    cv.style.width = W + 'px'; cv.style.height = H + 'px'; const d = fit(cv, W, H), c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, W, H);
-    const bt = batch();
-    b.pts.forEach(q => { const s = Math.round(q.s * 10) / 10, x = (q.x + .5) * pitch, y = (q.y + .5) * pitch;
-      if (pale) bt.add(`rgba(40,71,206,${(.12 + .18 * s).toFixed(2)})`, x, y, Math.max(.35, pitch * .38 * s));
-      else bt.add(`rgba(30,51,155,${(.45 + .55 * s).toFixed(2)})`, x, y, Math.max(.4, pitch * .44 * Math.max(s, .46))); });
-    bt.draw(c);
-  }
-  function board() {
-    document.querySelectorAll('canvas.mx').forEach(drawMx); document.querySelectorAll('canvas.ri-bot').forEach(drawBot);
-    const q = document.querySelector('.ri-q'); if (!q) return; const Q = JSON.parse(q.dataset.q), sel = $('ri-qc'), out = $('ri-qs'), cp = $('ri-cp');
-    sel.addEventListener('change', () => { out.textContent = Q[sel.value]; });
-    let t = 0; cp.addEventListener('click', () => { const done = () => { cp.textContent = 'Copied'; clearTimeout(t); t = setTimeout(() => { cp.textContent = 'Copy the quote'; }, 1600); };
-      try { navigator.clipboard.writeText(out.textContent).then(done, () => {}); } catch (x) {} });
+    '9': ['01110', '10001', '10001', '01111', '00001', '00010', '01100'], '$': ['00100', '01111', '10100', '01110', '00101', '11110', '00100'], ',': ['00', '00', '00', '00', '00', '01', '10'] };
+  const GC = {}; for (const k in G57) { const a = []; G57[k].forEach((row, y) => { for (let x = 0; x < row.length; x++) if (row[x] === '1') a.push(x, y); }); GC[k] = { w: G57[k][0].length, a }; }
+  // v is the figure (for a price, in hundreds of dollars). Each digit sits still most of the way and rolls to the next over the last part, as a counter's wheels do.
+  // o: {pre: '$', post: '00', commas, right (align the last column on x), col, a (alpha), k (scale about its own middle)}. pass 0 draws the outline, 1 the cells
+  function figure(v, x, y, c, o, pass, name) {
+    const fl = Math.floor(v + 1e-6), fr = v - fl, roll = fr > .001 ? clamp01((fr - .4) / .2) : 0, nd = String(fl + (roll > 0 ? 1 : 0)).length, post = o.post || '', T = nd + post.length, gl_ = [];
+    if (o.pre) gl_.push({ ch: o.pre });
+    for (let p = nd - 1, i = 0; p >= 0; p--, i++) { if (o.commas && i > 0 && (T - i) % 3 === 0) gl_.push({ ch: ',' }); const pw = Math.pow(10, p), dgt = Math.floor(fl / pw) % 10, low = fl % pw, f = low === pw - 1 ? roll : 0; gl_.push({ d: dgt, f, lead: p === nd - 1 && Math.floor(fl / pw) === 0 }); }
+    for (let i = 0; i < post.length; i++) { if (o.commas && (T - nd - i) % 3 === 0) gl_.push({ ch: ',' }); gl_.push({ ch: post[i] }); }
+    let w = -1; for (const g of gl_) { g.x = w + 1; g.w = g.ch ? GC[g.ch].w : 5; w = g.x + g.w; }
+    const k = o.k || 1, cc = c * k, x0 = (o.right ? x - w * c : x) + w * c * (1 - k) / 2, y0 = y + 7 * c * (1 - k) / 2, col = o.col, a = o.a == null ? 1 : o.a, sz = pass ? cc * .9 : cc * 1.9;
+    const i0 = nS, put = (ch, gx, off) => { const g = GC[ch]; for (let i = 0; i < g.a.length; i += 2) { const ry = g.a[i + 1] + off; if (ry < -.6 || ry > 6.6) continue; const e = clamp01(Math.min(ry + 1, 7 - ry)); push(x0 + (gx + g.a[i] + .5) * cc, y0 + (ry + .5) * cc, sz * e, 0, 0, pass ? col : INK, pass ? a : a * e); } };
+    for (const g of gl_) { if (g.ch) { put(g.ch, g.x, 0); continue; } if (!(g.lead && g.d === 0)) put(String(g.d), g.x, -g.f * 8); if (g.f > 0) put(String((g.d + 1) % 10), g.x, (1 - g.f) * 8); }
+    if (pass && a > .3) texts.push({ t: name, x0: x0 - cc * .5, y0: y0 - cc * .5, x1: x0 + w * cc + cc * .5, y1: y0 + 7 * cc + cc * .5, i0, i1: nS });
   }
 
-  // ============================================================ 0. the opening: every price as a dot (scenes 1 and 2)
-  // One dot per price the index holds. They stand scattered under the heading, sort themselves by price as the page scrolls (asking prices over auction sales, on one price line),
-  // then pour into the robot picked, standing at its likely auction price. When the scene lets go, the robot's dots ride a screen-fixed canvas down into the lookup and take their
-  // places at its age, the lost ones dropping to the pile. All of it is a plain function of the scroll position, so it runs backwards on the way up and never sits half done on a clock.
-  const run = $('prices'), pin = run && run.querySelector('.ri-opin'), ocv = $('ri-ocv'), ohead = run && run.querySelector('.ri-ohead'), fly = $('ri-fly'), navEl = document.querySelector('.nav');
-  const moving = !reduce && !!pin && getComputedStyle(pin).position === 'sticky';
-  const PR = (P ? P.a.map(v => ({ v, sale: 0 })).concat(P.s.map(v => ({ v, sale: 1 }))) : []).filter(q => q.v > 0);
-  const nice = (v, up) => { const k = Math.pow(10, Math.floor(Math.log10(v))), m = v / k; return (up ? (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) : (m >= 5 ? 5 : m >= 2 ? 2 : 1)) * k; };
-  // the price line runs between the round figures just outside the lowest and the highest price, so every dot stands at its own price
-  PR.sort((a, b) => a.v - b.v || a.sale - b.sale);
-  const LO = PR.length ? nice(PR[0].v, false) : 1, HI = PR.length ? Math.max(nice(PR[PR.length - 1].v, true), LO * 10) : 10, uOf = v => clamp01(Math.log(v / LO) / Math.log(HI / LO));
-  PR.forEach(q => { q.u = uOf(q.v); });
-  const LAB = 26, GAP = 18;
-  let OL = null, openKey = '', flyOn = false, fontsIn = 0;
-  function flyBegin() { if (!flyOn) { fly.style.display = 'block'; flyOn = true; } const w = fly.clientWidth, h = fly.clientHeight, d = fit(fly, w, h), c = fly.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, w, h); return c; }
-  function flyEnd() { if (flyOn) { flyOn = false; fly.style.display = 'none'; } }
-  // where everything in the opening stands, in the pinned box's own pixels. Run again only when the width changes.
-  function openLayout() {
-    OL = null; if (!pin || !PR.length) return; const W = pin.clientWidth, H = pin.clientHeight; if (!W || !H) return;
-    const pr = pin.getBoundingClientRect(), hr = ohead.getBoundingClientRect(), x0 = Math.round(hr.left - pr.left), x1 = W - x0, hb = hr.bottom - pr.top, M = PR.length;
-    const seen = moving ? Math.min(H, innerHeight) : H, ay = seen - 16 - LAB, yTop = hb + 22;
-    // the dot pitch: the largest at which both rows fit between the heading and the price line
-    let d = W < 700 ? 9 : 15, C = 1, pkA = 0, pkS = 0;
-    for (; d >= 3; d -= .5) { C = Math.max(1, Math.floor((x1 - x0) / d)); const nA = new Int16Array(C), nS = new Int16Array(C); pkA = pkS = 0;
-      for (const q of PR) { const k = Math.min(C - 1, Math.floor(q.u * C)); if (q.sale) { if (++nS[k] > pkS) pkS = nS[k]; } else if (++nA[k] > pkA) pkA = nA[k]; }
-      if ((pkA + pkS) * d + 2 * LAB + GAP <= Math.min(ay - yTop, Math.max(.8 * (x1 - x0), .62 * (ay - yTop))) || d <= 3) break; }
-    const cw = (x1 - x0) / C, ayA = ay - pkS * d - LAB - GAP, nA = new Int16Array(C), nS = new Int16Array(C);
-    for (const q of PR) { const k = Math.min(C - 1, Math.floor(q.u * C)); q.sx = x0 + (k + .5) * cw; q.sy = q.sale ? ay - 2 - (nS[k]++ + .5) * d : ayA - 2 - (nA[k]++ + .5) * d; }
-    // the first frame: the same dots scattered over the part of the scene on screen before any scrolling, each in its own cell of a loose grid so none sit on top of each other
-    const sb = (moving ? Math.min(H, innerHeight - (navEl ? navEl.offsetHeight : 0)) : H) - 18, sh = Math.max(40, sb - yTop), sw = x1 - x0, gc = Math.max(1, Math.round(Math.sqrt(M * sw / sh))), gr = Math.ceil(M / gc), rnd = rng(3), cells = Array.from({ length: gc * gr }, (_, i) => i);
-    for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)), t = cells[i]; cells[i] = cells[j]; cells[j] = t; }
-    PR.forEach((q, j) => { const cell = cells[j], gx = cell % gc, gy = (cell / gc) | 0; q.x0 = x0 + (gx + .5 + (rnd() - .5) * .8) * sw / gc; q.y0 = yTop + (gy + .5 + (rnd() - .5) * .8) * sh / gr; });
-    OL = { W, H, x0, x1, hb, ay, ayA, d, r: d * .4, topA: ayA - pkA * d - LAB, topS: ay - pkS * d - LAB }; pourFor = ''; openKey = '';
+  // ------------------------------------------------------------ the picture. Everything below is a plain function of where the page is, the robot, its age and (while they run) the clocks
+  let S_ = moving ? 0 : 2;                    // how far the pinned scene has run, in screens: 0 to 2
+  let onScreen = true, dirty = true, lastKey = '', raf = 0, clock = 0, lastT = 0;
+  let ptr = null;                              // the pointer or finger, in the pinned box's own pixels
+  let burst = null, stamp = 0, flash = 0;      // the answers to a pick and to letting go of the age: their start times on the page's clock (0 = not running)
+  let spinning = false, spinTo = null;
+  const T_FORM = 1.3, T_AGED = 1.9;            // by 1.3 screens the robot has formed; by 1.9 it has aged to its year and the tool is all but in place
+  const robotMode = () => S_ >= T_FORM;
+  const showAge = () => S_ >= T_AGED ? st.age : st.age * ease(clamp01((S_ - T_FORM) / (T_AGED - T_FORM)));
+  const tmp = { x: 0, y: 0, r: 0 }, c1 = [0, 0, 0], c3 = [0, 0, 0];
+  // keep a cell out of the heading's corner and above the floor (a pointer can push cells about; words stay clear)
+  const guard = o => { const { head, floor, d } = LAY; if (o.y > floor - d * .5) o.y = floor - d * .5; if (o.x < head.r && o.y < head.b) { if (head.r - o.x < head.b - o.y) o.x = head.r; else o.y = head.b; } };
+  function floorLine(x0, x1, a) { const y = LAY.floor + 3; for (let x = x0 + 2; x < x1; x += 6) push(x, y, 3, 0, 0, WHITE, .5 * a); }
+
+  // ---- scene 1: the swarm. Each price is one cell; with more robot cells than prices a price splits, with fewer several share a cell
+  let swarmFor = null, SW = null;
+  function swarmMap() {
+    const { S, c, ox, oy, ch, hox, hoy } = plan, FR = plan.frame, key = S.name + ':' + plan.kind + ':' + plan.fi + ':' + CW; if (swarmFor === key) return; swarmFor = key;
+    const N = FR.n, K = Math.max(N, M), ro = Array.from({ length: N }, (_, i) => i).sort((a, b) => FR.x[a] - FR.x[b] || FR.y[b] - FR.y[a]), rnd = rng(3);
+    const src = new Int32Array(K), dst = new Int32Array(K), a = new Float32Array(K * 8), dup = new Uint8Array(K), seen = new Uint8Array(M);
+    for (let k = 0; k < K; k++) { if (N >= M) { dst[k] = ro[k]; src[k] = Math.floor(k * M / N); } else { src[k] = k; dst[k] = ro[Math.floor(k * N / M)]; } if (seen[src[k]]) dup[k] = 1; seen[src[k]] = 1;
+      const i = dst[k], o = k * 8; a[o] = hox + (FR.x[i] + .5) * ch; a[o + 1] = hoy + (FR.y[i] + .5) * ch; a[o + 2] = ox + (FR.x[i] + .5) * c; a[o + 3] = oy + (FR.y[i] + .5) * c;
+      a[o + 4] = rnd() * 6.2832; a[o + 5] = rnd(); a[o + 6] = rnd() < .07 ? 5 + rnd() * 16 : .12 + rnd() * .2; a[o + 7] = .7 * PR[src[k]].k / Math.max(1, LAY.C - 1) + .3 * (1 - FR.y[i] / S.h); }
+    SW = { K, src, dst, a, dup, FR };
   }
-  // the robot the dots pour into: the lookup's own robot, at the lookup's own dot pitch where there is room, standing on the price line at its likely auction price
-  function openRobot() {
-    const G = wearG(); if (!OL || !G) return false; const { B } = plan, rp = Math.max(1, Math.min(G.pitch, (OL.ay - OL.hb - 60) / B.h)), w = B.w * rp, px = OL.x0 + uOf(E.likely) * (OL.x1 - OL.x0);
-    OL.rp = rp; OL.px = px; OL.rx = Math.max(OL.x0, Math.min(OL.x1 - w, px - w / 2)); OL.ry = OL.ay - 1 - B.h * rp;
-    if (pourFor === plan.id) return true; pourFor = plan.id;
-    // which price dot pours into which robot dot: both read left to right, so the low prices fill the robot's left side. More robot dots than prices: a price dot splits. Fewer: several merge.
-    const N = plan.N, M = PR.length, K = Math.max(N, M), ro = Array.from({ length: N }, (_, i) => i).sort((a, b) => B.pts[a].x - B.pts[b].x || B.pts[a].y - B.pts[b].y), src = new Int32Array(K), dst = new Int32Array(K);
-    for (let k = 0; k < K; k++) { if (N >= M) { dst[k] = ro[k]; src[k] = Math.floor(k * M / N); } else { src[k] = k; dst[k] = ro[Math.floor(k * N / M)]; } }
-    OL.K = K; OL.src = src; OL.dst = dst; return true;
-  }
-  const text = (c, t, x, y, col, a, weight, align) => { c.font = `${weight} 16px ${SANS}`; c.textAlign = align || 'left'; c.textBaseline = 'alphabetic'; const w = c.measureText(t).width, l = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
-    const pl = Math.max(OL.x0, l - 4), pr = Math.min(OL.x1, l + w + 4);   // a plate of the ground colour under each label, kept inside the page's grid edges
-    c.globalAlpha = Math.min(1, a * 3.4); c.fillStyle = '#fff'; c.fillRect(pl, y - 17, pr - pl, 23); c.globalAlpha = a; c.fillStyle = col; c.fillText(t, x, y); c.globalAlpha = 1; };   // the plate is solid once the label is a third in, so a dot still moving under a label that is fading in never shows through its letters
-  const tickText = v => '$' + v.toLocaleString('en-US');
-  // p is the scene's progress, 0 to 1: sorted by .35 with its labels in by .4, held to .5 for a read, poured into the robot by .93 with its name and price in by 1. robotHere is false once the robot's dots have left for the lookup, and gone says how far they are.
-  function drawOpen(p, robotHere, gone) {
-    if (!OL) return; const away = clamp01((gone || 0) * 3), key = [OL.W, OL.H, p.toFixed(4), robotHere ? 1 : 0, away.toFixed(2), plan.id, Math.round(E.likely), fontsIn].join(':'); if (key === openKey) return; openKey = key;
-    const { W, H, x0, x1, ay, ayA, r } = OL, d = fit(ocv, W, H), c = ocv.getContext('2d'), bt = batch(), M = PR.length;
-    c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, W, H);
-    const v = moving ? clamp01(p / .4) : 1, u = moving ? clamp01((p - .5) / .5) : 0, vs = clamp01(v / .88), up = clamp01(u / .86), la = clamp01((v - .88) / .12), rows = la * (1 - clamp01(u * 6)), ua = clamp01((u - .86) / .14);   // the dots finish sorting (vs), and later pouring (up), before the labels over them fade in (la, ua), and the two row labels are gone before the pouring dots rise past them (rows), so no dot moves under a word
-    if (u > 0 && !openRobot()) return;
-    if (u <= 0) for (let j = 0; j < M; j++) { const q = PR[j], t = ease(clamp01(vs * 1.5 - .5 * j / Math.max(1, M - 1))); bt.add(q.sale ? INK : COB, mix(q.x0, q.sx, t), mix(q.y0, q.sy, t), r); }
-    else if (robotHere || u < 1) { const { B } = plan, { rp, rx, ry, src, dst, K } = OL;
-      // the robot fills from the floor up: the lowest rows of dots land first
-      for (let k = 0; k < K; k++) { const q = PR[src[k]], pt = B.pts[dst[k]], t = ease(clamp01(up * 1.8 - .8 * (B.h - 1 - pt.y) / Math.max(1, B.h - 1))), tx = rx + (pt.x + .5) * rp, ty = ry + (pt.y + .5) * rp;
-        if (t <= 0) { bt.add(q.sale ? INK : COB, q.sx, q.sy, r); continue; }
-        bt.add(t < .5 ? (q.sale ? INK : COB) : shadeOf(pt.s, 1), mix(q.sx, tx, t), mix(q.sy, ty, t) - Math.sin(Math.PI * t) * Math.min(48, Math.abs(tx - q.sx) * .12), mix(r, Math.max(.35, rp * .44 * Math.max(pt.s, .46)), t)); } }
-    bt.draw(c);
-    if (la > 0) {
-      // the price line with a tick at each power of ten, and the asking row's own floor while its dots stand on it
-      c.globalAlpha = la; c.fillStyle = INK; c.fillRect(x0, ay, x1 - x0, 1); c.globalAlpha = rows; c.fillStyle = '#c9d0de'; c.fillRect(x0, ayA, x1 - x0, 1); c.globalAlpha = 1;
-      for (let t = Math.pow(10, Math.ceil(Math.log10(LO) - 1e-9)); t <= HI * 1.0001; t *= 10) { const x = x0 + uOf(t) * (x1 - x0), near = Math.abs(x - OL.px) < 76 ? 1 - clamp01((u - .55) / .2) : 1; c.globalAlpha = la; c.fillStyle = INK; c.fillRect(Math.round(x) - (x > x1 - 1 ? 1 : 0), ay, 1, 6);
-        if (near > 0) text(c, tickText(t), x < x0 + 30 ? x0 : x > x1 - 30 ? x1 : x, ay + 23, '#5b6474', la * near, 400, x < x0 + 30 ? 'left' : x > x1 - 30 ? 'right' : 'center'); }
-      if (rows > 0) { text(c, plural(P.a.length, 'asking price'), x0, OL.topA + 17, COB, rows, 600); text(c, plural(P.s.length, 'auction sale'), x0, OL.topS + 17, INK, rows, 600); }
-    }
-    if (ua > 0) {
-      // the robot's name over it, and its likely auction price marked on the line it stands on
-      const w = plan.B.w * OL.rp, cx = OL.rx + w / 2, name = `${E.m.label}, built ${L.now - Math.round(st.age)}`; c.font = `600 16px ${SANS}`; const nw = c.measureText(name).width / 2 + 4;
-      if (away < 1) text(c, name, Math.max(x0 + nw, Math.min(x1 - nw, cx)), OL.ry - 12, INK, ua * (1 - away), 600, 'center');
-      c.globalAlpha = ua; c.fillStyle = COB; c.fillRect(Math.round(OL.px) - 1, ay, 2, 8); c.globalAlpha = 1; const pt = usd(E.likely); c.font = `600 16px ${SANS}`; const pw = c.measureText(pt).width / 2 + 4;
-      text(c, pt, Math.max(x0 + pw, Math.min(x1 - pw, OL.px)), ay + 23, COB, ua, 600, 'center');
-    }
-  }
-  // the robot on its way from the price line down into the lookup, q from 0 (still standing on the line) to 1 (in its place in the lookup). It rides up the screen on its line for the
-  // first third, then sinks through the line and steps down the page into its place, quicker than the page moves, so it is behind the lookup's own words (its heading, its picker and,
-  // on a phone, its price) only briefly: a dot between the price line and the stage is not drawn, with a soft edge, so no dot ever sits on a word. The dots it has lost at its age hop
-  // off to the pile at the end.
-  function drawFlight(q) {
-    const G = wearG(); if (!G || !OL || !openRobot()) return; const a = pin.getBoundingClientRect(), b = cv.getBoundingClientRect(), c = flyBegin(), bt = batch(), o = {}, { B } = plan, dim = dimAt(st.age), rp = OL.rp;
-    const tb = ease(clamp01((q - .3) / .55)), tl = ease(clamp01((q - .72) / .28)), hop = Math.sin(Math.PI * tl) * 6 * G.pitch, top = a.top + OL.ay + 1, F = 22;
-    for (let i = 0; i < plan.N; i++) { const pt = B.pts[i]; wearDot(i, st.age, G, dim, o);
-      let x = mix(a.left + OL.rx + (pt.x + .5) * rp, b.left + o.bx, tb), y = mix(a.top + OL.ry + (pt.y + .5) * rp, b.top + o.by, tb), r = mix(Math.max(.35, rp * .44 * Math.max(pt.s, .46)), o.br, tb), col = shadeOf(pt.s, tb > .5 ? dim : 1);
-      if (o.k && tl > 0) { x += (o.x - o.bx) * tl; y += (o.y - o.by) * tl - hop; r = mix(r, o.r, tl); col = tl > .7 ? o.c : COB; }
-      if (y > top && y < b.top) { const f = Math.max(1 - (y - top) / 5, 1 - (b.top - y) / F); if (f <= 0) continue; r *= f; }   // 5px under the line: the figures under it start 11px down
-      bt.add(col, x, y, r); }
-    bt.draw(c);
-  }
-  // the scene's place: how far the pinned part has run (y over S), and the scroll at which the lookup's robot stands mid screen (ys)
-  function place() { const r = run.getBoundingClientRect(), VH = pin.offsetHeight, S = run.offsetHeight - VH, G = wearG(), b = cv.getBoundingClientRect(); return { y: -r.top, S, VH, ys: Math.max(S + .45 * VH, (b.top - r.top) + (G ? G.ch / 2 : 0) - VH / 2) }; }
-  let queued = false;
-  function tick() {
-    queued = false; if (anim || !moving) return; if (!OL) openLayout(); if (!OL) return;
-    const { y, S, VH, ys } = place(), p = clamp01(y / Math.max(1, S)), q = clamp01((y - S) / Math.max(1, ys - S)), g = q < 1;
-    if (g !== ghost) { ghost = g; lastKey = ''; }
-    if (y <= S) { flyEnd(); drawOpen(p, true); } else if (g) { drawOpen(1, false, q); drawFlight(q); } else { flyEnd(); if (y < S + VH) drawOpen(1, false, 1); }
-    drawWear();
-  }
-  const ask = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
-  // bring every picture in line with where the page stands now: after a pick, a burst, a width change
-  function sync() { if (moving) { openKey = ''; tick(); } else { ghost = false; flyEnd(); drawOpen(0, false); drawWear(); } }
-  function opening() {
-    if (!run || !pin || !ocv || !fly) return;
-    openLayout(); sync();
-    if (moving) { addEventListener('scroll', ask, { passive: true });
-      // an address that names a robot opens on the lookup, with the robot already in place
-      if (/(^|[#&])r=/.test(location.hash) && scrollY < 2) { const { ys } = place(); scrollTo({ top: Math.ceil(run.getBoundingClientRect().top + scrollY + ys) + 1, behavior: 'instant' }); tick(); } }
-    // the labels are drawn in the page's own type: draw again once it has arrived
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fontsIn = 1; lastKey = ''; openLayout(); sync(); });
+  function drawSwarm() {
+    swarmMap(); const { K, src, dst, a, dup, FR } = SW, { c, ch } = plan, { d, floor, X0, X1, one } = LAY, s = S_, t = clock;
+    const u1 = clamp01((s - .06) / .46), u2 = clamp01((s - .52) / (T_FORM - .52)), second = s > .52, dr = reduce ? 0 : 1 - smooth(0, .16, s), reach = one ? 70 : 120, la = smooth(.4, .5, s) * (1 - smooth(T_FORM - .2, T_FORM - .08, s));
+    for (let pass = 0; pass < 2; pass++) for (let k = 0; k < K; k++) { const o = k * 8, j = src[k], q = PR[j], i = dst[k], sh = SHADE[FR.s[i]]; let x, y, sz, tt, pat = 0, col;
+      if (!second) { tt = ease(clamp01(u1 * 1.5 - .5 * j / Math.max(1, M - 1))); x = mix(a[o], q.sx, tt) + Math.sin(Math.PI * tt) * (a[o + 5] - .5) * (one ? 60 : 160); y = mix(a[o + 1], q.sy, tt) - Math.sin(Math.PI * tt) * (20 + a[o + 5] * 50); sz = mix(ch * .9, d * .86, tt) * (dup[k] ? 1 - tt : 1);
+        if (dr > 0 && tt < 1) { const w = a[o + 6], lo = w > 3 ? 1 : smooth(.62, 1, Math.sin(t * .7 + a[o] * .009 - a[o + 1] * .013)) * 14 + 1, am = w * lo * ch * dr * (1 - tt); x += Math.cos(t * (.5 + a[o + 5]) + a[o + 4]) * am; y += Math.sin(t * (.4 + a[o + 5] * .9) + a[o + 4] * 1.7) * am * .8; } }
+      else { tt = ease(clamp01(u2 * 1.7 - .7 * a[o + 7])); x = mix(q.sx, a[o + 2], tt); y = mix(q.sy, a[o + 3], tt) - Math.sin(Math.PI * tt) * Math.min(150, 36 + Math.abs(a[o + 2] - q.sx) * .22); sz = mix(d * .86, c * .92, tt) * (dup[k] ? tt : 1); }
+      if (sz < .4) continue;
+      if (ptr) { const dx = x - ptr.x, dy = y - ptr.y, dd = Math.hypot(dx, dy); if (dd < reach) { const p = (1 - dd / reach), f = p * p * reach * (second || u1 > 0 ? .5 : .9) / (dd || 1); x += dx * f; y += dy * f; } }
+      tmp.x = x; tmp.y = y; guard(tmp); x = tmp.x; y = tmp.y;
+      if (!pass) { push(x, y, sz * 2.1, 0, 0, INK, 1); continue; }
+      const sky = second ? 1 - tt : tt, own = q.sale ? SIG : q.top ? WHITE : SKY; col = mixc(sh[0], own, smooth(.15, .7, sky), c1); if (sky < .4) pat = sh[1];
+      push(x, y, sz, 0, pat, col, 1); }
+    // the price line under the skyline, with a mark at each step
+    if (la > 0) { floorLine(X0, X1, la); for (const e of tickEls) { push(Math.min(X1 - 2, Math.max(X0 + 2, e._x)), floor + 3, 5, 0, 0, WHITE, la); } }
+    if (s > T_FORM - .3) floorLine(LAY.ST.x, LAY.ST.x + LAY.ST.w, smooth(T_FORM - .3, T_FORM, s));
   }
 
-  lookup(); opening(); printing(); board();
-  // a real width change lays everything out again; a height-only change (a phone's address bar) does nothing
-  let w = innerWidth; addEventListener('resize', () => { if (innerWidth === w) return; w = innerWidth; lastKey = ''; openLayout(); sync(); document.querySelectorAll('canvas.mx').forEach(c => { c._w = 0; drawMx(c); }); document.querySelectorAll('canvas.ri-bot').forEach(drawBot); });
+  // ---- scenes 2 and 4: the robot on its stage at an age. Cells still on the robot, cells in the air, cells on the pile, the floor, the year and the price
+  // the share of the robot's cells that have left it by an age (those in the air count as gone)
+  function startedAt(age) { const st_ = plan.start; let lo = 0, hi = plan.N; while (lo < hi) { const m = lo + hi >> 1; if (st_[m] < age) lo = m + 1; else hi = m; } return lo / plan.N; }
+  function robotGeo() { const e = spinning || spinTo ? clamp01(Math.abs(st.spin - Math.round(st.spin)) / .04) : 0, z = ease(e), k = mix(1, plan.k1, z); return { k, c: plan.c * k, ox: mix(plan.ox, plan.ox1, z), oy: mix(plan.oy, plan.oy1, z) }; }
+  function drawRobot(age, appear, cells) {
+    const { S, N, start } = plan, FR = plan.frame, G = robotGeo(), c = G.c, { ST, YR, PXB, floor } = LAY, now = performance.now(), pos = wearOrder(S, FR).pos, gone = FR.n * startedAt(age), hot = Math.max(3, FR.n * .06);
+    const turn = st.spin - Math.floor(st.spin), fake = (spinning || spinTo) && !(S.turn && S.turn.state === 2), sq = fake ? Math.cos(turn * 6.2832) : 1, mid = G.ox + (S.fb[0] + S.fb[2]) / 2 * c;
+    const fl = flash ? clamp01(1 - (now - flash) / 160) : 0, hov = ptr && !burst ? c * 3.4 : 0;
+    const lost = Math.floor(N * (1 - Math.exp(-plan.b * Math.max(0, age - FALL))));   // cells at rest on the pile by now (those still in the air come after)
+    for (let pass = 0; pass < 2; pass++) {
+      if (cells) for (let i = 0; i < FR.n; i++) { const tf = gone - pos[i]; let x = G.ox + (FR.x[i] + .5) * c, y = G.oy + (FR.y[i] + .5) * c; if (fake) x = mid + (x - mid) * sq;
+        if (!pass) { push(x, y, c * 2.1, 0, 0, INK, 1); continue; }
+        if (tf > 0) { push(x, y, c * .92, 0, 0, SKY, .2); continue; }                      // gone: the robot's whole outline stays, faint
+        const sh = SHADE[FR.s[i]], heat = clamp01(1 + tf / hot); let col = heat > .75 ? mixc(SIG, SIGT, (heat - .75) * 3, c1) : heat > 0 ? mixc(sh[0], SIG, heat / .75 * .9, c1) : sh[0], sz = c * .92;   // the next cells to go heat up
+        if (hov) { const dd = Math.hypot(x - ptr.x, y - ptr.y); if (dd < hov) { const p = 1 - dd / hov; sz *= 1 + .3 * p; col = mixc(col, WHITE, p * .8, c3); } }
+        if (fl) col = mixc(col, WHITE, fl * .8, c3);
+        push(x, y, sz, 0, sh[1], col, 1); }
+      // the lost cells: on the pile, or on their way. A ripple runs through the pile when the age is let go
+      const rp = stamp ? (now - stamp) / 520 : 2, cq = plan.cq;
+      if (cells) for (let r = 0; r < N; r++) { const tf = (age - start[r]) / FALL; if (tf <= 0) break; fallAt(r, tf, tmp); let y = tmp.y;
+        if (tf >= 1 && rp < 1.4) { const ph = rp * 1.6 - (tmp.x - plan.px0) / (plan.pc * cq) * .6; if (ph > 0 && ph < 1) y -= Math.sin(Math.PI * ph) * cq * 1.6 * (1 - rp / 1.4); }
+        if (!pass) { push(tmp.x, y, cq * (tf < 1 ? 1.9 : 2.1), 0, 0, INK, appear); continue; }
+        if (tf < 1) push(tmp.x, y, cq * .98, tmp.r, 0, mixc(SIGT, SIG, clamp01(tf * 2.2), c1), appear); else push(tmp.x, y, cq * .9, 0, (r * 7 + (r >> 3)) % 5 === 0 ? 1 : 0, r < lost * .35 ? SIGD : SIG, appear); }
+      // the year, over the pile, and the price
+      const sk = stamp ? clamp01((now - stamp) / 420) : 1, se = 1 - (1 - sk) * (1 - sk), bv = burst ? mix(burst.v0, E.likely, 1 - Math.pow(1 - clamp01((now - burst.t0) / 430), 3)) / 100 : null;
+      const ye = L.now - age, pv = bv != null ? bv : Math.floor(est(st.id, age).likely / 100 + .5);
+      figure(drag || snap ? ye : Math.round(ye), LAY.X1, YR.y, YR.c, { right: 1, col: SKY, a: appear }, pass, 'year');
+      figure(pv, PXB.x, PXB.y, PXB.c, { pre: '$', post: '00', commas: 1, col: se < 1 ? mixc(SIGT, WHITE, se, c3) : WHITE, a: appear, k: 1 + .1 * (1 - se) }, pass, 'price');
+    }
+    floorLine(ST.x, ST.x + ST.w, 1);
+  }
+
+  // ---- scene 3: a pick. The old picture's cells burst out from the robot's middle, swirl with trails, and slam into the new robot and its pile
+  function snapshot() { const out = []; if (!plan || !LAY) return out; const { N, start } = plan, FR = plan.frame, G = robotGeo(), age = st.age, pos = wearOrder(plan.S, FR).pos, gone = FR.n * startedAt(age);
+    for (let i = 0; i < FR.n; i++) { if (pos[i] < gone) continue; const sh = SHADE[FR.s[i]]; out.push({ x: G.ox + (FR.x[i] + .5) * G.c, y: G.oy + (FR.y[i] + .5) * G.c, s: G.c * .92, c: sh[0], p: sh[1] }); }
+    for (let r = 0; r < N; r++) { const tf = (age - start[r]) / FALL; if (tf <= 0) break; fallAt(r, tf, tmp); out.push({ x: tmp.x, y: tmp.y, s: plan.cq * .9, c: SIG, p: 0 }); }
+    return out.sort((a, b) => a.x - b.x || a.y - b.y); }
+  function startBurst(from, v0) { const to = snapshot(), K = Math.max(from.length, to.length), rnd = rng(11), { ST } = LAY, cx = plan.ox + (plan.S.fb[0] + plan.S.fb[2]) / 2 * plan.c, cyy = LAY.floor - ST.h * .45, dots = [];
+    for (let k = 0; k < K; k++) { const a = from[Math.floor(k * from.length / K)], b = to[Math.floor(k * to.length / K)]; let dx = a.x - cx + (rnd() - .5) * 40, dy = a.y - cyy + (rnd() - .5) * 40; const l = Math.hypot(dx, dy) || 1;
+      dots.push({ a, b, nx: dx / l, ny: dy / l, amp: (.12 + .3 * rnd()) * ST.h, dl: .16 * rnd(), dir: rnd() < .5 ? -1 : 1 }); }
+    burst = { t0: performance.now(), dots, v0, box: [ST.x + 4, Math.max(LAY.head.b, ST.y - 40), LAY.X1 - 4, LAY.floor - 4] }; stamp = 0; kick(); }
+  const BURST = 480;
+  function burstAt(q, t, o) { const tt = clamp01((t - q.dl) / (1 - q.dl)), e = tt * tt * tt, an = 2.8 * tt * q.dir, cs = Math.cos(an), sn = Math.sin(an), bx = mix(q.a.x, q.b.x, e), by = mix(q.a.y, q.b.y, e), B = burst.box;
+    const sw = Math.min(Math.sin(Math.PI * Math.pow(tt, .6)) * q.amp * (1 - e), Math.max(0, Math.min(bx - B[0], B[2] - bx, by - B[1], B[3] - by)));
+    o.x = bx + (q.nx * cs - q.ny * sn) * sw; o.y = by + (q.nx * sn + q.ny * cs) * sw; o.r = tt; return o; }
+  function drawBurst(t) {
+    for (const q of burst.dots) { burstAt(q, t, tmp); push(tmp.x, tmp.y, mix(q.a.s, q.b.s, tmp.r) * 1.9, 0, 0, INK, 1); }
+    for (const q of burst.dots) { for (let g = 3; g >= 1; g--) { burstAt(q, t - g * .028, tmp); if (tmp.r > 0 && tmp.r < 1) push(tmp.x, tmp.y, mix(q.a.s, q.b.s, tmp.r) * (1 - g * .18), 0, 0, mixc(q.a.c, q.b.c, tmp.r, c1), .34 - g * .08); }
+      burstAt(q, t, tmp); push(tmp.x, tmp.y, mix(q.a.s, q.b.s, tmp.r), 0, tmp.r > .6 ? q.b.p : q.a.p, mixc(q.a.c, q.b.c, smooth(.2, .8, tmp.r), c1), 1); }
+    drawRobot(st.age, 1, false); }
+
+  // the picture's labels follow the scroll by opacity alone; on the narrowest phones the lost label drops its last two words so the two labels never meet
+  function setLabels() { const s = S_, a = (smooth(.4, .5, s) * (1 - smooth(T_FORM - .2, T_FORM - .08, s))).toFixed(2), b = smooth(T_FORM, T_FORM + .07, s).toFixed(2);
+    if (lab._a !== a) { lab._a = a; lgd.style.opacity = a; tickEls.forEach(e => { e.style.opacity = a; }); }
+    if (lab._b !== b) { lab._b = b; pcap.style.opacity = b; tk.style.opacity = b; tl.style.opacity = b; }
+    if (+b > 0) { const age = showAge(), e = drag || snap || S_ < T_AGED ? est(st.id, age) : E, k = `Asks ${usd(e.ask)}`, l = `${usd(Math.max(0, e.at(0).ask - e.ask))} lost${LAY.tight ? '' : ' since new'}`; if (tk.textContent !== k) tk.textContent = k; if (tl.textContent !== l) tl.textContent = l; } }
+  function draw() {
+    if (!LAY || !plan) return; const now = performance.now(); nS = 0; texts.length = 0; setLabels();
+    if (!robotMode()) drawSwarm();
+    else if (burst) { const t = (now - burst.t0) / BURST; if (t >= 1) { burst = null; flash = now; drawRobot(st.age, 1, true); } else drawBurst(t); }
+    else drawRobot(showAge(), smooth(T_FORM, T_FORM + .08, S_), true);
+    flush();
+  }
+
+  // ---- the clocks. A frame is asked for only while something is moving, and drawn only when the picture changed
+  const filmOn = () => robotMode() && !reduce && !burst && !spinning && !spinTo && plan && plan.S.work && plan.S.work.state === 2;
+  const active = () => onScreen && ((!robotMode() && !reduce && S_ < .2) || filmOn() || burst || spinTo || snap || (stamp && performance.now() - stamp < 760) || (flash && performance.now() - flash < 200));
+  function frame(now) { raf = 0; const dt = Math.min(.1, (now - (lastT || now)) / 1000); lastT = now; clock += dt;
+    if (plan && robotMode()) {
+      if (spinTo) { const k = clamp01((now - spinTo.t0) / spinTo.ms); st.spin = mix(spinTo.from, spinTo.to, 1 - Math.pow(1 - k, 3)); if (k >= 1) { st.spin = 0; spinTo = null; plan.film = 0; } dirty = true; }
+      const S = plan.S; let kind = 'work', fi = 0;
+      if (spinning || spinTo) { if (S.turn && S.turn.state === 2) { kind = 'turn'; const u = st.spin - Math.floor(st.spin); fi = Math.round(u * S.turn.n) % S.turn.n; } }
+      else if (filmOn()) { plan.film += dt * mix(1, .3, clamp01(st.age / 30)); fi = Math.floor(plan.film * S.work.fps) % S.work.n; }   // an older robot moves more slowly
+      else if (S.work && S.work.state === 2) fi = Math.floor(plan.film * S.work.fps) % S.work.n;
+      if (kind !== plan.kind || fi !== plan.fi) { plan.kind = kind; plan.fi = fi; plan.frame = frameOf(S, kind, fi); dirty = true; }
+    }
+    if (snap) dirty = true;
+    const key = [S_.toFixed(4), st.id, st.age.toFixed(3), st.spin.toFixed(4), plan ? plan.kind + plan.fi : '', ptr ? Math.round(ptr.x) + ',' + Math.round(ptr.y) : '', CW, CH].join('|');
+    const run = active(), busy = (!robotMode() && !reduce && S_ < .2) || burst || (stamp && now - stamp < 760) || (flash && now - flash < 200);
+    if (onScreen && (dirty || busy || key !== lastKey)) { dirty = false; lastKey = key; draw(); }
+    if (stamp && now - stamp >= 760) stamp = 0; if (flash && now - flash >= 200) flash = 0;
+    if (run || active()) raf = requestAnimationFrame(frame); else lastT = 0;
+  }
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+
+  // ------------------------------------------------------------ the words and the controls
+  const ageTicks = (lo, hi) => [lo].concat([5, 10, 15, 20, 25].filter(a => lo + 2 <= a && a <= hi - 2), [hi]);
+  function words() { const a = Math.round(st.age), y = L.now - a; E = est(st.id, a);
+    set('likely', usd(E.likely)); set('lrange', `8 in 10 sell for ${usd(E.llo)} to ${usd(E.lhi)}`); set('agetxt', ageTxt(a)); sl.setAttribute('aria-valuetext', `${ageTxt(a)}, built ${y}`);
+    document.dispatchEvent(new CustomEvent('ri:robot', { detail: { id: st.id, age: a, year: y } })); }
+  // a family's own entry reads "Any KR" (pick_name() in pages/robot_index.py): short enough that no name is cut at 320 wide
+  const pickName = x => x.any && x.short !== 'Any model' ? 'Any ' + x.short.replace(/, any model$/, '').replace(/^Other /, 'other ') : x.short;
+  const fillModels = () => { const m = mk.value; md.innerHTML = L.models.filter(x => L.fams[x.fam].maker === m).map(x => `<option value="${x.id}">${pickName(x).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</option>`).join(''); };
+  const limits = () => { const [lo, hi] = limOf(st.id); sl.min = lo; sl.max = hi; st.age = Math.max(lo, Math.min(hi, st.age)); sl.value = st.age; if (ticksEl) ticksEl.innerHTML = ageTicks(lo, hi).map(a => `<span style="left:calc(14px + (100% - 28px) * ${((a - lo) / (hi - lo)).toFixed(4)})">${a === 0 ? 'New' : a}</span>`).join(''); };
+  let drag = false, snap = 0;
+  function controls() {
+    mk.value = L.fams[byId[st.id].fam].maker; fillModels(); md.value = st.id; limits();
+    const remember = () => { try { history.replaceState(null, '', `#r=${st.id}&y=${L.now - Math.round(st.age)}`); } catch (x) {} };
+    const robot = () => { const r = stageEl.getBoundingClientRect(), seen = r.bottom > 0 && r.top < innerHeight, from = !reduce && !burst && S_ >= T_AGED && seen && LAY ? snapshot() : null, v0 = E.likely;
+      snap = 0; drag = false; st.spin = 0; spinTo = null; st.age = Math.round(st.age); limits(); st.age = Math.round(st.age); sl.value = st.age; E = est(st.id, st.age); makePlan(); plan.film = 0; plan.kind = 'work'; plan.fi = 0; plan.frame = frameOf(plan.S, 'work', 0); words(); remember();
+      if (from && from.length) startBurst(from, v0); setTimeout(() => loadFilm(plan.S, 'work'), from ? 700 : 0); dirty = true; kick(); };
+    mk.addEventListener('change', () => { fillModels(); st.id = md.value; robot(); });
+    md.addEventListener('change', () => { st.id = md.value; robot(); });
+    // dragging: the picture follows the thumb; the words change on each whole year
+    sl.addEventListener('input', () => { snap = 0; drag = true; const was = Math.round(st.age); st.age = +sl.value; if (Math.round(st.age) !== was) words(); dirty = true; kick(); });
+    // letting go: the thumb settles on the whole year (a short glide; at once with reduced motion), then the price is stamped down and the pile ripples
+    const land = to => { snap = 0; drag = false; st.age = to; sl.value = to; words(); remember(); if (!reduce) stamp = performance.now(); dirty = true; kick(); };
+    sl.addEventListener('change', () => { const from = +sl.value, to = Math.round(from); if (reduce || Math.abs(to - from) < .02) return land(to);
+      const t0 = performance.now(); snap = 1; const step = () => { if (!snap) return; const t = clamp01((performance.now() - t0) / 160); if (t >= 1) return land(to); st.age = mix(from, to, 1 - Math.pow(1 - t, 3)); sl.value = st.age; dirty = true; kick(); requestAnimationFrame(step); }; requestAnimationFrame(step); });
+    // arrow keys move a whole year at a time
+    sl.addEventListener('keydown', ev => { const d = /Right|Up|PageUp/.test(ev.key) ? 1 : /Left|Down|PageDown/.test(ev.key) ? -1 : 0; if (!d && !/Home|End/.test(ev.key)) return; ev.preventDefault(); const [lo, hi] = limOf(st.id);
+      land(ev.key === 'Home' ? lo : ev.key === 'End' ? hi : Math.max(lo, Math.min(hi, Math.round(st.age) + d))); });
+    // a sideways drag on the stage turns the robot all the way round; letting go carries it on to the front, where its work film takes over again
+    let x0 = 0, s0 = 0, lastDx = 0;
+    stageEl.addEventListener('pointerdown', e => { if (!robotMode() || burst || !plan || S_ < T_AGED || e.button > 0) return; spinning = true; spinTo = null; x0 = e.clientX; s0 = st.spin; lastDx = 0; loadFilm(plan.S, 'turn'); try { stageEl.setPointerCapture(e.pointerId); } catch (x) {} dirty = true; kick(); });
+    stageEl.addEventListener('pointermove', e => { if (!spinning) return; const per = Math.min(stageEl.clientWidth, 520), dx = e.clientX - x0; lastDx = dx; st.spin = s0 + dx / per; dirty = true; kick(); });
+    const drop = () => { if (!spinning) return; spinning = false; const to = Math.abs(st.spin - Math.round(st.spin)) < .03 ? Math.round(st.spin) : lastDx > 0 ? Math.ceil(st.spin) : Math.floor(st.spin), far = Math.abs(to - st.spin);
+      if (reduce || far < .001) { st.spin = 0; plan.film = 0; } else spinTo = { from: st.spin, to, t0: performance.now(), ms: 240 + 320 * far }; dirty = true; kick(); };
+    stageEl.addEventListener('pointerup', drop); stageEl.addEventListener('pointercancel', drop);
+    words();
+  }
+
+  // ------------------------------------------------------------ the page's place and the pointer
+  function where() { const r = root.getBoundingClientRect(), VH = pin.offsetHeight, run = root.offsetHeight - VH; onScreen = r.bottom > 0 && r.top < innerHeight; if (moving && run > 0) S_ = Math.max(0, Math.min(2, -r.top / (run / 2))); else S_ = 2; }
+  const onScroll = () => { where(); kick(); };
+  const point = (x, y) => { const r = pin.getBoundingClientRect(); if (x < r.left || x > r.right || y < r.top || y > r.bottom) { if (ptr) { ptr = null; dirty = true; kick(); } return; } ptr = { x: x - r.left, y: y - r.top }; kick(); };
+  function start() {
+    startRenderer(); makePlan(); layout(); sizeCanvas(); where(); controls();
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('pointermove', e => point(e.clientX, e.clientY), { passive: true });
+    addEventListener('touchmove', e => { const t = e.touches[0]; if (t) point(t.clientX, t.clientY); }, { passive: true });
+    addEventListener('touchend', () => { if (ptr) { ptr = null; dirty = true; kick(); } }, { passive: true });
+    document.addEventListener('pointerleave', () => { if (ptr) { ptr = null; dirty = true; kick(); } });
+    // an address that names a robot opens on the tool, with the robot already in place
+    if (moving && /(^|[#&])r=/.test(location.hash) && scrollY < 2) { scrollTo({ top: Math.ceil(root.getBoundingClientRect().top + scrollY + root.offsetHeight - pin.offsetHeight) + 1, behavior: 'instant' }); where(); }
+    kick();
+    // the film arrives after the first screen has painted
+    const later = () => loadFilm(plan.S, 'work'); if (document.readyState === 'complete') setTimeout(later, 200); else addEventListener('load', () => setTimeout(later, 200), { once: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); dirty = true; kick(); });
+    // a real width change lays everything out again; a height-only change (a phone's address bar) does nothing
+    let w = innerWidth; addEventListener('resize', () => { if (innerWidth === w) return; w = innerWidth; layout(); sizeCanvas(); where(); dirty = true; kick(); });
+  }
+  start();
 })();

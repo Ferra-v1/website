@@ -4,82 +4,74 @@
 /* two white sections in a row share one section gap */
 .ri-noteS,.ri-board,.ri-thin,.ri-acc{padding-top:0}
 
-/* ---------------------------------------------------------------- 0. the opening: every price as a dot (assets/p-index.js draws it)
-   Plain flow by default: the words, then a band for the sorted picture. With motion allowed, on a screen tall enough to hold it, the scene pins
-   for one screen of scrolling; the heights are set here, before the first paint, so nothing below moves when the script starts. The script reads
-   which form it is in from the pin's own position, so the two never disagree. */
-.ri-open{position:relative}
-.ri-opin{position:relative;padding-bottom:clamp(300px,40vw,440px)}
-.ri-ohead{position:relative;z-index:1;width:fit-content;padding-top:clamp(32px,4vw,56px)}
-.ri-ohead h1{margin:0}
-.ri-ohead .t-lead{color:#3e4656;margin:12px 0 0}
-#ri-ocv{position:absolute;inset:0;display:block;width:100%;height:100%}
-#ri-fly{position:fixed;left:0;top:0;z-index:6;display:none;width:100%;height:100vh;height:100lvh;pointer-events:none}
-@media (prefers-reduced-motion:no-preference) and (min-height:520px){
- .ri-open{height:200vh;height:calc(100lvh + 100vh)}
- .ri-opin{position:sticky;top:0;height:100vh;height:100lvh;padding-bottom:0;overflow:clip}
+/* ---------------------------------------------------------------- 0 and 1. the stage: the opening and the tool (assets/p-index.js draws it; scenes 1 to 4 of design/ANIMATED-JOURNEY.md)
+   The look is the index's own: dark ink with a quiet texture of shade tiles, every picture in cells, sky and white for value kept, signal orange for value lost.
+   Signal orange lives in three tokens set on these two sections only (never on :root, never in a shared file). The playbook names them --sec, --sec-tint and --sec-deep, but
+   --sec is already the site's section spacing (site.css), so here they are --sig, --sig-tint and --sig-deep. The script reads them from here and carries no orange of its own.
+   One canvas, in the opening's pinned box, draws everything. The tool's first block is exactly as tall as that box and sits over its last screen (the negative margin), so
+   the stage the tool leaves empty is where the canvas already holds the robot: the controls arrive with the page's own scroll and the robot is never moved or hidden.
+   With motion allowed, on a screen tall enough, the box pins for two screens of scrolling; the heights are set here, before the first paint, so nothing below moves when
+   the script starts. The script reads which form it is in from the box's own position, so the two never disagree. */
+.ri-open,.ri-look{--sig:#FF6B1A;--sig-tint:#FFE6D6;--sig-deep:#B8470A;--sky:#0fa9e8;--rih:100vh;color:#fff}
+@supports (height:100lvh){.ri-open,.ri-look{--rih:100lvh}}
+.ri-open{position:relative;background:#0e1626}
+.ri-opin{position:relative;height:max(var(--rih),600px);overflow:clip;background:#0e1626 url(data:image/png;base64,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) 0 0/384px 384px}
+.ri-opin > .in{position:relative;z-index:1}
+.ri-ohead{width:fit-content;padding-top:clamp(32px,4vw,56px)}
+.ri-ohead h1{margin:0;color:#fff}
+.ri-ohead .t-lead{color:rgba(255,255,255,.8);margin:12px 0 0}
+/* every run of words stands on a plate of plain ink, so the ground's tiles never run through a letter (the plate is a shadow, so it moves nothing) */
+.ri-ohead h1,.ri-ohead .t-lead,.ri-lab > *,.ri-age{width:fit-content;background:#0e1626;box-shadow:0 0 0 7px #0e1626}
+.ri-age{width:auto}
+#ri-ocv{position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none}
+/* the picture's own labels: placed by the script once per width, shown and hidden by opacity only */
+.ri-lab{position:absolute;inset:0;pointer-events:none;font:400 16px/1.25 var(--sans);color:#fff}
+.ri-lab > *{position:absolute;left:0;top:0;margin:0;white-space:nowrap;opacity:0}
+.ri-tk{color:rgba(255,255,255,.78)}
+.ri-tk.c{transform:translateX(-50%)}.ri-tk.r,.ri-tag.ri-lost{transform:translateX(-100%)}
+.ri-lgd{display:flex;gap:20px}
+.ri-lgd span{display:inline-flex;align-items:center}
+.ri-lgd i{display:block;width:10px;height:10px;margin-right:8px;background:var(--sky)}
+.ri-lgd .s i{background:var(--sig)}
+.ri-cap{color:rgba(255,255,255,.8)}
+.ri-tag{font-weight:600}
+.ri-tag.ri-lost{color:var(--sig)}
+@media (prefers-reduced-motion:no-preference) and (min-height:600px){
+ .ri-open{height:calc(var(--rih) + 200vh)}
+ .ri-opin{position:sticky;top:0}
 }
 
-/* ---------------------------------------------------------------- 1. lookup: picker, likely auction price, the wear-down robot */
-.ri-head h2,.ri-nh h2,.ri-bh h2,.ri-th h3,.ri-al h3{margin:0}
-.ri-tb{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);row-gap:8px;margin-top:32px}
-.ri-tb label{grid-column:span 3}   /* four across the full width, the model widest: the longest maker, model and condition names fit their boxes, uncut */
-.ri-tb label:nth-child(2){grid-column:span 4}.ri-tb label:nth-child(3){grid-column:span 2}
-.page .ri-tb select{width:100%}
-.ri-tb .ri-in{height:var(--tb-h);margin:0;padding:0 14px;width:100%;min-width:0;border:1px solid var(--tb-b);border-radius:var(--r-field);background:#fff;color:var(--ink);font:400 16px/1 var(--sans);font-variant-numeric:lining-nums tabular-nums}
-.ri-tb .ri-in::placeholder{color:#5b6474;opacity:1}
-.ri-tb .ri-in:hover{background-color:var(--tb-hov)}
-.ri-tb .ri-in:focus-visible{outline:2px solid var(--c);outline-offset:2px}
-.ri-lg{margin-top:clamp(32px,4vw,48px);align-items:start}
-.ri-figs{grid-column:1 / span 5}
-.ri-lab{margin:0;font:400 16px/1.4 var(--sans);color:var(--muted)}
-.ri-big{margin:8px 0 0;font:700 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
-.ri-rg{margin:12px 0 0;color:#4a5262}
-.ri-stage{grid-column:7 / span 6;margin:0;min-width:0}
-.ri-cvw{position:relative;padding-bottom:28px}   /* the band under the floor line where the two labels stand */
-#ri-cv{display:block;width:100%;aspect-ratio:136/86}
-.ri-tag{position:absolute;left:0;top:0;transform:translate(-50%,0);font:600 16px/1.2 var(--sans);color:var(--deep);white-space:nowrap;pointer-events:none}
-.ri-tag.ri-lost{color:var(--muted)}
-/* while the robot is still on its way down from the opening, or mid burst after a pick, its two labels wait: gone at once, so no dot in the air crosses a word, and back with a fade once the dots have landed */
-.ri-tag{transition:opacity .5s ease}
-@media (prefers-reduced-motion:reduce){.ri-tag{transition:none}}
-.ri-ghost .ri-tag{opacity:0;transition:none}
-.ri-age{margin-top:8px}
-.ri-agel{display:flex;justify-content:space-between;gap:16px;font:500 16px/1.3 var(--sans);color:var(--ink)}
+/* the tool: left, the price (drawn by the canvas in the box kept free here); right, the stage, the age and the picker (one toolbar, one row) */
+.ri-look{position:relative;z-index:1;margin-top:calc(-1 * max(var(--rih),600px))}
+.ri-tool{height:max(var(--rih),600px)}
+.ri-tin{height:100%;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);padding-bottom:clamp(20px,3.4vh,36px)}
+.ri-left{grid-column:1 / span 4;display:flex;flex-direction:column;min-width:0;min-height:0;padding-top:var(--oh,161px)}
+.ri-pxb{flex:none;margin:auto 0;height:clamp(56px,9.4vh,88px)}
+.ri-tb{flex:none;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,5fr);gap:8px;margin:14px 0 0}
+.page .ri-tb select{width:100%;background-color:#0e1626}
+.ri-right{grid-column:5 / -1;display:flex;flex-direction:column;min-width:0;min-height:0;padding-top:clamp(56px,10vh,96px)}
+.ri-stage{flex:1 1 0;min-height:0;touch-action:pan-y;cursor:grab}
+.ri-stage:active{cursor:grabbing}
+.ri-age{flex:none;margin-top:52px}   /* the band between the floor and the slider is where the picture's two labels stand */
+.ri-agel{display:flex;justify-content:space-between;gap:16px;font:500 16px/1.3 var(--sans);color:#fff}
 #ri-age{-webkit-appearance:none;appearance:none;display:block;width:100%;height:46px;margin:0;background:none;cursor:pointer}
-#ri-age::-webkit-slider-runnable-track{height:2px;background:var(--line)}
-#ri-age::-moz-range-track{height:2px;background:var(--line)}
-#ri-age::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-11px;border:0;border-radius:2px;background:var(--c)}
-#ri-age::-moz-range-thumb{width:24px;height:24px;border:0;border-radius:2px;background:var(--c)}
+#ri-age::-webkit-slider-runnable-track{height:2px;background:rgba(255,255,255,.42)}
+#ri-age::-moz-range-track{height:2px;background:rgba(255,255,255,.42)}
+#ri-age::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-13px;border:3px solid #0e1626;border-radius:0;background:var(--sig)}
+#ri-age::-moz-range-thumb{width:22px;height:22px;border:3px solid #0e1626;border-radius:0;background:var(--sig)}
 #ri-age:focus-visible{outline-offset:4px}
-.ri-ticks{display:flex;justify-content:space-between;margin-top:-6px;font:400 16px/1.3 var(--sans);color:var(--muted)}
-
-/* the statement: asking estimate x auction share = likely auction price */
-.ri-stmt{margin-top:32px}
-.ri-stmt tbody th{font-weight:500}
-.ri-stmt .sub{display:block;margin-top:4px;font-weight:400;color:var(--muted)}
-.ri-stmt .op{color:var(--muted);font-weight:400;margin-right:6px}
-.ri-stmt td.r{vertical-align:top;font-weight:500}
-.ri-stmt tr.tot th,.ri-stmt tr.tot td{border-top:3px double var(--ink);border-bottom:0;color:var(--c);padding-top:16px}
-.ri-stmt tr.tot th{font-weight:600}
-.ri-stmt tr.tot td b{font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em}
-
-@media (max-width:1200px){.ri-tb label:nth-child(n){grid-column:span 6}}   /* two rows of two */
+.ri-ticks{position:relative;height:21px;margin-top:-6px;font:400 16px/1.3 var(--sans);color:rgba(255,255,255,.72)}
+.ri-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
 @media (max-width:980px){
- .ri-figs,.ri-stage{grid-column:1 / -1}
- .ri-stage{grid-row:2;margin-top:28px}
- .ri-figs{grid-row:3;margin-top:32px}
+ /* one column: the price, the stage, the age, the picker, all on one screen */
+ .ri-tin{display:flex;flex-direction:column;padding-bottom:16px}
+ .ri-left{flex:none;display:block;padding-top:calc(var(--oh,110px) + 14px)}
+ .ri-pxb{margin:0;height:clamp(40px,7vh,64px)}
+ .ri-right{flex:1 1 0;padding-top:38px}
+ .ri-age{margin-top:50px}
+ .ri-tb{margin-top:10px}
 }
-@media (max-width:720px){
- .ri-tb{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:8px}.ri-tb label:nth-child(n){grid-column:auto}
- .ri-tb label:nth-child(-n+2){grid-column:1 / -1}   /* maker and model each take the full width on a phone, so no name is cut */
- .ri-ticks span:nth-child(even){visibility:hidden}
- /* on a phone the price stands over the robot and the sum under it, so the picker, the price, the robot and its slider share one screen */
- .ri-figs{display:contents}
- .ri-figs > *{grid-column:1 / -1}
- .ri-stage{grid-row:auto;order:1;margin-top:24px}
- .ri-stmt{order:2}
-}
+@media (max-width:560px){.ri-tb{grid-template-columns:minmax(0,1fr)}}   /* maker and model each take the full width on a phone, so no name is cut */
 
 /* ---------------------------------------------------------------- 2. the valuation note: a credit memo on one Letter page */
 .ri-noteS .ri-nh{grid-column:1 / -1}
