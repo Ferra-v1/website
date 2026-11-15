@@ -23,6 +23,46 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-lg b{margin-right:6px;line-height:1;color:var(--ink)}
 .vr-k-ask b,.vr-k-rent b{color:var(--c)}
 
+/* board A, the cover: one arm at five ages, the dots it keeps standing for the asking price it keeps */
+.vr-bot{display:block;width:100%;height:auto}
+.vr-bot.vr-ph{display:none}
+.vr-wear{grid-column:1 / 11;min-width:0;margin:clamp(20px,2.5vw,36px) 0 clamp(12px,1.5vw,20px)}
+.vr-wr,.vr-wl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gut)}
+.vr-wr{align-items:end;border-bottom:1px solid var(--ink)}
+.vr-wa{padding:0 0 6px}
+.vr-wl{margin-top:14px}
+.vr-wl p{margin:0;text-align:center}
+.vr-wl b{display:block;color:var(--c)}
+.vr-wl span{display:block;color:var(--muted)}
+.vr-wc{margin:20px 0 0;max-width:62ch;color:#3e4656}
+.vr-hero .vr-legend{margin-top:clamp(40px,4vw,56px);padding-top:18px;border-top:1px solid var(--line)}
+
+/* chapter 2: the arm filled from its feet only to the share auctions pay */
+.vr-fill{position:relative;margin:26px 0 22px}
+.vr-fa{display:block;width:56%;height:auto;border-bottom:1px solid var(--ink)}
+.vr-fa path{stroke-linecap:round;fill:none}
+.vr-fon{stroke:#2c47b0}.vr-foff{stroke:#cad2ec}
+.vr-fl{position:absolute;left:0;right:0;margin:0;height:0;display:flex;justify-content:flex-end;align-items:center}
+.vr-fl::before{content:"";flex:1 1 auto;margin-right:10px;border-top:1px dashed rgba(14,22,38,.4)}
+.vr-fl span{flex:none;width:calc(44% - 10px);line-height:1.25;color:#3e4656}
+.vr-fl-a{top:var(--t)}
+.vr-fl-b{bottom:var(--f)}
+.vr-fl-b::before{border-top:1.5px solid var(--c)}
+.vr-fl-b span{color:var(--c);font-weight:600}
+
+/* chapter 3: one column per month of rent, solid from the month the rent adds up to the price */
+.vr-stack{margin:22px 0 26px}
+.vr-stack svg{display:block;width:100%;height:auto;overflow:visible}
+.vr-stack .vr-ph{display:none}
+.vr-stack .vr-desk{max-width:384px}
+.vr-so{stroke:#d3dbf2;stroke-linecap:round;fill:none}
+.vr-sn{stroke:var(--c);stroke-linecap:round;fill:none}
+.vr-sp{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 4}
+.vr-spl{font:500 16px/1 var(--sans);fill:var(--ink)}
+.vr-sb{stroke:#9aa3b5;stroke-width:1}
+.vr-sx{font:400 16px/1 var(--sans);fill:var(--cap)}
+.vr-sxm{font-weight:600;fill:var(--c)}
+
 /* a chapter: big figure, heading and words on the left, its figure on the right */
 .vr-ch{border-top:1px solid var(--line)}
 .vr-ch.g-ink,.vr-ch.g-ink + .vr-ch{border-top:0}
@@ -176,14 +216,19 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
  .vr-mr,.vr-mh{grid-template-columns:minmax(0,11rem) minmax(0,1fr) 5.5rem}
 }
 @media screen and (max-width:860px){
- .vr-ht,.vr-sum,.vr-l,.vr-r,.vr-cl,.vr-cm{grid-column:1 / -1}
+ .vr-ht,.vr-sum,.vr-l,.vr-r,.vr-cl,.vr-cm,.vr-wear{grid-column:1 / -1}
  .vr-r{margin-top:8px}
  .vr-stick{position:static}
  .vr-cm{margin-top:40px}
 }
 @media screen and (max-width:720px){
- .vr-cover.vr-desk,.vr-sc.vr-desk{display:none}
- .vr-cover.vr-ph,.vr-sc.vr-ph{display:block}
+ .vr-cover.vr-desk,.vr-sc.vr-desk,.vr-bot.vr-desk{display:none}
+ .vr-cover.vr-ph,.vr-sc.vr-ph,.vr-bot.vr-ph,.vr-stack .vr-ph{display:block}
+ .vr-stack .vr-desk{display:none}
+ .vr-wr,.vr-wl{column-gap:4px}
+ .vr-wa{padding:0 0 4px}
+
+ .vr-fa{width:60%}.vr-fl span{width:calc(40% - 10px)}
  .vr-lg{grid-column:1 / -1}
  .vr-lot{position:relative;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n v" "t t";row-gap:0;padding:6px 0 2px}
  .vr-lot .vr-ln{grid-area:n;padding:0}.vr-lot .vr-v{grid-area:v}.vr-lot .vr-tr{grid-area:t;min-height:22px}
@@ -209,7 +254,15 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
  .page .g12{display:block!important}
  .page .vr-hero{padding:0 0 10pt!important}
  .page .vr-sum{margin-top:12pt}
- .page .vr-cover.vr-desk,.page .vr-sc.vr-desk{display:block!important}
+ .page .vr-cover.vr-desk,.page .vr-sc.vr-desk,.page .vr-bot.vr-desk{display:block!important}
+ .page .vr-bot.vr-ph{display:none!important}
+ .page .vr-wear{margin:10pt 0 6pt!important}.page .vr-wr,.page .vr-wl{max-width:400px}.page .vr-toc{margin-top:18pt!important}
+ .page .vr-wear{margin-top:20pt;break-inside:avoid}
+ .page .vr-wl b{font-size:14pt!important}.page .vr-wl span,.page .vr-wc{font-size:10.5pt!important;color:#444!important}
+ .page .vr-hero .vr-legend{margin-top:16pt!important;padding-top:10pt!important}
+ .page .vr-fill{max-width:380px;break-inside:avoid}.page .vr-fl::before{content:""!important;display:block!important;border-top:1px dashed #888!important}.page .vr-fl-b::before{border-top:1.5px solid #2847ce!important}.page .vr-fl-b span{color:#2847ce!important;-webkit-text-fill-color:#2847ce!important;font-weight:600}
+.page .vr-stack{break-inside:avoid}.page .vr-c3 .vr-fig{break-before:page}.page .vr-stack .vr-desk{display:block!important;width:384px}.page .vr-stack .vr-ph{display:none!important}
+ .page .vr-sn{stroke:#2847ce}.page .vr-so{stroke:#d3dbf2}
  .page .vr-ch{break-before:page;padding:0!important;border:0!important}
  .page .vr-c1b,.page .vr-c3b{margin-top:22pt!important;padding-top:0!important;border:0!important;break-inside:avoid}
  .page figure.vr-fig{break-inside:auto}
