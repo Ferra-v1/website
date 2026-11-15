@@ -1,0 +1,237 @@
+/* "What robots are worth", the Ferra Robot Value Report (pages/value_report.py, at price-report.html when REPORT is on). Board D "Count the robots": one dot, ring or row per real record.
+   Grounds: white, with chapter 1 on the page's one ink band. Sizes come from site.css (60/36, 22/20, 16). The print layout at the end makes the PDF (tools/report_pdf.cjs). */
+
+/* the first screen */
+.vr-hero{padding:clamp(40px,5vw,80px) 0 var(--sec)}
+.vr-hg{row-gap:28px}
+.vr-ht{grid-column:1 / 8;min-width:0}
+.vr-sum{grid-column:1 / 9;min-width:0}
+.vr-ed{margin:18px 0 0;color:var(--ink)}
+.vr-dl{margin-top:10px}
+.vr-sum p{margin:0;color:#3e4656}
+.vr-sum .vr-asof{margin-top:10px;color:var(--cap)}
+.vr-print-only{display:none}
+.vr-field{margin:clamp(40px,4.4vw,64px) 0 0}
+.vr-cover{display:block;width:100%;height:auto}
+.vr-cover.vr-ph{display:none}
+path.vr-c-ask{stroke:var(--c);stroke-linecap:round;fill:none}
+path.vr-c-sale{stroke:var(--ink);stroke-linecap:round;fill:none}
+circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
+.vr-c-rent{fill:#fff;stroke:var(--c);stroke-width:1.5}
+.vr-legend{margin-top:18px;row-gap:8px}
+.vr-lg{grid-column:span 4;margin:0;color:#3e4656}
+.vr-lg b{margin-right:6px;line-height:1;color:var(--ink)}
+.vr-k-ask b,.vr-k-rent b{color:var(--c)}
+
+/* a chapter: big figure, heading and words on the left, its figure on the right */
+.vr-ch{border-top:1px solid var(--line)}
+.vr-ch.g-ink,.vr-ch.g-ink + .vr-ch{border-top:0}
+.vr-cg{row-gap:28px}
+.vr-l{grid-column:1 / 5;min-width:0}
+.vr-r{grid-column:6 / 13;min-width:0;margin:0}
+.vr-big{margin:0 0 18px;line-height:1}
+.vr-big .big-num{font:700 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
+.vr-big span{display:block;margin:8px 0 0;font:400 var(--t-sub)/1.2 var(--sans);letter-spacing:0;color:var(--muted)}
+.vr-l h2,.vr-l h3{margin:0 0 12px}
+.vr-b{margin:0 0 14px;color:#3e4656}
+.vr-sure{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--line);color:var(--ink)}
+.vr-sure b{font-weight:600}
+.vr-src{margin:16px 0 0;color:var(--cap)}
+.vr-cap{margin:0 0 16px;font:600 16px/1.35 var(--sans);color:var(--ink)}
+.vr-note{margin:14px 0 0;color:#3e4656}
+.vr-r > p,.vr-r .vr-note,.vr-sum p,.vr-l > p{max-width:50ch}
+.vr-c1b,.vr-c3b{margin-top:clamp(48px,5vw,72px);padding-top:clamp(40px,4vw,56px);border-top:1px solid var(--line)}
+.vr-plot{position:relative}
+.vr-keys{display:flex;flex-wrap:wrap;gap:6px 24px;margin:14px 0 0}
+.vr-lots ~ .vr-src,.vr-fig > .vr-keys:first-of-type{margin-top:0}
+.vr-fig > figcaption + .vr-keys{margin:0 0 14px}
+.vr-key{display:inline-flex;align-items:center;gap:8px;margin:0;color:#3e4656}
+.vr-ks{width:22px;height:14px;flex:none}
+.vr-tb{margin-top:16px}
+.vr-tb > .tlink:first-child{margin-left:0}
+.vr-tb .tlink{border:0;background:none;padding:0;cursor:pointer;font:500 16px/1.25 var(--sans)}
+.vr-tb .tlink:hover{text-decoration:underline;text-underline-offset:4px}
+
+/* chapter 1 on ink */
+.vr-c1 .vr-big .big-num{color:#fff}
+.vr-c1 .vr-big span,.vr-c1 .vr-b,.vr-c1 .vr-key,.vr-c1 .vr-note{color:rgba(255,255,255,.84)}
+.vr-c1 .vr-src{color:rgba(255,255,255,.7)}
+.vr-c1 .vr-cap,.vr-c1 .vr-sure{color:#fff}
+.vr-c1 .vr-sure,.vr-c1 .vr-c1b{border-color:rgba(255,255,255,.16)}
+.vr-c1 .vr-c1b{border-top:1px solid rgba(255,255,255,.16)}
+
+/* figure 1: asking price by age */
+.vr-sc{display:block;width:100%;height:auto;overflow:visible}
+.vr-sc.vr-ph{display:none}
+.vr-ax{font:400 var(--fs)/1 var(--sans);fill:var(--cap)}
+.vr-gl{stroke:var(--line);stroke-width:1}
+.vr-base{stroke:#9aa3b5;stroke-width:1}
+.vr-band{fill:rgba(40,71,206,.1)}
+.vr-pt{stroke:rgba(40,71,206,.55);stroke-linecap:round;fill:none}
+.vr-mid{stroke:var(--ink);stroke-width:2.5;fill:none;stroke-linejoin:round}
+.vr-hl{fill:var(--c);stroke:#fff;stroke-width:2}
+.vr-kd{fill:var(--c)}
+.vr-kr{fill:#fff;stroke:var(--ink);stroke-width:1.5}
+.vr-km{stroke:rgba(14,22,38,.38);stroke-width:1.5}
+.vr-c1 .vr-ax{fill:rgba(255,255,255,.7)}
+.vr-c1 .vr-gl{stroke:rgba(255,255,255,.12)}
+.vr-c1 .vr-base{stroke:rgba(255,255,255,.4)}
+.vr-c1 .vr-band{fill:rgba(150,232,255,.13)}
+.vr-c1 .vr-pt{stroke:rgba(255,255,255,.62)}
+.vr-c1 .vr-mid{stroke:#96e8ff}
+.vr-c1 .vr-hl{fill:#fff;stroke:var(--c)}
+.vr-c1 .vr-kd{fill:rgba(255,255,255,.8)}
+
+/* tables: figures 2 and 5, and every chart's table view */
+.vr-tbl{width:100%;border-collapse:collapse;font-variant-numeric:lining-nums tabular-nums;line-height:1.4}
+.vr-tbl th,.vr-tbl td{padding:12px 0 12px 16px;text-align:left;vertical-align:baseline;font-weight:400;border-bottom:1px solid var(--line)}
+.vr-tbl :is(th,td):first-child{padding-left:0}
+.vr-tbl thead th{padding-top:0;font-weight:500;color:var(--muted);vertical-align:bottom}
+.vr-tbl .r{text-align:right}
+.vr-tbl tbody th span{display:block;color:var(--muted)}
+.vr-tbl .vr-lk{color:var(--c);font-weight:600}
+.vr-tbl a{color:var(--c)}
+.vr-c1 .vr-tbl :is(th,td){border-color:rgba(255,255,255,.16)}
+.vr-c1 .vr-tbl thead th{color:rgba(255,255,255,.7)}
+.vr-c1 .vr-tbl .vr-lk{color:#96e8ff}
+.vr-c1 .vr-tbl a{color:#fff}
+.vr-tv{max-height:520px;overflow:auto;border-top:1px solid var(--line)}
+.vr-c1 .vr-tv{border-color:rgba(255,255,255,.16)}
+.vr-tv .vr-tbl thead th{position:sticky;top:0;background:#fff;padding-top:12px}
+.vr-c1 .vr-tv .vr-tbl thead th{background:var(--g-ink)}
+.vr-tv:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+
+/* tooltips: solid, beside what they describe (FerraPlot.placeTip places them) */
+.vr-tip{position:absolute;z-index:3;width:300px;max-width:calc(100% - 16px);background:#fff;color:var(--ink);border:1px solid #cfd5e0;border-radius:2px;padding:10px 12px;font-size:16px;line-height:1.4;pointer-events:none}
+.vr-c1 .vr-tip{border-color:transparent}
+.vr-tip b{display:block;font-weight:500}
+.vr-tip span{display:block;margin-top:2px;color:#3e4656}
+.vr-tip a{display:block;margin-top:4px;font-weight:500;color:var(--c)}
+.vr-tip.touch{pointer-events:auto;padding-bottom:0}
+.vr-tip.touch a{display:inline-flex;align-items:center;min-height:44px;margin-top:0}
+
+/* figure 3: one row per auction sale. The ring is the asking estimate, the dot what it sold for, the faint line the middle sale */
+.vr-rows{list-style:none;margin:0;padding:0}
+.vr-nb{white-space:nowrap}
+.vr-stick{position:sticky;top:96px;align-self:start}
+.vr-rs .vr-rc,.vr-rs td:last-child{white-space:nowrap}
+.vr-lots + .vr-tv + .vr-src{margin-top:20px}
+.vr-lot,.vr-lh{display:grid;grid-template-columns:minmax(0,16.5rem) minmax(0,1fr) 7.5rem;column-gap:16px;align-items:center}
+.vr-lot{min-height:32px;cursor:pointer}
+.vr-lot:hover .vr-ln,.vr-lot.on .vr-ln{color:var(--c)}
+.vr-ln{padding:5px 0;line-height:1.3}
+.vr-tr{position:relative;align-self:stretch;min-height:32px}
+.vr-tr::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
+.vr-lot .vr-tr::after{content:"";position:absolute;top:0;bottom:0;left:var(--m);border-left:1.5px solid rgba(14,22,38,.24)}
+.vr-ln2{position:absolute;top:50%;height:2px;margin-top:-1px;background:rgba(40,71,206,.32)}
+.vr-rg,.vr-dt{position:absolute;top:50%;border-radius:50%;transform:translate(-50%,-50%)}
+.vr-rg{width:13px;height:13px;background:#fff;border:1.5px solid var(--ink)}
+.vr-dt{width:13px;height:13px;background:var(--c)}
+.vr-lot.on .vr-dt{box-shadow:0 0 0 3px rgba(40,71,206,.22)}
+.vr-v{text-align:right;color:#3e4656;white-space:nowrap}
+.vr-v b{font-weight:600;color:var(--ink);margin-right:2px}
+.vr-lh{min-height:24px}
+.vr-th::before{display:none}
+.vr-th b{position:absolute;top:0;font-weight:400;color:var(--cap);white-space:nowrap;line-height:24px}
+.vr-th b:last-child{transform:translateX(-100%)}
+.vr-mg{display:flex;justify-content:space-between;gap:16px;margin-top:18px;padding-bottom:6px;border-bottom:1px solid var(--line);font:600 16px/1.35 var(--sans)}
+.vr-mg .vr-gn{font:400 16px/1.35 var(--sans);color:var(--cap)}
+.vr-rows > .vr-mg:first-child{margin-top:4px}
+
+/* figure 4: months of rent, one dot per month, 36 to a line */
+.vr-mr,.vr-mh{display:grid;grid-template-columns:minmax(0,13rem) minmax(0,27rem) 6rem;column-gap:16px;align-items:center}
+.vr-mr{padding:8px 0;cursor:pointer}
+.vr-mr:hover .vr-ml,.vr-mr.on .vr-ml{color:var(--c)}
+.vr-ml{line-height:1.3}
+.vr-mw{display:block;color:var(--cap)}
+.vr-mr:hover .vr-mw,.vr-mr.on .vr-mw{color:var(--cap)}
+.vr-ms{display:block;width:100%;height:auto}
+.vr-mo{stroke:var(--c);stroke-linecap:round;fill:none}
+.vr-yr{stroke:var(--line);stroke-width:1}
+.vr-y3{stroke:#9aa3b5}
+.vr-mh{min-height:24px}
+.vr-mt2{position:relative;align-self:stretch}
+.vr-mt2 b{position:absolute;top:0;font-weight:400;color:var(--cap);white-space:nowrap;line-height:24px;transform:translateX(-50%)}
+.vr-mt2 b:last-child{transform:translateX(-100%)}
+
+/* chapters 4 and 5: the survey invitation beside the sourced figure */
+.vr-ask{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}
+.vr-units{display:block;width:100%;max-width:calc(var(--cols) * 40px);height:auto}
+.vr-uon{fill:var(--c)}
+.vr-uoff{fill:#fff;stroke:#9aa3b5;stroke-width:1.5}
+.vr-sv ul{list-style:none;margin:0 0 24px;padding:0}
+.vr-sv li{display:grid;grid-template-columns:minmax(0,14rem) minmax(0,1fr) 3rem;gap:12px;align-items:center;padding:6px 0}
+.vr-sv i{display:block;height:12px;width:var(--w);background:var(--c);border-radius:2px}
+.vr-sv b{text-align:right;font-weight:600}
+
+/* the close: the index, the method, then the closing band */
+.vr-close{padding:var(--sec) 0 0;border-top:1px solid var(--line)}
+.vr-cl{grid-column:1 / 6;min-width:0}
+.vr-cm{grid-column:7 / 12}
+.vr-cl h2{margin:0 0 12px}
+.vr-rev{margin:24px 0 0;color:#3e4656}
+
+@media screen and (max-width:1080px){
+ .vr-lot,.vr-lh{grid-template-columns:minmax(0,13rem) minmax(0,1fr) 7rem}
+ .vr-mr,.vr-mh{grid-template-columns:minmax(0,11rem) minmax(0,1fr) 5.5rem}
+}
+@media screen and (max-width:860px){
+ .vr-ht,.vr-sum,.vr-l,.vr-r,.vr-cl,.vr-cm{grid-column:1 / -1}
+ .vr-r{margin-top:8px}
+ .vr-stick{position:static}
+ .vr-cm{margin-top:40px}
+}
+@media screen and (max-width:720px){
+ .vr-cover.vr-desk,.vr-sc.vr-desk{display:none}
+ .vr-cover.vr-ph,.vr-sc.vr-ph{display:block}
+ .vr-lg{grid-column:1 / -1}
+ .vr-lot{position:relative;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n v" "t t";row-gap:0;padding:6px 0 2px}
+ .vr-lot .vr-ln{grid-area:n;padding:0}.vr-lot .vr-v{grid-area:v}.vr-lot .vr-tr{grid-area:t;min-height:22px}
+ .vr-lh{grid-template-columns:minmax(0,1fr)}.vr-lh > span:not(.vr-tr){display:none}
+ .vr-mr{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l v" "s s";row-gap:6px;padding:10px 0}
+ .vr-mr .vr-ml{grid-area:l}.vr-mr .vr-v{grid-area:v;align-self:start}.vr-mr .vr-ms{grid-area:s}
+ .vr-mh{grid-template-columns:minmax(0,1fr)}.vr-mh > span:not(.vr-mt2){display:none}
+ .vr-tbl th,.vr-tbl td{padding-left:10px}
+ .vr-rs td:last-child{white-space:normal}
+ .vr-tb{flex-wrap:nowrap}
+}
+
+/* the printable report: Letter pages, every chart in colour on white, nothing to click */
+@media print{
+ @page{size:letter;margin:16mm 15mm 18mm}
+ .page .vr-units{max-width:300px!important}
+ .page .vr-tb,.page .vr-tip,.page .vr-dl,.page .vr-tv,.page .vr-close,.page .cb,.page .vr-ask .tlink,.page .vr-cover.vr-ph,.page .vr-sc.vr-ph{display:none!important}
+ .page .vr-print-only{display:block!important;margin:6pt 0 0;font-size:10.5pt!important;color:#333!important}
+ .page .vr-toc{margin-top:36pt;padding-top:14pt;border-top:1px solid #ccc}
+ .page .vr-toch{margin:0 0 8pt;font:600 12pt/1.3 var(--sans)!important;color:#000!important}
+ .page .vr-toc ol{margin:0;padding-left:18pt}.page .vr-toc li{font-size:12pt!important;line-height:1.7!important}
+ .page .in{padding-left:0!important;padding-right:0!important;max-width:none!important}
+ .page .g12{display:block!important}
+ .page .vr-hero{padding:0 0 10pt!important}
+ .page .vr-sum{margin-top:12pt}
+ .page .vr-cover.vr-desk,.page .vr-sc.vr-desk{display:block!important}
+ .page .vr-ch{break-before:page;padding:0!important;border:0!important}
+ .page .vr-c1b,.page .vr-c3b{margin-top:22pt!important;padding-top:0!important;border:0!important;break-inside:avoid}
+ .page figure.vr-fig{break-inside:auto}
+ .page .vr-r{margin-top:14pt}
+ .page .vr-big{margin-bottom:8pt}
+ .page .vr-big .big-num{color:#2847ce!important;-webkit-text-fill-color:#2847ce!important;font-size:30pt!important}
+ .page .vr-big span{display:inline!important;margin-left:8pt!important;color:#555!important;-webkit-text-fill-color:#555!important;font-size:13pt!important}
+ .page .vr-src,.page .vr-key,.page .vr-mw,.page .vr-gn,.page .vr-ax{color:#444!important;-webkit-text-fill-color:#444!important}
+ .page .vr-lg b{font-size:14pt!important}
+ .page .vr-legend{display:block!important}.page .vr-lg{margin:0 0 4pt}
+ .page .vr-tbl .vr-lk{color:#2847ce!important;-webkit-text-fill-color:#2847ce!important}
+ .page .vr-sc .vr-ax{fill:#555}
+ .page .vr-c1 .vr-gl{stroke:#e2e6ee}.page .vr-c1 .vr-base{stroke:#9aa3b5}.page .vr-c1 .vr-band{fill:rgba(40,71,206,.1)}.page .vr-c1 .vr-pt{stroke:rgba(40,71,206,.55)}
+ .page .vr-c1 .vr-mid{stroke:#0e1626}.page .vr-c1 .vr-kd{fill:#2847ce}
+ .page .vr-lots .vr-dt{background-color:#2847ce!important}
+ .page .vr-lots .vr-rg{background-color:#fff!important;border:1.5px solid #0e1626!important}
+ .page .vr-lots .vr-ln2{background-color:rgba(40,71,206,.32)!important}
+ .page .vr-lot,.page .vr-mr,.page .vr-mg,.page .vr-tbl tr,.page .vr-keys,.page .vr-cap{break-inside:avoid}
+ .page .vr-mg,.page .vr-cap{break-after:avoid}
+ .page .vr-lot{min-height:0}.page .vr-lot .vr-tr{min-height:20px}
+ .page .vr-tbl :is(th,td){border-color:#ccc!important}
+ .page :is(.vr-ch,.vr-hero) a[href^="http"]::after{content:none!important}
+ .page *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.vr-unitf .vr-keys{margin-top:14px}
