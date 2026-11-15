@@ -1,14 +1,30 @@
 /* Robot Index page (pages/robot_index.py, assets/p-index.js). White grounds, cobalt accents, the site's 12 columns and three sizes.
-   One block per section, so a section's pick can be swapped alone: lookup, statement, note, board, thin data, accuracy, print. */
+   One block per section, so a section's pick can be swapped alone: opening, lookup, statement, note, board, thin data, accuracy, print. */
 
 /* two white sections in a row share one section gap */
 .ri-noteS,.ri-board,.ri-thin,.ri-acc{padding-top:0}
 
+/* ---------------------------------------------------------------- 0. the opening: every price as a dot (assets/p-index.js draws it)
+   Plain flow by default: the words, then a band for the sorted picture. With motion allowed, on a screen tall enough to hold it, the scene pins
+   for one screen of scrolling; the heights are set here, before the first paint, so nothing below moves when the script starts. The script reads
+   which form it is in from the pin's own position, so the two never disagree. */
+.ri-open{position:relative}
+.ri-opin{position:relative;padding-bottom:clamp(300px,40vw,440px)}
+.ri-ohead{position:relative;z-index:1;width:fit-content;padding-top:clamp(32px,4vw,56px)}
+.ri-ohead h1{margin:0}
+.ri-ohead .t-lead{color:#3e4656;margin:12px 0 0}
+#ri-ocv{position:absolute;inset:0;display:block;width:100%;height:100%}
+#ri-fly{position:fixed;left:0;top:0;z-index:6;display:none;width:100%;height:100vh;height:100lvh;pointer-events:none}
+@media (prefers-reduced-motion:no-preference) and (min-height:520px){
+ .ri-open{height:200vh;height:calc(100lvh + 100vh)}
+ .ri-opin{position:sticky;top:0;height:100vh;height:100lvh;padding-bottom:0;overflow:clip}
+}
+
 /* ---------------------------------------------------------------- 1. lookup: picker, likely auction price, the wear-down robot */
-.ri-head h1,.ri-nh h2,.ri-bh h2,.ri-th h3,.ri-al h3{margin:0}
-.ri-look .ri-head .t-lead{color:#3e4656;margin:12px 0 0}
+.ri-head h2,.ri-nh h2,.ri-bh h2,.ri-th h3,.ri-al h3{margin:0}
 .ri-tb{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);row-gap:8px;margin-top:32px}
-.ri-tb label{grid-column:span 2}
+.ri-tb label{grid-column:span 3}   /* four across the full width, the model widest: the longest maker, model and condition names fit their boxes, uncut */
+.ri-tb label:nth-child(2){grid-column:span 4}.ri-tb label:nth-child(3){grid-column:span 2}
 .page .ri-tb select{width:100%}
 .ri-tb .ri-in{height:var(--tb-h);margin:0;padding:0 14px;width:100%;min-width:0;border:1px solid var(--tb-b);border-radius:var(--r-field);background:#fff;color:var(--ink);font:400 16px/1 var(--sans);font-variant-numeric:lining-nums tabular-nums}
 .ri-tb .ri-in::placeholder{color:#5b6474;opacity:1}
@@ -20,10 +36,14 @@
 .ri-big{margin:8px 0 0;font:700 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
 .ri-rg{margin:12px 0 0;color:#4a5262}
 .ri-stage{grid-column:7 / span 6;margin:0;min-width:0}
-.ri-cvw{position:relative}
+.ri-cvw{position:relative;padding-bottom:28px}   /* the band under the floor line where the two labels stand */
 #ri-cv{display:block;width:100%;aspect-ratio:136/86}
-.ri-tag{position:absolute;left:0;top:0;transform:translate(-50%,-100%);font:600 16px/1.2 var(--sans);color:var(--deep);white-space:nowrap;pointer-events:none}
+.ri-tag{position:absolute;left:0;top:0;transform:translate(-50%,0);font:600 16px/1.2 var(--sans);color:var(--deep);white-space:nowrap;pointer-events:none}
 .ri-tag.ri-lost{color:var(--muted)}
+/* while the robot is still on its way down from the opening, or mid burst after a pick, its two labels wait: gone at once, so no dot in the air crosses a word, and back with a fade once the dots have landed */
+.ri-tag{transition:opacity .5s ease}
+@media (prefers-reduced-motion:reduce){.ri-tag{transition:none}}
+.ri-ghost .ri-tag{opacity:0;transition:none}
 .ri-age{margin-top:8px}
 .ri-agel{display:flex;justify-content:space-between;gap:16px;font:500 16px/1.3 var(--sans);color:var(--ink)}
 #ri-age{-webkit-appearance:none;appearance:none;display:block;width:100%;height:46px;margin:0;background:none;cursor:pointer}
@@ -44,16 +64,21 @@
 .ri-stmt tr.tot th{font-weight:600}
 .ri-stmt tr.tot td b{font:700 var(--t-sub)/1.2 var(--serif);letter-spacing:-.02em}
 
+@media (max-width:1200px){.ri-tb label:nth-child(n){grid-column:span 6}}   /* two rows of two */
 @media (max-width:980px){
- .ri-tb label{grid-column:span 3}
  .ri-figs,.ri-stage{grid-column:1 / -1}
  .ri-stage{grid-row:2;margin-top:28px}
  .ri-figs{grid-row:3;margin-top:32px}
 }
 @media (max-width:720px){
- .ri-tb{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:8px}.ri-tb label{grid-column:auto}
+ .ri-tb{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:8px}.ri-tb label:nth-child(n){grid-column:auto}
+ .ri-tb label:nth-child(-n+2){grid-column:1 / -1}   /* maker and model each take the full width on a phone, so no name is cut */
  .ri-ticks span:nth-child(even){visibility:hidden}
- .ri-figs{grid-row:2;margin-top:0}.ri-stage{grid-row:3;margin-top:32px}
+ /* on a phone the price stands over the robot and the sum under it, so the picker, the price, the robot and its slider share one screen */
+ .ri-figs{display:contents}
+ .ri-figs > *{grid-column:1 / -1}
+ .ri-stage{grid-row:auto;order:1;margin-top:24px}
+ .ri-stmt{order:2}
 }
 
 /* ---------------------------------------------------------------- 2. the valuation note: a credit memo on one Letter page */
@@ -135,6 +160,7 @@ canvas.mx{display:block}
 .ri-qs{margin:6px 0 0;color:var(--ink)}
 .ri-qtb{grid-column:7 / span 3}.ri-qtb label{width:100%}.page .ri-qtb select{width:100%}
 #ri-cp{grid-column:10 / span 3;width:100%}
+@media (max-width:1200px){.ri-qt{grid-column:1 / -1}.ri-qtb{grid-column:1 / span 6}#ri-cp{grid-column:7 / span 6}}   /* room for the longest class name in the quote's picker */
 @media (max-width:1100px){
  .ri-tbl,.ri-tbl tbody,.ri-tbl tfoot,.ri-tbl tr,.ri-ttbl,.ri-ttbl tbody,.ri-ttbl tr{display:block}
  .ri-tbl thead,.ri-ttbl thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -209,6 +235,9 @@ canvas.mx{display:block}
  .page .ri-note .vn-cv{max-height:160px}
  .page .ri-note .vn-cv svg{max-height:160px}
 }
+
+/* the narrowest phones: one control a row */
+@media (max-width:374px){.ri-tb label:nth-child(n){grid-column:1 / -1}}
 
 /* phone rows for the two tables: after the desktop cell rules above, so these win */
 @media (max-width:1100px){
