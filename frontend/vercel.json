@@ -3,50 +3,6 @@
  "trailingSlash": false,
  "redirects": [
   {
-   "source": "/",
-   "has": [
-    {
-     "type": "host",
-     "value": "ferra.world"
-    }
-   ],
-   "destination": "https://www.ferra.company/",
-   "permanent": true
-  },
-  {
-   "source": "/:path*",
-   "has": [
-    {
-     "type": "host",
-     "value": "ferra.world"
-    }
-   ],
-   "destination": "https://www.ferra.company/:path*",
-   "permanent": true
-  },
-  {
-   "source": "/",
-   "has": [
-    {
-     "type": "host",
-     "value": "www.ferra.world"
-    }
-   ],
-   "destination": "https://www.ferra.company/",
-   "permanent": true
-  },
-  {
-   "source": "/:path*",
-   "has": [
-    {
-     "type": "host",
-     "value": "www.ferra.world"
-    }
-   ],
-   "destination": "https://www.ferra.company/:path*",
-   "permanent": true
-  },
-  {
    "source": "/price-index",
    "destination": "/price-report",
    "permanent": true

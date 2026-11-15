@@ -629,6 +629,8 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-tb:has([data-v="all"][aria-checked="true"]) .pp-lall{display:inline}
 .pp-in > .pp-hint{display:block;margin:10px 0 0;font:500 var(--t-small)/1.4 var(--sans);color:#b42318}
 .pp-in > .pp-hint[hidden]{display:none}
+/* a note that nothing is wrong: why the years stop where they do for a robot type with no listings (2026-11-14) */
+.pp-in > .pp-hint.pp-note{font-weight:400;color:var(--muted)}
 @media (max-width:360px){.pp-flds{align-items:end}}
 /* phone frame study (2026-11-14) */
 /* a figure being worked out dims at once and comes back quickly; the worth figure, which is ready at once, never dims */

@@ -1,5 +1,7 @@
 // Price a robot (ferra.world/price). Draws every figure from window.FERRA_PRICE (the listings data, inlined at build)
 // and FerraEngine (assets/engine.js, run in a Web Worker). Charts are hand-built SVG. Dots mark real listings only; every other mark is solid.
+// 2026-11-14 (Praj unfroze the script): one worth per age. A robot's value today and its value on the chart come from the same curve,
+// the price paid on the risk engine's curve, never below what the arm alone would sell for and never above the price paid.
 (() => {
 const start = () => {
 const $ = id => document.getElementById(id);
@@ -67,6 +69,9 @@ const PRESETS = {
   amr: { r: 'warehouse-mobile-robot', y: 2026, p: META.types.AMR.cost, m: META.types.AMR.fee, u: 'AMR', t: 'MID', n: 36 },
 };
 const ent = () => byId[S.r] || DEF;
+// a robot type with no listings has only the model curve, which runs to nothing: it is priced while it keeps at least 5% of the price paid
+const reach = x => { if (!x.gen) return 31; const t = META.types[x.gen]; return Math.max(1, Math.floor(t.tau * Math.pow(-Math.log(.05), 1 / t.beta) / 12)); };
+const minYear = x => Math.max(1995, NOW - reach(x));
 
 // ------------------------------------------------------------------ the data estimate: asking range, expected sale, auction floor
 const slope = f => f.dep.b != null ? f.dep.b : -Math.log(1 - f.dep.annual);
@@ -75,7 +80,7 @@ function estimate() {
   if (x.gen) {
     const t = META.types[x.gen], keep = Math.exp(-Math.pow(age * 12 / t.tau, t.beta));
     const sale = S.p * keep, keep1 = Math.exp(-Math.pow((age * 12 + 12) / t.tau, t.beta));
-    return { gen: true, age, capped, sale, value: sale, isNew: age <= 2, ask: null, floor: null, annual: 1 - keep1 / keep, keep };
+    return { gen: true, age, capped, sale, value: sale, isNew: age <= 2, ask: null, floor: null, annual: 1 - keep1 / keep, keep, atEdge: age >= reach(x) };
   }
   // the data file's method: median asking = exp(level + fe - b x age); band from residual, model and slope uncertainty
   const f = x.fam, m = x.model, fe = m && m.fe != null ? m.fe : 0, b = slope(f);
@@ -85,13 +90,19 @@ function estimate() {
   const ask = Math.exp(f.level + fe - b * age);
   const AR = D.auction_ratio.by_age, ar = age < 10 ? AR.under_10 : AR['10_plus'], floor = ask * ar.median;
   const sale = Math.sqrt(ask * floor);
-  // value today, one continuous curve from the price paid (round 2 plan T1.2): the engine's own curve for the first
-  // 2 years, then the listings' rate of loss (asking falls by exp(-b) a year). The auction ratio is left out of that
-  // ratio on purpose: it steps from about 50% to 17% at age 10, which would put a false cliff in the value.
+  // value at any age, one curve for today and for the chart (2026-11-14): the price paid on the risk engine's curve, never
+  // below what the arm alone would sell for (the expected sale this page prints) and never above the price paid.
+  // The engine draws the same curve forward from today (its floor input), so a robot's value today is what a newer
+  // copy of it is charted to reach at that age.
   const tt = META.types[S.u], isNew = age <= 2, keepE = a => Math.exp(-Math.pow(a * 12 / tt.tau, tt.beta));
-  const cell = S.p * keepE(Math.min(age, 2)), value = isNew ? cell : cell * Math.exp(-b * (age - 2));
-  const armAt = a => { const q = Math.exp(f.level + fe - b * a), r2 = (a < 10 ? AR.under_10 : AR['10_plus']).median; return q * Math.sqrt(r2); };
-  return { isNew, cell, value, ask0: Math.exp(f.level + fe), armAt, famFit: f.n_fit, age, capped, ask, lo: ask * Math.exp(-z * sdp), hi: ask * Math.exp(z * sdp), floor, sale, thin, n, fe, ownFe: !!(m && m.fe != null && m.basis !== 'family'), b, ar, young: age < 10,
+  // the arm's expected sale at any age. The auction share steps down at age 10 (under 10 against 10 and over); between a robot's 9th
+  // and 10th birthdays it slides from one to the other, so the chart shows a year's fall and never a one-month cliff. At every whole
+  // age it is exactly the expected sale this page prints.
+  const arRatio = a => a <= 9 ? AR.under_10.median : a >= 10 ? AR['10_plus'].median : Math.exp(Math.log(AR.under_10.median) + (a - 9) * (Math.log(AR['10_plus'].median) - Math.log(AR.under_10.median)));
+  const armAt = a => Math.exp(f.level + fe - b * a) * Math.sqrt(arRatio(a));
+  const floorAt = a => Math.min(S.p, armAt(a)), worthAt = a => Math.max(S.p * keepE(a), floorAt(a));
+  const value = worthAt(age), cell = value, onArm = floorAt(age) > S.p * keepE(age);
+  return { isNew, cell, value, onArm, floorAt, worthAt, ask0: Math.exp(f.level + fe), armAt, famFit: f.n_fit, age, capped, ask, lo: ask * Math.exp(-z * sdp), hi: ask * Math.exp(z * sdp), floor, sale, thin, n, fe, ownFe: !!(m && m.fe != null && m.basis !== 'family'), b, ar, young: age < 10,
     pooled: f.dep.basis === 'pooled', own: f.dep.own, annual: f.dep.annual, alo: f.dep.lo, ahi: f.dep.hi };
 }
 
@@ -113,19 +124,37 @@ const hash = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0
 
 // ------------------------------------------------------------------ inputs
 const q = $('pp-q'), lb = $('pp-lb'), ySel = $('pp-y'), pIn = $('pp-p'), mIn = $('pp-m'), fIn = $('pp-fl');
-const num = el => { const v = parseFloat(String(el.value).replace(/[^0-9.]/g, '')); return isFinite(v) ? v : 0; };
+// typed numbers read as meant: "125.000" and "125 000" are 125,000, "4500,50" is 4,500.50, "125k" is 125,000, "1.2m" is 1,200,000
+const num = el => {
+  let s = String(el.value).trim().toLowerCase().replace(/[$\s\u00a0'_]/g, ''), k = 1;
+  const suf = /(k|thousand|m|mm|million)$/.exec(s); if (suf) { k = /^(k|thousand)$/.test(suf[1]) ? 1e3 : 1e6; s = s.slice(0, -suf[1].length); }
+  if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^\d+,\d{1,2}$/.test(s)) s = s.replace(',', '.');
+  else s = s.replace(/,/g, '');
+  if (!/^\d*\.?\d+$/.test(s) && !/^\d+\.$/.test(s)) return NaN;
+  const v = parseFloat(s) * k; return isFinite(v) ? v : NaN;
+};
 const fmtIn = (el, v) => { el.value = Math.round(v).toLocaleString('en-US'); };
 const setSeg = (name, v) => document.querySelectorAll(`.pp-seg[data-name="${name}"] [role=radio]`).forEach(b => { const on = b.dataset.v === String(v); b.setAttribute('aria-checked', on); b.tabIndex = on ? 0 : -1; });
 function syncInputs() {
   const x = ent();
   q.value = x.label; $('pp-cbn').innerHTML = countHtml(x);
-  ySel.value = String(clamp(S.y, 1995, 2026)); fmtIn(pIn, S.p); fmtIn(mIn, S.m); fmtIn(fIn, S.f);
+  // a robot type priced from the model curve alone offers only the years that curve reaches
+  const y0 = minYear(x); if (S.y < y0) S.y = y0;
+  [...ySel.options].forEach(o => { o.disabled = +o.value < y0; });
+  ySel.value = String(clamp(S.y, 1995, 2026));
+  // a field holding a figure that cannot be used keeps what was typed, with its message, until it is corrected
+  if (!bad.p) fmtIn(pIn, S.p); if (!bad.m) fmtIn(mIn, S.m); fmtIn(fIn, S.f);
   setSeg('u', S.u); setSeg('t', S.t); setSeg('n', S.n); setSeg('view', S.view);
   $('pp-log').checked = S.log;
   const tl = { IG: 'Large and rated customer', MID: 'Mid-size customer', STARTUP: 'Startup customer' }[S.t];
   $('pp-moresum').textContent = `${tl}, ${S.n} months, ${S.f} robots`;
   $('pp-uc').hidden = !!ent().gen || NOW - S.y <= 2;
   $('pp-yc').hidden = NOW - S.y <= 30;
+  // at the oldest year a model-curve-only type offers, one line says why the years stop there, and the step buttons show their ends
+  const yh = $('pp-yh'), edge = !!x.gen && S.y <= y0;
+  if (yh) { yh.hidden = !edge; if (edge) yh.textContent = `Our model prices this robot type up to ${reach(x)} years old. No listings yet to price older ones.`; }
+  document.querySelectorAll('.pp-st').forEach(b => b.setAttribute('aria-disabled', String(+b.dataset.d < 0 ? S.y <= y0 : S.y >= 2026)));
   check();
 }
 const typical = x => {
@@ -136,6 +165,7 @@ const typical = x => {
 // picking a robot sets its use; price paid and rent stay what the visitor typed (round 3 T1.1)
 function pickRobot(x) {
   S.r = x.id; S.u = x.use;
+  if (S.y < minYear(x)) S.y = minYear(x);
   if (x.gen && S.view === 'all') S.view = 'fam';
 }
 
@@ -179,23 +209,28 @@ lb.addEventListener('mousedown', ev => ev.preventDefault());
 lb.addEventListener('click', ev => { const li = ev.target.closest('[data-i]'); if (li) choose(+li.dataset.i); });
 q.addEventListener('blur', () => setTimeout(() => { if (!lb.hidden) closeList(true); }, 120));
 
-const setYear = y => { release(); S.y = clamp(y, 1995, 2026); syncInputs(); update(); };
+const setYear = y => { release(); S.y = clamp(y, minYear(ent()), 2026); syncInputs(); update(); };
 ySel.addEventListener('change', () => setYear(+ySel.value));
 document.querySelectorAll('.pp-st').forEach(b => b.addEventListener('click', () => setYear(S.y + +b.dataset.d)));
 const release = () => document.querySelectorAll('.pp-pre').forEach(o => o.setAttribute('aria-pressed', 'false'));
 // checks the two money fields as typed; while either is invalid the results are greyed out and nothing reruns
+const bad = { p: false, m: false }, PMAX = 5e6;
 function check() {
-  const p = num(pIn), m = num(mIn), ph = $('pp-ph'), mh = $('pp-mh'), pBad = p < 1000, mBad = m <= 0;
-  ph.hidden = !pBad; if (pBad) ph.textContent = 'Enter what the robot cost, at least $1,000.';
-  if (mBad) { mh.textContent = 'Rent has to be above $0 a month for a loan to be repaid from it.'; mh.hidden = false; }
+  const p = num(pIn), m = num(mIn), ph = $('pp-ph'), mh = $('pp-mh');
+  const pBad = !(p >= 1000 && p <= PMAX), mBad = !(m > 0) || (!pBad && m > p);
+  ph.hidden = !pBad;
+  if (pBad) ph.textContent = isNaN(p) ? 'Enter the cost as a number, like 125,000.' : p > PMAX ? 'Enter what one robot cost, up to $5,000,000.' : 'Enter what the robot cost, at least $1,000.';
+  if (mBad) { mh.textContent = isNaN(m) ? 'Enter the rent as a number, like 4,500.' : m > 0 ? 'Rent each month has to be below what the robot cost.' : 'Rent has to be above $0 a month for a loan to be repaid from it.'; mh.hidden = false; }
   else if (!pBad && m * 12 > p) { mh.textContent = 'That rent repays the robot in under a year. Check the figure.'; mh.hidden = false; }
   else mh.hidden = true;
+  bad.p = pBad; bad.m = mBad;
+  pIn.setAttribute('aria-invalid', String(pBad)); mIn.setAttribute('aria-invalid', String(mBad));
   document.querySelector('.page').classList.toggle('pp-stale', pBad || mBad);
   return { bad: pBad || mBad, odd: !pBad && !mBad && m * 12 > p, p, m };
 }
 // a rent that repays the robot in under a year holds the engine until the field blurs (round 3 T5)
 let held = false;
-[pIn, mIn].forEach(el => el.addEventListener('input', () => { release(); const c = check(); if (c.bad) return; S.p = c.p; S.m = c.m; if (c.odd) { held = true; return; } held = false; update(); }));
+[pIn, mIn].forEach(el => el.addEventListener('input', () => { release(); const c = check(); if (c.bad) return; S.p = c.p; S.m = c.m; if (c.odd) { held = true; return; } held = false; update(false, true); }));
 [pIn, mIn].forEach(el => el.addEventListener('blur', () => { syncInputs(); if (held) { held = false; update(); } }));
 fIn.addEventListener('blur', () => syncInputs());
 fIn.addEventListener('input', () => { release(); const v = Math.round(num(fIn)); if (v >= 1) { S.f = Math.min(v, 100000); update(true); } });
@@ -230,7 +265,8 @@ function fromHash() {
   const x = byId[h.get('r')] || (h.get('r') ? byId['any-arm'] : null); if (x) { S.r = x.id; S.u = x.use; S.p = typical(x); S.m = META.types[S.u].fee; S.unknown = !byId[h.get('r')] ? h.get('r') : null; }
   const n = k => { const v = parseFloat(h.get(k)); return isFinite(v) ? v : null; };
   if (n('y') != null) S.y = clamp(Math.round(n('y')), 1995, 2026);
-  if (n('p') > 0) S.p = n('p'); if (n('m') > 0) S.m = n('m');
+  if (n('p') > 0) S.p = clamp(n('p'), 1000, PMAX); if (n('m') > 0) S.m = Math.min(n('m'), S.p);
+  if (S.y < minYear(ent())) S.y = minYear(ent());
   if (META.types[h.get('u')]) S.u = h.get('u'); if (META.tiers[h.get('t')]) S.t = h.get('t');
   if ([24, 36, 48, 60].includes(n('n'))) S.n = n('n'); if (n('f') >= 1) S.f = Math.round(n('f'));
   return true;
@@ -270,12 +306,13 @@ const fitAns = () => document.querySelectorAll('.pp-av').forEach(el => { el.styl
 let EST = null;
 function drawData() {
   const x = ent(), es = EST = estimate();
-  // one figure for every age: price paid run down the risk engine's curve, then the listings' rate of loss (T1.2).
+  // one figure for every age: price paid run down the risk engine's curve, never below what the arm alone would sell for.
   // A cell is valued as a cell (D-8): the arm-alone listing value never stands in for it here.
   tween($('a-v'), es.value, m100);
-  const inst = `Installed ${S.u === 'PALLET' ? 'cell' : 'robot'}, risk engine's curve`;
-  if (es.gen) $('ac-v').innerHTML = `<b>Risk engine's curve.</b> No listings yet`;
-  else $('ac-v').innerHTML = es.isNew ? `<b>${inst}.</b> From the price paid` : `<b>${inst}</b> for 2 years, then the listings' rate`;
+  const inst = `Installed ${S.u === 'PALLET' ? 'cell' : 'robot'}, risk engine's curve`, av = $('ac-v');
+  av.dataset.k = es.gen ? 'gen' : es.onArm ? 'arm' : es.age === 0 ? 'new' : 'age';
+  if (es.gen) av.innerHTML = `<b>Risk engine's curve.</b> No listings yet`;
+  else av.innerHTML = es.onArm ? `<b>The arm alone.</b> At this age the robot is worth what its arm would sell for` : `<b>${inst}.</b> From the price paid`;
   tween($('a-d'), es.annual * 100, v => v.toFixed(1) + '%');
   if (es.gen) $('ac-d').innerHTML = `<b>Risk engine's curve.</b> No listings yet`;
   else $('ac-d').innerHTML = `<b>From listings, arm alone.</b> 95% range ${pct(es.alo)} to ${pct(es.ahi)}`;
@@ -544,7 +581,7 @@ function drawCompare() {
 <td class="pp-crg"><span class="pp-cb2"><i class="pp-ci" style="left:${P(r.lo)};width:calc(${P(r.hi)} - ${P(r.lo)})"></i><i class="pp-cd" style="left:${P(r.v)}"></i></span></td><td class="r pp-crv">${pct(r.v)}</td></tr>`).join('') +
     `<tr class="pp-cax"><td></td><td class="pp-crg"><span class="pp-caxs">${[0, .05, .1, .15].filter(v => v >= mn && v <= mx).map(v => `<em style="left:${P(v)}">${Math.round(v * 100)}%</em>`).join('')}</span></td><td></td></tr></tbody></table>`;
   $('pp-vnote').textContent = x.gen ? `With no listings for this robot type, its value follows the risk engine's model curve: about ${pct(es.annual)} a year at this age.`
-    : `Across the ${A.n} ${famTxt(D.all)} listings ${RULES}, arms lose about ${pct(A.annual)} of their asking price a year, and the risk engine runs your robot's value forward from there.`;
+    : `Across the ${A.n} ${famTxt(D.all)} listings ${RULES}, arms lose about ${pct(A.annual)} of their asking price a year. The installed robot follows the risk engine's curve and never falls below what its arm alone would sell for.`;
   VWHY = x.gen ? '' : `<p><b>One rate for all arms.</b> Across the ${A.n} listings ${RULES}, arms lose about ${pct(A.annual)} of their asking price a year${young ? `, and about ${pct(young.annual)} while they are 15 years old or younger` : ''}. Family rates could not be told apart and predicted worse, so one rate is used. The table below shows each rate with its 95% range.</p>`;
 }
 
@@ -552,39 +589,52 @@ function drawCompare() {
 let gen = 0, R0 = null, R1 = null, OFF = null;
 const engKeys = ['l', 'o'];
 const ADV = .70;            // reference advance: 70% of today's resale value
+const WORTH_NONE = 'The robot loses value faster than a loan could be repaid', WORTH_STEP = "Stepped down until the loan stays under the robot's value in every month";
 function startEngine() {
   const my = ++gen, es = EST, t0 = performance.now();
   if (!E || !E.run) return engineFailed();
   setBusy(true);
   engKeys.forEach(k => document.querySelector(`.pp-a[data-k="${k}"]`).classList.add('busy'));
   document.querySelectorAll('.pp-eng').forEach(n => n.classList.add('busy'));
-  // the loan is sized on the robot's value today: price paid, run down the risk engine's curve for 2 years and the listings'
-  // rate of loss after that (one continuous curve, T1.2). Price paid still sets the running costs. A new robot is the
-  // price paid itself, so it keeps the engine's default cost basis.
+  // the loan is sized on the robot's value today: the price paid on the risk engine's curve, never below what the arm alone
+  // would sell for. The engine draws that same curve forward (floor). Price paid still sets the running costs. A new robot
+  // is the price paid itself, so it keeps the engine's default cost basis.
   const base = { type: S.u, tier: S.t, cost: S.p, fee: S.m, ageMonths: es.age * 12, term: S.n, paths: 2000 };
   if (es.age > 0) { base.marketValue = es.value; base.loanBasis = 'market'; }
+  if (!es.gen) base.floor = Array.from({ length: S.n + 62 }, (_, m) => es.floorAt(es.age + m / 12) / S.p);
   // one fixed seed for every run (common random numbers), so a change in an input shows only its own effect
   const seed = 42;
   const go = (advance, backup) => runEngine({ ...base, id: ++rid, advance, seed, backup });
-  // each offer starts at 70% and steps down until debt service coverage holds at 1.25x, with and without a backup partner
+  // each offer starts at 70% and steps down until debt service coverage holds at 1.25x and the loan left to pay sits at or
+  // under the robot's expected value in every month, with and without a backup partner
+  const under = r => { const bal = r.balance || [], ex = (r.resale && (r.resale.mean || r.resale.p50)) || []; let k = 1;
+    for (let m = 1; m < bal.length && m < ex.length; m++) if (bal[m] > ex[m] * 1.0005 && bal[m] > 1) k = Math.min(k, ex[m] / bal[m]); return k; };
   const size = async (first, backup) => {
-    let A = ADV, r = first;
-    for (let i = 0; i < 5; i++) {
+    let A = ADV, r = first, lim = null;
+    for (let i = 0; i < 9; i++) {
       const cap = backup ? r.max_advance_125_backup : r.max_advance_125, d = backup ? r.dscr_backup : r.dscr;
-      if (cap < .05 || (d != null && d <= 0)) return { r, A, none: true };
-      if (cap >= A - 1e-4 && (d == null || d >= 1.2495)) return { r, A };
-      A = Math.max(.05, Math.min(Math.floor(cap * 100) / 100, Math.round((A - .01) * 100) / 100));
-      if (my !== gen) return { r, A };
+      if (cap < .05 || (d != null && d <= 0)) return { r, A, none: true, lim: 'rent' };
+      if (cap >= A - 1e-4 && (d == null || d >= 1.2495)) {
+        const k = under(r); if (k >= 1) return { r, A, lim };
+        const nx = Math.min(Math.floor(A * k * .995 * 100) / 100, Math.round((A - .01) * 100) / 100);
+        if (nx < .05) return { r, A, none: true, lim: 'worth' };
+        A = nx; lim = 'worth';
+      } else { A = Math.max(.05, Math.min(Math.floor(cap * 100) / 100, Math.round((A - .01) * 100) / 100)); lim = lim || 'rent'; }
+      if (my !== gen) return { r, A, lim };
       r = await go(A, false);
     }
-    return { r, A };
+    // no advance found in nine tries: a loan is only offered where both tests hold
+    const cap = backup ? r.max_advance_125_backup : r.max_advance_125, d = backup ? r.dscr_backup : r.dscr;
+    if (!(cap >= A - 1e-4 && (d == null || d >= 1.2495))) return { r, A, none: true, lim: 'rent' };
+    if (under(r) < 1) return { r, A, none: true, lim: 'worth' };
+    return { r, A, lim };
   };
   Promise.all([go(ADV, false), go(ADV, true)]).then(([a, b]) => {
     if (my !== gen) return;
     return Promise.all([size(a, false), size(a, true)]).then(([s0, s1]) => {
       if (my !== gen) return;
-      const wait = Math.max(0, 600 - (performance.now() - t0));
-      setTimeout(() => { if (my === gen) showEngine(a, b, s0, s1); }, reduce ? 0 : wait);
+      // the loan lands as soon as it is worked out, beside the worth it is sized on
+      if (my === gen) showEngine(a, b, s0, s1);
     });
   }).catch(err => { if (my !== gen) return; console.error(err); engineFailed(); });
 }
@@ -611,8 +661,8 @@ function showEngine(a, b, s0, s1) {
   };
   const off = (sz, backup) => {
     const r = sz.r, k = backup ? '_backup' : '';
-    if (sz.none) return { run: r, backup, ok: false, none: true, c: null, A: 0, L: 0, cap: 0, dscr: r['dscr' + k], el: r['el' + k], pay: null };
-    return mk(r, sz.A, r['coupon_needed' + k], r['dscr' + k], r['max_advance_125' + k], r['el' + k], backup);
+    if (sz.none) return { run: r, backup, ok: false, none: true, lim: sz.lim, c: null, A: 0, L: 0, cap: 0, dscr: r['dscr' + k], el: r['el' + k], pay: null };
+    return { ...mk(r, sz.A, r['coupon_needed' + k], r['dscr' + k], r['max_advance_125' + k], r['el' + k], backup), lim: sz.lim };
   };
   const o0 = off(s0, false), o1 = off(s1, true);
   OFF = [o0, o1]; OFF.basis = basisV === S.p ? 'cost' : 'market'; OFF.coll = basisV === S.p ? a.resale.p50[0] : es.value;
@@ -622,7 +672,7 @@ function showEngine(a, b, s0, s1) {
   elTween(l.querySelector('.v0'), a.el); elTween(l.querySelector('.v1'), a.el_backup);
   // T2: an older robot's backup figure can read under 0.1%; one line says why it sits below the 0.3% of a new cell
   $('ac-l').innerHTML = 'Without, then with a backup partner, simulated live' + (a.el_backup < .0005 && es.age > 0 ? '<span class="pp-elo">Lower than 0.3% because the loan is smaller against an older robot.</span>' : '');
-  if (o0.none) { tw.set($('a-o'), null); $('a-o').textContent = 'No loan'; $('ac-o').textContent = 'Rent does not cover running costs at 1.25x coverage'; }
+  if (o0.none) { tw.set($('a-o'), null); $('a-o').textContent = 'No loan'; $('ac-o').textContent = o0.lim === 'worth' ? WORTH_NONE : 'Rent does not cover running costs at 1.25x coverage'; }
   else tween($('a-o'), o0.L, m100);
   if (!o0.none) $('ac-o').textContent = o0.ok ? `${pct(o0.A, 0)} of ${OFF.basis === 'market' ? 'value today' : 'price paid'}, ${m100(o0.pay)} a month for ${S.n} months` : 'No rate works at this advance';
   // the two expected loss bars
@@ -637,7 +687,8 @@ function showEngine(a, b, s0, s1) {
 function drawCover() {
   const o = OFF[0], r = o.run, es = EST, host = $('pp-cov'), W = Math.max(280, host.clientWidth), phone = W < 560;
   const yrs = Math.ceil(S.n / 12) + 3, M = yrs * 12;
-  let p50 = (r.resale && r.resale.p50) || [], p10 = (r.resale && r.resale.p10) || [], p90 = (r.resale && r.resale.p90) || [];
+  // the line is the expected value, the curve itself (the engine's p50 is the median of the shocked value and sits a little under it)
+  let p50 = (r.resale && (r.resale.mean || r.resale.p50)) || [], p10 = (r.resale && r.resale.p10) || [], p90 = (r.resale && r.resale.p90) || [];
   const t = META.types[S.u], S0 = m => Math.exp(-Math.pow((es.age * 12 + m) / t.tau, t.beta));
   const ext = (arr, base) => { const out = []; for (let m = 0; m <= M; m++) out.push(m < arr.length ? arr[m] : (arr.length ? arr[arr.length - 1] * S0(m) / S0(arr.length - 1) : base * S0(m) / S0(0))); return out; };
   p50 = ext(p50, es.value); p10 = ext(p10, es.value * .7); p90 = ext(p90, es.value * 1.3);
@@ -652,7 +703,7 @@ function drawCover() {
   Array.from({ length: Math.round(vmax / stp) + 1 }, (_, i) => i * stp).forEach(v => { out.push(`<line class="gl" x1="${ml}" x2="${W - mr}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text class="ax" x="${ml - bw / 2 - 6}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end">${kfmt(v)}</text>`); });
   // cushion: where resale sits above the balance, shaded; where the balance is above resale, flagged
   const seg = [], bad = [];
-  for (let m = 0; m <= S.n; m++) if (bal[m] > p50[m] && m > 0) bad.push(m);
+  for (let m = 0; m <= S.n; m++) if (bal[m] > p50[m] * 1.0005 && bal[m] > 1 && m > 0) bad.push(m);
   const top = [], bot = []; for (let m = 0; m <= S.n; m++) { top.push(`${X(m).toFixed(1)},${Y(Math.max(p50[m], bal[m])).toFixed(1)}`); bot.unshift(`${X(m).toFixed(1)},${Y(bal[m]).toFixed(1)}`); }
   out.push(`<polygon class="cush" points="${top.concat(bot).join(' ')}"/>`);
   out.push(`<rect class="after" x="${X(S.n).toFixed(1)}" y="${mt}" width="${(X(M) - X(S.n)).toFixed(1)}" height="${H - mt - mb}"/><text class="ax aft" x="${(X(S.n) + 8).toFixed(1)}" y="${mt + 14}">After the loan</text>`);
@@ -799,9 +850,9 @@ function drawSheets() {
     const rows = [
       ['Collateral', `${N.toLocaleString('en-US')} × ${esc(x.label)}, built ${S.y}`],
       [mkt ? 'Value today' : 'Price paid', m100((mkt ? es.value : S.p) * N)],
-      ['Loan basis', `${S.u === 'PALLET' ? 'Cell' : 'Robot'} value, from the price paid`, es.gen || es.isNew ? "Run down the risk engine's curve" : "The risk engine's curve for 2 years, then the listings' rate of loss"],
-      ['Advance rate', o.none ? 'None' : pct(o.A, 0), o.none ? 'No advance holds 1.25x debt service coverage at this rent' : o.A < ADV - .001 ? '' : `Coverage at 1.25x would support up to ${pct(Math.min(o.cap, 1), 0)}${o.cap >= 1 ? ', the cap' : ''}`],
-      ['Loan amount', o.none ? 'None' : m100(o.L * N), o.none ? '' : o.A < ADV - .001 ? 'Stepped down until debt service coverage holds at 1.25x' : '70% of value today', 'big'],
+      ['Loan basis', `${S.u === 'PALLET' ? 'Cell' : 'Robot'} value, from the price paid`, es.gen ? "Run down the risk engine's curve" : es.onArm ? 'At this age, what the arm alone would sell for' : "Run down the risk engine's curve, never below the arm alone"],
+      ['Advance rate', o.none ? 'None' : pct(o.A, 0), o.none ? (o.lim === 'worth' ? WORTH_NONE : 'No advance holds 1.25x debt service coverage at this rent') : o.A < ADV - .001 ? '' : `Coverage at 1.25x would support up to ${pct(Math.min(o.cap, 1), 0)}${o.cap >= 1 ? ', the cap' : ''}`],
+      ['Loan amount', o.none ? 'None' : m100(o.L * N), o.none ? '' : o.A < ADV - .001 ? (o.lim === 'worth' ? WORTH_STEP : 'Stepped down until debt service coverage holds at 1.25x') : '70% of value today', 'big'],
       ['Interest rate needed', o.ok ? `${pct(o.c)} a year ${mk}` : `No rate works at this advance ${mk}`, o.ok ? `${pct(META.tiers[S.t].hurdle, 0)} return to the lender after expected losses, including the 1.5% fee at close` : 'Nothing up to 31% earns the lender\'s return. Try a lower advance or a backup partner', 'd'],
       ['Monthly payment', o.ok ? m100(o.pay * N) : 'None at this advance', '', 'd'],
       ['Debt service coverage', dscr, 'Rent after running costs, against the payment'],
@@ -823,10 +874,11 @@ function drawSheets() {
       : `Both sheets lend ${pct(a.A, 0)} of ${base}. With a backup partner the lender needs a rate ${dr.toFixed(1)} points lower, which cuts the fleet's payment by ${m100(a.pay * N - b.pay * N)} a month.`;
   } else if (b.ok) msg = a.none ? `Without a backup partner the rent cannot carry a loan at 1.25x coverage. With one, ${pct(b.A, 0)} of ${base} works at ${pct(b.c)} a year.` : `Without a backup partner no rate up to 31% earns the lender's return at ${pct(a.A, 0)}. With one, ${pct(b.A, 0)} works at ${pct(b.c)} a year.`;
   else if (a.ok) msg = b.none ? `With a backup partner the rent cannot carry a loan at 1.25x coverage; without one, ${pct(a.A, 0)} of ${base} works at ${pct(a.c)} a year.` : `With a backup partner no rate up to 31% works at ${pct(b.A, 0)}; without one, ${pct(a.A, 0)} of ${base} works at ${pct(a.c)} a year.`;
-  else if (a.none && b.none) msg = 'At this rent the robot cannot carry a loan at 1.25x debt service coverage, with or without a backup partner. A higher rent or lower running costs would change that.';
+  else if (a.none && b.none) msg = a.lim === 'worth' && b.lim === 'worth' ? 'The robot loses value faster than a loan could be repaid, with or without a backup partner. A shorter loan or a newer robot would change that.'
+    : 'At this rent the robot cannot carry a loan at 1.25x debt service coverage, with or without a backup partner. A higher rent or lower running costs would change that.';
   else msg = 'No rate up to 31% earns the lender\'s return on these terms, with or without a backup partner. A newer robot, a higher rent or a lower advance would help.';
   $('pp-onote').textContent = msg;
-  $('pp-why-o').innerHTML = `<p><b>How the advance is set.</b> Each sheet starts at 70% of the robot's value today and steps down until debt service coverage, rent after running costs against the payment, holds at 1.25x. The value today is the price paid, run down the risk engine's curve for the first 2 years and at the listings' rate of loss after that.</p>
+  $('pp-why-o').innerHTML = `<p><b>How the advance is set.</b> Each sheet starts at 70% of the robot's value today and steps down until debt service coverage, rent after running costs against the payment, holds at 1.25x and the loan left to pay sits under the robot's expected value in every month. The value today is the price paid, run down the risk engine's curve, never below what the arm alone would sell for.</p>
 <p><b>The rate.</b> The interest rate is the lowest that earns the lender a ${pct(META.tiers[S.t].hurdle, 0)} return after expected losses, including the 1.5% fee at close. Rows that change with a backup partner are shaded on the right-hand sheet.</p>
 <p><b>The backup partner sheet</b> is the engine's upper limit, with operator failure switched off; no lease like this is signed yet. Nothing on either sheet is an offer to lend.</p>` +
     (es.isNew && !es.gen && S.u === 'PALLET' ? `<p><b>A new cell.</b> Both sheets lend against the cell's value, from the price paid. If the cell went dark and the arm were sold separately, listings put it at about ${m100(es.sale)}; the rest of the cell's value holds while the cell keeps running. That is the risk a backup partner removes.</p>` : '');
@@ -860,14 +912,15 @@ ${TG ? `<p><b>How much is data.</b> The engine tags each of its ${TG.total} key 
 
 // ------------------------------------------------------------------ update loop
 let timer = null;
-function update(onlyTotals) {
+function update(onlyTotals, typing) {
   history.replaceState(null, '', toHash());
   if (onlyTotals) { if (OFF) drawSheets(); return; }
   setBusy(true);
   drawData(); drawMethod();
   clearTimeout(timer);
   engKeys.forEach(k => document.querySelector(`.pp-a[data-k="${k}"]`).classList.add('busy'));
-  timer = setTimeout(startEngine, 250);
+  // a pick or a click runs the engine at once; typing waits for a pause between keys
+  timer = setTimeout(startEngine, typing ? 250 : 0);
 }
 let rw = innerWidth;
 addEventListener('resize', () => { if (Math.abs(innerWidth - rw) < 2) return; rw = innerWidth; clearTimeout(window.__ppR); window.__ppR = setTimeout(() => { fitAns(); drawStrip(); drawResale(); fades(); if (R0) { drawCover(); drawRisk(true); } }, 120); });

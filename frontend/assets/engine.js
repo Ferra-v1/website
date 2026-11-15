@@ -27,6 +27,11 @@
  *     curve keeps its shape and value at month 0 equals marketValue exactly. If marketValue is at or
  *     above cost, a0 = 0 and the curve is scaled up by marketValue / cost. If marketValue is missing,
  *     a0 = ageMonths (cost read as the price when new).
+ *   - floor (optional): the lowest the residual curve may go, month by month from today, as fractions of
+ *     cost (the price page passes what the arm alone would sell for). With a floor the curve is not shifted:
+ *     a0 = ageMonths, and v(t) = max(exp(-((a0 + t)/tau)^beta), floor[t]). The page works out today's value
+ *     the same way, so a robot's value today equals what a newer copy of it is charted to reach at that age.
+ *     Without a floor nothing changes.
  *   - loanBasis (optional, default 'cost' as spec 5.2 says): 'market' sizes the loan as advance x marketValue
  *     instead of advance x price paid, for a used robot financed against today's value. The residual curve
  *     and the cost-scaled amounts still use the price paid. meta.ltv_market reports loan / marketValue.
@@ -343,9 +348,13 @@
 
     // Residual base curve rv_base[t] for t = 0..len-1, with the used-robot shift (see header).
     function residualBase(P, len) {
-      var tau = P.tau, beta = P.beta, a0 = P._a0 || 0, sc = P._rv_scale || 1;
+      var tau = P.tau, beta = P.beta, a0 = P._a0 || 0, sc = P._rv_scale || 1, fl = P._rv_floor;
       var out = new Float64Array(len);
-      for (var t = 0; t < len; t++) out[t] = sc * Math.exp(-Math.pow((a0 + t) / tau, beta));
+      for (var t = 0; t < len; t++) {
+        var v = sc * Math.exp(-Math.pow((a0 + t) / tau, beta));
+        if (fl && fl.length) { var f = fl[t < fl.length ? t : fl.length - 1]; if (f > v) v = f; }
+        out[t] = v;
+      }
       return out;
     }
 
@@ -787,6 +796,12 @@
       // loanBasis 'cost' (default, spec 5.2): loan = advance x price paid. 'market': loan = advance x
       // marketValue, for a used robot financed against what it is worth today. The engine itself always
       // works in fractions of cost, so the market basis is converted with basisRatio = marketValue / cost.
+      // floor: fractions of cost by month from today, each kept within 0..4 (the marketValue clamp), at most 240 months
+      var floor = null;
+      if (inp.floor && typeof inp.floor.length === 'number' && inp.floor.length) {
+        floor = [];
+        for (var fi = 0; fi < inp.floor.length && fi < 240; fi++) { var fv = +inp.floor[fi]; floor.push(isFinite(fv) ? clamp(fv, 0, 4) : 0); }
+      }
       var basis = inp.loanBasis === 'market' && marketValue !== null ? 'market' : 'cost';
       if (inp.loanBasis === 'market' && basis !== 'market') notes.push('loanBasis market needs marketValue, used cost');
       var basisRatio = basis === 'market' ? marketValue / cost : 1;
@@ -795,7 +810,7 @@
       return {
         id: inp.id, type: type, tier: tier, cost: cost, fee: fee, marketValue: marketValue, ageMonths: ageMonths,
         advance: advance, term: term, paths: paths, coupon: coupon, seed: seed, backup: !!inp.backup,
-        loanBasis: basis, basisRatio: basisRatio, advCost: advance * basisRatio,
+        loanBasis: basis, basisRatio: basisRatio, advCost: advance * basisRatio, floor: floor,
         notes: notes
       };
     }
@@ -810,7 +825,10 @@
       P.tenor = I.term;
       // used-robot shift of the residual curve (see header)
       var a0 = 0, scale = 1;
-      if (I.marketValue !== null) {
+      if (I.floor) {
+        // with a floor the curve stays on the robot's true age (see header)
+        a0 = I.ageMonths; P._rv_floor = I.floor;
+      } else if (I.marketValue !== null) {
         var ratio = I.marketValue / I.cost;
         if (ratio >= 1) scale = ratio;
         else a0 = P.tau * Math.pow(-Math.log(ratio), 1 / P.beta);
@@ -871,7 +889,8 @@
      *   irr_p10, irr_p50, loss_hist      for the scenario chosen by input.backup (false: all risks, true: operator failure off)
      *   drivers                          shares of all-risks expected loss: operator, customer, residual (sum 1)
      *   balance                          scheduled loan balance per robot, months 0..term, at the offer coupon
-     *   resale                           fair market value per robot, months 0..term+36: p10, p50, p90, forced_p50
+     *   resale                           fair market value per robot, months 0..term+36: p10, p50, p90, forced_p50, and
+     *                                    mean, the expected value (the curve itself; p50 is the median of the shocked value)
      */
     function run(input) {
       var t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
@@ -924,9 +943,10 @@
       }
       // resale band: analytic quantiles of the lognormal residual shock (rwz is standard normal)
       var M = I.term + 36, base = residualBase(P, M + 1), z90 = 1.2815515655446004;
-      var r10 = [], r50 = [], r90 = [], f50 = [];
+      var r10 = [], r50 = [], r90 = [], f50 = [], rmean = [];
       for (var t = 0; t <= M; t++) {
         var s = P.rv_sd * Math.sqrt(Math.min(t, 36) / 36.0), v = P.cost * base[t], adj = Math.exp(-0.5 * s * s);
+        rmean.push(v);
         r10.push(v * Math.exp(-s * z90) * adj);
         r50.push(v * adj);
         r90.push(v * Math.exp(s * z90) * adj);
@@ -944,7 +964,7 @@
         drivers: drivers,
         drivers_el: { all: elA, operator_off: elB, customer_off: elByMask[5], resale_uncertainty_off: elByMask[3], all_three_off: elByMask[0] },
         balance: balance,
-        resale: { p10: r10, p50: r50, p90: r90, forced_p50: f50 },
+        resale: { p10: r10, p50: r50, p90: r90, forced_p50: f50, mean: rmean },
         scenarios: { all: A, backup: B },
         meta: {
           type: I.type, tier: I.tier, hurdle: hurdle, coupon_ref: I.coupon, advance: I.advance, term: I.term,
