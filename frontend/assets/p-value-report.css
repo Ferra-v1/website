@@ -30,7 +30,7 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-l{grid-column:1 / 5;min-width:0}
 .vr-r{grid-column:6 / 13;min-width:0;margin:0}
 .vr-big{margin:0 0 18px;line-height:1}
-.vr-big .big-num{font:700 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
+.vr-big .big-num{font:600 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
 .vr-big span{display:block;margin:8px 0 0;font:400 var(--t-sub)/1.2 var(--sans);letter-spacing:0;color:var(--muted)}
 .vr-l h2,.vr-l h3{margin:0 0 12px}
 .vr-b{margin:0 0 14px;color:#3e4656}
@@ -53,12 +53,6 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-tb .tlink:hover{text-decoration:underline;text-underline-offset:4px}
 
 /* chapter 1 on ink */
-.vr-c1 .vr-big .big-num{color:#fff}
-.vr-c1 .vr-big span,.vr-c1 .vr-b,.vr-c1 .vr-key,.vr-c1 .vr-note{color:rgba(255,255,255,.84)}
-.vr-c1 .vr-src{color:rgba(255,255,255,.7)}
-.vr-c1 .vr-cap,.vr-c1 .vr-sure{color:#fff}
-.vr-c1 .vr-sure,.vr-c1 .vr-c1b{border-color:rgba(255,255,255,.16)}
-.vr-c1 .vr-c1b{border-top:1px solid rgba(255,255,255,.16)}
 
 /* figure 1: asking price by age */
 .vr-sc{display:block;width:100%;height:auto;overflow:visible}
@@ -73,14 +67,6 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-kd{fill:var(--c)}
 .vr-kr{fill:#fff;stroke:var(--ink);stroke-width:1.5}
 .vr-km{stroke:rgba(14,22,38,.38);stroke-width:1.5}
-.vr-c1 .vr-ax{fill:rgba(255,255,255,.7)}
-.vr-c1 .vr-gl{stroke:rgba(255,255,255,.12)}
-.vr-c1 .vr-base{stroke:rgba(255,255,255,.4)}
-.vr-c1 .vr-band{fill:rgba(150,232,255,.13)}
-.vr-c1 .vr-pt{stroke:rgba(255,255,255,.62)}
-.vr-c1 .vr-mid{stroke:#96e8ff}
-.vr-c1 .vr-hl{fill:#fff;stroke:var(--c)}
-.vr-c1 .vr-kd{fill:rgba(255,255,255,.8)}
 
 /* tables: figures 2 and 5, and every chart's table view */
 .vr-tbl{width:100%;border-collapse:collapse;font-variant-numeric:lining-nums tabular-nums;line-height:1.4}
@@ -91,12 +77,6 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-tbl tbody th span{display:block;color:var(--muted)}
 .vr-tbl .vr-lk{color:var(--c);font-weight:600}
 .vr-tbl a{color:var(--c)}
-.vr-c1 .vr-tbl :is(th,td){border-color:rgba(255,255,255,.16)}
-.vr-c1 .vr-tbl thead th{color:rgba(255,255,255,.7)}
-.vr-c1 .vr-tbl .vr-lk{color:#96e8ff}
-.vr-c1 .vr-tbl a{color:#fff}
-.vr-tv{max-height:520px;overflow:auto;border-top:1px solid var(--line)}
-.vr-c1 .vr-tv{border-color:rgba(255,255,255,.16)}
 .vr-tv .vr-tbl thead th{position:sticky;top:0;background:#fff;padding-top:12px}
 .vr-c1 .vr-tv .vr-tbl thead th{background:var(--g-ink)}
 .vr-tv:focus-visible{outline:2px solid var(--c);outline-offset:2px}
@@ -113,7 +93,7 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 /* figure 3: one row per auction sale. The ring is the asking estimate, the dot what it sold for, the faint line the middle sale */
 .vr-rows{list-style:none;margin:0;padding:0}
 .vr-nb{white-space:nowrap}
-.vr-stick{position:sticky;top:96px;align-self:start}
+.vr-stick{position:relative;align-self:start}   /* sand build: nothing pins (end condition line 2) */
 .vr-rs .vr-rc,.vr-rs td:last-child{white-space:nowrap}
 .vr-lots + .vr-tv + .vr-src{margin-top:20px}
 .vr-lot,.vr-lh{display:grid;grid-template-columns:minmax(0,16.5rem) minmax(0,1fr) 7.5rem;column-gap:16px;align-items:center}
@@ -223,7 +203,7 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
  .page .vr-tbl .vr-lk{color:#2847ce!important;-webkit-text-fill-color:#2847ce!important}
  .page .vr-sc .vr-ax{fill:#555}
  .page .vr-c1 .vr-gl{stroke:#e2e6ee}.page .vr-c1 .vr-base{stroke:#9aa3b5}.page .vr-c1 .vr-band{fill:rgba(40,71,206,.1)}.page .vr-c1 .vr-pt{stroke:rgba(40,71,206,.55)}
- .page .vr-c1 .vr-mid{stroke:#0e1626}.page .vr-c1 .vr-kd{fill:#2847ce}
+ .page .vr-c1 .vr-mid{stroke:#0e1626}
  .page .vr-lots .vr-dt{background-color:#2847ce!important}
  .page .vr-lots .vr-rg{background-color:#fff!important;border:1.5px solid #0e1626!important}
  .page .vr-lots .vr-ln2{background-color:rgba(40,71,206,.32)!important}

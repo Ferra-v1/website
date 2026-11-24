@@ -14,14 +14,14 @@
 .r-kind{margin:18px 0 0;color:#3e4656}
 .r-kind-m{display:none}
 /* the ink starts a gutter into column eight, and its words start on the line of column nine */
-.r-one-r{grid-column:8 / 13;min-width:0;color:#fff;margin-right:calc(-1 * var(--gl));margin-left:var(--g)}
+.r-one-r{grid-column:8 / 13;min-width:0;color:var(--ink);background:var(--peri3);margin-right:calc(-1 * var(--gl));margin-left:var(--g)}
 .r-one-st{--c1:calc((100vw - 2 * var(--gl) - 11 * var(--g)) / 12);position:sticky;top:72px;min-height:calc(100svh - 72px);display:flex;flex-direction:column;padding:clamp(32px,4vw,56px) var(--gl) 0 calc(var(--c1))}
 .r-sum{flex:none}
-.r-big{display:block;color:#fff;white-space:nowrap}
-.r-say{margin:10px 0 0;color:#fff;text-wrap:pretty}
-.r-admit{margin:0 0 8px;font-weight:500;color:#fff;text-wrap:pretty}
+.r-big{display:block;color:var(--c);white-space:nowrap}
+.r-say{margin:10px 0 0;color:var(--ink);text-wrap:pretty}
+.r-admit{margin:0 0 8px;font-weight:500;color:var(--ink);text-wrap:pretty}
 .r-one .r-act{margin-top:clamp(16px,2vh,24px)}
-.r-why{margin:clamp(10px,1.4vh,16px) 0 0;color:rgba(255,255,255,.92)}
+.r-why{margin:clamp(10px,1.4vh,16px) 0 0;color:var(--ink2)}
 .r-one-bot{flex:none;margin-top:auto;padding-top:16px;width:100%}
 .r-one-bot canvas{display:block;width:100%;aspect-ratio:var(--ar);height:auto;cursor:default;touch-action:pan-y}
 .r-one>.r-tip{z-index:8}
@@ -162,7 +162,7 @@
 .r-mds a{display:flex;align-items:baseline;justify-content:flex-start;gap:12px;align-self:center}
 .r-mds b,.r-find-list b{font-weight:500;font-size:var(--t-body);line-height:1.25;transition:color .15s ease;min-width:0}
 .r-mds span,.r-find-list span{color:var(--muted);white-space:nowrap}
-.r-mds i,.r-find-list i{font-style:normal;font-size:16px;color:var(--c);font-weight:500;transition:transform .18s cubic-bezier(.2,.7,.2,1)}
+.r-mds i,.r-find-list i{font-style:normal;font-size:16px;color:var(--c);font-weight:500;transition:transform .14s cubic-bezier(.2,.7,.2,1)}
 .r-mds a:hover b,.r-find-list a:hover b{color:var(--c)}
 .r-mds a:hover i,.r-find-list a:hover i{transform:translateX(3px)}
 
@@ -175,27 +175,27 @@
 @media (max-width:720px){.r-act-c .btn{width:calc((100% - var(--g)) / 2)}}
 
 /* ------------------------------------------------------------------ the shelf: robots drawn at the size of their evidence, in whole columns, all standing on lines */
-.r-shelf{position:relative;color:#fff;padding-bottom:var(--sec);overflow:clip}
+.r-shelf{position:relative;color:var(--ink);padding-bottom:var(--sec);overflow:clip}
 .r-wrap{container-type:inline-size}
 .r-wrap.in{padding-top:var(--sec)}
 .r-top{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:stretch}
 .r-top-t{grid-column:1 / 6;padding-top:0;display:flex;flex-direction:column;align-self:stretch;min-width:0}
-.page .r-s-h{margin:0 0 clamp(16px,1.6vw,24px);color:#fff}
-.r-s-l{margin:0;color:rgba(255,255,255,.96);text-wrap:pretty}
+.page .r-s-h{margin:0 0 clamp(16px,1.6vw,24px);color:var(--ink)}
+.r-s-l{margin:0;color:var(--ink2);text-wrap:pretty}
 .r-cells{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);row-gap:0;margin-top:clamp(48px,5.6vw,80px);margin-bottom:calc(-1 * clamp(44px,5vw,72px))}
 .r-cells>:last-child{margin-bottom:clamp(44px,5vw,72px)}
-.r-cell{display:grid;grid-column:span var(--sd);grid-row:span 3;grid-template-rows:subgrid;min-width:0;color:#fff;margin-bottom:clamp(44px,5vw,72px)}
-.r-c-go{display:grid;grid-row:span 2;grid-template-rows:subgrid;min-width:0;color:#fff;border-radius:2px}
-.r-c-go:focus-visible,.r-cell:focus-visible{outline:2px solid #fff;outline-offset:6px}
-.r-c-bot{display:block;align-self:end;width:100%;border-bottom:1px solid rgba(255,255,255,.55)}
+.r-cell{display:grid;grid-column:span var(--sd);grid-row:span 3;grid-template-rows:subgrid;min-width:0;color:var(--ink);margin-bottom:clamp(44px,5vw,72px)}
+.r-c-go{display:grid;grid-row:span 2;grid-template-rows:subgrid;min-width:0;color:var(--ink);border-radius:2px}
+.r-c-go:focus-visible,.r-cell:focus-visible{outline:2px solid var(--c);outline-offset:6px}
+.r-c-bot{display:block;align-self:end;width:100%;border-bottom:1px solid var(--line2)}
 .r-c-bot canvas{display:block;width:100%;aspect-ratio:var(--ar);height:auto;cursor:pointer}
 .r-c-t{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:14px 0 0}
 .r-c-nm{font:600 var(--t-smallh)/1.35 var(--sans);text-wrap:pretty}
-.r-c-kd{margin-top:2px;color:rgba(255,255,255,.88)}
+.r-c-kd{margin-top:2px;color:var(--grey)}
 /* the figure's line keeps its height as the age moves, so the shelf does not jump under the reader's hand. Two figure sizes from the one scale, by the listings near that age, and words for a rough guess. */
 .r-c-pr{display:flex;align-items:flex-end;margin-top:12px;min-height:calc(var(--t-sub) * 1.25)}
 .r-c-pr.t{font:500 var(--t-lead)/1.25 var(--sans)}
-.r-c-at,.r-c-ct{color:rgba(255,255,255,.92)}
+.r-c-at,.r-c-ct{color:var(--ink2)}
 .r-shelf.aged .r-cell:not(.r-c-top) .r-c-at{display:none}
 .r-c-at{margin-top:3px}
 .r-c-ct{margin-top:8px;display:grid}
@@ -207,24 +207,24 @@
 /* a card with sub-series: its words and links are one column, so the links sit straight under its own words */
 .r-c-has>.r-c-go{display:block;grid-row:1;align-self:end}
 .r-c-tw{grid-row:2 / span 2;min-width:0}
-.r-c-tl{display:block;color:#fff;border-radius:2px}
-.r-c-tl:focus-visible{outline:2px solid #fff;outline-offset:6px}
+.r-c-tl{display:block;color:var(--ink);border-radius:2px}
+.r-c-tl:focus-visible{outline:2px solid var(--c);outline-offset:6px}
 .r-c-subs{display:flex;flex-direction:column;align-items:flex-start;padding-top:4px}
-.r-c-subs a{display:inline-flex;align-items:center;gap:8px;min-height:36px;font-weight:500;color:#fff}
+.r-c-subs a{display:inline-flex;align-items:center;gap:8px;min-height:36px;font-weight:500;color:var(--c)}
 .r-c-subs a:hover{text-decoration:underline;text-underline-offset:4px}
 .r-c-subs span{font-weight:400}
 .r-c-subs i{font-style:normal;font-weight:500}
 /* the biggest robot stands beside the heading, four columns wide, with its words in the three beside it, on one floor */
 .r-wrap .r-c-top{display:block;grid-column:6 / 13;margin:0}
-.r-wrap .r-c-top .r-c-go{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto;column-gap:var(--g);align-items:end;border-bottom:1px solid rgba(255,255,255,.55)}
+.r-wrap .r-c-top .r-c-go{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto;column-gap:var(--g);align-items:end;border-bottom:1px solid var(--line2)}
 .r-c-top .r-c-bot{grid-column:1 / 5;border-bottom:0}
 .r-c-top .r-c-t{grid-column:5 / 8;padding:0 0 14px}
 .r-c-top .r-c-pr{min-height:calc(var(--t-section) * 1.08)}
 .r-c-top .r-c-nm{font:600 var(--t-lead)/1.25 var(--sans)}
 .r-shelf>.r-tip{z-index:8}
 /* one age for the whole shelf: a plain white strip, edge to edge, its words on the grid. It rides along at the top of the screen until the shelf ends, and steps down when the bar comes back */
-.r-dial{position:sticky;top:0;z-index:6;margin:clamp(28px,3vw,44px) calc(-1 * var(--gl)) 0;background:#fff;color:var(--ink)}
-html:has(.fbar.on) .r-dial{top:72px}
+.r-dial{position:relative;z-index:6;   /* sand build: nothing pins (end condition line 2); the dial stands at the head of the shelf */
+ margin:clamp(28px,3vw,44px) calc(-1 * var(--gl)) 0;background:#fff;color:var(--ink)}
 .r-dial[hidden]{display:none}
 .r-dial-in{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);align-items:center;min-height:56px;padding-inline:var(--gl)}
 .r-dial-k{grid-column:1 / 3;color:#3e4656;white-space:nowrap}
@@ -237,8 +237,8 @@ html:has(.fbar.on) .r-dial{top:72px}
 .r-dial input:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:4px}
 
 /* know the model: on the first screen. Without the script the list stands open; with it, it opens as a solid panel under the field. */
-.r-find{position:relative;margin-top:auto;padding-top:clamp(20px,3vh,36px);color:#fff}
-.r-find-h{margin:0;color:#fff}
+.r-find{position:relative;margin-top:auto;padding-top:clamp(20px,3vh,36px);color:var(--ink)}
+.r-find-h{margin:0;color:var(--ink)}
 .r-find-in{display:block;margin-top:12px}
 .r-find-in[hidden]{display:none}
 .r-find-in input{display:block;width:100%;height:48px;-webkit-appearance:none;appearance:none}
@@ -374,3 +374,4 @@ html:has(.fbar.on) .r-dial{top:72px}
 .r-bar .r-find,.r-agebox{height:46px}
 .r-bar .r-find-in input,.r-dial .r-agebox input{height:46px}
 .r-bar .r-find:not(.live){height:auto}
+@media (prefers-reduced-motion:reduce){.r-mds i,.r-find-list i{transition:none}}

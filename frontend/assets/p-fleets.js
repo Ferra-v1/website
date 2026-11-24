@@ -1,4 +1,4 @@
-// Robot companies page. One pinned scene, the robot that fills with rent, which scrolls away once it is full. Everything else sits in plain flow.
+// Robot companies page. No pinned scene: the robot that fills with rent plays once on arrival. Everything else sits in plain flow.
 // The sentence's fields stay in range, and every change goes straight to the answer. Further down, the same sentence sets the robot that fills with rent and the one month of rent split between the loan and the company.
 // Every "Ask what you could borrow" link on the page returns to the sentence. With reduced motion every section stands finished, in order.
 (() => {
@@ -73,7 +73,7 @@
       ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(40,71,206,.15)'; ctx.fill(off); ctx.fillStyle = '#2847ce'; ctx.fill(on); };
     const read = m => { nEl.textContent = usd(m * rent); sEl.textContent = m === 0 ? 'of rent on day one. You have paid ' + usd(price) + ' for the robot.' : m < months ? 'of rent after ' + m + (m === 1 ? ' month.' : ' months.') : 'of rent after ' + m + ' months. The robot has earned back its price.'; };
     const show = m => { if (m === shown) return; shown = m; paint(m); read(m); };
-    const fix = () => { if (still) { const xs = list.map(q => q.cx); pb.style.height = pb.clientWidth * rows / (Math.max(...xs) - Math.min(...xs) + 1) + 'px'; } size(); show(Math.round(Math.min(1, lastP / .86) * months)); };
+    const fix = () => { { const xs = list.map(q => q.cx); pb.style.height = pb.clientWidth * rows / (Math.max(...xs) - Math.min(...xs) + 1) + 'px'; } size(); show(Math.round(Math.min(1, lastP / .86) * months)); };
     setRent = p => { lastP = p; show(Math.round(Math.min(1, p / .86) * months)); };   // the fill takes 86% of the distance; the rest is the finished robot, held
     pb._fix = fix; let fw = innerWidth; addEventListener('resize', () => { if (innerWidth !== fw) { fw = innerWidth; fix(); } });   // a phone toolbar sliding away changes only the height
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fix);
@@ -102,9 +102,9 @@
   if (still) { setRent(1); startBots(); return; }
   page.classList.add('f-live'); setBar(0); arrive.observe(bar.nextElementSibling); arrive.observe(document.querySelector('.f-yard'));
   const near = new IntersectionObserver(es => { if (es.some(en => en.isIntersecting)) { near.disconnect(); startBots(); } }, { rootMargin: '0px 0px 100% 0px' }); near.observe(document.querySelector('.f-yard'));
-  const runEl = $('sc-why'), pin = runEl.querySelector('.f-wpin'), clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
-  let queued = false;
-  const tick = () => { queued = false; const h = runEl.offsetHeight - pin.offsetHeight; setRent(clamp01(-runEl.getBoundingClientRect().top / Math.max(1, h))); };
-  const ask = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
-  addEventListener('scroll', ask, { passive: true }); addEventListener('resize', ask); tick();
+  // no pinned scene (sand build): the robot fills once, over 1.4s, when most of it is on screen, then stands full. A reader who stops scrolling never sees it caught half way for long
+  const runEl = $('sc-why'); setRent(0);
+  const fillIo = new IntersectionObserver(es => { if (!es.some(en => en.isIntersecting)) return; fillIo.disconnect(); const t0 = performance.now(), D = 1400 / .86;
+    const step = t => { const k = Math.min(1, (t - t0) / D); setRent(k); if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); }, { threshold: .45 });
+  fillIo.observe(pb || runEl);
 })();

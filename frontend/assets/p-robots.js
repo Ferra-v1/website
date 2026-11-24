@@ -21,9 +21,9 @@
   // the robot as faint halftone, shaded the way dotbot.js shades it. Its bounds and one painted bitmap per size.
   const ghost = (name, grid = '-l') => { const g = (window.FERRA_DOTS || {})[name + grid]; if (!g) return null; if (!g.g2) { let pts = g.d.split(';').filter(Boolean).map(s => { const [x, y, L, A, , ed] = s.split(',').map(Number); return [x, y, (A / 100) * Math.min(1, .28 + .72 * Math.pow(L / 100, .9) + (ed / 100) * .35)]; }); pts = flatBase(pts); let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (const p of pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; } g.g2 = { pts, x0, x1, y0, y1 }; } return g.g2; };
   // the pixel robot: one dot on each grid square, sized by the machine's shading
-  const ghostBitmap = (G, cell, alpha, rgb = '255,255,255') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.55 + .45 * s)})`; c.beginPath(); c.arc((x - G.x0 + .5) * cell, (y - G.y0 + .5) * cell, Math.max(.3, cell * .44 * s), 0, 6.2832); c.fill(); } return b; };
+  const ghostBitmap = (G, cell, alpha, rgb = '30,51,155') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.55 + .45 * s)})`; c.beginPath(); c.arc((x - G.x0 + .5) * cell, (y - G.y0 + .5) * cell, Math.max(.3, cell * .44 * s), 0, 6.2832); c.fill(); } return b; };
   // the robot's body stays quiet, so each bright dot reads as one listing at a glance
-  const BODY = .3, THIN_DOTS = 20;
+  const BODY = .24, THIN_DOTS = 20;   // sand build: a faint cobalt body on light grounds
   // nice dollar ticks inside a range
   const TICKS = [300, 1000, 3000, 10000, 30000, 100000, 300000];
   // a tooltip: solid, small, beside what it describes and never on it. It looks for room above, below, right and left of the dot, inside box when there is one, and clear of the bar at the top of the screen.
@@ -243,7 +243,7 @@
       c.globalAlpha = clamp(t * 2.5); c.drawImage(cv._bm, g.ox, g.oy, g.cols * g.cell, g.rows * g.cell); c.globalAlpha = 1;
       // bright dots, one per listing. A robot with very few listings keeps them a touch bigger, so each one can still be found and tapped. They fly to their seats as t runs from 0 to 1.
       const r = clamp(g.cell * .62, list.length < 30 ? 2.6 : 1.9, 3.3), n = list.length, far = [], W = cv.clientWidth, H = cv.clientHeight;
-      c.fillStyle = '#fff'; c.beginPath();
+      c.fillStyle = '#0033A0'; c.beginPath();
       for (let i = 0; i < n; i++) {
         const k = list[(i * 7919) % n];
         let [x, y] = dotXY(g, k), q = r;
@@ -252,8 +252,8 @@
         c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832);
       }
       c.fill();
-      if (far.length) { const q = r * .72; c.fillStyle = 'rgba(255,255,255,.34)'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
-      if (hot) { const [x, y] = dotXY(g, hot); c.fillStyle = 'rgb(150,232,255)'; c.beginPath(); c.arc(x, y, r + 1.6, 0, 6.2832); c.fill(); }
+      if (far.length) { const q = r * .72; c.fillStyle = 'rgba(0,51,160,.28)'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
+      if (hot) { const [x, y] = dotXY(g, hot); c.fillStyle = '#0B1630'; c.beginPath(); c.arc(x, y, r + 1.6, 0, 6.2832); c.fill(); }
     };
     const cvs = [...shelf.querySelectorAll('canvas[data-b]')];
     // Assemble: each robot's dots fly to their seats over 2200ms, the robots 300ms apart

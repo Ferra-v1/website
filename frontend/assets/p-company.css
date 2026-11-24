@@ -5,8 +5,8 @@
 .c-hero{padding-block:var(--sec)}
 .c-heg{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:var(--gut);align-items:center}
 .c-htxt{grid-column:1}
-.c-h1{color:#fff;margin:0}
-.c-lead{margin:20px 0 0;color:#fff}
+.c-h1{color:var(--ink);margin:0}
+.c-lead{margin:20px 0 0;color:var(--ink2)}
 .c-pic{grid-column:2;min-width:0;display:flex;justify-content:center}
 .c-bot .rs-bot{height:clamp(200px,19.5vw,280px);display:flex;align-items:center;justify-content:center}
 /* the grid's second column starts a gutter past the words, so half a gutter back puts the arm in the middle of the space the words leave; its drawn shape sits 3.7% low in its canvas, measured at 1440 */
@@ -18,7 +18,7 @@
 .c-sheet{margin-top:24px;width:calc((100% - 11 * var(--gut)) / 12 * 7 + 6 * var(--gut));font:400 var(--t-lead)/1.5 var(--sans);color:var(--ink)}
 .c-sheet p{margin:0 0 1em;text-wrap:pretty}
 .c-sheet p:last-child{margin-bottom:0}
-.c-sheet .c-sign{margin-top:32px;color:#3e4656}
+.c-sheet .c-sign{margin-top:24px;color:var(--ink2)}
 
 /* the contact form has no next steps to list, so nothing promises them */
 .page[data-page="company.html"] .cb .ldone span,.page[data-page="company.html"] .cb .ldone ol:empty{display:none}

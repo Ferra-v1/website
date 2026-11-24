@@ -1,94 +1,38 @@
-/* Vision page (v-). A first film that scrolls away like any page, then one sticky stage: the dark parade of dot robots. Under it the lower films and the plan sit in plain flow, sized to their words. Without motion each film is one screen, stacked, with its poster and its words in place. */
-[data-page="vision.html"]{--gy:72svh;--gy2:53svh;--rh:min(47svh,31vw)}
+/* Vision page (v-), sand build. Every section sits in plain flow on a light ground, sized to its words. The films play in product windows; the six robots stand in cobalt dots on sand. Nothing pins. */
 .page[data-page="vision.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
-/* a smooth jump across the pinned parade would run through ten screens */
-html:has(.page[data-page="vision.html"]){scroll-behavior:auto}
-.v-run{position:relative;background:var(--g-ink);color:#fff}
-.v-first{position:relative}
-.v-first > .nav{z-index:5}
-
-/* the films. The first is one screen, with its line in the dark ground under the robot's wheels. The two lower ones are shown whole, fading at the foot into the ink, with their words straight under them on the page's left edge, so nothing crosses the figures in the picture */
-.v-layer{position:relative;overflow:hidden;background:var(--g-ink);color:#fff}
-.v-street{min-height:100svh}
-.v-frame{position:relative;width:100%;aspect-ratio:16/9;max-height:100svh;overflow:hidden}
-.v-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.v-shade{position:absolute;inset:0;pointer-events:none}
-/* the films carry their own dusk, so the first needs only a light scrim on the dark paving at the left */
-.v-street .v-shade{background:linear-gradient(to top,rgba(14,22,38,.82),rgba(14,22,38,0) 46%),linear-gradient(to right,rgba(14,22,38,.55),rgba(14,22,38,0) 52%)}
-.v-frame .v-shade{background:linear-gradient(to top,#0e1626,rgba(14,22,38,0) 14%),linear-gradient(to bottom,#0e1626,rgba(14,22,38,0) 8%)}
-.v-site .v-frame .v-shade{background:linear-gradient(to top,#0e1626,rgba(14,22,38,0) 14%)}
-.v-below{padding-block:20px var(--sec)}
-.v-below p{margin:16px 0 0;max-width:34em;text-wrap:balance}
-.v-words{position:absolute;left:0;right:0;width:100%;bottom:clamp(40px,7svh,72px);z-index:2}
-.v-words p{margin:0}
-.v-words .t-lead{margin-top:12px}
-.v-w-street{bottom:clamp(28px,4.4svh,40px)}
-.v-w-street .t-lead{margin-top:18px}
-
-/* the parade, without motion: a plain list of robots on ink, one to a row, its words on the left and its robot's own pixels starting on the middle line. Its two uncaptioned robots wait for the line of eight */
-.v-work{position:relative;background:var(--g-ink);padding-block:120px}
-.v-road{max-width:var(--w);margin-inline:auto;padding-inline:var(--gl)}
-.v-track{display:grid;row-gap:72px}
-.v-slot{margin:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
-.v-slot[data-extra]{display:none}
-.v-slot .rs-bot{grid-column:7 / 13;grid-row:1;display:flex;align-items:flex-end;justify-content:flex-start;position:relative;height:var(--rh);width:100%}
-.v-slot canvas.dotbot,.v-crowd canvas.dotbot{display:block;height:100%;width:auto;max-width:100%}
+/* the first screen: words left on the soft wash, the street film in a window right */
+.v-street{padding-block:clamp(48px,6vw,96px) var(--sec)}
+.v-hg{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:clamp(32px,4vw,64px);align-items:center}
+.v-words .t-lead{margin:20px 0 0;color:var(--ink2)}
+.v-win{position:relative;aspect-ratio:4/3;border-radius:var(--r-win);overflow:hidden;background:var(--peri)}
+.v-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(1.18) saturate(.9);display:block}
+/* the six robots */
+.v-work{padding-block:var(--sec)}
+.v-world{max-width:20em}
+.v-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(40px,4vw,56px) 24px;margin-top:clamp(40px,4.4vw,64px)}
+.v-slot{margin:0;display:flex;flex-direction:column;min-width:0}
+.v-slot .rs-bot{display:flex;align-items:flex-end;justify-content:flex-start;height:clamp(150px,15vw,220px);border-bottom:1px solid var(--line2)}
+.v-slot canvas.dotbot{display:block;height:100%;width:auto;max-width:100%}
+/* each robot's own pixels start on the slot's left edge, as before the sand repaint: --lm is the empty canvas left of the robot (pages/vision.py LM) */
 .v-slot canvas.dotbot{transform:translateX(calc(var(--lm,0) * -100%))}
-/* drawn twice over itself, so the robots read full white on the ink */
-.v-slot canvas,.v-crowd canvas{filter:drop-shadow(0 0 0 #fff)}
-.v-slot[data-fly] canvas.dotbot{transform:translate(calc(var(--lm,0) * -100%),-16%)}
-.v-crowdbot[data-fly] canvas.dotbot{transform:translateY(-16%)}
-.v-line,.v-crowd{display:none}
-.v-world{position:relative;margin-bottom:72px}
-.v-slot figcaption{grid-column:1 / 7;grid-row:1;color:#fff;text-wrap:pretty}
-
+.v-slot[data-fly] canvas.dotbot{height:70%;align-self:flex-start}
+.v-slot figcaption{margin-top:16px;color:var(--ink);text-wrap:pretty}
+/* the building site, whole, with its point under it */
+.v-site{padding-block:var(--sec) 0}
+.v-site .v-frame{aspect-ratio:16/9}
+.v-below{padding-block:clamp(24px,2.4vw,32px) 0}
 /* the plan: the point across the top, then the three steps in reading order, one to a column, tops in line */
 .v-path{padding-block:var(--sec)}
 .v-steps{list-style:none;margin:clamp(48px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .v-step{padding-top:20px;border-top:1px solid var(--ink)}
-.v-step p{margin:10px 0 0;color:#3e4656;text-wrap:pretty}
-.v-go{display:inline-block;margin-top:16px}
-
-/* with motion: one stage */
-.v-live .v-stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--g-ink)}
-/* the parade: the page scrolls, they drive past on one line that sits high enough for robot and caption to fit together */
-.v-live .v-work{position:absolute;inset:0;z-index:2;padding:0;background:none;overflow:hidden;pointer-events:none}
-.v-live .v-road{position:absolute;inset:0;max-width:none;margin:0;padding:0}
-.v-live .v-line{display:block;position:absolute;left:0;right:0;top:var(--gy);height:1px;background:rgba(255,255,255,.34)}
-.v-live .v-line2{display:none}
-.v-live .v-track{display:block;position:absolute;left:0;top:calc(var(--gy) - var(--rh));width:100%;height:calc(100svh - var(--gy) + var(--rh))}
-.v-live .v-slot,.v-live .v-slot[data-extra]{display:flex;flex-direction:column;align-items:center;text-align:center;--slot:min(46vw,640px);position:absolute;left:0;top:0;width:var(--slot);transform-origin:50% var(--rh);will-change:transform,opacity;opacity:0}
-.v-live .v-slot .rs-bot{justify-content:center}
-.v-live .v-slot canvas.dotbot{transform:none}
-.v-live .v-slot[data-fly] canvas.dotbot{transform:translateY(-16%)}
-.v-live .v-slot figcaption{margin-top:clamp(18px,3vh,30px);padding-inline:12px;opacity:0;will-change:transform,opacity}
-/* the page's point takes the captions' place under the line, and the line rises so the two sit in the middle of the screen */
-.v-live .v-world{position:absolute;left:0;right:0;top:calc(var(--gy2) + clamp(24px,4.4svh,44px));z-index:1;margin:0 auto;opacity:0;text-align:center}
-.v-live .v-world h2{margin-inline:auto}
-/* where they end: drawn at their final size, and only shown once the pull-back has nearly finished */
-.v-live .v-crowd{position:absolute;bottom:calc(100svh - var(--gy));align-items:flex-end;opacity:0}
-.v-crowded .v-crowd{display:flex!important}
-.v-crowdbot{flex:none}
-.v-crowd .rs-bot{display:flex;align-items:flex-end;justify-content:center}
-.v-settled .v-track{visibility:hidden}
-
-@media (max-width:820px){
- [data-page="vision.html"]{--gy:64svh;--rh:min(40svh,76vw)}
- .v-live .v-slot,.v-live .v-slot[data-extra]{--slot:88vw}
- .v-live .v-world{top:clamp(44px,9svh,96px);text-align:left}
- .v-live .v-world h2{margin-inline:0}
- /* the end picture is two rows of four, placed one by one (p-vision.js), each row on its own line */
- .v-live .v-line2{display:block;opacity:0}
- .v-live .v-crowd{inset:0}
- .v-live .v-work.v-crowded .v-crowd{display:block!important}
- .v-live .v-crowdbot{position:absolute}
- .v-work{padding-block:72px}
- .v-slot{grid-template-columns:minmax(0,1fr);row-gap:20px}
- .v-slot .rs-bot,.v-slot figcaption{grid-column:1}
- .v-slot figcaption{grid-row:2}
+.v-step p{margin:10px 0 0;color:var(--ink2);text-wrap:pretty}
+@media (max-width:900px){
+ .v-hg{grid-template-columns:minmax(0,1fr);row-gap:32px}
+ .v-win{aspect-ratio:4/3}
+ .v-track{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 16px}
+ .v-slot .rs-bot{height:min(34vw,160px)}
+ .v-slot figcaption{margin-top:10px}
+ .v-site .v-frame{aspect-ratio:4/3}
  .v-steps{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:32px}
- /* the phone cut: the site film is tall, near black at its head and empty at its foot, so it is cut just over the drone and just under the figures */
- .v-site .v-frame{aspect-ratio:390/450;max-height:none}
- .v-site .v-film{object-position:50% 29%}
  .v-below br,.v-pg h2 br{display:none}
 }

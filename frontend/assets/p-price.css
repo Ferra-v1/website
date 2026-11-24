@@ -80,7 +80,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-use .pp-seg button:nth-child(even){grid-column:span 2}
 .pp-seg button[aria-checked="true"],.pp-seg button[aria-checked="true"]:hover{color:var(--c);border-bottom-color:var(--c)}
 .pp-seg button:focus-visible,.pp-pre:focus-visible,.pp-copy:focus-visible,.pp-rb:focus-visible,.pp-st:focus-visible{outline:2px solid var(--c);outline-offset:2px}
-.pp-ans :is(a,button,summary):focus-visible,.pp-risk :is(a,button):focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:none}
+.pp-ans :is(a,button,summary):focus-visible,.pp-risk :is(a,button):focus-visible{outline:2px solid var(--c);outline-offset:2px;box-shadow:none}
 .pp-more{min-width:0}
 .pp-more summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font:500 var(--t-small)/1.4 var(--sans);color:var(--ink);list-style:none;white-space:nowrap}
 .pp-more summary::-webkit-details-marker{display:none}
@@ -92,34 +92,34 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-ans{grid-column:7 / -1;position:relative;isolation:isolate;min-width:0;display:flex;flex-direction:column;padding-block:clamp(32px,3.4vw,48px) clamp(24px,2.8vw,40px)}
 .pp-ans.g-ink{background:none}
 .pp-ans::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc((100% + var(--pp-gut)) / -6);width:100vw;background:var(--g-ink)}
-.pp-ans .pp-mk{color:rgba(255,255,255,.66)}
+.pp-ans .pp-mk{color:var(--grey)}
 .pp-a{min-width:0;display:flex;flex-direction:column}
-.pp-a[data-k="o"]{margin-top:clamp(20px,2.2vw,32px);padding-top:clamp(20px,2.2vw,32px);border-top:1px solid rgba(255,255,255,.2)}
+.pp-a[data-k="o"]{margin-top:clamp(20px,2.2vw,32px);padding-top:clamp(20px,2.2vw,32px);border-top:1px solid var(--line2)}
 .pp-al{font:500 var(--t-small)/1.4 var(--sans);color:var(--txt);min-height:20px}
-.pp-ans .pp-al{color:rgba(255,255,255,.82)}
-.pp-av{display:block;margin:8px 0 10px;white-space:nowrap;min-height:1em;transition:opacity .6s var(--m-ease)}
-.pp-ans .pp-av{color:#fff}
+.pp-ans .pp-al{color:var(--ink2)}
+.pp-av{display:block;margin:8px 0 10px;white-space:nowrap;min-height:1em;transition:opacity .25s var(--m-ease)}
+.pp-ans .pp-av{color:var(--ink)}
 .pp-ac{display:block;font-size:var(--t-small);line-height:1.45;color:var(--muted)}
 .pp-ac b{color:inherit;font-weight:400}
-.pp-ans .pp-ac{color:rgba(255,255,255,.82);transition:opacity .6s var(--m-ease)}
-.pp-arml{margin:0;font:400 var(--t-body)/1.5 var(--sans);color:#fff}
+.pp-ans .pp-ac{color:var(--ink2);transition:opacity .25s var(--m-ease)}
+.pp-arml{margin:0;font:400 var(--t-body)/1.5 var(--sans);color:var(--ink)}
 .pp-arml b{font-weight:600}
-.pp-army{margin:4px 0 0;line-height:1.45;color:rgba(255,255,255,.82)}
+.pp-army{margin:4px 0 0;line-height:1.45;color:var(--ink2)}
 .pp-age{margin:2px 0 0;line-height:1}
-.pp-agego{appearance:none;border:0;background:none;padding:0;min-height:44px;text-align:left;font:500 var(--t-small)/1.4 var(--sans);color:#fff;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
+.pp-agego{appearance:none;border:0;background:none;padding:0;min-height:44px;text-align:left;font:500 var(--t-small)/1.4 var(--sans);color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
 .pp-agego:hover{color:#c9d6ff}
-.pp-offw{margin:4px 0 0;font-size:var(--t-small);line-height:1.45;color:rgba(255,255,255,.82)}
+.pp-offw{margin:4px 0 0;font-size:var(--t-small);line-height:1.45;color:var(--ink2)}
 .pp-av .v0{color:var(--ink)}.pp-av .v1{color:var(--c)}
 .pp-av i{font-style:normal;font-size:.5em;color:#9aa3b3;margin:0 .22em;position:relative;top:-.14em}
 .pp-lt{font-size:.62em;position:relative;top:-.12em;margin-right:.04em}
 .pp-elo{display:block;margin-top:4px;font-size:var(--t-small);line-height:1.35;color:var(--muted)}
 .pp-a.busy .pp-av,.pp-a.busy .pp-ac{opacity:.35}
-.pp-stale .pp-a,.pp-stale .pp-sec,.pp-stale .pp-risk{opacity:.38;filter:grayscale(1);transition:opacity .6s var(--m-ease)}
+.pp-stale .pp-a,.pp-stale .pp-sec,.pp-stale .pp-risk{opacity:.38;filter:grayscale(1);transition:opacity .25s var(--m-ease)}
 .pp-answ{margin-top:8px}
-.pp-ans .pp-why summary{color:#fff}
+.pp-ans .pp-why summary{color:var(--ink)}
 .pp-ans .pp-answb{columns:1;padding:4px 0 8px}
-.pp-ans .pp-whyb b{color:#fff}
-.pp-ans .pp-whyb p,.pp-ans .pp-whyb .pp-ac{margin:0 0 8px;font-size:var(--t-small);line-height:1.5;color:rgba(255,255,255,.82)}
+.pp-ans .pp-whyb b{color:var(--ink)}
+.pp-ans .pp-whyb p,.pp-ans .pp-whyb .pp-ac{margin:0 0 8px;font-size:var(--t-small);line-height:1.5;color:var(--ink2)}
 .pp-ans .pp-whyb p:empty{display:none}
 
 /* other robots to try, and what the figure rests on */
@@ -129,17 +129,17 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-pre:hover,.pp-copy:hover,.pp-copy.done{color:var(--ink)}
 .pp-pre[aria-pressed="true"],.pp-pre[aria-pressed="true"]:hover{color:var(--ink)}
 .pp-copy{white-space:nowrap}
-.pp-bar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--pp-gut);align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,.2)}
+.pp-bar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--pp-gut);align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--line2)}
 .pp-bar .pp-pres{display:none;grid-column:1 / -1}
 .pp-dl{grid-column:1 / span 4}
 .pp-copy{grid-column:5 / -1}
-.pp-bar .pp-pres > span{color:rgba(255,255,255,.82)}
-.pp-bar .pp-pre,.pp-bar .pp-copy,.pp-bar .pp-pre:hover,.pp-bar .pp-copy:hover,.pp-bar .pp-copy.done{color:#fff}
+.pp-bar .pp-pres > span{color:var(--ink2)}
+.pp-bar .pp-pre,.pp-bar .pp-copy,.pp-bar .pp-pre:hover,.pp-bar .pp-copy:hover,.pp-bar .pp-copy.done{color:var(--ink)}
 .pp-bar .pp-pre[aria-pressed="true"]{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 .pp-copy{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-.pp-dl{margin:0;font-size:var(--t-small);line-height:1.5;color:rgba(255,255,255,.82);max-width:90ch}
-.pp-dl b{color:#fff;font-weight:500}
-.pp-dl a:not(.pp-mk){position:relative;color:#fff;font-weight:500;border-bottom:1px solid currentColor}
+.pp-dl{margin:0;font-size:var(--t-small);line-height:1.5;color:var(--ink2);max-width:90ch}
+.pp-dl b{color:var(--ink);font-weight:500}
+.pp-dl a:not(.pp-mk){position:relative;color:var(--ink);font-weight:500;border-bottom:1px solid currentColor}
 .pp-dl a:not(.pp-mk)::after{content:"";position:absolute;inset:-12px 0}
 
 /* drawn by the tool's script, unseen on this page: the longer failure story lives on Lenders */
@@ -163,7 +163,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-ladh{grid-column:1 / -1;display:block;font:600 var(--t-small)/1.4 var(--sans);color:var(--ink);margin-bottom:8px}
 .pp-rung{min-width:0;padding-top:16px;border-top:1px solid var(--line)}
 .pp-rung > span:first-child{display:block;font:500 var(--t-small)/1.4 var(--sans);color:var(--txt)}
-.pp-rung > b{display:block;font:700 var(--t-section)/1.04 var(--serif);letter-spacing:-.028em;margin:10px 0 12px;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
+.pp-rung > b{display:block;font:600 var(--t-section)/1.04 var(--serif);letter-spacing:-.028em;margin:10px 0 12px;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
 .pp-rung.hi > b{color:var(--c)}
 .pp-rung p{margin:0;font-size:var(--t-small);line-height:1.5;color:var(--txt);max-width:34ch}
 .pp-rung .pp-dr{display:none}
@@ -274,7 +274,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-covs .gl{stroke:#d3e0ec}
 .pp-covs .ax{font:16px var(--sans);fill:var(--muted)}
 /* each year's range is a thin bar from its low case to its high case. The script draws wide columns, so these narrow them and hold them on their year */
-.pp-covs .bar{opacity:0;width:4px;--bx:9px;transform:translate(var(--bx),5px);transition:opacity .6s var(--m-ease) var(--d),transform .6s var(--m-ease) var(--d)}
+.pp-covs .bar{opacity:0;width:4px;--bx:9px;transform:translate(var(--bx),5px);transition:opacity .25s var(--m-ease) min(var(--d),.25s),transform .25s var(--m-ease) min(var(--d),.25s)}
 .pp-covc.on .pp-covs .bar{opacity:1;transform:translate(var(--bx),0)}
 .pp-covs .c{display:none}.pp-covs .c2,.pp-covs .gr{fill:#b7c5ef}
 .pp-covs .c2.bad,.pp-covs .gr.bad{fill:#c2410c}
@@ -310,20 +310,20 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-rt{grid-column:1 / -1;margin:0}
 .pp-rh{grid-column:1 / span 6}
 .pp-rbig{grid-column:7 / -1}
-.pp-rh .t-lead{margin:0;max-width:46ch;color:#fff}
-.pp-rdef{margin:14px 0 8px;max-width:46ch;font-size:var(--t-body);line-height:1.55;color:rgba(255,255,255,.82)}
+.pp-rh .t-lead{margin:0;max-width:46ch;color:var(--ink)}
+.pp-rdef{margin:14px 0 8px;max-width:46ch;font-size:var(--t-body);line-height:1.55;color:var(--ink2)}
 .pp-rbig{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
-.pp-rl{display:block;font:500 var(--t-small)/1.4 var(--sans);color:rgba(255,255,255,.82)}
-.pp-rl .pp-mk{color:rgba(255,255,255,.66)}
-.pp-rv{display:block;color:#fff;margin:8px 0 24px;white-space:nowrap}
+.pp-rl{display:block;font:500 var(--t-small)/1.4 var(--sans);color:var(--ink2)}
+.pp-rl .pp-mk{color:var(--grey)}
+.pp-rv{display:block;color:var(--ink);margin:8px 0 24px;white-space:nowrap}
 .pp-rsw{display:flex;flex-direction:column;align-items:stretch;gap:2px;width:100%}
-.pp-rb{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--pp-gut);align-items:center;min-height:44px;padding:0;border:0;border-bottom:1px solid rgba(255,255,255,.2);border-radius:0;background:none;color:#fff;cursor:pointer;font-family:var(--sans);text-align:left}
-.pp-rb span{grid-column:1 / span 4;font-size:var(--t-small);font-weight:500;color:rgba(255,255,255,.82);white-space:nowrap}
-.pp-rb b{grid-column:5 / -1;font:500 var(--t-small) var(--sans);color:rgba(255,255,255,.82);font-variant-numeric:lining-nums tabular-nums}
-.pp-rb:hover span{color:#fff}
-.pp-rb[aria-checked="true"]{border-bottom:2px solid #fff}
-.pp-rb[aria-checked="true"] span,.pp-rb[aria-checked="true"] b{color:#fff;font-weight:600}
-.pp-rcap{margin:12px 0 0;font-size:var(--t-small);line-height:1.5;color:rgba(255,255,255,.82);max-width:52ch}
+.pp-rb{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--pp-gut);align-items:center;min-height:44px;padding:0;border:0;border-bottom:1px solid var(--line2);border-radius:0;background:none;color:var(--ink);cursor:pointer;font-family:var(--sans);text-align:left}
+.pp-rb span{grid-column:1 / span 4;font-size:var(--t-small);font-weight:500;color:var(--ink2);white-space:nowrap}
+.pp-rb b{grid-column:5 / -1;font:500 var(--t-small) var(--sans);color:var(--ink2);font-variant-numeric:lining-nums tabular-nums}
+.pp-rb:hover span{color:var(--ink)}
+.pp-rb[aria-checked="true"]{border-bottom:2px solid var(--c)}
+.pp-rb[aria-checked="true"] span,.pp-rb[aria-checked="true"] b{color:var(--ink);font-weight:600}
+.pp-rcap{margin:12px 0 0;font-size:var(--t-small);line-height:1.5;color:var(--ink2);max-width:52ch}
 
 /* the loan: the term sheets are real documents, so they stay paper */
 .pp-og{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--pp-gut);align-items:stretch}
@@ -471,7 +471,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-covs .aft{display:none}
 @media (max-width:359px){.pp-covs .bl.cu{display:none}.pp-covs .bl:not(.rs):not(.al){transform:translateY(-16px)}}
 
-.pp-scs .lab:not(.ttl){transition:opacity .5s ease}
+.pp-scs .lab:not(.ttl){transition:opacity .25s ease}
 .pp-scw:has(.pp-tip:not([hidden])) .pp-scs .lab:not(.ttl){opacity:0}
 
 /* ---------- Round 5 (ROUND-5-SPEC section 19): one question, one answer panel, then two sections. These rules come last and win. ---------- */
@@ -504,7 +504,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 /* the answer: one flat navy panel, as tall as the question */
 .pp-ans{grid-column:7 / -1;padding:clamp(24px,2.8vw,40px);display:flex;flex-direction:column;justify-content:flex-start}
 .pp-ans::before{display:none}
-.pp-ans .pp-al{color:rgba(255,255,255,.82)}
+.pp-ans .pp-al{color:var(--ink2)}
 .pp-a[data-k="o"]{margin-top:clamp(20px,2.2vw,28px);padding-top:clamp(20px,2.2vw,28px)}
 .pp-ans .pp-av{margin:8px 0 6px}
 .pp-ans .pp-ac{font-size:var(--t-small)}
@@ -563,7 +563,8 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .tb .pp-seg.tb-seg{height:auto;min-height:var(--tb-h)}
 .tb .pp-seg.tb-seg button{height:44px;min-height:44px}
 /* the focus ring stays visible on a pressed (ink) button and on any dark ground: white there, cobalt on white */
-.tb .pp-seg button[aria-checked="true"]:focus-visible,:where(.g-ink,.g-dark,.g-cobalt,.ink-panel,.on-dark) .pp-seg button:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+.tb .pp-seg button[aria-checked="true"]:focus-visible{outline:2px solid #fff;outline-offset:-4px}   /* the pressed segment is cobalt, so its ring is white inside it */
+:where(.g-ink,.g-dark,.g-cobalt,.ink-panel,.on-dark) .pp-seg button:focus-visible{outline:2px solid var(--c);outline-offset:-4px}
 /* under 1001px the panel runs to the window's edges, never past them: its overhang is the page's own side margin, so nothing scrolls sideways (200% zoom at 720 wide overflowed by 4px) */
 @media (max-width:1000px){
   .pp-ans{--pp-pad:min(clamp(16px,4vw,24px),var(--gl))}
@@ -620,7 +621,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
   .pp-gen .pp-ladw .pp-rate{grid-column:1 / -1}
 }
 /* plates leave with their labels while a tip is open */
-.pp-scs .pp-pl{transition:opacity .5s ease}
+.pp-scs .pp-pl{transition:opacity .25s ease}
 .pp-scw:has(.pp-tip:not([hidden])) .pp-scs .pp-pl{opacity:0}
 /* flow study (2026-11-14) */
 .pp-st{touch-action:manipulation}
@@ -642,3 +643,5 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 @media (hover:none){.pp-st:hover{color:var(--c)}}
 /* nothing the page keeps out of sight asks for the paper typeface */
 .pp-keep,.pp-keep *{font-family:var(--sans)!important}
+/* reduced motion: the chart's labels and plates appear without a fade (these rules sit after the ones that set their fades) */
+@media (prefers-reduced-motion:reduce){.pp-scs .pp-pl,.pp-scs .lab:not(.ttl){transition:none}}

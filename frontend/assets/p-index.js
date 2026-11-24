@@ -33,8 +33,9 @@
   const lgd = $('ri-lgd'), pcap = $('ri-pcap'), tk = $('ri-kept'), tl = $('ri-lost');
   // colours: sky and white for what is kept, cobalt for depth, ink for the outline; signal orange comes from the section's own tokens
   const hex = h => { h = h.trim().replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); const n = parseInt(h, 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
-  const tok = getComputedStyle(root), SIG = hex(tok.getPropertyValue('--sig')), SIGT = hex(tok.getPropertyValue('--sig-tint')), SIGD = hex(tok.getPropertyValue('--sig-deep'));
-  const WHITE = [1, 1, 1], SKY = hex('#0fa9e8'), COB = hex('#2847ce'), INK = hex('#0e1626');
+  const tok = getComputedStyle(root), SIG = hex(tok.getPropertyValue('--sig')), SIGT = hex(tok.getPropertyValue('--sig-deep')), SIGD = hex(tok.getPropertyValue('--sig-deep'));
+  // sand build: a light ground, so the brightest value is cobalt and the backing under each cell is the ground itself
+  const WHITE = hex('#0033A0'), SKY = hex('#3A63D0'), COB = hex('#8FA6E3'), INK = hex(tok.getPropertyValue('--ri-g') || '#EEF2FC');
   const mixc = (a, b, t, o) => { o[0] = a[0] + (b[0] - a[0]) * t; o[1] = a[1] + (b[1] - a[1]) * t; o[2] = a[2] + (b[2] - a[2]) * t; return o; };
   // a cell's shade: 0 full, 1 half, 2 light, 3 trim. [colour, pattern]: pattern 0 is a solid tile, 1 a tile with holes, 2 a tile of small squares
   const SHADE = [[SKY, 0], [SKY, 1], [COB, 1], [WHITE, 0]];
@@ -282,7 +283,7 @@
       const sk = stamp ? clamp01((now - stamp) / 420) : 1, se = 1 - (1 - sk) * (1 - sk), bv = burst ? mix(burst.v0, E.likely, 1 - Math.pow(1 - clamp01((now - burst.t0) / 430), 3)) / 100 : null;
       const ye = L.now - age, pv = bv != null ? bv : Math.floor(est(st.id, age).likely / 100 + .5);
       figure(drag || snap ? ye : Math.round(ye), LAY.X1, YR.y, YR.c, { right: 1, col: SKY, a: appear }, pass, 'year');
-      figure(pv, PXB.x, PXB.y, PXB.c, { pre: '$', post: '00', commas: 1, col: se < 1 ? mixc(SIGT, WHITE, se, c3) : WHITE, a: appear, k: 1 + .1 * (1 - se) }, pass, 'price');
+      figure(pv, PXB.x, PXB.y, PXB.c, { pre: '$', post: '00', commas: 1, col: se < 1 ? mixc(SIGD, WHITE, se, c3) : WHITE, a: appear, k: 1 + .1 * (1 - se) }, pass, 'price');
     }
     floorLine(ST.x, ST.x + ST.w, 1);
   }

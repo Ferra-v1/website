@@ -1,12 +1,13 @@
 // The header panels' live pictures. site.js loads this and media/nav/np-data.js the first time a panel opens, and calls FerraNP.pick(link, numbers) for the link under the pointer.
 // One canvas per panel, one frame at a time, and nothing runs once the panel has shut. Every number comes from the page's data-n, which core.py reads from the price data and the example loan. Each scene paints as a pure function of time.
 // Reduced motion: each scene paints once at its finished state.
+// Sand system (2026-11-24): the pictures sit on a sand card. Dots and lines are ink (W), the highlight is cobalt (C), and every label sits on a sand plate (INK keeps its name: the plate colour).
 (() => {
   const D = window.FERRA_NP_DATA, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TAU = Math.PI * 2, clamp = v => v < 0 ? 0 : v > 1 ? 1 : v, smooth = t => t * t * (3 - 2 * t), out3 = t => 1 - Math.pow(1 - t, 3), lerp = (a, b, k) => a + (b - a) * k;
   const R = n => { const s = Math.sin(n * 12.9898 + 4.1) * 43758.5453; return s - Math.floor(s); };
   const usd = n => '$' + Math.round(n).toLocaleString('en-US'), count = n => Math.round(n).toLocaleString('en-US');
-  const W = a => `rgba(255,255,255,${a})`, C = a => `rgba(150,232,255,${a})`, INK = '#0e1626';
+  const W = a => `rgba(11,22,48,${Math.min(1, a * 1.05)})`, C = a => `rgba(0,51,160,${a})`, INK = '#F5F0E7', SOLID = '#0B1630', HI = '#0033A0';
   const F16 = "400 16px Geist,'Geist Fallback',system-ui,sans-serif";
   const disc = (c, x, y, r) => { c.moveTo(x + r, y); c.arc(x, y, r, 0, TAU); };
   // a label on a solid plate of the ground colour, so whatever sits under it gives way
@@ -23,7 +24,7 @@
   const SCENES = {
     // dots gather into 50 arms, 35 of them light up, and the figure ticks up to the example loan. The rows fill three of the picture's seven columns, from its top line to its rule, and the figure stands on the rule beside them
     borrow: { setup(S) { const cols = 10, rows = 5, gw = S.line(3) - S.g, cw = gw / cols, aw = cw * .94, k = aw / (BOX.r - BOX.a), ch = (BOX.u - BOX.t) * k + 2, py = (S.h - 3 - ch) / (rows - 1);
-        const dpr = S.dpr, sp = document.createElement('canvas'); sp.width = Math.ceil(cw * dpr); sp.height = Math.ceil(ch * dpr); const x = sp.getContext('2d'); x.scale(dpr, dpr); x.fillStyle = '#fff'; x.beginPath(); D.seats.forEach(s => disc(x, 1 + (s[0] - BOX.a) * k, 1 + (s[1] - BOX.t) * k, Math.max(.45, s[2] * k * .8))); x.fill();
+        const dpr = S.dpr, sp = document.createElement('canvas'); sp.width = Math.ceil(cw * dpr); sp.height = Math.ceil(ch * dpr); const x = sp.getContext('2d'); x.scale(dpr, dpr); x.fillStyle = SOLID; x.beginPath(); D.seats.forEach(s => disc(x, 1 + (s[0] - BOX.a) * k, 1 + (s[1] - BOX.t) * k, Math.max(.45, s[2] * k * .8))); x.fill();
         const cells = []; for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) cells.push({ x: i * cw, y: 1 + j * py, n: j * cols + i });
         const bits = []; cells.forEach(cl => { for (let b = 0; b < 8; b++) { const q = cl.n * 8 + b; bits.push({ sx: R(q) * gw, sy: R(q + .5) * S.h, x: cl.x + cw * (.2 + R(q + .2) * .6), y: cl.y + ch * (.1 + R(q + .7) * .8), d: R(q + .9) * .7 }); } });
         S.state = { cells, bits, sp, cw, ch, lit: S.N.borrowLit || 35 }; S.f = S.fig({ left: S.line(3), bottom: 12 }, usd(0), 'The example loan'); },
@@ -39,16 +40,16 @@
         const stream = (L, from, col, n, sp) => { const on = clamp((t - from) / .4); if (!on) return; c.fillStyle = col; c.globalAlpha = on; c.beginPath(); for (let i = 0; i < n; i++) { const k = ((t - from) * sp / L.total + i / n) % 1, p = at(L, k), r = 3.2 * Math.min(1, Math.min(k, 1 - k) * 12); if (r > .2) disc(c, p[0], p[1], r); } c.fill(); c.globalAlpha = 1; };
         const { loan, buy, rent, pay, use } = st.lanes, seg = (a, b) => smooth(clamp((t - a) / (b - a)));
         trace(loan, seg(.5, 1), .4); trace(buy, seg(1, 1.4), .4); trace(use, seg(1.4, 1.7), .18); trace(rent, seg(1.8, 2.5), .4); trace(pay, seg(2.6, 3), .4);
-        st.xs.forEach((x, i) => { const a = smooth(clamp((t - i * .1) / .5)); c.globalAlpha = a; c.strokeStyle = W(.72); c.lineWidth = 1; c.strokeRect(x + .5, st.top + .5, st.sq, st.sq); c.font = F16; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff'; c.fillText(['The lender', 'The company', 'The robots', 'Customers'][i], x + st.sq / 2, st.cy); c.globalAlpha = 1; });
+        st.xs.forEach((x, i) => { const a = smooth(clamp((t - i * .1) / .5)); c.globalAlpha = a; c.strokeStyle = W(.72); c.lineWidth = 1; c.strokeRect(x + .5, st.top + .5, st.sq, st.sq); c.font = F16; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = SOLID; c.fillText(['The lender', 'The company', 'The robots', 'Customers'][i], x + st.sq / 2, st.cy); c.globalAlpha = 1; });
         c.textAlign = 'left'; c.textBaseline = 'alphabetic';
-        stream(loan, 1, C(1), 4, 90); stream(buy, 1.4, C(1), 3, 70); stream(rent, 2.5, '#fff', 8, 80); stream(pay, 3, '#fff', 4, 70);
+        stream(loan, 1, C(1), 4, 90); stream(buy, 1.4, C(1), 3, 70); stream(rent, 2.5, SOLID, 8, 80); stream(pay, 3, SOLID, 4, 70);
         const tx = (s, x, y, from) => label(c, s, x, y, smooth(clamp((t - from) / .5)), 'center');
         tx(S.N.loanT + ' example loan', (st.xs[0] + st.sq + st.xs[1]) / 2, 12, .9); tx('Buys the robots', (st.xs[1] + st.sq + st.xs[2]) / 2, 12, 1.3);
         tx(S.N.rentT + ' example rent a month', (st.xs[1] + st.sq / 2 + st.xs[3] + st.sq / 2) / 2, st.route + 22, 2.2); tx(S.N.payT + ' a month, plus interest', (st.xs[0] + st.xs[1] + st.sq) / 2, st.route + 22, 2.8); } },
     // the arm drains to the auction line. Three columns on the grid: the arm on the rule, the words at the ends of the two lines, the figure on the rule
     drain: { setup(S) { const top = 6, H = S.h - top - 3, lx = S.snap(armW(H) + S.g); S.state = { H, top, pts: armAt(2, top, H), lx }; S.f = S.fig({ left: S.snap(lx + 130), bottom: 12 }, '100%', 'of what sellers usually ask'); },
       paint(c, t, S) { const st = S.state, p = smooth(clamp((t - .7) / 2.6)), share = lerp(1, S.N.pct / 100, p), wave = t > 3.3 ? Math.sin(t * 1.4) * 1.2 : 0, line = st.top + st.H * (1 - share) + wave; const a = smooth(clamp(t / .5));
-        c.globalAlpha = a; c.fillStyle = W(.16); c.beginPath(); for (const d of st.pts) if (d.y < line) disc(c, d.x, d.y, d.r); c.fill(); c.fillStyle = '#fff'; c.beginPath(); for (const d of st.pts) if (d.y >= line) disc(c, d.x, d.y, d.r); c.fill(); c.globalAlpha = 1;
+        c.globalAlpha = a; c.fillStyle = W(.16); c.beginPath(); for (const d of st.pts) if (d.y < line) disc(c, d.x, d.y, d.r); c.fill(); c.fillStyle = SOLID; c.beginPath(); for (const d of st.pts) if (d.y >= line) disc(c, d.x, d.y, d.r); c.fill(); c.globalAlpha = 1;
         const end = st.lx - 12; c.lineWidth = 1; c.strokeStyle = W(.28); c.beginPath(); c.moveTo(0, st.top + .5); c.lineTo(end, st.top + .5); c.stroke(); c.strokeStyle = C(.9); c.beginPath(); c.moveTo(0, Math.round(line) + .5); c.lineTo(end, Math.round(line) + .5); c.stroke();
         label(c, 'What sellers usually ask', st.lx, st.top + 6, a, 'left', W(.72)); if (line > st.top + 26) label(c, 'Sold at auction', st.lx, line + 6, smooth(clamp((line - st.top - 26) / 30)), 'left', C(1));
         S.f.b(Math.round(share * 100) + '%'); } },
@@ -84,14 +85,17 @@
         let n = 0; for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) { const x = ox + i * pitch, y = oy + j * pitch; if (!bars.some(r => inside(b.l + x / k, b.t + y / k, r))) continue; n++; dots.push({ x, y: 2 + y, sx: R(n) * S.w, sy: R(n + .4) * S.h, d: R(n + .7) * .8 + (x / gw) * .3 }); }
         S.state = { dots, rd, gw, gh }; },
       paint(c, t, S) { const st = S.state, run = t > 2.2 ? ((t - 2.2) % 5.5) / 2.4 : -1, edge = run * (st.gw + st.gh) - st.gh * .3;
-        c.fillStyle = W(.9); c.beginPath(); const hi = [];
+        c.fillStyle = C(.92); c.beginPath(); const hi = [];
         for (const d of st.dots) { const p = smooth(clamp((t - d.d) / 1.1)), x = lerp(d.sx, d.x, p), y = lerp(d.sy, d.y, p), r = lerp(st.rd * .6, st.rd, p); const f = run >= 0 && run <= 1 ? Math.max(0, 1 - Math.abs(d.x + d.y * .6 - edge) / 70) : 0; if (f > .05) hi.push(x, y, r * (1 + .25 * f), f); else disc(c, x, y, r); }
-        c.fill(); for (let i = 0; i < hi.length; i += 4) { c.fillStyle = `rgba(${Math.round(255 - 105 * hi[i + 3])},${Math.round(255 - 23 * hi[i + 3])},255,1)`; c.beginPath(); disc(c, hi[i], hi[i + 1], hi[i + 2]); c.fill(); } } },
+        c.fill(); for (let i = 0; i < hi.length; i += 4) { c.fillStyle = `rgba(${Math.round(0 + 92 * hi[i + 3])},${Math.round(51 + 77 * hi[i + 3])},${Math.round(160 + 44 * hi[i + 3])},.92)`; c.beginPath(); disc(c, hi[i], hi[i + 1], hi[i + 2]); c.fill(); } } },
   };
 
   let run = null, swap = 0;
   const end = () => { if (!run) return; cancelAnimationFrame(run.raf); (run.bots || []).forEach(b => { const d = window.FerraDots; if (d && b.cv._seen) d.pause(b.cv); clearTimeout(b.timer); b.el.remove(); }); run.nodes.forEach(n => n.remove()); run = null; };
-  const begin = (stage, name, N) => { end(); const def = SCENES[name]; if (!def) return; let cv = stage.querySelector('canvas.np-cv'); if (!cv) { cv = document.createElement('canvas'); cv.className = 'np-cv'; stage.prepend(cv); }
+  const begin = (card, name, N) => { end(); const def = SCENES[name]; if (!def) return;
+    // the picture draws inside .np-st, inset from the sand card's edges (site.css), so nothing touches the card's rim
+    let stage = card.querySelector('.np-st'); if (!stage) { stage = document.createElement('div'); stage.className = 'np-st'; card.append(stage); }
+    let cv = stage.querySelector('canvas.np-cv'); if (!cv) { cv = document.createElement('canvas'); cv.className = 'np-cv'; stage.prepend(cv); }
     const box = stage.getBoundingClientRect(), w = Math.round(box.width), h = Math.round(box.height), dpr = Math.min(2, devicePixelRatio || 1); cv.width = w * dpr; cv.height = h * dpr; const c = cv.getContext('2d');
     const g = 24, step = (w + g) / 7;   // the picture spans seven of the page's twelve columns (6 to 12, after one empty column): line(i) is the left edge of its column i, and the picture ends on the right margin
     const S = { w, h, dpr, N, g, line: i => i * step, snap: x => Math.ceil(x / step - .001) * step, nodes: [], bots: [], state: null, f: null,
@@ -99,8 +103,8 @@
       fig(pos, big, small) { const p = document.createElement('p'); p.className = 'np-fig'; if (pos.top === 0) p.classList.add('up'); for (const k in pos) p.style[k] = pos[k] + 'px'; if (pos.right === undefined) p.style.right = '0'; const b = document.createElement('b'), s = document.createElement('span'); b.textContent = big; s.textContent = small; p.append(b, s); stage.append(p); S.nodes.push(p); return { el: p, b: v => { if (b.textContent !== v) b.textContent = v; }, a: v => { p.style.opacity = v; } }; },
       // a layer for the moving robots, which dotbot.js paints, standing on the picture's rule
       row() { const r = document.createElement('div'); r.className = 'np-row'; stage.append(r); S.nodes.push(r); return r; },
-      bot(row, name, width, ar, anim, alpha, delay) { const el = document.createElement('span'); el.className = 'ff-bot np-rb'; el.style.width = width + 'px'; el.style.setProperty('--ar', ar); if (alpha < 1) el.style.opacity = alpha; const cvs = document.createElement('canvas'); cvs.dataset.bot = name; cvs.dataset.tone = 'light'; cvs.dataset.anim = anim; el.append(cvs); row.append(el); const d = window.FerraDots, o = { el, cv: cvs }; if (d) { d.fetch(cvs); const go = () => { if (!run || !run.bots.includes(o)) return; cvs.classList.add('dotbot'); cvs._seen = 1; cvs._vis = true; d.draw(cvs); }; o.timer = setTimeout(go, delay || 0); } S.bots.push(o); return el; } };
-    run = { name, stage, raf: 0, nodes: S.nodes, bots: S.bots };
+      bot(row, name, width, ar, anim, alpha, delay) { const el = document.createElement('span'); el.className = 'ff-bot np-rb'; el.style.width = width + 'px'; el.style.setProperty('--ar', ar); if (alpha < 1) el.style.opacity = alpha; const cvs = document.createElement('canvas'); cvs.dataset.bot = name; cvs.dataset.tone = 'ink'; cvs.dataset.anim = anim; el.append(cvs); row.append(el); const d = window.FerraDots, o = { el, cv: cvs }; if (d) { d.fetch(cvs); const go = () => { if (!run || !run.bots.includes(o)) return; cvs.classList.add('dotbot'); cvs._seen = 1; cvs._vis = true; d.draw(cvs); }; o.timer = setTimeout(go, delay || 0); } S.bots.push(o); return el; } };
+    run = { name, stage: card, raf: 0, nodes: S.nodes, bots: S.bots };
     def.setup(S);
     const paint = t => { c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h); c.fillStyle = W(.2); c.fillRect(0, h - 1, w, 1); def.paint(c, t, S); };
     if (reduce) { paint(60); return; }

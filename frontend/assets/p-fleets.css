@@ -1,4 +1,4 @@
-/* Robot companies page (f-). Plain sections sized to their content, on flat grounds. With motion (.f-live) one thing pins: the robot that fills with rent. When it is full it scrolls away like the rest of the page. Everything sits on the page's twelve columns. Sizes, buttons and fields come from site.css; layout lives here. */
+/* Robot companies page (f-). Plain sections sized to their content, on light grounds (sand build). Nothing pins: the robot that fills with rent plays its fill once on arrival. Everything sits on the page's twelve columns. Sizes, buttons and fields come from site.css; layout lives here. */
 
 .page[data-page="fleets.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
 /* the sentence is reached by its own script; a keyboard stop arrives at once, without a smooth run through the pinned robot */
@@ -21,9 +21,9 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 .f-say .pf{font:inherit;line-height:46px;letter-spacing:inherit;color:var(--c);vertical-align:baseline;text-align:center;padding:0 18px;max-width:100%}
 .page[data-page="fleets.html"] .f-say select.pf{padding:0 38px 0 18px;text-align:left}
 .f-say .pf[aria-invalid="true"]{color:#b42318}
-.f-say .pf:focus-visible{outline-color:#fff}
+.f-say .pf:focus-visible{outline-color:var(--c)}
 /* the range message has its own line, so showing it moves nothing */
-.f-msg{margin:0;min-height:24px;color:#fff;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.f-msg{margin:0;min-height:24px;color:#b42318;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s ease}
 .f-msg.on{opacity:1}
 .f-out p{margin:0;color:var(--ink)}
 /* the answer (Praj 2026-11-13: no navy box; 2026-11-14: not the same blue as everything else either): one white card on the cobalt, full grid width, the shared card radius, no border and no shadow.
@@ -72,29 +72,23 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 .f-run{grid-column:7 / 13;min-width:0}
 .f-whyt p{margin:0;color:#3e4656;max-width:30em;text-wrap:balance}
 @media (min-width:1200px){#f-w-t{white-space:nowrap;max-width:none}}  /* the example line sits on one line */
-.f-pay-bot{display:block;width:100%}
+.f-pay-bot{display:block;width:100%;max-height:min(62vh,560px)}
+/* sand build: no pinned scene. The robot fills once, on its own, when it comes into view, and then stands full */
+@media (min-width:901px){.f-whyt{display:flex;flex-direction:column;justify-content:center;align-self:center;margin-top:0}}
 .f-read{margin:clamp(28px,3.4vw,48px) 0 0!important;color:var(--ink)!important}
-.f-read b{display:block;color:var(--c);font-weight:700}
+.f-read b{display:block;color:var(--c);font-weight:600}
 .f-read span{display:block;margin-top:6px;color:#3e4656;max-width:24em;min-height:3.2em}
-.f-live .f-wrun{height:calc(100lvh + 170vh)}
-.f-live .f-wpin{position:sticky;top:0;height:100lvh;overflow:clip}
-.f-live .f-why{height:100%;padding-block:0}
-.f-live .f-whyg{height:100%;grid-template-rows:auto minmax(0,1fr);padding-block:clamp(88px,10svh,112px) clamp(32px,5svh,56px)}
-.f-live .f-run{height:100%;min-height:0}
 /* the example and its counter stand together, centred beside the robot, so the left half is never empty while the robot fills */
-@media (min-width:901px){.f-live .f-whyt{display:flex;flex-direction:column;justify-content:center;height:100%;margin-top:0}.f-live .f-read{margin-top:24px!important}.f-live .f-run{padding-top:24px}}
 /* on a phone the heading starts near the top, since the header has scrolled away, and the robot gets the room */
-@media (max-width:900px){.f-live .f-whyg{padding-top:32px}}
-.f-live .f-pay-bot{width:100%;max-width:none;height:100%}
 
 /* one month: heading left, paragraph right, then one wide bar for the rent, split at the loan's share. Each figure stands under its own part of the bar */
 .f-month{padding-block:var(--sec)}
 .f-mlead{margin:16px 0 0;text-wrap:pretty}
 .f-bar,.f-mg{display:grid;grid-template-columns:calc(var(--pay) * 100%) minmax(0,1fr)}
-.f-bar{margin-top:clamp(40px,4.4vw,64px);height:12px;overflow:hidden;transition:clip-path 1.2s var(--m-ease)}
+.f-bar{margin-top:clamp(40px,4.4vw,64px);height:12px;overflow:hidden;transition:clip-path .3s var(--m-ease)}
 .f-bar span{display:block;min-width:0;border-radius:1px}
-.f-b1{background:#fff;color:var(--ink);border-right:3px solid var(--g-ink)}
-.f-b2{background:rgba(255,255,255,.2);color:#fff}
+.f-b1{background:var(--c);color:#fff;border-right:3px solid var(--sand)}
+.f-b2{background:var(--peri2);color:var(--ink)}
 .f-mg{margin-top:clamp(20px,2.4vw,28px)}
 .f-mcol{min-width:0;padding-right:clamp(24px,4vw,56px)}
 .f-mn{margin:0}
@@ -123,7 +117,7 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 .f-next .f-bot .rs-bot{height:clamp(96px,8vw,116px)}
 .f-next .rs-bot canvas{opacity:.62}
 .f-bot canvas{display:block;max-width:100%;height:100%;width:auto;transform:translateX(calc(var(--lm,0) * -100%))}
-.f-live .f-bot canvas{transition:opacity .5s var(--m-ease)}
+.f-live .f-bot canvas{transition:opacity .25s var(--m-ease)}
 .f-live .f-yard:not(.on) .f-bot canvas{opacity:0}
 .f-bot figcaption{margin-top:12px;padding-right:12px;font:500 var(--t-small)/1.3 var(--sans);min-height:42px}
 .f-ysay{margin:0 0 clamp(14px,1.6vw,22px);padding-right:16px}
@@ -138,8 +132,6 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
  .f-whyg h2 br{display:none}
  .f-whyt,.f-run,.f-real,.f-next{grid-column:1}
  .f-whyt{margin-top:8px}
- .f-live .f-whyg{grid-template-rows:auto auto minmax(0,1fr);padding-block:72px 8px}
- .f-live .f-run{padding-block:8px 16px;min-height:0}
  .f-read{margin-top:16px!important}
  .f-read span{min-height:3.2em}
  .f-yard{grid-template-columns:minmax(0,1fr);row-gap:32px}
@@ -150,7 +142,6 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 @media (max-width:720px){.f-left{--gut:16px}.f-keepg{grid-template-columns:minmax(0,1fr)}.page[data-page="fleets.html"] .f-keepg h2{grid-column:1;grid-row:2;margin-top:8px}.f-keepl{grid-column:1;grid-row:3;width:auto}}
 /* narrower than a laptop the panel is one column: the loan, the sum behind it, then the fields and the button */
 @media (max-width:900px){.f-panel{grid-template-columns:minmax(0,1fr);padding:24px 20px}.f-o1,.f-o2,.f-panel > .lf,.f-panel > .la,.f-panel > .ldone,.f-panel > .f-cav{grid-column:1;grid-row:auto}.f-o2{margin-top:24px}.f-cav{margin-top:20px!important}}
-@media (max-width:720px){.f-live .f-wrun{height:calc(100lvh + 120vh)}}
 @media (max-width:680px){
  .f-who{grid-template-columns:minmax(0,1fr)}.f-panel .btn{width:100%}.f-say .pf{padding:0 16px}.f-say{line-height:52px}.f-say label:has(#sz-type){display:block}
  .f-bot .rs-bot{height:min(32vw,120px)}.f-ybots{column-gap:16px}.f-next .f-ybots{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:20px}.f-next .f-bot .rs-bot{height:84px}

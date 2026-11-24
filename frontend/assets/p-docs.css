@@ -14,7 +14,7 @@ html{scroll-behavior:auto}
 .d-upd{margin:18px 0 0;font-size:var(--t-small);color:var(--muted)}
 
 /* the contents rail */
-.d-toc{position:sticky;top:96px;max-height:calc(100vh - 112px);overflow:auto;padding-top:14px}
+.d-toc{position:sticky;top:96px;max-height:calc(100vh - 112px);overflow:auto;padding-top:14px}   /* the contents and each section's heading stay beside the text as it is read, as before the sand repaint: they hold their column and never move the page, so scrolling is not hijacked */
 .d-toc b,.d-tocx b{display:block;font:500 var(--t-small)/1.35 var(--sans);color:var(--ink);padding:14px 0 4px}
 .d-tol{margin-top:14px!important}
 .d-toc ol,.d-tocx ol{list-style:none;margin:0;padding:0}
@@ -31,7 +31,7 @@ html{scroll-behavior:auto}
 .d-sec p{margin:0 0 16px;max-width:490px;color:#3e4656;font-size:var(--t-body);line-height:1.65}
 .d-sec .d-ld{margin:0 0 20px;max-width:700px;font-size:var(--t-lead);line-height:1.45;color:var(--ink);text-wrap:pretty}
 .d-sec b{color:var(--ink);font-weight:500}
-.d-sec b.num{font-weight:700}
+.d-sec b.num{font-weight:600}
 .d-rl > b:first-child{display:block;width:fit-content;margin-bottom:2px}
 .d-sec p a,.d-pr p a{position:relative;color:var(--c);border-bottom:1px solid currentColor}
 .d-sec p a::after,.d-pr p a::after{content:"";position:absolute;inset:-12px 0}
@@ -161,9 +161,8 @@ html{scroll-behavior:auto}
   .d-g{display:block}
   .page:is([data-page="methodology.html"],[data-page="privacy.html"]){--d-gut:16px}
   .d-toc{display:none}
-  .d-tocx{display:block;position:sticky;top:8px;z-index:20;margin-top:24px;border-radius:var(--r-card);background:#fff;box-shadow:inset 0 0 0 1px rgba(14,22,38,.14);padding:0 16px}
+  .d-tocx{display:block;position:relative;z-index:20;margin-top:24px;border-radius:var(--r-card);background:#fff;box-shadow:inset 0 0 0 1px rgba(14,22,38,.14);padding:0 16px}
   /* the site's floating bar comes back when the reader scrolls up: the control steps down under it */
-  html:has(.fbar.on) .d-tocx{top:76px}
   .d-tocx summary{display:flex;align-items:center;gap:10px;min-height:48px;font-size:var(--t-body);font-weight:500;color:var(--ink);cursor:pointer;list-style:none}
   .d-tocx summary::-webkit-details-marker{display:none}
   .d-tocnow{font-weight:400;color:#4a5262;overflow:hidden;white-space:nowrap;min-width:0}

@@ -49,7 +49,8 @@
 
   // ------------------------------------------------------------ the cell kit
   let CW = 8, LH = 12, HW = 4, HH = 6, PH = false;
-  const COL = { sky: '#0fa9e8', white: '#ffffff', cob: '#2847ce', deep: '#1e339b', ink: '#0e1626', sig: getComputedStyle(first).getPropertyValue('--sig').trim() || '#0fa9e8' };
+  const COL = { sky: '#0033A0', white: '#0B1630', cob: '#8FA2E0', deep: '#C5D1F1', ink: '#ffffff',   // sand build: the show is drawn light, so the old ground (ink) is white and the old brightest cells (white) are ink
+    sig: getComputedStyle(first).getPropertyValue('--sig').trim() || '#0fa9e8' };
   const tiles = new Map();
   // a shade of a colour: 4 is the full cell, 3 three quarters of its 2px squares, 2 half (a checker), 1 a quarter
   function shade(ctx, key) {
@@ -64,7 +65,7 @@
   function pen(s) {
     const m = new Map([['ink4', new Path2D()]]), rec = window.__rsRec ? [] : null;
     return { r(key, x, y, w, h) { let p = m.get(key); if (!p) m.set(key, p = new Path2D()); p.rect(x, y, w, h); if (rec && key !== 'ink4') rec.push(x, y, w, h); },
-      flush() { m.forEach((p, k) => { s.ctx.fillStyle = shade(s.ctx, k); s.ctx.fill(p); }); if (rec) s.rec = rec; } };
+      flush() { m.forEach((p, k) => { if (k === 'ink4') return; s.ctx.fillStyle = shade(s.ctx, k); s.ctx.fill(p); }); if (rec) s.rec = rec; } };   // sand build: the ink margins are the white page itself, so they are left clear rather than painted white past the content column
   }
   const sx = v => Math.round(v / CW) * CW, sy = v => Math.round(v / LH) * LH, qx = v => Math.round(v / HW) * HW, qy = v => Math.round(v / HH) * HH;
 
@@ -207,8 +208,10 @@
         // the hammer: a head as wide as the bar on a handle that runs off the edge; it waits above, falls on the bar and springs back a little
         const hh = (PH ? 5 : 8) * LH, restY = barTop - hh - (PH ? 5 : 10) * LH, hy = sy(p < .5 ? restY : p < .59 ? mix(restY, barTop - hh, pHam * pHam) : mix(barTop - hh, barTop - hh - 3 * LH, Math.sin(Math.min(1, pDr / .14) * Math.PI / 2)));
         const hx = barX - CW + sx((1 - pIn) * (W - barX + 2 * CW)), hw = bwd + 2 * CW, nk = (PH ? 1 : 2) * LH;   // the hammer slides in from the edge with the robot, so nothing waits on an empty block
-        if (hx < W) { P.r('ink4', hx - CW, hy - LH / 2, W - hx + CW, hh + LH);
-          P.r('white4', hx, hy, hw, hh); P.r('sky4', hx, hy + LH, hw, LH); P.r('sky4', hx, hy + hh - 2 * LH, hw, LH); if (W - hx - hw > 0) P.r('white3', hx + hw, hy + (hh - nk) / 2, W - hx - hw, nk); }
+        // sand build: a cobalt head with light bands, its short handle standing up from the middle of the head, all inside the content column
+        if (hx < W) { const hl = 3 * LH, hwd = (PH ? 2 : 3) * CW, hcx = sx(hx + (hw - hwd) / 2);
+          P.r('ink4', hx - CW, hy - LH / 2, hw + 2 * CW, hh + LH); P.r('ink4', hcx - CW, hy - hl - LH / 2, hwd + 2 * CW, hl + LH / 2);
+          P.r('cob3', hcx, hy - hl, hwd, hl); P.r('sky4', hx, hy, hw, hh); P.r('deep4', hx, hy + LH, hw, LH); P.r('deep4', hx, hy + hh - 2 * LH, hw, LH); }
         // the figures: asking counts up as the bar rises, the bids count up to the likely auction price, and the share counts down from all of it as the bar drains
         const round = v => Math.floor(v / 100 + .5) * 100, askT = usd(round(E.ask * pIn)), likT = usd(round(E.likely * pBid)), shT = Math.round(100 - (100 - L.share * 100) * pDr) + '%';
         const plate = (xr, y, t, U) => P.r('ink4', xr - unitsOf(t) * U.uw - CW, y - LH / 2, unitsOf(t) * U.uw + 2 * CW, U.h + 2 * U.uh + LH);
@@ -267,12 +270,12 @@
   }
   function note() {
     const wrap = $('rs-paperw'), paper = $('rs-paper'), port = $('rs-port'), slot = $('rs-slot'), stamp = $('rs-stamp'), sec = wrap && wrap.closest('.rs'); if (!wrap || !paper) return;
-    const live = !reduce; sec.classList.add('rs-on', live ? 'rs-live' : 'rs-still');
+    const live = false; sec.classList.add('rs-on', 'rs-still');   // sand build: the note stands whole the moment it is on screen (end condition line 4), never part printed
     const scanEl = $('rs-scan');
     // the portrait: the reader's robot in ink on the paper, drawn whole whenever the robot changes (so the note prints whole whatever the page was doing)
     drawPortrait = () => { if (!port) return; const h = PH ? 240 : 440, fl = filmFor(E.f.cls, E.m.fam), cols = colsFor(fl, PH ? 330 : 1000, h, HW, HH), G = grid(fl, 0, cols), w = cols * HW, hh = G.h * HH;
       if (port.width !== w || port.height !== hh) { port.width = w; port.height = hh; } const s2 = { ctx: port.getContext('2d') }, P = pen(s2); s2.ctx.clearRect(0, 0, w, hh);
-      for (let r2 = 0; r2 < G.h; r2++) { let c = 0; while (c < G.w) { const kd = G.k[r2 * G.w + c]; if (!kd) { c++; continue; } let e2 = c + 1; while (e2 < G.w && G.k[r2 * G.w + e2] === kd) e2++; P.r(kd === 4 ? 'cob2' : kd === 3 ? 'cob3' : kd === 2 ? 'cob4' : 'deep4', c * HW, r2 * HH, (e2 - c) * HW, HH); c = e2; } }
+      for (let r2 = 0; r2 < G.h; r2++) { let c = 0; while (c < G.w) { const kd = G.k[r2 * G.w + c]; if (!kd) { c++; continue; } let e2 = c + 1; while (e2 < G.w && G.k[r2 * G.w + e2] === kd) e2++; P.r(kd === 4 ? 'sky4' : kd === 3 ? 'sky3' : kd === 2 ? 'cob4' : 'deep4', c * HW, r2 * HH, (e2 - c) * HW, HH); c = e2; } }
       P.flush(); };
     drawPortrait();
     const cover = $('rs-cover'), curve = $('rs-curve'), rel = el => { const a = el.getBoundingClientRect(), b = paper.getBoundingClientRect(); return [a.top - b.top, a.height]; };
