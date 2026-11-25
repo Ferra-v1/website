@@ -1,13 +1,13 @@
 // The header panels' live pictures. site.js loads this and media/nav/np-data.js the first time a panel opens, and calls FerraNP.pick(link, numbers) for the link under the pointer.
 // One canvas per panel, one frame at a time, and nothing runs once the panel has shut. Every number comes from the page's data-n, which core.py reads from the price data and the example loan. Each scene paints as a pure function of time.
 // Reduced motion: each scene paints once at its finished state.
-// Sand system (2026-11-24): the pictures sit on a sand card. Dots and lines are ink (W), the highlight is cobalt (C), and every label sits on a sand plate (INK keeps its name: the plate colour).
+// Sand system (2026-11-24): the pictures sit on the --alt card. Dots and lines are ink (W), the highlight is cobalt (C), and every label sits on a plate of the card colour, read from --alt in site.css (INK keeps its name: the plate colour).
 (() => {
   const D = window.FERRA_NP_DATA, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TAU = Math.PI * 2, clamp = v => v < 0 ? 0 : v > 1 ? 1 : v, smooth = t => t * t * (3 - 2 * t), out3 = t => 1 - Math.pow(1 - t, 3), lerp = (a, b, k) => a + (b - a) * k;
   const R = n => { const s = Math.sin(n * 12.9898 + 4.1) * 43758.5453; return s - Math.floor(s); };
   const usd = n => '$' + Math.round(n).toLocaleString('en-US'), count = n => Math.round(n).toLocaleString('en-US');
-  const W = a => `rgba(11,22,48,${Math.min(1, a * 1.05)})`, C = a => `rgba(0,51,160,${a})`, INK = '#F5F0E7', SOLID = '#0B1630', HI = '#0033A0';
+  const W = a => `rgba(11,22,48,${Math.min(1, a * 1.05)})`, C = a => `rgba(40,71,206,${a})`, INK = getComputedStyle(document.documentElement).getPropertyValue('--alt').trim() || '#F2F4F7', SOLID = '#0B1630', HI = '#2847ce';
   const F16 = "400 16px Geist,'Geist Fallback',system-ui,sans-serif";
   const disc = (c, x, y, r) => { c.moveTo(x + r, y); c.arc(x, y, r, 0, TAU); };
   // a label on a solid plate of the ground colour, so whatever sits under it gives way

@@ -44,7 +44,7 @@ html{scroll-behavior:auto}
 .d-bars ul{list-style:none;margin:0;padding:0}
 .d-bars li{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:baseline;gap:0 var(--d-gut);padding:10px 0 12px}
 .d-bars b{color:var(--ink)}
-.d-bars b.fig-24{font-size:var(--t-lead);letter-spacing:-.015em}
+.d-bars b.fig-24{letter-spacing:-.015em}
 .d-bars li.hi b{color:var(--c)}
 .d-bars span{font-size:var(--t-body);line-height:1.4;color:#3e4656}
 .d-tr{position:relative;grid-column:1 / -1;height:6px;margin-top:8px;background:#f1f4f9}
@@ -277,5 +277,17 @@ html{scroll-behavior:auto}
 }
 @media (min-width:1061px){.d-sec .d-sb p,.d-src dd{max-width:min(100%,620px)!important}}
 /* the sources list's links are the site's arrow link: cobalt, weight 500, no line at rest, kept on the end of their sentence */
-.d-src a.tlink{display:inline;min-height:0;margin:0;font-family:var(--sans);font-weight:500;font-size:var(--t-body);line-height:inherit;color:var(--c);text-decoration:none;white-space:nowrap}
+.d-src a.tlink{display:inline;min-height:0;margin:0;font-family:var(--sans);font-weight:500;font-size:16px;line-height:inherit;color:var(--c);text-decoration:none;white-space:nowrap}
 .d-src a.tlink:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+
+/* 2026-11-25: section headings at the one h2 size take their own row, with the text under them on the same left edge */
+.d-sec > .d-sh,.d-one > h2.d-sh{grid-column:1 / -1;position:static;margin:0 0 16px;padding:0}
+.d-sec > .d-sb{grid-column:1 / -1}
+.d-sb :is(p,li){max-width:760px}
+@media (min-width:1061px){
+  /* the reading column now spans all ten of the section's columns: its inner grids keep to those ten lines */
+  .d-sec .d-gl div{grid-template-columns:repeat(10,minmax(0,1fr))}
+  .d-sec .d-gl dt{grid-column:span 3}.d-sec .d-gl dd{grid-column:span 7}
+  .d-sec .d-sb .d-nums{grid-template-columns:repeat(10,minmax(0,1fr))}
+  .d-sec .d-sb .d-nums > div{grid-column:span 3}
+}

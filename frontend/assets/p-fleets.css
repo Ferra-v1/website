@@ -87,7 +87,7 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 .f-bar,.f-mg{display:grid;grid-template-columns:calc(var(--pay) * 100%) minmax(0,1fr)}
 .f-bar{margin-top:clamp(40px,4.4vw,64px);height:12px;overflow:hidden;transition:clip-path .3s var(--m-ease)}
 .f-bar span{display:block;min-width:0;border-radius:1px}
-.f-b1{background:var(--c);color:#fff;border-right:3px solid var(--sand)}
+.f-b1{background:var(--c);color:#fff;border-right:3px solid var(--alt)}
 .f-b2{background:var(--peri2);color:var(--ink)}
 .f-mg{margin-top:clamp(20px,2.4vw,28px)}
 .f-mcol{min-width:0;padding-right:clamp(24px,4vw,56px)}

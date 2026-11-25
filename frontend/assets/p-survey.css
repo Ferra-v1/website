@@ -34,7 +34,7 @@
 .sv-seg label + label{border-left:var(--hair)}
 .sv-seg input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
 .sv-seg span{flex:1;display:flex;align-items:center;justify-content:center;min-height:48px;padding:4px 6px;text-align:center;font:400 15px/1.15 var(--sans);color:var(--ink);transition:background-color .15s ease,color .15s ease}
-.sv-seg label:hover span{background:var(--mist)}
+.sv-seg label:hover span{background:var(--alt)}
 .sv-seg input:checked + span{background:var(--c);color:#fff}
 .sv-seg input:focus-visible + span{outline:2px solid var(--c);outline-offset:-4px}
 .sv-seg input:checked:focus-visible + span{outline-color:#fff}
@@ -42,7 +42,7 @@
 .sv-ml{display:grid;gap:10px;font:500 16px/1.5 var(--sans);color:var(--ink)}
 .sv-act{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:40px}
 .sv-err{flex-basis:100%;margin:0;font:500 16px/1.5 var(--sans);color:#b42318}
-.sv-done{padding:28px 24px;border:var(--hair);border-radius:var(--r-card);background:var(--paper)}
+.sv-done{padding:28px 24px;border:var(--hair);border-radius:var(--r-card);background:var(--alt)}
 .sv-done p{margin:0}
 .sv-done:focus{outline:0}
 @media (max-width:600px){

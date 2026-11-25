@@ -35,7 +35,7 @@
   const hex = h => { h = h.trim().replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); const n = parseInt(h, 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
   const tok = getComputedStyle(root), SIG = hex(tok.getPropertyValue('--sig')), SIGT = hex(tok.getPropertyValue('--sig-deep')), SIGD = hex(tok.getPropertyValue('--sig-deep'));
   // sand build: a light ground, so the brightest value is cobalt and the backing under each cell is the ground itself
-  const WHITE = hex('#0033A0'), SKY = hex('#3A63D0'), COB = hex('#8FA6E3'), INK = hex(tok.getPropertyValue('--ri-g') || '#EEF2FC');
+  const WHITE = hex('#2847ce'), SKY = hex('#3A63D0'), COB = hex('#8FA6E3'), INK = hex(tok.getPropertyValue('--ri-g') || '#EEF2FC');
   const mixc = (a, b, t, o) => { o[0] = a[0] + (b[0] - a[0]) * t; o[1] = a[1] + (b[1] - a[1]) * t; o[2] = a[2] + (b[2] - a[2]) * t; return o; };
   // a cell's shade: 0 full, 1 half, 2 light, 3 trim. [colour, pattern]: pattern 0 is a solid tile, 1 a tile with holes, 2 a tile of small squares
   const SHADE = [[SKY, 0], [SKY, 1], [COB, 1], [WHITE, 0]];

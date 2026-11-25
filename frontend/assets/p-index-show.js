@@ -49,7 +49,7 @@
 
   // ------------------------------------------------------------ the cell kit
   let CW = 8, LH = 12, HW = 4, HH = 6, PH = false;
-  const COL = { sky: '#0033A0', white: '#0B1630', cob: '#8FA2E0', deep: '#C5D1F1', ink: '#ffffff',   // sand build: the show is drawn light, so the old ground (ink) is white and the old brightest cells (white) are ink
+  const COL = { sky: '#2847ce', white: '#0B1630', cob: '#8FA2E0', deep: '#C5D1F1', ink: '#ffffff',   // sand build: the show is drawn light, so the old ground (ink) is white and the old brightest cells (white) are ink
     sig: getComputedStyle(first).getPropertyValue('--sig').trim() || '#0fa9e8' };
   const tiles = new Map();
   // a shade of a colour: 4 is the full cell, 3 three quarters of its 2px squares, 2 half (a checker), 1 a quarter

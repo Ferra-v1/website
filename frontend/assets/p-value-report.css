@@ -31,7 +31,7 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-r{grid-column:6 / 13;min-width:0;margin:0}
 .vr-big{margin:0 0 18px;line-height:1}
 .vr-big .big-num{font:600 var(--t-title)/1 var(--serif);letter-spacing:-.033em;color:var(--c)}
-.vr-big span{display:block;margin:8px 0 0;font:400 var(--t-sub)/1.2 var(--sans);letter-spacing:0;color:var(--muted)}
+.vr-big span{display:block;margin:8px 0 0;font:400 var(--t-body)/1.2 var(--sans);letter-spacing:0;color:var(--muted)}
 .vr-l h2,.vr-l h3{margin:0 0 12px}
 .vr-b{margin:0 0 14px;color:#3e4656}
 .vr-sure{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--line);color:var(--ink)}
@@ -78,7 +78,7 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-tbl .vr-lk{color:var(--c);font-weight:600}
 .vr-tbl a{color:var(--c)}
 .vr-tv .vr-tbl thead th{position:sticky;top:0;background:#fff;padding-top:12px}
-.vr-c1 .vr-tv .vr-tbl thead th{background:var(--g-ink)}
+.vr-c1 .vr-tv .vr-tbl thead th{background:var(--alt)}
 .vr-tv:focus-visible{outline:2px solid var(--c);outline-offset:2px}
 
 /* tooltips: solid, beside what they describe (FerraPlot.placeTip places them) */

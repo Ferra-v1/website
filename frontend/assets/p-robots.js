@@ -150,7 +150,9 @@
       read.querySelector('.r-rv').textContent = thin ? `${money(c[0])} to ${money(c[2])}` : money(c[1]);
       // the same count, by the same band, as this robot's card on the shelf. When few listings set the price, the sentence says how many first.
       const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1), F = D.fit, count = near ? `${near} for sale near this age.` : 'None for sale near this age. Worked out from other ages.';
-      read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this. ${count}` : `Most ask ${money(c[0])} to ${money(c[2])}. ${count}`;
+      read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this. ${count}` : count;
+      // the range under the figure: low and high asking prices at the bar's ends, the typical one marked on it (2026-11-25: a picture, not a sentence)
+      read.querySelector('.r-rlo').textContent = money(c[0]); read.querySelector('.r-rhi').textContent = money(c[2]); read.querySelector('.r-rmid').style.left = (c[2] > c[0] ? (c[1] - c[0]) / (c[2] - c[0]) * 100 : 50).toFixed(1) + '%';
       read.querySelector('.r-rl').href = `/price#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
@@ -243,7 +245,7 @@
       c.globalAlpha = clamp(t * 2.5); c.drawImage(cv._bm, g.ox, g.oy, g.cols * g.cell, g.rows * g.cell); c.globalAlpha = 1;
       // bright dots, one per listing. A robot with very few listings keeps them a touch bigger, so each one can still be found and tapped. They fly to their seats as t runs from 0 to 1.
       const r = clamp(g.cell * .62, list.length < 30 ? 2.6 : 1.9, 3.3), n = list.length, far = [], W = cv.clientWidth, H = cv.clientHeight;
-      c.fillStyle = '#0033A0'; c.beginPath();
+      c.fillStyle = '#2847ce'; c.beginPath();
       for (let i = 0; i < n; i++) {
         const k = list[(i * 7919) % n];
         let [x, y] = dotXY(g, k), q = r;
@@ -252,7 +254,7 @@
         c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832);
       }
       c.fill();
-      if (far.length) { const q = r * .72; c.fillStyle = 'rgba(0,51,160,.28)'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
+      if (far.length) { const q = r * .72; c.fillStyle = 'rgba(40,71,206,.28)'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
       if (hot) { const [x, y] = dotXY(g, hot); c.fillStyle = '#0B1630'; c.beginPath(); c.arc(x, y, r + 1.6, 0, 6.2832); c.fill(); }
     };
     const cvs = [...shelf.querySelectorAll('canvas[data-b]')];

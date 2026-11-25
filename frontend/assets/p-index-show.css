@@ -2,7 +2,7 @@
    Terminal blocks on dark ink: every picture is drawn by the script in shade cells on one grid; this file lays the scenes out and holds every word.
    One block per scene, so a scene can be swapped alone: shared, auction, note, board, thin data, drop test, finale, print.
    Signal orange lives in three tokens on .rs only (value lost, the reader's robot, the one main button). The site already uses --sec for the section gap, so the tokens are --sig. */
-.rs{--sky:#0033A0;--sig:#FF6B1A;--sig-tint:#FFE6D6;--sig-deep:#B8470A;--rs-ink:#fff;--rs-mut:#5E6676;position:relative;background-color:var(--rs-ink);color:var(--ink)}
+.rs{--sky:var(--c);--sig:#FF6B1A;--sig-tint:#FFE6D6;--sig-deep:#B8470A;--rs-ink:#fff;--rs-mut:#5E6676;position:relative;background-color:var(--rs-ink);color:var(--ink)}
 /* sand build: the show stands on white in plain flow, its block pictures in ink, cobalt and signal orange. No texture, nothing pins */
 .rs,.rs-pin,.rs-cover{background-image:none!important}
 .rs,.rs-pin{background-image:var(--rs-tex,none);image-rendering:pixelated}

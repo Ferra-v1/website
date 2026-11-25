@@ -3,7 +3,7 @@
 .page[data-page="company.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
 /* the headline and its line from the left grid line; the arm in the space they leave up to the right grid edge, its drawn shape centred both ways on the words (spec 15). The row is as tall as the arm, plus the normal spacing */
 .c-hero{padding-block:var(--sec)}
-.c-heg{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:var(--gut);align-items:center}
+.c-heg{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:var(--gut);align-items:center}
 .c-htxt{grid-column:1}
 .c-h1{color:var(--ink);margin:0}
 .c-lead{margin:20px 0 0;color:var(--ink2)}

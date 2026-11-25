@@ -11,22 +11,25 @@
 @font-face{font-family:'Geist Fallback';src:local('Arial'),local('ArialMT'),local('Helvetica Neue'),local('Helvetica');font-weight:400;font-style:normal;size-adjust:102%;ascent-override:98.53%;descent-override:28.92%;line-gap-override:0%}
 @font-face{font-family:'Geist Fallback';src:local('Arial'),local('ArialMT'),local('Helvetica Neue'),local('Helvetica');font-weight:500 600;font-style:normal;size-adjust:104.3%;ascent-override:96.36%;descent-override:28.28%;line-gap-override:0%}
 :root{color-scheme:light only;
- --ink:#0B1630;--ink2:#2A3347;--grey:#5E6676;--hgrey:#666D7A;--c:#0033A0;--deep:#00287f;--mist:#F5F0E7;--paper:#F5F0E7;--muted:#5E6676;--line:#E2E4E9;--line2:#D3D6DD;--cap:#5E6676;
- --sand:#F5F0E7;--peri:#E3E9F9;--peri2:#C5D1F1;--peri3:#EEF2FC;--fair:#2F6E4F;--fair-l:#DCEBE1;--w:none;--gl:max(clamp(20px,8.34vw,120px),calc((100vw - 1320px) / 2));--gut:24px;--sec:clamp(48px,5vw,72px);
+ --ink:#0B1630;--ink2:#2A3347;--grey:#5E6676;--hgrey:#666D7A;--c:#2847ce;--deep:#1e339b;--mist:var(--alt);--paper:var(--alt);--muted:#5E6676;--line:#E2E4E9;--line2:#D3D6DD;--cap:#5E6676;
+ /* --alt: the one second colour for every flat band, card and the footer. Change this one value to repaint them all (2026-11-25). Sand #F5F0E7 lives only in the cloud pictures behind the homepage product cards */
+ --alt:#F2F4F7;--sand:var(--alt);--peri:#E3E9F9;--peri2:#C5D1F1;--peri3:#EEF2FC;--fair:#2F6E4F;--fair-l:#DCEBE1;--w:none;--gl:max(clamp(20px,8.34vw,120px),calc((100vw - 1320px) / 2));--gut:24px;--sec:clamp(48px,5vw,72px);
  --serif:'Inter','Inter Fallback',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--sans:'Geist','Geist Fallback',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--doc:'Source Serif 4',Georgia,'Times New Roman',serif;
- --t-hero:clamp(40px,5.5556vw,80px);--t-title:clamp(36px,4.17vw,60px);--t-display:var(--t-title);--t-section:var(--t-title);--t-statement:var(--t-title);--t-sub:clamp(20px,1.53vw,22px);--t-smallh:16px;
- --t-lead:var(--t-sub);--t-body:16px;--t-small:16px;--t-btn:16px;--t-btn-bar:16px;--t-film:var(--t-section);
+ /* one type scale (Praj, 2026-11-25, B2C): h1 68/40 (Home's headline, every page's top heading), h2 44/30, h3 22/20, body 18/17 at 1.5. Defined here once; pages never set heading sizes */
+ --t-h1:clamp(40px,4.7223vw,68px);--t-h2:clamp(30px,3.0556vw,44px);--t-h3:clamp(20px,1.53vw,22px);
+ --t-hero:var(--t-h1);--t-title:var(--t-h1);--t-display:var(--t-h1);--t-section:var(--t-h2);--t-statement:var(--t-h2);--t-sub:var(--t-h3);--t-smallh:16px;
+ --t-lead:var(--t-body);--t-body:18px;--t-small:16px;--t-btn:16px;--t-btn-bar:16px;--t-film:var(--t-section);
  --m-fade:260ms;--m-ease:cubic-bezier(.2,.7,.2,1);
  /* sand system (2026-11-24): light grounds only. The old dark names (g-ink, g-dark, g-cobalt, g-grad) now paint sand, periwinkle and the soft hero wash */
- --g-white:#fff;--g-pale:#fff;--g-ink:#F5F0E7;--g-dark:#F5F0E7;--g-grad:linear-gradient(180deg,#E3E9F9 0%,#EEF2FC 55%,#fff 100%);--g-foot:#F5F0E7;--g-cobalt:#E3E9F9;
+ --g-white:#fff;--g-pale:#fff;--g-ink:var(--alt);--g-dark:var(--alt);--g-grad:linear-gradient(180deg,#E3E9F9 0%,#EEF2FC 55%,#fff 100%);--g-foot:var(--alt);--g-cobalt:#E3E9F9;
  --r-field:8px;--r-card:12px;--r-btn:8px;--r-win:14px;--r-doc:4px;--hair:1px solid var(--line);--sh-doc:0 1px 0 rgba(11,22,48,.04),0 12px 28px -20px rgba(11,22,48,.18)}
-@media (max-width:720px){:root{--gl:20px}}
+@media (max-width:720px){:root{--gl:20px;--t-body:17px}}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{background:#fff;margin:0}
 html{scroll-behavior:smooth;scroll-padding-top:88px}
 html.mn-open,html.mn-open body{overflow:hidden}
-body{color:var(--ink);font:400 var(--t-body)/1.6 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
+body{color:var(--ink);font:400 var(--t-body)/1.5 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#fff;z-index:60}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
@@ -58,21 +61,19 @@ canvas.dotbot{display:block;width:100%}
 .t-section,.fig-44,.h2{font-size:var(--t-section);line-height:1.08;letter-spacing:-.028em}
 .t-sub,.fig-24,.h3{font-size:var(--t-sub);line-height:1.2;letter-spacing:-.02em}
 .t-smallh{font:600 var(--t-smallh)/1.35 var(--serif);letter-spacing:-.01em;margin:0}
-.t-lead,.lede,.lead-1{font:400 var(--t-lead)/1.45 var(--sans)}
-.t-body,.body{font:400 var(--t-body)/1.6 var(--sans)}
+.t-lead,.lede,.lead-1{font:400 var(--t-body)/1.5 var(--sans)}
+.t-body,.body{font:400 var(--t-body)/1.5 var(--sans)}
 .t-small,.fine,.cap{font:400 var(--t-small)/1.5 var(--sans)}
 .fig-96,.fig-64,.fig-44,.fig-24,.big-num{font-variant-numeric:lining-nums tabular-nums}
 .big-num{font-family:var(--serif);font-weight:600;font-size:var(--t-statement);line-height:1;letter-spacing:-.028em}
 /* headings take the scale by their tag; a class chooses another allowed size. These win over page styles on purpose: a page that sets its own heading size is how every section came to shout. */
 .page :is(h1,h2,h3,h4,h5,h6):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-family:var(--serif);font-weight:600;text-wrap:pretty}
-.page h1:not(.t-display,.t-hero,.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-title)!important;line-height:1.02;letter-spacing:-.035em}
-.page h1.t-display{font-size:var(--t-display)!important;line-height:1;letter-spacing:-.035em}
-.page :is(h1,h2,p,b,span).t-hero{font-size:var(--t-hero)!important;line-height:1;letter-spacing:-.035em}
-.page h2:not(.t-statement,.t-sub,.t-smallh,.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-section)!important;line-height:1.08;letter-spacing:-.028em}
-.page :is(h2,h3).t-statement{font-size:var(--t-statement)!important;line-height:1.04;letter-spacing:-.028em}
-.page h3:not(.t-statement,.t-section,.t-smallh,.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-sub)!important;line-height:1.2;letter-spacing:-.02em}
-.page :is(h2,h3).t-sub{font-size:var(--t-sub)!important;line-height:1.2;letter-spacing:-.02em}
-.page h3.t-section{font-size:var(--t-section)!important;line-height:1.08;letter-spacing:-.02em}
+.page h1:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h1)!important;font-weight:600!important;line-height:1.04!important;letter-spacing:-.04em!important;color:var(--ink);text-wrap:balance}
+.page h2:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h2)!important;font-weight:600;line-height:1.08!important;letter-spacing:-.04em!important;text-wrap:balance}
+.page h3:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h3)!important;font-weight:600;line-height:1.2!important;letter-spacing:-.02em!important;text-wrap:balance}
+.page :is(p,b,span).t-hero{font-size:var(--t-h1)!important;line-height:1.04;letter-spacing:-.04em}
+/* body copy wraps without a lone word on its last line */
+.page p,.page li{text-wrap:pretty}
 .page :is(h2,h3,h4,h5,h6).t-smallh,.page :is(h4,h5,h6):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-smallh)!important;font-weight:500;line-height:1.35;letter-spacing:-.01em}
 .h1,.h1.ink{color:var(--ink)}
 .h2{margin-bottom:16px}.h2 + .lead-1{margin-bottom:40px}.h2.w{color:var(--ink)}
@@ -175,14 +176,14 @@ canvas.dotbot{display:block;width:100%}
 .np-l a{display:flex;flex-direction:column;justify-content:center;padding:12px 0;min-height:44px;border-bottom:1px solid var(--line)}
 .np.on .np-l a{animation:np-rise .36s var(--m-ease) both;animation-delay:calc(var(--i,0) * 40ms + 80ms)}
 @keyframes np-rise{from{opacity:0;transform:translateY(8px)}}
-.np-l b{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font:600 var(--t-lead)/1.25 var(--serif);letter-spacing:-.025em;color:var(--hgrey);transition:color .15s ease}
+.np-l b{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font:600 var(--t-sub)/1.25 var(--serif);letter-spacing:-.025em;color:var(--hgrey);transition:color .15s ease}
 .np-l b::after{content:"\2192";font-weight:400;color:var(--c);opacity:0;transform:translateX(-6px);transition:opacity .15s ease,transform .2s var(--m-ease)}
 .np-l span{display:block;margin-top:4px;font:400 var(--t-small)/1.45 var(--sans);color:var(--grey);transition:color .15s ease}
 .np-l a.sel b,.np-l a:hover b,.np-l a:focus-visible b{color:var(--ink)}
 .np-l a.sel b::after,.np-l a:hover b::after,.np-l a:focus-visible b::after{opacity:1;transform:none}
 .np-l a.sel span,.np-l a:hover span,.np-l a:focus-visible span{color:var(--ink2)}
 .np-l a:focus-visible{outline-offset:-2px}
-.np-card{grid-column:6 / -1;position:relative;min-width:0;overflow:hidden;cursor:pointer;background:var(--sand);border-radius:var(--r-win)}
+.np-card{grid-column:6 / -1;position:relative;min-width:0;overflow:hidden;cursor:pointer;background:var(--alt);border-radius:var(--r-win)}
 .np-st{position:absolute;inset:24px 28px 22px}
 .np-card canvas.np-cv{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .16s ease}
 .np-card.off > *{opacity:0}
@@ -329,7 +330,8 @@ canvas.dotbot{display:block;width:100%}
 .cb.cb2{border-top:0;padding-top:0;padding-bottom:32px}   /* the white section above already ends on one section gap */
 :is(.g-ink,.g-dark,.g-cobalt,.g-grad,.hw-run) + .cb.cb2{padding-top:28px}   /* after a dark section the band brings its own gap */
 .cb2 .cb-g{position:relative;isolation:isolate;padding-block:clamp(40px,4vw,56px) clamp(36px,3.2vw,44px);row-gap:36px}
-.cb2 .cb-g::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--peri3);border-radius:var(--r-card)}
+.cb2 .cb-g{background:var(--peri3);border-radius:var(--r-card)}
+.cb2 .cb-g::before{content:none}
 .cb2 .cb-l{grid-column:2 / 7;min-width:0;display:flex;flex-direction:column;margin-left:calc(-1 * var(--gut))}   /* one column in from the panel's edge, on a grid line */
 .cb2 .cb-r{grid-column:7 / 12}
 .cb2.cb-k-form .cb-g{align-items:stretch}
@@ -380,7 +382,7 @@ canvas.dotbot{display:block;width:100%}
 .chart .end{font:600 14px var(--serif);fill:var(--c);opacity:0;transition:opacity .25s ease .2s}
 .in-view .chart .end,.chart.drawn .end{opacity:1}
 /* a table set the way a financial statement is printed: a heavy rule on top, hairlines between rows, right-aligned even-width digits, a double rule under totals */
-.stmt{width:100%;border-collapse:collapse;font-size:var(--t-body);line-height:1.35;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
+.stmt{width:100%;border-collapse:collapse;font-size:16px;line-height:1.35;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
 .stmt caption{caption-side:top;text-align:left;font-weight:500;padding-bottom:12px}
 .stmt thead th{font-size:var(--t-small);font-weight:500;color:var(--ink);text-align:left;vertical-align:bottom;padding:10px 16px 10px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--ink)}
 .stmt tbody th,.stmt tbody td{font-weight:400;text-align:left;padding:13px 16px 13px 0;border-bottom:1px solid var(--line)}
@@ -420,7 +422,7 @@ canvas.dotbot{display:block;width:100%}
 /* the page (main.lift) and under it the footer, an ordinary block that scrolls up after the last section. Sand system (2026-11-24): the sand footer block from the S2 board, ink words, ink2 links, cobalt logo, the six robots drawn in cobalt dots on a hairline.
    .lift stays a stacking layer so nothing inside the page can rise over the bar, the panels or the menu */
 .lift{position:relative;z-index:1;background:#fff}
-.foot{position:relative;display:flex;flex-direction:column;background:var(--sand);color:var(--ink);padding-block:clamp(44px,4.4vw,64px) 28px;overflow:hidden}
+.foot{position:relative;display:flex;flex-direction:column;background:var(--alt);color:var(--ink);padding-block:clamp(44px,4.4vw,64px) 28px;overflow:hidden}
 .foot > .in{display:flex;flex-direction:column;flex:1;width:100%}
 .fg{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px clamp(48px,8vw,120px);align-items:start}
 .fbrand{display:flex;flex-direction:column;align-items:flex-start}
@@ -464,7 +466,7 @@ canvas.dotbot{display:block;width:100%}
 .nf h1{margin:0}
 .nf p{margin:20px 0 0;max-width:44ch;color:var(--ink2)}
 .nf-l{display:grid;gap:0;margin-top:32px;border-top:1px solid var(--line)}
-.nf-l a{display:flex;justify-content:space-between;align-items:center;min-height:60px;font:600 var(--t-lead)/1.25 var(--serif);letter-spacing:-.025em;color:var(--ink);border-bottom:1px solid var(--line)}
+.nf-l a{display:flex;justify-content:space-between;align-items:center;min-height:60px;font:600 var(--t-sub)/1.25 var(--serif);letter-spacing:-.025em;color:var(--ink);border-bottom:1px solid var(--line)}
 .nf-l a span{transition:transform .2s var(--m-ease)}.nf-l a:hover span{transform:translateX(4px)}
 .nf-bot{border-bottom:1px solid var(--line2)}
 .nf-bot canvas{width:100%}
@@ -491,3 +493,13 @@ canvas.dotbot{display:block;width:100%}
  .foot{position:static!important;min-height:0!important;background:none!important;color:#000!important;padding:12pt 0 0!important;border-top:1px solid #999}
  .foot .brand,.foot .fine-w,.foot .fine-y,.foot .ftag{color:#000!important}.foot .ftag{font-size:11pt!important}
 }
+
+/* 2026-11-25: one heading size everywhere, so the closing heading takes its own row across the panel (no forced break), with the steps and the form side by side under it. On a phone the panel runs edge to edge and its words sit on the page's own edges */
+.cb2.cb-k-form .cb-l{display:contents}
+.page .cb2.cb-k-form .cb-h{grid-column:2 / 12;margin-left:calc(-1 * var(--gut))}
+.cb2.cb-k-form .cb-steps{grid-column:2 / 7;margin:0 0 0 calc(-1 * var(--gut));padding-top:0}
+.cb2.cb-k-form .cb-r{grid-column:7 / 12}
+.cb2.cb-k-form:not(.cb-st) .cb-r{grid-column:2 / 8;margin-left:calc(-1 * var(--gut))}
+@media (max-width:760px){.page .cb2.cb-k-form .cb-h,.cb2.cb-k-form .cb-steps,.cb2.cb-k-form .cb-r,.cb2.cb-k-form:not(.cb-st) .cb-r{grid-column:auto;margin-left:0}.cb2 .cb-g{padding-inline:0;background:none}.cb2 .cb-g::before{content:"";position:absolute;z-index:-1;background:var(--peri3);inset:0 calc(-1 * var(--gl));border-radius:0}}
+/* body copy keeps a readable measure: about 75 characters at 18px */
+.page :is(.t-lead,.lede,.lead-1){max-width:540px!important}

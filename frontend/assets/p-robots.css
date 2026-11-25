@@ -19,6 +19,8 @@
 .r-sum{flex:none}
 .r-big{display:block;color:var(--c);white-space:nowrap}
 .r-say{margin:10px 0 0;color:var(--ink);text-wrap:pretty}
+.r-rg-l{margin-top:16px}
+.r-src{margin:10px 0 0;color:var(--ink2)}
 .r-admit{margin:0 0 8px;font-weight:500;color:var(--ink);text-wrap:pretty}
 .r-one .r-act{margin-top:clamp(16px,2vh,24px)}
 .r-why{margin:clamp(10px,1.4vh,16px) 0 0;color:var(--ink2)}
@@ -45,14 +47,19 @@
 /* ------------------------------------------------------------------ one short chart */
 /* the heading, its short line under it, then the age being read: its figure on the page's left edge, its words beside it, both standing on one line */
 .r-ch-h .h2{margin:0 0 12px}
-.r-read{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);row-gap:8px;align-items:end;margin-top:clamp(24px,2.8vw,40px)}
-.r-read>div{min-width:0}
-.r-read>div:first-child{grid-column:1 / 5}
-.r-read>div:last-child{grid-column:5 / 11}
-.r-rk{margin:0 0 4px;color:#3e4656}
+/* the reading: age, then the figure with the asking range beside it as one bar, then the count and the link, all in one group on the chart's left edge (2026-11-25) */
+.r-read{margin-top:clamp(24px,2.8vw,40px);max-width:calc((100% - 11 * var(--g)) / 12 * 7 + 6 * var(--g))}
+.r-rk{margin:0 0 6px;color:var(--ink2)}
+.r-rrow{display:flex;align-items:flex-end;gap:clamp(20px,3vw,40px);flex-wrap:wrap}
 .r-rv{display:block;color:var(--c);white-space:nowrap}
-.r-rs{margin:0;color:#3e4656;text-wrap:pretty}
-.tlink.r-rl{margin:0;min-height:32px}
+.r-rg{flex:1 1 260px;display:grid;grid-template-columns:auto minmax(80px,1fr) auto;align-items:center;column-gap:12px;padding-bottom:6px}
+.r-rg .r-rlo,.r-rg .r-rhi{font-size:16px;color:var(--ink);font-weight:500}
+.r-rbar{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--peri2),var(--c))}
+.r-rmid{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--c)}
+.r-rcap{grid-column:1 / -1;order:-1;margin-bottom:6px;font-size:16px;color:var(--ink2)}
+.r-rs{margin:10px 0 0;color:var(--ink2);display:flex;flex-wrap:wrap;align-items:center;column-gap:16px}
+.tlink.r-rl{margin:0;min-height:32px;display:inline-flex}
+@media (max-width:720px){.r-read{max-width:none}.r-rg{flex-basis:100%}}
 .r-plot{position:relative;height:clamp(380px,38vw,540px);margin-top:clamp(24px,3vw,40px)}
 .r-cv,.r-ax{position:absolute;inset:0;width:100%;height:100%;display:block}
 .r-cv{touch-action:pan-y;cursor:default}
@@ -263,7 +270,6 @@
 /* ------------------------------------------------------------------ narrower */
 @media (max-width:1060px){
  .r-tr-g{grid-template-columns:minmax(0,1fr)}
- .r-read>div:first-child,.r-read>div:last-child{grid-column:1 / -1}
 }
 @media (max-width:960px){
  /* the title and its listings, then the price and the robot, standing on the bottom edge of the ink */

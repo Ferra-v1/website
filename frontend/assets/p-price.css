@@ -46,7 +46,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-lb li{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:6px 10px;border-radius:2px;cursor:pointer;font-size:var(--t-small);line-height:1.35}
 .pp-lb li small{color:var(--muted);font-size:var(--t-small)}
 .pp-lb li em{font-style:normal;font-size:var(--t-small);color:var(--muted);text-align:right}
-.pp-lb li[aria-selected="true"]{background:var(--mist)}
+.pp-lb li[aria-selected="true"]{background:var(--alt)}
 .pp-lb li[aria-selected="true"] em{color:var(--deep)}
 .pp-lb .pp-none{cursor:default;color:var(--muted)}
 /* the year: one field, a minus and a plus inside its ends */
@@ -91,7 +91,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 /* the answer: one big figure, one line that keeps it honest, then the offer, then the fold */
 .pp-ans{grid-column:7 / -1;position:relative;isolation:isolate;min-width:0;display:flex;flex-direction:column;padding-block:clamp(32px,3.4vw,48px) clamp(24px,2.8vw,40px)}
 .pp-ans.g-ink{background:none}
-.pp-ans::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc((100% + var(--pp-gut)) / -6);width:100vw;background:var(--g-ink)}
+.pp-ans::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc((100% + var(--pp-gut)) / -6);width:100vw;background:var(--alt)}
 .pp-ans .pp-mk{color:var(--grey)}
 .pp-a{min-width:0;display:flex;flex-direction:column}
 .pp-a[data-k="o"]{margin-top:clamp(20px,2.2vw,32px);padding-top:clamp(20px,2.2vw,32px);border-top:1px solid var(--line2)}
@@ -335,7 +335,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-sheet .dr small{flex:1 0 100%;font-size:14px;color:#5b6474;line-height:1.35}
 .pp-sheet .dr b{text-align:right;margin-left:auto;display:flex;align-items:baseline;justify-content:flex-end;flex-wrap:wrap;gap:2px}
 .pp-sheet .dr.big b{font:600 var(--t-sub)/1.1 var(--doc);color:var(--c)}
-.pp-sheet .dr.hl{background:var(--mist)}
+.pp-sheet .dr.hl{background:var(--alt)}
 .pp-sheet .dr.hl span{color:#3e4656}.pp-sheet .dr.hl b{color:var(--ink)}.pp-sheet .dr.hl.big b{color:var(--c)}
 .pp-sheet .sh-f{margin-top:14px;padding-top:0;font-size:14px;line-height:1.4;text-align:left}
 .pp-sb .sh-t{color:var(--deep)}

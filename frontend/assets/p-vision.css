@@ -1,14 +1,8 @@
-/* Vision page (v-), sand build. Every section sits in plain flow on a light ground, sized to its words. The films play in product windows; the six robots stand in cobalt dots on sand. Nothing pins. */
+/* Vision page (v-). Every section sits in plain flow on a light ground, sized to its words. The six robots stand in cobalt dots under the headline. No films. Nothing pins. */
 .page[data-page="vision.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
-/* the first screen: words left on the soft wash, the street film in a window right */
+/* the first screen: the headline, then the six robots */
 .v-street{padding-block:clamp(48px,6vw,96px) var(--sec)}
-.v-hg{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:clamp(32px,4vw,64px);align-items:center}
-.v-words .t-lead{margin:20px 0 0;color:var(--ink2)}
-.v-win{position:relative;aspect-ratio:4/3;border-radius:var(--r-win);overflow:hidden;background:var(--peri)}
-.v-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(1.18) saturate(.9);display:block}
-/* the six robots */
-.v-work{padding-block:var(--sec)}
-.v-world{max-width:20em}
+.v-street h1{max-width:18em}
 .v-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(40px,4vw,56px) 24px;margin-top:clamp(40px,4.4vw,64px)}
 .v-slot{margin:0;display:flex;flex-direction:column;min-width:0}
 .v-slot .rs-bot{display:flex;align-items:flex-end;justify-content:flex-start;height:clamp(150px,15vw,220px);border-bottom:1px solid var(--line2)}
@@ -17,22 +11,15 @@
 .v-slot canvas.dotbot{transform:translateX(calc(var(--lm,0) * -100%))}
 .v-slot[data-fly] canvas.dotbot{height:70%;align-self:flex-start}
 .v-slot figcaption{margin-top:16px;color:var(--ink);text-wrap:pretty}
-/* the building site, whole, with its point under it */
-.v-site{padding-block:var(--sec) 0}
-.v-site .v-frame{aspect-ratio:16/9}
-.v-below{padding-block:clamp(24px,2.4vw,32px) 0}
 /* the plan: the point across the top, then the three steps in reading order, one to a column, tops in line */
 .v-path{padding-block:var(--sec)}
 .v-steps{list-style:none;margin:clamp(48px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .v-step{padding-top:20px;border-top:1px solid var(--ink)}
 .v-step p{margin:10px 0 0;color:var(--ink2);text-wrap:pretty}
 @media (max-width:900px){
- .v-hg{grid-template-columns:minmax(0,1fr);row-gap:32px}
- .v-win{aspect-ratio:4/3}
  .v-track{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 16px}
  .v-slot .rs-bot{height:min(34vw,160px)}
  .v-slot figcaption{margin-top:10px}
- .v-site .v-frame{aspect-ratio:4/3}
  .v-steps{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:32px}
- .v-below br,.v-pg h2 br{display:none}
 }
+.page .v-step p{text-wrap:balance}
