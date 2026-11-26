@@ -147,3 +147,12 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
  .f-bot .rs-bot{height:min(32vw,120px)}.f-ybots{column-gap:16px}.f-next .f-ybots{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:20px}.f-next .f-bot .rs-bot{height:84px}
  .f-bot figcaption{margin-top:8px;min-height:0}
 }
+
+/* "0% of your company given up." is one heading on one line, the 0% in cobalt, and the line under it starts on the same edge and stops at the heading's width (2026-11-25) */
+.f-keepg{grid-template-columns:max-content;justify-content:center;align-items:start}
+.f-keepg h2{grid-column:1;grid-row:1}
+.f-keepg .f-zero{display:inline;color:var(--c);font:inherit}
+.f-keepl{grid-column:1;grid-row:2;width:0;min-width:100%;max-width:none;text-wrap:balance}
+@media (max-width:720px){.f-keepg{grid-template-columns:minmax(0,1fr)}.page[data-page="fleets.html"] .f-keepg h2{grid-row:1;margin-top:0}.f-keepl{grid-row:2;width:auto}}
+.page .f-keepg .f-keepl{text-wrap:balance}
+@media (min-width:721px){.f-ks{display:block}}

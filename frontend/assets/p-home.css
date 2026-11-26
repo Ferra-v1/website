@@ -264,3 +264,6 @@ h2.h-c{max-width:none}
 .h-bento .h-h2{max-width:none}
 .h-band + .h-band2{padding-top:calc(var(--sec) * .75)}
 .page .h-bc>p,.page .h-stp li p,.page .h-bot figcaption{text-wrap:balance}
+
+/* the line under the heading runs as wide as the heading (2026-11-25) */
+@media (min-width:901px){.h-ht{display:grid;grid-template-columns:max-content;justify-content:center}.page .h-ht .h-sub{max-width:none;width:0;min-width:100%}}

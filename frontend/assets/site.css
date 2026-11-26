@@ -503,3 +503,8 @@ canvas.dotbot{display:block;width:100%}
 @media (max-width:760px){.page .cb2.cb-k-form .cb-h,.cb2.cb-k-form .cb-steps,.cb2.cb-k-form .cb-r,.cb2.cb-k-form:not(.cb-st) .cb-r{grid-column:auto;margin-left:0}.cb2 .cb-g{padding-inline:0;background:none}.cb2 .cb-g::before{content:"";position:absolute;z-index:-1;background:var(--peri3);inset:0 calc(-1 * var(--gl));border-radius:0}}
 /* body copy keeps a readable measure: about 75 characters at 18px */
 .page :is(.t-lead,.lede,.lead-1){max-width:540px!important}
+
+/* the robots stand closer under the links (2026-11-25) */
+.ffleet{padding-top:clamp(16px,2vw,28px)}
+.fcols a{min-height:34px}
+@media (max-width:760px){.fcols a{min-height:44px}}

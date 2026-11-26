@@ -381,3 +381,13 @@
 .r-bar .r-find-in input,.r-dial .r-agebox input{height:46px}
 .r-bar .r-find:not(.live){height:auto}
 @media (prefers-reduced-motion:reduce){.r-mds i,.r-find-list i{transition:none}}
+
+/* the search and the age sit in the left columns beside the biggest robot, on its floor line, so the first screen has no empty half (2026-11-25) */
+@media (min-width:1061px){
+ .r-wrap .r-top>.r-top-t{grid-row:1 / span 3}
+ .r-top-t .r-dial{margin:auto 0 0;background:none;padding-bottom:15px}
+ .r-top-t .r-bar{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:8px;min-height:0;padding:0}
+ .r-top-t .r-bar .r-find,.r-top-t .r-agebox{grid-column:auto}
+ .r-top-t .r-agebox{grid-template-columns:auto minmax(0,1fr);column-gap:10px;padding:0 12px}
+ .r-top-t .r-agebox .r-dial-k{display:none}
+}
