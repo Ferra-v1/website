@@ -84,7 +84,7 @@
   const fbar = document.querySelector('.fbar');
   if (fbar) { let last = scrollY, on = false, asked = false, mouseY = 1e4, drop;
     const OWN = 72;   // past here the page's own bar has left the screen
-    const PINS = '.h-stage,.h-ink,.f-live .f-wpin,.v-live .v-stage,.hw-on .hw-stage,.sc-on .sc:not([data-flow]) > .sc-s';
+    const PINS = '.h-on .h-mfs,.h-ink,.f-live .f-wpin,.v-live .v-stage,.hw-on .hw-stage,.sc-on .sc:not([data-flow]) > .sc-s';
     // a scene is pinned while it is stuck at its sticky offset (the top of the screen, or How it works' stage card held a little below it in the sand build). Measured from its top only: a stage set in svh is shorter than the screen once a phone's address bar has gone, and How it works' stage on a phone is a card at the top of the screen
     const inPin = () => { for (const el of document.querySelectorAll(PINS)) { const r = el.getBoundingClientRect(), cs = getComputedStyle(el), at = cs.position === 'sticky' ? parseFloat(cs.top) || 0 : 0; if (r.height >= innerHeight * .3 && Math.abs(r.top - at) <= 1) return true; } return false; };
     const set = v => { if (v !== on) { on = v; fbar.classList.toggle('on', v); if (!v && fbar.classList.contains('np-on')) closePanel(); } };
