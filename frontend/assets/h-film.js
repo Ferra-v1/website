@@ -1,19 +1,20 @@
 // Home, the market film (design-loop/home-motion-2026-11-25/SPEC.md). One pinned stage, four beats, every moment a pure function of the scroll position, so scrolling up plays it backwards (SPEED-RULES 4b).
 // 1 the hero's dot arm grows into the stage and breaks into one dot per real listing, which drift into a loose field. 2 the field settles on a chart of age against asking price; auction sales
 // arrive in the deep shade; the axis labels come once the dots have landed. 3 a ring lands on a KUKA KR 210 built in 2020; KUKA arms built within two years of it stay bright, the rest dim.
-// 4 the bright dots pour down into the four bars, which grow from the left with their figures already beside them. Then a short hold, and the stage scrolls away; the tabs switch the bars.
+// 4 the bright dots pour down into the four bars, which grow from the left with their figures already beside them. Then a short hold, and the stage scrolls away.
 // Drawing: one canvas, one path and one fill per shade (rule 7), repainted only when the scroll moved. Words swap in short windows that finish on their own when the reader stops (rule 4).
 // Every dot keeps clear of every word: dots stay inside the picture area under the headings, the axis labels sit outside the plot, and the pour runs in lanes the words never use.
 // Width changes only re-measure (rule 9). Reduced motion shows the last beat's finished frame, unpinned. Without scripts the section is the last beat as plain markup.
 (() => {
   const sec = document.getElementById('h-mf'); if (!sec) return;
   const $ = s => sec.querySelector(s), $$ = s => [...sec.querySelectorAll(s)];
-  const stage = $('.h-mfs'), box = $('.h-mfb'), hero = $('.h-hero'), rowCv = sec.querySelector('.h-bcv[data-loop="hero-arm-loop"]'), cv = $('.h-mcv'), ctx = cv.getContext('2d'), heads = $$('.h-mft'), hstack = $('.h-mfh'), axis = $('.h-max'), panel = $('.h-mp'), foot = $('.h-mfoot'), tip = $('.h-tip'), you = $('#h-myou');
-  const xls = $$('.h-xl'), yls = $$('.h-yl'), yt = $('.h-yt'), tabs = $$('.h-mtabs [role=tab]');
+  const stage = $('.h-mfs'), box = $('.h-mfb'), hero = $('.h-hero'), rowCv = sec.querySelector('.h-bcv[data-loop="hero-arm-loop"]'), cv = $('.h-mcv'), ctx = cv.getContext('2d'), heads = $$('.h-mft'), hstack = $('.h-mfh'), axis = $('.h-max'), panel = $('.h-mp'), tip = $('.h-tip');
+  const xls = $$('.h-xl'), yls = $$('.h-yl'), yt = $('.h-yt');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const COB = '#2847ce', DEEP = '#1e339b', RING_AGE = +sec.dataset.age, RING_ASK = +sec.dataset.ask, LO = 1000, HI = 125000;
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, seg = (s, a, b) => clamp((s - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
+  const barG = q => (1 - Math.cos(Math.PI * seg(q, .1, 1))) / 2;   // the four bars grow over the whole of beat 4, easing in and out
   const hash = j => ((j * 2654435761 >>> 0) % 1000) / 1000, hash2 = j => ((j * 40503 + 7919 >>> 0) % 997) / 997;
   sec.classList.add(reduce ? 'h-still' : 'h-on');
 
@@ -23,7 +24,7 @@
   // Beat 1 is then the arm breaking and drifting, the last 70% of the old beat 1 (its first 30% was the growth, which now happens here).
   let U = .65, T = {}, END = 3, S0 = 0;
   const buildT = () => { const SW = .2, HOLD = .33, A = .5, U1 = .7 * U, o = A + U1; T = { g: [S0, A - .05], w0: [.1, .32], b1: [A, o], w1: [o, o + SW], b2: [o + SW, o + SW + U], w2: [o + SW + U, o + 2 * SW + U], b3: [o + 2 * SW + U, o + 2 * SW + 2 * U], w3: [o + 2 * SW + 2 * U, o + 3 * SW + 2 * U], b4: [o + 3 * SW + 2 * U, o + 3 * SW + 3 * U] };
-    T.ax = [T.b2[1] - .1, T.b2[1]]; T.ft = [T.b4[0] + .7 * U, T.b4[1]]; END = T.b4[1] + HOLD; };
+    T.ax = [T.b2[1] - .1, T.b2[1]]; END = T.b4[1] + HOLD; };
 
   // ---------------------------------------------------------------- data, fetched after the page has loaded (rule 11)
   let D = null, A = null, N = 0, NA = 0, ready = false;
@@ -75,7 +76,7 @@
     const want = phone ? gL + ylw + 10 : Math.max(track[0], gL + ylw + 16), cl = Math.min(...lines.filter(x => x >= want - 1)), ct = Math.round(hb + (phone ? 48 : 60));
     CB = { l: cl, r: gR, t: ct, b: Math.round(H - (phone ? 30 : 44) - xh - 12) }; CS = { l: cl, r: gR, t: ct, b: Math.round(pTop - gap - xh - 12) };
     // a screen too short for both (a phone held sideways) shows the last beat as plain markup instead, as without scripts
-    const wasFlat = flat; flat = !reduce && CS.b - CS.t < 70; if (flat !== wasFlat || flat) { sec.classList.toggle('h-on', !flat && !reduce); if (flat) { sec.style.height = ''; heads.forEach(h => { h.style.opacity = h.style.visibility = h.style.transform = ''; h._a = h._v = h._t = undefined; }); [panel, axis, foot].forEach(h => { h.style.opacity = h.style.visibility = h.style.transform = h.style.top = h.style.pointerEvents = ''; h._a = h._v = h._t = h._live = undefined; }); bars.forEach(b => { b.el.style.transform = ''; }); paint._g = null; tabs.forEach(t => { t.tabIndex = t.getAttribute('aria-selected') === 'true' ? 0 : -1; }); you.tabIndex = 0; return; } else return layout(); }
+    const wasFlat = flat; flat = !reduce && CS.b - CS.t < 70; if (flat !== wasFlat || flat) { sec.classList.toggle('h-on', !flat && !reduce); if (flat) { sec.style.height = ''; heads.forEach(h => { h.style.opacity = h.style.visibility = h.style.transform = ''; h._a = h._v = h._t = undefined; }); [panel, axis].forEach(h => { h.style.opacity = h.style.visibility = h.style.transform = h.style.top = h.style.pointerEvents = ''; h._a = h._v = h._t = h._live = undefined; }); bars.forEach(b => { b.el.style.transform = ''; }); paint._g = null; return; } else return layout(); }
     C = CS; xBand = [CS.b + 8, CS.b + 12 + xh]; yg = (xBand[1] + pTop) / 2;
     xFree = []; xls.forEach(s => { const a = +s.dataset.age, x = X(a), w = s.offsetWidth, l = a === 0 ? x - 2 : a === 30 ? x - w + 2 : x - w / 2; xFree.push([l - 8, l + w + 8]); });
     comp = -1; setComp(reduce ? 1 : Math.max(0, shown[2]));
@@ -123,19 +124,16 @@
   // ---------------------------------------------------------------- the scroll, the words and their settle
   const rawS = () => (scrollY - secTop) / (H || 1);
   let dir = 1, idle = true, lastY = scrollY, idleT = 0, sv = null, painted = NaN, dirty = true, on = true, raf = 0, lastNow = 0;
-  const WINS = () => [T.w1, T.w2, T.w3, T.ax, T.w0, T.ft], latch = [null, null, null, null, null, null], shown = [-1, -1, -1, -1, -1, -1];
+  const WINS = () => [T.w1, T.w2, T.w3, T.ax, T.w0], latch = [null, null, null, null, null], shown = [-1, -1, -1, -1, -1];
   // a window part way through when the reader stops finishes in the direction they were going, and stays finished while they carry on that way
   const target = (k, s) => { if (reduce) return 1; const [a, b] = WINS()[k], raw = seg(s, a, b); if (raw <= 0 || raw >= 1) { latch[k] = null; return raw; } if (latch[k] !== null) return latch[k]; if (idle) { latch[k] = dir > 0 ? 1 : 0; return latch[k]; } return raw; };
   const setOp = (el, a, dy) => { const s = a.toFixed(3); if (el._a !== s) { el._a = s; el.style.opacity = s; const v = a > .002 || el === panel; if (el._v !== v) { el._v = v; el.style.visibility = v ? 'visible' : 'hidden'; } } if (dy !== undefined) { const t = dy ? `translateY(${dy.toFixed(1)}px)` : 'none'; if (el._t !== t) { el._t = t; el.style.transform = t; } } };
-  // a window settles toward where it is going; the tabs' small words (k 5) settle faster, so they are never read half faded
   function words(s, dt) { let moving = false;
-    for (let k = 0; k < 6; k++) { const tg = target(k, s); let v = shown[k];
-      if (v < 0 || Math.abs(tg - v) < .004) v = tg; else { const fast = latch[k] === null && !idle; v += (tg - v) * (1 - Math.exp(-dt / (fast ? 40 : k === 5 ? 45 : 90))); if (Math.abs(tg - v) < .004) v = tg; else moving = true; }
+    for (let k = 0; k < 5; k++) { const tg = target(k, s); let v = shown[k];
+      if (v < 0 || Math.abs(tg - v) < .004) v = tg; else { const fast = latch[k] === null && !idle; v += (tg - v) * (1 - Math.exp(-dt / (fast ? 40 : 90))); if (Math.abs(tg - v) < .004) v = tg; else moving = true; }
       shown[k] = v; }
     // in each swap the old heading leaves in the first half and the new one arrives in the second, so two headings never share the spot
-    const [w1, w2, w3, ax, w0, ft] = shown, ws = [w1, w2, w3];
-    // the tabs and the price link arrive as the bars finish, once the four figures have been read
-    setOp(foot, reduce ? 1 : ft);
+    const [w1, w2, w3, ax, w0] = shown, ws = [w1, w2, w3];
     // the h1, its line and button leave in the first half of the first swap, and beat 1's heading arrives in the second
     { const o = reduce || flat ? 0 : io3(seg(w0, 0, .5)); setOp(hero, 1 - o); const live = o < .5; if (hero._live !== live) { hero._live = live; hero.style.pointerEvents = live ? '' : 'none'; } }
     heads.forEach((h, i) => { const inA = i ? seg(ws[i - 1], .5, 1) : reduce ? 0 : seg(w0, .5, 1), outA = i < 3 ? seg(ws[i], 0, .5) : 0; setOp(h, reduce ? (i === 3 ? 1 : 0) : inA * (1 - outA), reduce ? 0 : (1 - out3(inA)) * 14 - in2(outA) * 14); });
@@ -158,7 +156,7 @@
   function paint(s) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
     const q1 = .3 + .7 * seg(s, ...T.b1), q2 = seg(s, ...T.b2), q3 = seg(s, ...T.b3), q4 = seg(s, ...T.b4);
-    const brk = seg(q1, .3, .68), drift = seg(q1, .62, 1), dim = lerp(1, .25, io3(seg(q3, .15, .55))), gBar = reduce ? 1 : io3(seg(q4, .15, .95));
+    const brk = seg(q1, .3, .68), drift = seg(q1, .62, 1), dim = lerp(1, .25, io3(seg(q3, .15, .55))), gBar = reduce ? 1 : barG(q4);
     // the chart's own white ground and baseline, from the flight onto it: its two ends stand on the page grid
     { const a = seg(q2, .35, .9); if (a > 0) { ctx.globalAlpha = a; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(C.l, C.t - 14, C.r - C.l, C.b - C.t + 18, 8); ctx.fill(); ctx.fillStyle = '#C5CBD6'; ctx.fillRect(C.l, C.b + 3, C.r - C.l, 1); ctx.globalAlpha = 1; } }
     // 1. the arm, whole while it grows, then each dot runs to the listing it belongs to and is taken in
@@ -222,16 +220,10 @@
     if (ready) { if (sv === null || reduce) sv = s; else { sv += (s - sv) * (1 - Math.exp(-dt / 60)); if (Math.abs(s - sv) < .0004) sv = s; else busy = true; }
       // only the stretch around the stage needs a picture; repaint only when the scroll moved it
       const vs = clamp(sv, -1.2, END + .2); if (on && (vs !== painted || dirty)) { painted = vs; dirty = false; paint(vs); } }
-    else { const g = (reduce ? 1 : io3(seg(seg(s, ...T.b4), .15, .95))).toFixed(4); if (g !== paint._g) { paint._g = g; bars.forEach(b => { b.el.style.transform = `scaleX(${g})`; }); } }   // the bars follow the scroll even before the dots have arrived
+    else { const g = (reduce ? 1 : barG(seg(s, ...T.b4))).toFixed(4); if (g !== paint._g) { paint._g = g; bars.forEach(b => { b.el.style.transform = `scaleX(${g})`; }); } }   // the bars follow the scroll even before the dots have arrived
     if (busy && on) raf = requestAnimationFrame(frame); }
   const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
   new IntersectionObserver(es => { on = es[0].isIntersecting; if (on) { dirty = true; kick(); } }, { rootMargin: '200px 0px' }).observe(sec);
-
-  // ---------------------------------------------------------------- the four prices' tabs: click, or the arrow keys between them. The bars switch at once; the price link follows the pick
-  const pick = t => { tabs.forEach(b => { const sel = b === t; b.setAttribute('aria-selected', sel); b.tabIndex = sel ? 0 : -1; document.getElementById(b.getAttribute('aria-controls')).hidden = !sel; }); you.href = t.getAttribute('href');
-    paint._g = null; const s = reduce ? END : rawS(); layoutBars(); if (ready) paint(clamp(sv === null ? s : sv, -1.2, END + .2)); else { const g = (reduce ? 1 : io3(seg(seg(s, ...T.b4), .15, .95))).toFixed(4); bars.forEach(b => { b.el.style.transform = `scaleX(${g})`; }); } };
-  tabs.forEach((t, i) => { t.addEventListener('click', ev => { ev.preventDefault(); pick(t); });
-    t.addEventListener('keydown', ev => { const d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[ev.key]; if (!d) return; ev.preventDefault(); const n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); pick(n); }); });
 
   // ---------------------------------------------------------------- a listing under the pointer, or under a tap on a phone: its name, build year, price and where it is listed, with a link to it
   let tipOn = false, tipJ = -1;
@@ -251,9 +243,6 @@
     stage.addEventListener('pointerleave', ev => { if (ev.pointerType === 'mouse') hideTip(); });
     stage.addEventListener('click', ev => { if (ev.target.closest('a,button,.h-tip')) return; if (!chartUp()) return; const b = box.getBoundingClientRect(), j = nearest(ev.clientX - b.left, ev.clientY - b.top, fine ? 8 : 16); if (j >= 0) showTip(j); else hideTip(); });
   }
-
-  // the four prices stay in the tab order while they are see-through: a keyboard reaching the tabs or the price link before they have shown is taken straight to them, so focus never lands on something unseen
-  sec.addEventListener('focusin', ev => { if (reduce || flat || panel._live || !panel.contains(ev.target)) return; scrollTo({ top: Math.round(secTop + (T.b4[1] + .05) * H), behavior: 'instant' }); });
 
   // ---------------------------------------------------------------- go
   addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; hideTip(); layout(); });   // rule 9: width changes only
