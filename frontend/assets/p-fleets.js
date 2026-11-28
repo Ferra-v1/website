@@ -49,36 +49,23 @@
   // once the request is in, the range message has nothing left to say
   const done = form.querySelector('.ldone');
   new MutationObserver(() => { if (!done.hidden) msg.hidden = true; }).observe(done, { attributes: true, attributeFilter: ['hidden'] });
-  const toForm = smooth => { scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' }); let tries = 0; const wait = () => { if (scrollY < 40 || ++tries > 240) n.focus({ preventScroll: true }); else requestAnimationFrame(wait); }; wait(); };   // the sentence is the first screen of the page. A faded screen cannot take focus, so the cursor goes there on arrival
+  const toForm = smooth => { const y = Math.max(0, Math.round(form.closest('section').getBoundingClientRect().top + scrollY)); scrollTo({ top: y, behavior: smooth ? 'smooth' : 'auto' }); let tries = 0; const wait = () => { if (Math.abs(scrollY - y) < 40 || ++tries > 240) n.focus({ preventScroll: true }); else requestAnimationFrame(wait); }; wait(); };   // the sentence is the first screen of the page. A faded screen cannot take focus, so the cursor goes there on arrival
   document.querySelectorAll('a[href="#quote"]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); history.replaceState(null, '', '#quote'); toForm(!still); }));
   if (location.hash === '#quote') addEventListener('load', () => setTimeout(() => toForm(false), 60));
   // "Ask what you could borrow" opens email and company and turns into Send
   const open = $('f-open'), send = $('f-send'), who = $('f-who');
   open.addEventListener('click', () => { who.hidden = false; open.hidden = true; send.hidden = false; const em = who.querySelector('input[type=email]'); if (em) em.focus({ preventScroll: true }); });
   const mSec = document.querySelector('.f-month'), SHARE = +mSec.dataset.share, ADV = +mSec.dataset.adv, TERM = +mSec.dataset.term, rentOf = price => Math.max(1, Math.round(price * SHARE));
-  // one robot earning its price back: as the page scrolls, one month of rent at a time, the dots fill from the base up. Each dot is an equal share of the robot's price
-  const pb = document.querySelector('.f-pay-bot'), spriteOf = rid => (window.FERRA_DOTS || {})[rid + '-l'] || (window.FERRA_DOTS || {})['arm-l'];
+  // the rent, one bar a month: as it arrives the bars fill one month at a time, and the figure beside them counts up. Each bar is one month's rent added to the last
+  const rc = document.querySelector('.f-rc');
   let setRent = () => {};
-  if (pb && spriteOf('arm')) {
-    let price = +pb.dataset.price, rent = +pb.dataset.rent, months = +pb.dataset.months, data = null, list = [], rows = 1, y0 = 0, rid0 = 'arm', lastP = 1;
-    const load = rid => { data = spriteOf(rid); list = data.d.split(';').filter(Boolean).map(t => { const [cx, cy, L, A, , ed] = t.split(',').map(Number); return { cx, cy, s: (A / 100) * Math.min(1, .3 + .7 * Math.pow(L / 100, .9) + (ed / 100) * .35) }; });
-      const ys = list.map(q => q.cy); y0 = Math.min(...ys); rows = Math.max(...ys) - y0 + 1; list.sort((a, b) => b.cy - a.cy || a.cx - b.cx); list.forEach((q, i) => { q.rank = i / list.length; }); };
-    load('arm');
-    const nEl = $('f-read-n'), sEl = $('f-read-s'), ctx = pb.getContext('2d');
-    let W = 0, H = 0, pitch = 0, ox = 0, oy = 0, shown = -1;
-    const size = () => { const xs = list.map(q => q.cx), x0 = Math.min(...xs), wide = Math.max(...xs) - x0 + 1; W = pb.clientWidth; H = pb.clientHeight || W * rows / wide; const d = Math.min(2, devicePixelRatio || 1); pitch = Math.min(W / wide, H / rows); ox = -x0 * pitch; oy = H - pitch * rows;   // the robot's own pixels start on the column's left edge and, where the height allows, end on its right edge
-      pb.width = Math.round(W * d); pb.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0); shown = -1; };
-    const paint = m => { const share = Math.min(1, m * rent / price), on = new Path2D(), off = new Path2D();
-      for (const q of list) { const r = Math.max(.5, pitch * .5 * Math.max(.34, q.s)), X = ox + (q.cx + .5) * pitch, Y = oy + (q.cy - y0 + .5) * pitch, path = q.rank < share ? on : off; path.moveTo(X + r, Y); path.arc(X, Y, r, 0, 6.2832); }
-      ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(40,71,206,.15)'; ctx.fill(off); ctx.fillStyle = '#2847ce'; ctx.fill(on); };
+  if (rc) {
+    const bars = [...rc.querySelectorAll('.f-bars g')], nEl = $('f-read-n'), sEl = $('f-read-s');
+    let price = +rc.dataset.price, rent = +rc.dataset.rent, months = +rc.dataset.months, lastP = 1, shown = -1;
     const read = m => { nEl.textContent = usd(m * rent); sEl.textContent = m === 0 ? 'of rent on day one. You have paid ' + usd(price) + ' for the robot.' : m < months ? 'of rent after ' + m + (m === 1 ? ' month.' : ' months.') : 'of rent after ' + m + ' months. The robot has earned back its price.'; };
-    const show = m => { if (m === shown) return; shown = m; paint(m); read(m); };
-    const fix = () => { { const xs = list.map(q => q.cx); pb.style.height = pb.clientWidth * rows / (Math.max(...xs) - Math.min(...xs) + 1) + 'px'; } size(); show(Math.round(Math.min(1, lastP / .86) * months)); };
-    setRent = p => { lastP = p; show(Math.round(Math.min(1, p / .86) * months)); };   // the fill takes 86% of the distance; the rest is the finished robot, held
-    pb._fix = fix; let fw = innerWidth; addEventListener('resize', () => { if (innerWidth !== fw) { fw = innerWidth; fix(); } });   // a phone toolbar sliding away changes only the height
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fix);
-    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); if (st.rid !== rid0) { rid0 = st.rid; load(rid0); } $('f-w-t').textContent = 'Say it costs ' + usd(price) + ' and rents for ' + usd(rent) + ' a month.'; fix(); });
-    requestAnimationFrame(fix);
+    const show = m => { if (m === shown) return; shown = m; bars.forEach((b, i) => b.classList.toggle('on', i < m)); read(m); };
+    setRent = k => { lastP = k; show(Math.round(Math.min(1, k / .86) * months)); };   // the fill takes 86% of the time; the rest is the finished row, held
+    followers.push(st => { price = st.price; rent = rentOf(price); months = Math.ceil(price / rent); $('f-w-t').textContent = 'Say it costs ' + usd(price) + ' and rents for ' + usd(rent) + ' a month.'; $('f-pl-v').textContent = usd(price); $('f-rx').dataset.b = 'Month ' + months; shown = -1; setRent(lastP); });
   }
   // one month: the bar fills from the left as the page scrolls. With reduced motion it stands finished
   const bar = $('f-bar');
@@ -106,5 +93,5 @@
   const runEl = $('sc-why'); setRent(0);
   const fillIo = new IntersectionObserver(es => { if (!es.some(en => en.isIntersecting)) return; fillIo.disconnect(); const t0 = performance.now(), D = 1400 / .86;
     const step = t => { const k = Math.min(1, (t - t0) / D); setRent(k); if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); }, { threshold: .45 });
-  fillIo.observe(pb || runEl);
+  fillIo.observe(rc || runEl);
 })();

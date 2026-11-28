@@ -3,10 +3,16 @@
 .page[data-page="fleets.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
 /* the sentence is reached by its own script; a keyboard stop arrives at once, without a smooth run through the pinned robot */
 html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
-/* the first screen: the sentence and the answer, on flat cobalt */
-.f-hero{padding-block:var(--sec) calc(var(--sec) - 24px)}
-.f-left{min-width:0;container-type:inline-size;--col:calc((100cqw - 11 * var(--gut)) / 12)}
-.page[data-page="fleets.html"] .f-left h1{margin-bottom:28px}
+/* the first screen (2026-11-28): heading, one line and one button in columns 1 to 5, the Gemini loop in columns 6 to 12 */
+.f-hero{padding-block:clamp(40px,5vw,80px) var(--sec)}
+.f-hg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:center}
+.f-hc{grid-column:1 / 6;min-width:0}
+.f-clip{grid-column:6 / 13}
+.f-sub{margin:20px 0 32px;color:var(--ink2);max-width:22em}
+@media (max-width:900px){.f-hg{grid-template-columns:minmax(0,1fr);row-gap:32px}.f-hc,.f-clip{grid-column:1}}
+/* the sentence and the answer, on fog */
+.f-qs{padding-block:var(--sec)}
+.page[data-page="fleets.html"] .f-qs h2{margin-bottom:28px}
 .f-quote{max-width:none}
 .f-quote .lf{display:block}
 /* the sentence: real words, with the answers in white fields in the same type. p-fleets.js sets each one as wide as its words */
@@ -36,14 +42,14 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 /* between a tablet and a laptop the sum needs half the card */
 @media (min-width:901px) and (max-width:1279px){.f-panel{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .f-l{color:var(--muted)!important}
-.f-big{white-space:nowrap;margin-top:8px!important;color:var(--c)!important}
+.f-big{white-space:nowrap;margin-top:8px!important;color:var(--brass-d)!important}
 .f-row{display:flex;align-items:baseline;justify-content:space-between;gap:4px 16px;white-space:nowrap}
 .f-row span{color:#3e4656}
 .f-row b,.f-legs b{color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 .f-row b{flex:1;text-align:right}
 .f-split{display:grid;grid-template-columns:calc(var(--adv) * 100%) minmax(0,1fr);gap:3px;height:12px;margin-top:14px}
 .f-split i{display:block;background:var(--c);border-radius:1px}
-.f-split i + i{background:#cfd8f2}
+.f-split i + i{background:#B9C0CB}
 .f-legs{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 16px;margin-top:10px}
 .f-legs p{color:#3e4656}
 .f-legs p:last-child{margin-left:auto;text-align:right;white-space:nowrap}
@@ -71,12 +77,22 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 .f-whyt{grid-column:1 / 7;margin-top:16px}
 .f-run{grid-column:7 / 13;min-width:0}
 .f-whyt p{margin:0;color:#3e4656;max-width:30em;text-wrap:balance}
-@media (min-width:1200px){#f-w-t{white-space:nowrap;max-width:none}}  /* the example line sits on one line */
-.f-pay-bot{display:block;width:100%;max-height:min(62vh,560px)}
+
+/* the rent, one bar a month, filling on arrival; the dashed line is what the robot cost */
+.f-rc{position:relative;height:clamp(240px,24vw,340px)}
+.f-bars{position:absolute;inset:0;width:100%;height:100%;display:block}
+.f-bars .g{fill:var(--line)}
+.f-bars .f{fill:var(--c);transform:scaleY(0);transform-box:fill-box;transform-origin:50% 100%;transition:transform .3s var(--m-ease)}
+.f-bars g.on .f{transform:none}
+.f-pl{position:absolute;left:0;right:0;z-index:1;border-top:1.5px dashed var(--ink2);pointer-events:none}
+.f-plt{position:absolute;left:0;bottom:8px;color:var(--ink2);white-space:nowrap;background:#fff;padding-right:8px}
+.f-plt b{color:var(--ink);font-weight:600}
+.f-rx{display:flex;justify-content:space-between;margin:10px 0 0;min-height:1.4em;color:var(--muted)}.f-rx::before{content:attr(data-a)}.f-rx::after{content:attr(data-b)}
+@media (prefers-reduced-motion:reduce){.f-bars .f{transition:none}}
 /* sand build: no pinned scene. The robot fills once, on its own, when it comes into view, and then stands full */
-@media (min-width:901px){.f-whyt{display:flex;flex-direction:column;justify-content:center;align-self:center;margin-top:0}}
+
 .f-read{margin:clamp(28px,3.4vw,48px) 0 0!important;color:var(--ink)!important}
-.f-read b{display:block;color:var(--c);font-weight:600}
+.f-read b{display:block;color:var(--ink);font-weight:600}
 .f-read span{display:block;margin-top:6px;color:#3e4656;max-width:24em;min-height:3.2em}
 /* the example and its counter stand together, centred beside the robot, so the left half is never empty while the robot fills */
 /* on a phone the heading starts near the top, since the header has scrolled away, and the robot gets the room */
@@ -88,25 +104,28 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 .f-bar{margin-top:clamp(40px,4.4vw,64px);height:12px;overflow:hidden;transition:clip-path .3s var(--m-ease)}
 .f-bar span{display:block;min-width:0;border-radius:1px}
 .f-b1{background:var(--c);color:#fff;border-right:3px solid var(--alt)}
-.f-b2{background:var(--peri2);color:var(--ink)}
+.f-b2{background:var(--mark);color:var(--ink)}
 .f-mg{margin-top:clamp(20px,2.4vw,28px)}
 .f-mcol{min-width:0;padding-right:clamp(24px,4vw,56px)}
 .f-mn{margin:0}
 .f-mw{margin:8px 0 0;max-width:26em}
 
-/* one sentence across the grid (spec 12): "0%" at the hero size in cobalt in columns 1 and 2, the heading from the column 3 line on its baseline, and the line under the heading no wider than the heading (it gives the column no width of its own) */
+/* "0% of your company given up." words in columns 1 to 6, the three mobile robots in columns 7 to 12 (2026-11-28) */
 .f-keep{padding-block:var(--sec)}
-/* 2026-11-07: the 0% line sits centred on the page */
-.f-keepg{display:grid;grid-template-columns:max-content max-content;column-gap:clamp(24px,3vw,48px);align-items:baseline;justify-content:center}
-.f-zero{grid-column:1;grid-row:1;margin:0;color:var(--c);font-variant-numeric:lining-nums tabular-nums}
-.f-keepg h2{grid-column:2;grid-row:1}
-.f-keepl{grid-column:2;grid-row:2;width:0;min-width:min(100%,31em);max-width:31em;margin:16px 0 0;color:#3e4656;text-wrap:pretty}
+.f-keepg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:center}
+.f-keept{grid-column:1 / 8;min-width:0;justify-self:start;width:fit-content;max-width:100%}
+.f-keept .f-keepl{width:0;min-width:100%;max-width:none}
+.f-zero{color:var(--c);font-variant-numeric:lining-nums tabular-nums}
+.f-keepl{margin:16px 0 0;color:var(--ink2);max-width:28em;text-wrap:pretty}
+.f-keepi{grid-column:8 / 13;display:block;width:100%;height:auto}
+@media (max-width:900px){.f-keepg{grid-template-columns:minmax(0,1fr);row-gap:28px}.f-keept,.f-keepi{grid-column:1}}
 
 /* the robots. One row of six, two columns each, every robot's own pixels starting on a grid line. The arms we price stand large; the others stand small and fainter */
 .f-fleet{padding-block:var(--sec);border-top:1px solid var(--line)}
 .f-yard{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;margin-top:clamp(48px,5vw,72px)}
 .f-real{grid-column:1 / 5}
 .f-next{grid-column:5 / 13}
+.f-real .f-ybots{grid-template-columns:minmax(0,1fr)}
 .f-yg{display:grid;grid-template-rows:auto 1fr;min-width:0}
 .f-ybots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;align-items:start;align-self:end}
 .f-bot{display:flex;flex-direction:column;min-width:0;margin:0;color:var(--ink)}
@@ -139,7 +158,7 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
 /* on a phone the figures stack, and the words inside the bar say which part is which */
 @media (max-width:600px){.f-mg{grid-template-columns:minmax(0,1fr);row-gap:24px}.f-mcol{padding-right:0}}
 /* phone: "0%" above, then the heading, then its line, all on the left */
-@media (max-width:720px){.f-left{--gut:16px}.f-keepg{grid-template-columns:minmax(0,1fr)}.page[data-page="fleets.html"] .f-keepg h2{grid-column:1;grid-row:2;margin-top:8px}.f-keepl{grid-column:1;grid-row:3;width:auto}}
+
 /* narrower than a laptop the panel is one column: the loan, the sum behind it, then the fields and the button */
 @media (max-width:900px){.f-panel{grid-template-columns:minmax(0,1fr);padding:24px 20px}.f-o1,.f-o2,.f-panel > .lf,.f-panel > .la,.f-panel > .ldone,.f-panel > .f-cav{grid-column:1;grid-row:auto}.f-o2{margin-top:24px}.f-cav{margin-top:20px!important}}
 @media (max-width:680px){
@@ -148,11 +167,31 @@ html:has(.page[data-page="fleets.html"]){scroll-behavior:auto}
  .f-bot figcaption{margin-top:8px;min-height:0}
 }
 
-/* "0% of your company given up." is one heading on one line, the 0% in cobalt, and the line under it starts on the same edge and stops at the heading's width (2026-11-25) */
-.f-keepg{grid-template-columns:max-content;justify-content:center;align-items:start}
-.f-keepg h2{grid-column:1;grid-row:1}
-.f-keepg .f-zero{display:inline;color:var(--c);font:inherit}
-.f-keepl{grid-column:1;grid-row:2;width:0;min-width:100%;max-width:none;text-wrap:balance}
-@media (max-width:720px){.f-keepg{grid-template-columns:minmax(0,1fr)}.page[data-page="fleets.html"] .f-keepg h2{grid-row:1;margin-top:0}.f-keepl{grid-row:2;width:auto}}
-.page .f-keepg .f-keepl{text-wrap:balance}
-@media (min-width:721px){.f-ks{display:block}}
+
+/* round 2 (2026-11-28 critics) */
+/* the sentence: larger words and larger white fields with a thin edge, so each answer reads at a glance */
+@media (min-width:681px){.f-say{font-size:var(--t-h3);line-height:64px}.f-say .pf{line-height:48px;height:48px}}   /* the one-system scale: h3 size, 48px fields */
+.f-say .pf{border:1px solid var(--line2);background:#fff}
+@media (min-width:901px) and (max-height:800px){.f-say{line-height:68px}}
+
+/* the rent: heading, example and figure in columns 1 to 5, the bars in 7 to 12, both centred on each other */
+.f-whyg{align-items:center}
+.page[data-page="fleets.html"] .f-whyt h2{margin:0 0 24px}
+.f-whyt{grid-column:1 / 6;margin-top:0}
+.f-whyt p{max-width:none}
+.f-read{margin-top:28px!important}
+/* the robots: every robot in the same two-column cell, the same height and the same ground line */
+@media (min-width:901px){.f-real{grid-column:1 / 3}.f-next{grid-column:3 / 11}}
+.f-bot .rs-bot,.f-next .f-bot .rs-bot{height:clamp(130px,12vw,176px)}
+.f-next .rs-bot canvas{opacity:1}
+.f-bot figcaption{font:500 var(--t-body)/1.3 var(--sans)}
+.f-yall{margin-top:32px}
+@media (max-width:900px){.f-whyt,.f-run{grid-column:1}.f-run{margin-top:24px}}
+@media (max-width:680px){.f-bot .rs-bot,.f-next .f-bot .rs-bot{height:96px}}
+@media (min-width:901px){.f-ysay{min-height:calc(3.9em + 14px)}}
+.f-keepl{max-width:min(28em,62ch)}.f-keept .f-keepl{max-width:62ch}
+
+/* gate round: no empty band over the limit around the rent drawing */
+.f-why{padding-block:max(24px,calc(var(--sec) - 40px)) max(24px,calc(var(--sec) - 16px))}
+@media (max-width:900px){.f-why{padding-bottom:12px}}
+.f-keept .f-keepl{min-width:min(100%,50ch)}

@@ -16,7 +16,7 @@
 .sv-opts{display:grid;gap:8px;margin-top:16px}
 .sv-o{display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 14px;border:var(--hair);border-radius:var(--r-field);background:#fff;font:400 16px/1.35 var(--sans);color:var(--ink);cursor:pointer;transition:border-color .15s ease,background-color .15s ease}
 .sv-o:hover{border-color:#b7bfcd}
-.sv-o:has(input:checked){border-color:var(--c);background:#f5f7fd}
+.sv-o:has(input:checked){border-color:var(--c);background:#F2F4F7}
 .sv-o input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--c);cursor:pointer}
 .sv-o.off{opacity:.5;cursor:default}
 .sv-o.off input{cursor:default}

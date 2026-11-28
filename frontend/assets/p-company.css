@@ -1,33 +1,50 @@
-/* Company page (c-). Plain sections in plain flow, sized to their content, on flat grounds and the page's twelve columns. Sizes come from site.css. */
-
+/* Company page (c-). Round 2: hero on fog with the cobot at its bench, who we are with the plan as a figure row, the contact form across the band. Sizes come from site.css. */
 .page[data-page="company.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
-/* the headline and its line from the left grid line; the arm in the space they leave up to the right grid edge, its drawn shape centred both ways on the words (spec 15). The row is as tall as the arm, plus the normal spacing */
-.c-hero{padding-block:var(--sec)}
-.c-heg{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:var(--gut);align-items:center}
-.c-htxt{grid-column:1}
+.c-fog{background:var(--alt)}
+/* hero: words in columns 1 to 6, the bench picture in 7 to 12 */
+.c-hero{padding-block:clamp(40px,5vw,80px)}
+.c-heg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:center}
+.c-htxt{grid-column:1 / span 6}
 .c-h1{color:var(--ink);margin:0}
-.c-lead{margin:20px 0 0;color:var(--ink2)}
-.c-pic{grid-column:2;min-width:0;display:flex;justify-content:center}
-.c-bot .rs-bot{height:clamp(200px,19.5vw,280px);display:flex;align-items:center;justify-content:center}
-/* the grid's second column starts a gutter past the words, so half a gutter back puts the arm in the middle of the space the words leave; its drawn shape sits 3.7% low in its canvas, measured at 1440 */
-.c-bot .rs-bot canvas{display:block;height:100%;width:auto;transform:translate(calc(var(--gut) * -.5 + 1.5px),-3.7%)}
-
-/* who: the point, and a short plain letter straight under it on the same left edge, signed */
+.c-sub{margin:24px 0 32px;max-width:36ch;font:400 var(--t-body)/1.5 var(--sans);color:var(--ink2);text-wrap:pretty}
+.page .c-clip{grid-column:7 / span 6;border-radius:0;background:transparent}
+.page .c-clip{aspect-ratio:4 / 3}
+.page .c-clip video{object-fit:cover;object-position:58% 50%}
+/* who: the point, then the plan as three figures, each with its drawn mark, then the signature */
 .c-top{padding-block:var(--sec)}
 .page .c-top .c-we{color:var(--ink);margin:0}
-.c-sheet{margin-top:24px;width:calc((100% - 11 * var(--gut)) / 12 * 7 + 6 * var(--gut));font:400 var(--t-lead)/1.5 var(--sans);color:var(--ink)}
-.c-sheet p{margin:0 0 1em;text-wrap:pretty}
-.c-sheet p:last-child{margin-bottom:0}
-.c-sheet .c-sign{margin-top:24px;color:var(--ink2)}
-
+.c-lead{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:start}
+.c-ltxt{grid-column:1 / span 6}
+.c-bench{grid-column:8 / span 5;margin:0}
+.c-bench img{display:block;width:100%;height:auto}
+.c-p{max-width:420px;margin:24px 0 0;font:500 var(--t-h3)/1.4 var(--sans);letter-spacing:-.015em;color:var(--ink);text-wrap:pretty}
+.c-plan{margin-top:56px}
+.c-plan > li{padding:34px;min-height:clamp(220px,19vw,280px);display:flex;flex-direction:column}
+.c-plan > li .fl{margin-top:auto;padding-top:16px}
+.page .c-plan .fnum{font-size:clamp(30px,2.8vw,40px)}
+.c-plan .fl{font-size:var(--t-body);line-height:1.5;color:var(--ink)}
+.c-plan svg.fm{width:44px;height:44px;margin-bottom:32px}
+.c-sign{margin:32px 0 0;font:400 var(--t-body)/1.5 var(--sans);color:var(--ink2)}
+/* the contact form runs across the band: email beside the space, the message full width */
+@media (min-width:761px){
+ .page[data-page="company.html"] .cb2.cb-k-form:not(.cb-st) .cb-r{grid-column:2 / 12}
+ .page[data-page="company.html"] .cb .lf{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 24px}
+ .page[data-page="company.html"] .cb .lf > .fl:has(textarea){grid-column:1 / -1}
+}
 /* the contact form has no next steps to list, so nothing promises them */
 .page[data-page="company.html"] .cb .ldone span,.page[data-page="company.html"] .cb .ldone ol:empty{display:none}
-
 @media (max-width:900px){
- .c-sheet{width:auto}
- .c-heg{grid-template-columns:minmax(0,1fr);row-gap:32px}
- .c-htxt,.c-pic{grid-column:1}
- .c-pic{justify-content:flex-start}
- .c-bot .rs-bot{height:min(64vw,300px);justify-content:flex-start}
- .c-bot .rs-bot canvas{transform:translateX(-2.73%)}
+ .c-heg{grid-template-columns:minmax(0,1fr);row-gap:24px}
+ .c-htxt,.page .c-clip{grid-column:1}
+ .c-sub{margin:16px 0 24px}
+ .c-plan{margin-top:32px}
+ .c-lead{grid-template-columns:minmax(0,1fr);row-gap:16px}
+ .c-ltxt,.c-bench{grid-column:1}
+ .c-plan > li{min-height:0;padding:32px}
+ .c-plan svg.fm{margin-bottom:20px}
 }
+@media (max-width:900px){.page .c-plan{grid-template-columns:minmax(0,1fr)}}
+/* the frameless loop melts into the fog at its edges */
+.page .c-clip{-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(transparent,#000 7%,#000 93%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(transparent,#000 7%,#000 93%,transparent);mask-composite:intersect}
+/* 2026-11-28 type check: the letter line is a lead (18), word values in the plan tiles are body size */
+.page .c-p{font-size:var(--t-body)!important}

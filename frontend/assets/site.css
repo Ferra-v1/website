@@ -11,17 +11,19 @@
 @font-face{font-family:'Geist Fallback';src:local('Arial'),local('ArialMT'),local('Helvetica Neue'),local('Helvetica');font-weight:400;font-style:normal;size-adjust:102%;ascent-override:98.53%;descent-override:28.92%;line-gap-override:0%}
 @font-face{font-family:'Geist Fallback';src:local('Arial'),local('ArialMT'),local('Helvetica Neue'),local('Helvetica');font-weight:500 600;font-style:normal;size-adjust:104.3%;ascent-override:96.36%;descent-override:28.28%;line-gap-override:0%}
 :root{color-scheme:light only;
- --ink:#0B1630;--ink2:#2A3347;--grey:#5E6676;--hgrey:#666D7A;--c:#2847ce;--deep:#1e339b;--mist:var(--alt);--paper:var(--alt);--muted:#5E6676;--line:#E2E4E9;--line2:#D3D6DD;--cap:#5E6676;
+ --ink:#0B1630;--ink2:#2A3347;--grey:#4F5767;--hgrey:#666D7A;--c:#2847ce;--deep:#1e339b;--mist:var(--alt);--paper:var(--alt);--muted:#4F5767;--line:#E2E4E9;--line2:#D3D6DD;--cap:#4F5767;
  /* --alt: the one second colour for every flat band, card and the footer. Change this one value to repaint them all (2026-11-25). Sand #F5F0E7 lives only in the cloud pictures behind the homepage product cards */
- --alt:#F2F4F7;--sand:var(--alt);--peri:#E3E9F9;--peri2:#C5D1F1;--peri3:#EEF2FC;--fair:#2F6E4F;--fair-l:#DCEBE1;--w:none;--gl:max(clamp(20px,8.34vw,120px),calc((100vw - 1320px) / 2));--gut:24px;--sec:clamp(48px,5vw,72px);
+ --alt:#F2F4F7;--sand:var(--alt);--peri:var(--alt);--peri2:var(--line2);--peri3:var(--alt);--fair:var(--c);--fair-l:var(--alt);
+ /* accents (2026-11-28 overhaul, design-loop/site-rules-2026-11-28/mckinsey-notes.md): cobalt leads; one blue family carries the data; one bright sky mark is the answer (McKinsey's cyan-on-blue move, nudged). Roles: --ans the answer and yours (the --brass names are kept as aliases from the first draft, when the answer was brass: three critics found brass clashed with cobalt, 2026-11-28), --sale (navy) sales and auctions, --cat (steel) a third series and drawing accents, --mark (grey) everything else. At most two accents at full strength per screen; never on buttons, body text or a section ground. The old --peri and --fair names now resolve to neutrals */
+ --ans:#1597DA;--ans-d:#0B6DA8;--ans-l:var(--alt);--brass:var(--ans);--brass-d:var(--ans-d);--brass-l:var(--ans-l);--sale:#0C2338;--sale-d:#081827;--cat:#5B7BA6;--cat-d:#3F5F8A;--mark:#B9C0CB;--line3:#B9BFC9;--w:none;--gl:max(clamp(20px,8.34vw,120px),calc((100vw - 1320px) / 2));--gut:24px;--sec:clamp(48px,5vw,72px);
  --serif:'Inter','Inter Fallback',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--sans:'Geist','Geist Fallback',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--doc:'Source Serif 4',Georgia,'Times New Roman',serif;
  /* one type scale (Praj, 2026-11-25, B2C): h1 68/40 (Home's headline, every page's top heading), h2 44/30, h3 22/20, body 18/17 at 1.5. Defined here once; pages never set heading sizes */
  --t-h1:clamp(40px,4.7223vw,68px);--t-h2:clamp(30px,3.0556vw,44px);--t-h3:clamp(20px,1.53vw,22px);
  --t-hero:var(--t-h1);--t-title:var(--t-h1);--t-display:var(--t-h1);--t-section:var(--t-h2);--t-statement:var(--t-h2);--t-sub:var(--t-h3);--t-smallh:16px;
  --t-lead:var(--t-body);--t-body:18px;--t-small:16px;--t-btn:16px;--t-btn-bar:16px;--t-film:var(--t-section);
  --m-fade:260ms;--m-ease:cubic-bezier(.2,.7,.2,1);
- /* sand system (2026-11-24): light grounds only. The old dark names (g-ink, g-dark, g-cobalt, g-grad) now paint sand, periwinkle and the soft hero wash */
- --g-white:#fff;--g-pale:#fff;--g-ink:var(--alt);--g-dark:var(--alt);--g-grad:linear-gradient(180deg,#E3E9F9 0%,#EEF2FC 55%,#fff 100%);--g-foot:var(--alt);--g-cobalt:#E3E9F9;
+ /* light grounds only: white and fog. The old names g-ink and g-dark paint fog; g-cobalt and g-grad paint white since the 2026-11-28 overhaul */
+ --g-white:#fff;--g-pale:#fff;--g-ink:var(--alt);--g-dark:var(--alt);--g-grad:#fff;--g-foot:var(--alt);--g-cobalt:#fff;
  --r-field:8px;--r-card:12px;--r-btn:8px;--r-win:14px;--r-doc:4px;--hair:1px solid var(--line);--sh-doc:0 1px 0 rgba(11,22,48,.04),0 12px 28px -20px rgba(11,22,48,.18)}
 @media (max-width:720px){:root{--gl:20px;--t-body:17px}}
 *{box-sizing:border-box}
@@ -53,10 +55,10 @@ canvas.dotbot{display:block;width:100%}
 
 /* type classes */
 .t-hero,.t-display,.t-title,.t-statement,.t-section,.t-sub,.fig-96,.fig-64,.fig-44,.fig-24,.h1,.h2,.h3{font-family:var(--serif);font-weight:600;text-wrap:pretty;margin:0}
-.t-display,.fig-96{font-size:var(--t-display);line-height:1;letter-spacing:-.035em}
+.t-display,.fig-96{font-size:var(--t-display);line-height:1;letter-spacing:-.025em}
 /* the hero size: Home, Vision and Lenders top headings, and Fleets' 0%. Nothing else */
-.t-hero{font-size:var(--t-hero);line-height:1;letter-spacing:-.035em;font-variant-numeric:lining-nums tabular-nums}
-.t-title,.h1{font-size:var(--t-title);line-height:1.02;letter-spacing:-.035em}
+.t-hero{font-size:var(--t-hero);line-height:1;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums}
+.t-title,.h1{font-size:var(--t-title);line-height:1.02;letter-spacing:-.025em}
 .t-statement,.fig-64{font-size:var(--t-statement);line-height:1.04;letter-spacing:-.028em}
 .t-section,.fig-44,.h2{font-size:var(--t-section);line-height:1.08;letter-spacing:-.028em}
 .t-sub,.fig-24,.h3{font-size:var(--t-sub);line-height:1.2;letter-spacing:-.02em}
@@ -68,10 +70,10 @@ canvas.dotbot{display:block;width:100%}
 .big-num{font-family:var(--serif);font-weight:600;font-size:var(--t-statement);line-height:1;letter-spacing:-.028em}
 /* headings take the scale by their tag; a class chooses another allowed size. These win over page styles on purpose: a page that sets its own heading size is how every section came to shout. */
 .page :is(h1,h2,h3,h4,h5,h6):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-family:var(--serif);font-weight:600;text-wrap:pretty}
-.page h1:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h1)!important;font-weight:600!important;line-height:1.04!important;letter-spacing:-.04em!important;color:var(--ink);text-wrap:balance}
-.page h2:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h2)!important;font-weight:600;line-height:1.08!important;letter-spacing:-.04em!important;text-wrap:balance}
+.page h1:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h1)!important;font-weight:600!important;line-height:1.04!important;letter-spacing:-.025em!important;color:var(--ink);text-wrap:balance}
+.page h2:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h2)!important;font-weight:600!important;line-height:1.08!important;letter-spacing:-.025em!important;text-wrap:balance}
 .page h3:not(.sr):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart],[data-product]) *){font-size:var(--t-h3)!important;font-weight:600;line-height:1.2!important;letter-spacing:-.02em!important;text-wrap:balance}
-.page :is(p,b,span).t-hero{font-size:var(--t-h1)!important;line-height:1.04;letter-spacing:-.04em}
+.page :is(p,b,span).t-hero{font-size:var(--t-h1)!important;line-height:1.04;letter-spacing:-.025em}
 /* body copy wraps without a lone word on its last line */
 .page p,.page li{text-wrap:pretty}
 .page :is(h2,h3,h4,h5,h6).t-smallh,.page :is(h4,h5,h6):not(:is(.sheet,.l-book,.h-tk,.c-sheet,.pr-lot,.r-lot,.pp-sheet,[data-paper],[data-chart]) *){font-size:var(--t-smallh)!important;font-weight:500;line-height:1.35;letter-spacing:-.01em}
@@ -92,7 +94,12 @@ canvas.dotbot{display:block;width:100%}
 .btn:hover,.btn-c:hover,.btn-w:hover{background:#0b3fb0}
 .btn:active,.btn-c:active,.btn-w:active{background:var(--deep)}
 .btn-c,.btn-w{background:var(--c);color:#fff}
-.btn.btn-o{background:#fff;color:var(--ink);border-color:var(--line2)}.btn.btn-o:hover{background:var(--peri3);border-color:var(--peri2)}.btn.btn-o:active{background:var(--peri)}
+.btn.btn-o{background:#fff;color:var(--c);border-color:var(--line2)}.btn.btn-o:hover{background:var(--alt);border-color:var(--line3)}.btn.btn-o:active{background:#E8EBF0}
+.nav-b .btn.btn-o,.mn-foot .btn.btn-o{color:var(--ink)}
+/* three kinds of action (design-loop/site-rules-2026-11-28/SPEC.md rule 2): primary .btn, secondary .btn.btn-o, a link inside a sentence. Every page button carries the arrow (core.button); it slides 3px on hover */
+.btn{gap:10px;transition:background-color .15s,border-color .15s,transform .15s}.btn .arw{width:16px;height:16px;flex:none;transition:transform .15s}.btn:hover .arw{transform:translateX(3px)}.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--c);outline-offset:2px}.btn:disabled,.btn[aria-disabled="true"]{opacity:.4}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .btn:disabled,.btn[aria-disabled="true"]{opacity:.55;cursor:default;pointer-events:none}
 .nav-b .btn,.mn-foot .btn{font-size:var(--t-btn-bar)}
 /* the one arrow link: 16px 600, cobalt on light, white on dark. Write the arrow in the text with &rarr; */
@@ -120,9 +127,9 @@ canvas.dotbot{display:block;width:100%}
 .fl input:hover,.fl select:hover,.fl textarea:hover{border-color:var(--line2)}
 .fl input:disabled,.fl select:disabled,.fl textarea:disabled,.pf:disabled{opacity:.55;cursor:default;background-color:var(--paper)}
 .fl select:required:invalid{color:var(--grey)}.fl select option{color:var(--ink)}
-.pf{height:46px;border:0;border-radius:var(--r-field);padding:0 16px;font:400 16px var(--sans);color:var(--ink);background:var(--peri3);min-width:0}
-.pf.w,:where(.g-grad,.g-cobalt,.ink-panel,.g-ink,.g-dark) .pf{background:#fff}
-.pf:hover{box-shadow:inset 0 0 0 1px var(--peri2)}
+.pf{height:46px;border:0;border-radius:var(--r-field);padding:0 16px;font:400 16px var(--sans);color:var(--ink);background:var(--alt);min-width:0}
+.pf.w,:where(.ink-panel,.g-ink,.g-dark,.cb2) .pf{background:#fff}
+.pf:hover{box-shadow:inset 0 0 0 1px var(--line3)}
 .pf:focus-visible,.fl input:focus,.fl select:focus,.fl textarea:focus{outline:2px solid var(--c);outline-offset:2px}
 /* select boxes: a drawn chevron in place of the browser arrow (the price tool's year stepper keeps its own) */
 .page select:not([multiple]):not(.pp-yr *){-webkit-appearance:none;appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230B1630' stroke-opacity='.6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;background-size:10px 6px;cursor:pointer}
@@ -188,7 +195,7 @@ canvas.dotbot{display:block;width:100%}
 .np-card canvas.np-cv{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .16s ease}
 .np-card.off > *{opacity:0}
 .np-fig{position:absolute;margin:0;color:var(--ink);transition:opacity .16s ease}
-.np-fig b{display:block;white-space:nowrap;font:600 var(--t-section)/1.04 var(--serif);letter-spacing:-.035em;font-variant-numeric:lining-nums tabular-nums}
+.np-fig b{display:block;white-space:nowrap;font:600 var(--t-section)/1.04 var(--serif);letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums}
 .np-fig.up b{margin-top:-.157em}
 .np-fig.mid{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .np-fig span{display:block;margin-top:8px;font:400 var(--t-small)/1.4 var(--sans);color:var(--ink2);text-wrap:balance}
@@ -257,7 +264,7 @@ canvas.dotbot{display:block;width:100%}
 
 /* .tb, the one toolbar a section may have: every control in one row, 46px tall (44px buttons inside the border), one border, one radius. Children: select (inside a label or bare), .tb-seg (a segmented switch of buttons with aria-pressed),
    .tb-step (button, output, button), and at most one .tlink at the end. On white the pressed segment is ink; inside an ink, cobalt or dark ground it turns white automatically */
-.tb{--tb-h:46px;--tb-b:var(--line2);--tb-bg:#fff;--tb-fg:var(--ink);--tb-on-bg:var(--c);--tb-on-fg:#fff;--tb-hov:var(--peri3);display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 16px/1 var(--sans)}
+.tb{--tb-h:46px;--tb-b:var(--line2);--tb-bg:#fff;--tb-fg:var(--ink);--tb-on-bg:var(--c);--tb-on-fg:#fff;--tb-hov:var(--alt);display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 16px/1 var(--sans)}
 .tb label{display:flex;margin:0;min-width:0}
 .page .tb select:not([multiple]),.tb select{height:var(--tb-h);margin:0;padding:0 38px 0 14px;border:1px solid var(--tb-b);border-radius:var(--r-field);background-color:var(--tb-bg);color:var(--tb-fg);font:400 16px/1 var(--sans);min-width:0;max-width:100%;cursor:pointer}
 .tb select option{color:var(--ink);background:#fff}
@@ -273,10 +280,11 @@ canvas.dotbot{display:block;width:100%}
 .tb :is(.tb-seg,.tb-step) button:focus-visible{outline-offset:-3px}
 .tb-seg button:is([aria-pressed="true"],[aria-checked="true"],.on):focus-visible{outline-color:var(--tb-on-fg)}
 .tb .tlink{min-height:var(--tb-h);margin-left:8px}
+.tb .btn.btn-o{height:40px;padding:0 16px;margin-left:auto}
 @media (max-width:720px){.tb{gap:8px}.tb > label,.tb > select{flex:1 1 140px}.tb > label select{width:100%}}
 
-/* .ink-panel (name kept): now the lightest periwinkle card, ink words, cobalt buttons, white fields */
-.ink-panel{background:var(--peri3);color:var(--ink);border:0;border-radius:var(--r-card);box-shadow:none;padding:clamp(24px,2.8vw,40px)}
+/* .ink-panel (name kept): a fog card, ink words, cobalt buttons, white fields */
+.ink-panel{background:var(--alt);color:var(--ink);border:0;border-radius:var(--r-card);box-shadow:none;padding:clamp(24px,2.8vw,40px)}
 .ink-panel .fl{color:var(--grey)}
 .ink-panel .fl :is(input,select,textarea){border-color:var(--line);background-color:#fff;color:var(--ink)}
 @media (max-width:720px){.ink-panel{padding:24px 20px}.ink-panel .btn{width:100%}}
@@ -330,7 +338,7 @@ canvas.dotbot{display:block;width:100%}
 .cb.cb2{border-top:0;padding-top:0;padding-bottom:32px}   /* the white section above already ends on one section gap */
 :is(.g-ink,.g-dark,.g-cobalt,.g-grad,.hw-run) + .cb.cb2{padding-top:28px}   /* after a dark section the band brings its own gap */
 .cb2 .cb-g{position:relative;isolation:isolate;padding-block:clamp(40px,4vw,56px) clamp(36px,3.2vw,44px);row-gap:36px}
-.cb2 .cb-g{background:var(--peri3);border-radius:var(--r-card)}
+.cb2 .cb-g{background:var(--alt);border-radius:var(--r-card)}
 .cb2 .cb-g::before{content:none}
 .cb2 .cb-l{grid-column:2 / 7;min-width:0;display:flex;flex-direction:column;margin-left:calc(-1 * var(--gut))}   /* one column in from the panel's edge, on a grid line */
 .cb2 .cb-r{grid-column:7 / 12}
@@ -500,7 +508,7 @@ canvas.dotbot{display:block;width:100%}
 .cb2.cb-k-form .cb-steps{grid-column:2 / 7;margin:0 0 0 calc(-1 * var(--gut));padding-top:0}
 .cb2.cb-k-form .cb-r{grid-column:7 / 12}
 .cb2.cb-k-form:not(.cb-st) .cb-r{grid-column:2 / 8;margin-left:calc(-1 * var(--gut))}
-@media (max-width:760px){.page .cb2.cb-k-form .cb-h,.cb2.cb-k-form .cb-steps,.cb2.cb-k-form .cb-r,.cb2.cb-k-form:not(.cb-st) .cb-r{grid-column:auto;margin-left:0}.cb2 .cb-g{padding-inline:0;background:none}.cb2 .cb-g::before{content:"";position:absolute;z-index:-1;background:var(--peri3);inset:0 calc(-1 * var(--gl));border-radius:0}}
+@media (max-width:760px){.page .cb2.cb-k-form .cb-h,.cb2.cb-k-form .cb-steps,.cb2.cb-k-form .cb-r,.cb2.cb-k-form:not(.cb-st) .cb-r{grid-column:auto;margin-left:0}.cb2 .cb-g{padding-inline:0;background:none}.cb2 .cb-g::before{content:"";position:absolute;z-index:-1;background:var(--alt);inset:0 calc(-1 * var(--gl));border-radius:0}}
 /* body copy keeps a readable measure: about 75 characters at 18px */
 .page :is(.t-lead,.lede,.lead-1){max-width:540px!important}
 
@@ -508,3 +516,31 @@ canvas.dotbot{display:block;width:100%}
 .ffleet{padding-top:clamp(16px,2vw,28px)}
 .fcols a{min-height:34px}
 @media (max-width:760px){.fcols a{min-height:44px}}
+
+/* ================================================================ 2026-11-28 overhaul blocks (design-loop/site-rules-2026-11-28/OVERHAUL-SPEC.md) */
+/* .card: the one card style. White on fog or fog on white, 12px corners, a 1px line, 28 to 32px padding, the figure or picture on top */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);box-shadow:none;padding:clamp(24px,2.2vw,32px)}
+:where(.g-white,.g-pale,section:not(.g-ink):not(.g-dark)) > .in .card.fog,.card.fog{background:var(--alt);border-color:transparent}
+/* .figrow: three or four facts, each led by a figure. Tiles on fog; the one answer figure takes .ans (deep brass) */
+.figrow{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:var(--gut);margin:0;padding:0;list-style:none}
+.figrow > *{background:var(--alt);border-radius:var(--r-card);padding:clamp(22px,2.2vw,30px);margin:0;min-width:0}
+.g-ink .figrow > *,.g-dark .figrow > *{background:#fff}
+.figrow .fnum{display:block;font:600 clamp(36px,3.4vw,52px)/1 var(--serif);letter-spacing:-.03em;color:var(--ink);font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.figrow .fnum.ans{color:var(--brass-d)}
+.figrow .fl{display:block;margin-top:12px;font:400 16px/1.4 var(--sans);color:var(--ink2)}
+.figrow svg.fm{display:block;width:44px;height:44px;margin-bottom:18px;color:var(--c)}
+@media (max-width:900px){.figrow{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+@media (max-width:420px){.figrow .fnum{font-size:32px}}
+/* .clip: a Gemini loop on the page's own fog ground, poster first, the film only once it is near (site.js lazy loader) */
+.clip{position:relative;margin:0;background:var(--alt);border-radius:var(--r-win);overflow:hidden;aspect-ratio:16/9}
+.clip video,.clip img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* header panel pictures: one Gemini loop per panel (np-scenes.js), cover-fit on the card's fog ground */
+.np-card video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}   /* contain: the whole machine shows; the clip ground is graded to the card fog, so the sides are seamless */
+/* 2026-11-28 critics: a clip's own fog frame showed as a box edge on white. Every clip now feathers into whatever ground it sits on */
+.clip{border-radius:0;background:transparent;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(transparent,#000 7%,#000 93%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(transparent,#000 7%,#000 93%,transparent);mask-composite:intersect}
+
+/* 2026-11-28 gate (system.cjs): figures are set in the text face at the h2 size, and nothing moves under reduced motion */
+.page .fnum{font-family:var(--serif)!important;font-size:var(--t-h2)!important;font-weight:600!important;letter-spacing:-.03em!important}
+.page .fnum.fword{font-family:var(--sans)!important;font-size:var(--t-h3)!important;letter-spacing:0!important;line-height:1.3!important}
+@media (prefers-reduced-motion:reduce){.btn,.btn .arw{transition:background-color .15s,border-color .15s,color .15s!important}.btn:active,.btn:hover .arw{transform:none!important}}
+.page .fnum.fword{font-size:var(--t-body)!important}

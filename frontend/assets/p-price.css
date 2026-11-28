@@ -2,7 +2,7 @@
    Grounds are flat, and every section is sized to its content with a plain edge between grounds. Only the term sheets are paper (.sheet). Sizes come from the shared tokens in site.css; new classes start with pp-. */
 html:has(.page[data-page="price.html"]){scroll-behavior:auto}
 /* one grid: 12 columns between the header's own edges, with a 24px gutter (16 on a phone) */
-.page[data-page="price.html"]{--soft:rgba(40,71,206,.32);--txt:#3e4656;--pp-g:#fff;--pp-gut:24px}
+.page[data-page="price.html"]{--soft:#B9C0CB;--txt:#3e4656;--pp-g:#fff;--pp-gut:24px}
 .pp-tool,.pp-vtop,.pp-rk{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--pp-gut)}
 .pp-hero,.pp-sec,.pp-risk{scroll-margin-top:72px}
 .pp-nwr{white-space:nowrap}
@@ -37,7 +37,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-f{display:flex;flex-direction:column;gap:6px;min-width:0}
 .pp-f > label,.pp-lab{font:500 var(--t-small)/1.4 var(--sans);color:var(--txt)}
 .pp-in .pf{width:100%;font-weight:500;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);outline-offset:2px}
-.pp-in .pf:hover{background:#dfeefb}
+.pp-in .pf:hover{background:#E8EBF0}
 .pp-cb{position:relative;min-width:0}
 .pp-cb .pf{display:block;padding-right:40px;text-overflow:ellipsis}
 .pp-cb::after{content:"";position:absolute;right:20px;top:18px;width:7px;height:7px;border-right:1.6px solid var(--c);border-bottom:1.6px solid var(--c);transform:rotate(45deg);pointer-events:none}
@@ -107,7 +107,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-army{margin:4px 0 0;line-height:1.45;color:var(--ink2)}
 .pp-age{margin:2px 0 0;line-height:1}
 .pp-agego{appearance:none;border:0;background:none;padding:0;min-height:44px;text-align:left;font:500 var(--t-small)/1.4 var(--sans);color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
-.pp-agego:hover{color:#c9d6ff}
+.pp-agego:hover{color:#1e339b}
 .pp-offw{margin:4px 0 0;font-size:var(--t-small);line-height:1.45;color:var(--ink2)}
 .pp-av .v0{color:var(--ink)}.pp-av .v1{color:var(--c)}
 .pp-av i{font-style:normal;font-size:.5em;color:#9aa3b3;margin:0 .22em;position:relative;top:-.14em}
@@ -188,12 +188,12 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-gone{visibility:hidden}
 .pp-scs .gl{stroke:#e8ecf2}
 .pp-scs .ax{font:16px var(--sans);fill:var(--muted)}
-.pp-scs .band{fill:rgba(40,71,206,.09)}
+.pp-scs .band{fill:rgba(11,22,48,.06)}
 .pp-scs .med{fill:none;stroke:var(--c);stroke-width:2.5;stroke-linejoin:round}
 .pp-scs .med.mc{stroke-dasharray:6 5}
-.pp-scs .pt{fill:rgba(40,71,206,.42)}
+.pp-scs .pt{fill:#B9C0CB}
 .pp-scs .pt.me{fill:var(--deep)}
-.pp-scs .pt.nf{fill:none;stroke:rgba(40,71,206,.6);stroke-width:1.4}
+.pp-scs .pt.nf{fill:none;stroke:#8E97A6;stroke-width:1.4}
 .pp-scs .pt.cut{stroke:var(--deep);stroke-width:1.2}
 .pp-scs .au{fill:var(--ink);stroke:#fff;stroke-width:1.5}
 .pp-scs .au.im{fill:none;stroke:var(--ink);stroke-width:1.8}
@@ -276,10 +276,10 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 /* each year's range is a thin bar from its low case to its high case. The script draws wide columns, so these narrow them and hold them on their year */
 .pp-covs .bar{opacity:0;width:4px;--bx:9px;transform:translate(var(--bx),5px);transition:opacity .25s var(--m-ease) min(var(--d),.25s),transform .25s var(--m-ease) min(var(--d),.25s)}
 .pp-covc.on .pp-covs .bar{opacity:1;transform:translate(var(--bx),0)}
-.pp-covs .c{display:none}.pp-covs .c2,.pp-covs .gr{fill:#b7c5ef}
+.pp-covs .c{display:none}.pp-covs .c2,.pp-covs .gr{fill:#B9C0CB}
 .pp-covs .c2.bad,.pp-covs .gr.bad{fill:#c2410c}
-.pp-covs .cush{fill:rgba(40,71,206,.1)}
-.pp-pl.cu{fill:#eaedfa}
+.pp-covs .cush{fill:rgba(11,22,48,.06)}
+.pp-pl.cu{fill:#EEF0F3}
 .pp-covs .after{fill:transparent}
 .pp-covs .aft{font-size:16px;fill:var(--muted)}
 .pp-covs .p50{fill:none;stroke:var(--c);stroke-width:3;stroke-linejoin:round}
@@ -300,7 +300,7 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .stmt.pp-cmpt tr.pp-cax td{border:0;padding:6px 0 0}
 .pp-cb2{display:block;position:relative;height:18px}
 .pp-cb2::before{content:"";position:absolute;left:0;right:0;top:8.5px;height:1px;background:var(--line)}
-.pp-ci{position:absolute;top:5px;height:8px;background:rgba(40,71,206,.22)}
+.pp-ci{position:absolute;top:5px;height:8px;background:#B9C0CB}
 .pp-cd{position:absolute;top:1px;width:3px;height:16px;background:var(--c);transform:translateX(-50%)}
 .pp-caxs{display:block;position:relative;height:18px}
 .pp-caxs em{position:absolute;top:0;transform:translateX(-50%);font-style:normal;font-size:16px;color:var(--muted)}
@@ -645,3 +645,27 @@ a.pp-mk{display:inline-flex;align-items:center;justify-content:center;min-height
 .pp-keep,.pp-keep *{font-family:var(--sans)!important}
 /* reduced motion: the chart's labels and plates appear without a fade (these rules sit after the ones that set their fades) */
 @media (prefers-reduced-motion:reduce){.pp-scs .pp-pl,.pp-scs .lab:not(.ttl){transition:none}}
+
+/* 2026-11-28: the "Priced from N listings" link counts listings, which the copy rules ban; p-price.js still fills it, so it never shows */
+#pp-src{display:none!important}
+/* the scatter is drawn by the frozen p-price.js with its axis labels 5px in; this puts them on the section's left edge (one edge per section) */
+@media (min-width:900px){.pp-scs{margin-left:-5px;width:calc(100% + 5px)}}
+/* 2026-11-28 overhaul (agent C): calm hero with a sub line no wider than the headline; the gripper beside section A's heading; brass marks yours and the answer, navy marks sales and auctions, grey the rest */
+.pp-head{width:fit-content;max-width:100%}
+.pp-sub{margin:14px 0 0;width:0;min-width:100%;max-width:44ch;font:400 var(--t-body)/1.5 var(--sans);color:var(--ink2)}
+.pp-ans .pp-a[data-k="v"] .pp-av{color:var(--brass-d)}
+.pp-rung.hi > b{color:var(--sale)}
+.pp-scs .uo{fill:var(--brass)}
+.pp-scs .ul .uv{fill:var(--sale)}
+.pp-scs .au{fill:var(--sale)}
+.pp-scs .au.im{fill:none;stroke:var(--sale)}
+/* the scatter's axis words sit on the grid line and the chart's own box does too: the drawing moves 5px left inside a box that starts on the line */
+@media (min-width:900px){.pp-scs{margin-left:0;width:100%}.pp-scs > *{transform:translateX(-5px)}}
+/* round 2 (critics): the four prices as even fog tiles; the robot's chart label is its price alone, so no plate crosses the line or dots; the loan chart's gap reads from its two labelled lines; the sentence sits under the figure it explains */
+.pp-ladw .pp-rung,.pp-ladw .pp-rate{background:var(--alt);border:0;border-radius:var(--r-card);padding:clamp(20px,2vw,28px)}
+.pp-ladw .pp-rung > b{margin-bottom:0}
+.pp-scs .ul text:not(.uv){display:none}
+.pp-covs .bl.cu{display:none}
+.pp-vtop,.pp-vtop:has(.pp-end:not([hidden])){display:block}
+.pp-val .pp-covn,.pp-vtop:has(.pp-end:not([hidden])) .pp-covn{margin:12px 0 0;max-width:46ch;color:var(--ink2)}
+@media (max-width:720px){.pp-ladw{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-ladw .pp-rung,.pp-ladw .pp-rate{grid-column:auto}.pp-ladw .pp-rung > b{font-size:30px}}

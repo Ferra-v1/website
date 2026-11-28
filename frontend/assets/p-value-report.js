@@ -92,8 +92,8 @@
       const X = a => L + a / xmax * (R - L), Y = v => T + (hi - Math.log(v)) / (hi - lo) * (B - T);
       c.font = '400 14px Geist'; c.textBaseline = 'middle';
       for (const t of [1000, 3000, 10000, 30000, 100000]) { c.strokeStyle = LINE; c.lineWidth = 1; c.beginPath(); c.moveTo(L, Y(t)); c.lineTo(R, Y(t)); c.stroke(); c.fillStyle = CAP; c.textAlign = 'right'; c.fillText(usd(t), L - 8, Y(t)); }
-      const cv = D.curve.filter(p => p[0] <= xmax); c.fillStyle = 'rgba(40,71,206,.1)'; c.beginPath(); cv.forEach((p, k) => c[k ? 'lineTo' : 'moveTo'](X(p[0]), Y(p[3]))); cv.slice().reverse().forEach(p => c.lineTo(X(p[0]), Y(p[1]))); c.closePath(); c.fill();
-      c.fillStyle = 'rgba(40,71,206,.55)'; c.beginPath(); for (const r of D.rows) { c.moveTo(X(r[0]) + 2.6, Y(r[1])); c.arc(X(r[0]), Y(r[1]), 2.6, 0, 7); } c.fill();
+      const cv = D.curve.filter(p => p[0] <= xmax); c.fillStyle = 'rgba(11,22,48,.06)'; c.beginPath(); cv.forEach((p, k) => c[k ? 'lineTo' : 'moveTo'](X(p[0]), Y(p[3]))); cv.slice().reverse().forEach(p => c.lineTo(X(p[0]), Y(p[1]))); c.closePath(); c.fill();
+      c.fillStyle = '#8E97A6'; c.beginPath(); for (const r of D.rows) { c.moveTo(X(r[0]) + 2.6, Y(r[1])); c.arc(X(r[0]), Y(r[1]), 2.6, 0, 7); } c.fill();
       c.strokeStyle = INK; c.lineWidth = 2.5; c.lineJoin = 'round'; c.beginPath(); cv.forEach((p, k) => c[k ? 'lineTo' : 'moveTo'](X(p[0]), Y(p[2]))); c.stroke();
       c.strokeStyle = '#9aa3b5'; c.lineWidth = 1; c.beginPath(); c.moveTo(L, B); c.lineTo(R, B); c.stroke();
       c.fillStyle = CAP; c.textBaseline = 'top'; for (let a = 0; a <= xmax; a += 5) { c.textAlign = a ? (a === xmax ? 'right' : 'center') : 'left'; c.fillText(a ? (a === xmax ? a + ' years' : String(a)) : 'New', X(a), B + 10); }
@@ -111,7 +111,7 @@
         for (const r of rs) { const m = y + rh / 2, s = r[1] / r[2];
           c.font = '400 13px Geist'; c.fillStyle = INK; c.textAlign = 'left'; let n = r[0]; while (c.measureText(n).width > lw - 14 && n.length > 8) n = n.slice(0, -2); c.fillText(n === r[0] ? n : n.trim() + '...', x0, m);
           c.strokeStyle = LINE; c.beginPath(); c.moveTo(L, m); c.lineTo(R, m); c.stroke();
-          c.fillStyle = 'rgba(40,71,206,.32)'; c.fillRect(X(s), m - 1, X(1) - X(s), 2);
+          c.fillStyle = '#B9C0CB'; c.fillRect(X(s), m - 1, X(1) - X(s), 2);
           c.fillStyle = '#fff'; c.strokeStyle = INK; c.lineWidth = 1.5; c.beginPath(); c.arc(X(1), m, 5.5, 0, 7); c.fill(); c.stroke(); c.lineWidth = 1;
           c.fillStyle = CO; c.beginPath(); c.arc(X(s), m, 5.5, 0, 7); c.fill();
           c.textAlign = 'right'; c.font = '600 13px Geist'; c.fillStyle = INK; const v = usd(r[1]); c.fillText(pct(s), x0 + w - c.measureText(' ' + v).width - 2, m); c.font = '400 13px Geist'; c.fillStyle = SOFT; c.fillText(v, x0 + w, m);
@@ -158,5 +158,13 @@
     c.font = '400 15px Geist'; c.fillStyle = CAP; c.textAlign = 'left'; c.textBaseline = 'alphabetic'; src.forEach(l => { c.fillText(l, pad, y + 15); y += 22; });
     const blob = await new Promise(r => cv.toBlob(r, 'image/png')); if (!blob) return;
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `ferra-robot-value-report-figure-${D.fig}.png`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+})();
+// Figure 3 opens on five sales per age band; the button shows every sale, and shows the short set again (round 2, 2026-11-28)
+(() => {
+  for (const b of document.querySelectorAll('.vr-all')) {
+    const fig = b.closest('.vr-fig'), plot = fig && fig.querySelector('.vr-lots'); if (!plot) continue;
+    const lab = b.firstChild;
+    b.addEventListener('click', () => { const open = plot.classList.toggle('vr-open'); b.setAttribute('aria-expanded', String(open)); lab.textContent = open ? 'Show fewer sales' : 'Show all sales'; if (!open) fig.scrollIntoView({ block: 'start' }); });
   }
 })();

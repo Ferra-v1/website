@@ -14,10 +14,10 @@
 .r-kind{margin:18px 0 0;color:#3e4656}
 .r-kind-m{display:none}
 /* the ink starts a gutter into column eight, and its words start on the line of column nine */
-.r-one-r{grid-column:8 / 13;min-width:0;color:var(--ink);background:var(--peri3);margin-right:calc(-1 * var(--gl));margin-left:var(--g)}
+.r-one-r{grid-column:8 / 13;min-width:0;color:var(--ink);background:var(--alt);margin-right:calc(-1 * var(--gl));margin-left:var(--g)}
 .r-one-st{--c1:calc((100vw - 2 * var(--gl) - 11 * var(--g)) / 12);position:sticky;top:72px;min-height:calc(100svh - 72px);display:flex;flex-direction:column;padding:clamp(32px,4vw,56px) var(--gl) 0 calc(var(--c1))}
 .r-sum{flex:none}
-.r-big{display:block;color:var(--c);white-space:nowrap}
+.r-big{display:block;color:var(--brass-d);white-space:nowrap}
 .r-say{margin:10px 0 0;color:var(--ink);text-wrap:pretty}
 .r-rg-l{margin-top:16px}
 .r-src{margin:10px 0 0;color:var(--ink2)}
@@ -51,10 +51,10 @@
 .r-read{margin-top:clamp(24px,2.8vw,40px);max-width:calc((100% - 11 * var(--g)) / 12 * 7 + 6 * var(--g))}
 .r-rk{margin:0 0 6px;color:var(--ink2)}
 .r-rrow{display:flex;align-items:flex-end;gap:clamp(20px,3vw,40px);flex-wrap:wrap}
-.r-rv{display:block;color:var(--c);white-space:nowrap}
+.r-rv{display:block;color:var(--ink);white-space:nowrap}
 .r-rg{flex:1 1 260px;display:grid;grid-template-columns:auto minmax(80px,1fr) auto;align-items:center;column-gap:12px;padding-bottom:6px}
 .r-rg .r-rlo,.r-rg .r-rhi{font-size:16px;color:var(--ink);font-weight:500}
-.r-rbar{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--peri2),var(--c))}
+.r-rbar{position:relative;height:6px;border-radius:3px;background:var(--mark)}
 .r-rmid{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--c)}
 .r-rcap{grid-column:1 / -1;order:-1;margin-bottom:6px;font-size:16px;color:var(--ink2)}
 .r-rs{margin:10px 0 0;color:var(--ink2);display:flex;flex-wrap:wrap;align-items:center;column-gap:16px}
@@ -70,8 +70,8 @@
 .r-ax .ax{stroke:rgba(14,22,38,.4);stroke-width:1}
 .r-ax .ld{fill:none;stroke:rgba(14,22,38,.35);stroke-width:1}
 .r-ax .k-line{fill:none;stroke:var(--c);stroke-width:2}
-.r-ax .k-band{fill:rgba(40,71,206,.14)}
-.r-ax .k-dot{fill:var(--ink)}
+.r-ax .k-band{fill:rgba(150,158,172,.16)}
+.r-ax .k-dot{fill:var(--sale)}
 /* the age control: the chart's own axis is the track */
 .r-age{position:absolute;z-index:3;height:44px;display:block}
 .r-age input{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:ew-resize;outline:0;box-shadow:none}
@@ -109,12 +109,12 @@
 /* ------------------------------------------------------------------ what buyers paid, and what a buyer would likely pay */
 .r-au-say{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g);row-gap:8px;align-items:baseline;margin:clamp(20px,2.6vw,32px) 0 0}
 .r-au-say b{grid-column:1 / 4}
-.r-au-say b{color:var(--c);white-space:nowrap}
+.r-au-say b{color:var(--sale);white-space:nowrap}
 .r-au-say p{grid-column:4 / 10;margin:0;color:#3e4656;text-wrap:pretty}
 .r-au-both{margin:clamp(14px,2vw,22px) 0 0;max-width:32em;font:500 var(--t-lead)/1.45 var(--sans);letter-spacing:0;color:var(--ink);text-wrap:pretty}
-.r-au-both b{color:var(--c)}
+.r-au-both b{color:var(--sale)}
 .r-like{margin:clamp(32px,4vw,48px) 0 0;max-width:30em;color:var(--ink);text-wrap:pretty}
-.r-like b{color:var(--c)}
+.r-like b{color:var(--sale)}
 /* an auction row: the share reads as a figure, and on a phone the three middle cells fold into one line */
 .r-au-p b{font-weight:500}
 .r-tbl-a .r-au-p,.r-tbl-a thead th:last-child{padding-right:0}
@@ -136,9 +136,9 @@
 .r-tally{display:block;width:100%;height:auto;overflow:visible}
 .r-tally path{fill:none;stroke-linecap:round}
 .r-tally .s{stroke:var(--c);stroke-width:5}
-.r-tally .y{stroke:rgba(40,71,206,.62);stroke-width:5}
-.r-tally .p{stroke:rgba(40,71,206,.32);stroke-width:5}
-.r-tally .n{stroke:rgba(40,71,206,.14);stroke-width:5}
+.r-tally .y{stroke:#8E97A6;stroke-width:5}
+.r-tally .p{stroke:#B9C0CB;stroke-width:5}
+.r-tally .n{stroke:#E2E4E9;stroke-width:5}
 /* the count chain: the figure on the column's left edge, its shade at the end of that column, the words from the next line */
 .r-chain{list-style:none;margin:0;padding:0;font-size:var(--t-body);line-height:1.4;color:var(--ink)}
 .r-chain li{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--g);align-items:center;min-height:40px}
@@ -146,7 +146,7 @@
 .r-key{grid-column:1;grid-row:1;justify-self:end}
 .r-chain span{grid-column:2 / -1;grid-row:1}
 @media (max-width:1060px){.r-chain li{grid-template-columns:repeat(12,minmax(0,1fr))}.r-chain b,.r-key{grid-column:1 / 4}.r-chain span{grid-column:4 / -1}}
-.r-key.s circle{fill:var(--c)}.r-key.y circle{fill:rgba(40,71,206,.62)}.r-key.p circle{fill:rgba(40,71,206,.32)}.r-key.n circle{fill:rgba(40,71,206,.14)}
+.r-key.s circle{fill:var(--c)}.r-key.y circle{fill:#8E97A6}.r-key.p circle{fill:#B9C0CB}.r-key.n circle{fill:#E2E4E9}
 .r-tr-t{margin-top:clamp(20px,2.8vw,40px)}
 .r-tr-t p{margin:0 0 12px;color:#3e4656;max-width:32em}
 .r-tr-t .tlink{margin:0}
@@ -237,8 +237,8 @@
 .r-dial-k{grid-column:1 / 3;color:#3e4656;white-space:nowrap}
 .r-dial-v{grid-column:3 / 5;font-weight:600;color:var(--c);white-space:nowrap}
 .r-dial input{grid-column:5 / 13;-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:none;cursor:ew-resize}
-.r-dial input::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:rgba(40,71,206,.26)}
-.r-dial input::-moz-range-track{height:4px;border-radius:2px;background:rgba(40,71,206,.26)}
+.r-dial input::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:#B9C0CB}
+.r-dial input::-moz-range-track{height:4px;border-radius:2px;background:#B9C0CB}
 .r-dial input::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-10px;border:0;border-radius:50%;background:var(--c)}
 .r-dial input::-moz-range-thumb{width:24px;height:24px;border:0;border-radius:50%;background:var(--c)}
 .r-dial input:focus-visible{outline:2px solid var(--c);outline-offset:2px;border-radius:4px}
@@ -391,3 +391,54 @@
  .r-top-t .r-agebox{grid-template-columns:auto minmax(0,1fr);column-gap:10px;padding:0 12px}
  .r-top-t .r-agebox .r-dial-k{display:none}
 }
+
+/* 2026-11-28 overhaul: how much to trust this, as three facts (site.css .figrow) and one line with its link inside the sentence */
+.r-tr-f{margin-top:clamp(24px,2.8vw,40px)}
+.r-tr .r-tr-t{margin:clamp(20px,2.4vw,28px) 0 0;color:var(--ink2);max-width:62ch}
+.r-tr .r-tr-t a{color:var(--c);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.r-mds-more summary.btn{margin-top:16px}
+.r-s-act{margin:clamp(20px,2vw,28px) 0 0}
+@media (max-width:600px){.r-tr-f{grid-template-columns:minmax(0,1fr)}}
+.r-tr-f svg.fm{width:100%;height:44px}
+@media (min-width:1001px){.r-au-s .r-au-both{max-width:21em}}
+.r-tr-f > li.card{display:block;background:var(--alt);border-color:var(--alt);padding:clamp(22px,2.2vw,30px)}
+@media (min-width:1001px){.page .r-au-s p.r-au-both{max-width:460px!important}}
+@media (min-width:1001px){.page .r-au-s p.lead-1{max-width:460px!important}}
+/* a long list starts short: rows not picked in the build wait until "Show every listing" adds .all (robots.py kept()) */
+@media (min-width:761px){.r-tbl[data-listings]:not(.all) tbody tr[class]:not(.k8){display:none}}
+@media (max-width:760px){.r-tbl[data-listings]:not(.all) tbody tr[class]:not(.k5){display:none}}
+/* ---------- Round 2 (critic notes) ---------- */
+/* the hero listing table at the body size, each cell on one line */
+.r-one .r-tbl{font-size:var(--t-body)}
+.r-one .r-tw{white-space:nowrap}
+/* the trust marks: one size, one stroke weight */
+.r-tr-f svg.fm{height:48px;margin-bottom:20px}
+/* what a buyer would likely pay: three prices for one arm on white tiles over the fog band, and one line under them */
+.r-au-f{margin-top:clamp(24px,2.8vw,40px)}
+.r-au-f > li.card{display:block;background:#fff;border-color:#fff;padding:clamp(22px,2.2vw,30px)}
+.r-au-f .fnum{font-size:clamp(28px,2.6vw,44px);white-space:normal}
+.r-au .r-au-n{margin:clamp(20px,2.4vw,28px) 0 0;max-width:68ch;color:var(--ink2);font-size:var(--t-body)}
+@media (max-width:600px){.r-au-f{grid-template-columns:minmax(0,1fr)}}
+/* look up one model: each model a small card with its own price, three to a row */
+.r-mdl .r-mds{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gut)}
+.r-mds a.r-md{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:0;padding:20px 22px;background:var(--alt);border-color:var(--alt);transition:border-color .15s ease}
+.r-mds a.r-md:hover{border-color:var(--c)}
+.r-mds a.r-md b{font:600 var(--t-body)/1.25 var(--sans);color:var(--ink)}
+.r-md-p{font-size:16px;color:var(--ink2)}
+.r-md-p b{font:600 16px/1 var(--sans)!important;color:var(--ink)!important}
+@media (max-width:980px){.r-mdl .r-mds{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.r-mdl .r-mds{grid-template-columns:minmax(0,1fr);gap:12px}}
+/* the shelf: sub-series as a sentence */
+.r-c-subs{display:block;padding-top:8px;color:var(--ink2)}
+.r-c-subs a{display:inline;min-height:0;color:var(--c);font-weight:500;white-space:nowrap}
+/* the shelf on a phone: one card a row, the robot beside its words, so heights match and nothing sits alone */
+@media (max-width:760px){
+ .r-cells .r-cell{grid-column:1 / -1!important;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-rows:auto;column-gap:16px;align-items:end;margin-bottom:28px}
+ .r-cells .r-cell > .r-c-go{display:contents}
+ .r-cells .r-cell .r-c-bot{grid-column:1;grid-row:1}
+ .r-cells .r-cell .r-c-t{grid-column:2;grid-row:1;padding:0}
+ .r-cells .r-c-has > .r-c-go{display:block;grid-column:1;grid-row:1}
+ .r-cells .r-c-has > .r-c-tw{grid-column:2;grid-row:1}
+}
+/* 2026-11-28 targets: the series links are 44px tall touch targets */
+.r-c-subs a{display:inline;padding:12px 0}

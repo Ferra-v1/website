@@ -55,7 +55,7 @@
     const items = LABS.map(L => ({ ...L, real: Y(dayOne(L.k)) / 1000 * H, h: L.el.offsetHeight })).sort((a, b) => a.real - b.real);
     let y = -Infinity; for (const it of items) { it.y = Math.max(it.real, y + it.h / 2 + 6); y = it.y + it.h / 2; }
     y = H + 12; for (let i = items.length - 1; i >= 0; i--) { const it = items[i]; if (it.y + it.h / 2 > y) it.y = y - it.h / 2; y = it.y - it.h / 2 - 6; }
-    for (const it of items) { it.el.style.top = it.y.toFixed(1) + 'px'; const x0 = W - 26, x1 = W - 10; it.wire.setAttribute('d', `M${x0} ${it.y.toFixed(1)}L${x1} ${it.y.toFixed(1)}L${W} ${it.real.toFixed(1)}`); }
+    for (const it of items) { it.el.style.top = it.y.toFixed(1) + 'px'; const x0 = Math.min(W - 26, Math.max(it.el.querySelector('b').offsetWidth, it.el.querySelector('span').offsetWidth) + 10), x1 = Math.max(x0 + 4, W - 10); it.wire.setAttribute('d', `M${x0} ${it.y.toFixed(1)}L${x1} ${it.y.toFixed(1)}L${W} ${it.real.toFixed(1)}`); }
   }
   // a ring where a sale first covers what is owed, a thin line down to the axis, and the month written under the axis
   function place() {

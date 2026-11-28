@@ -1,25 +1,48 @@
-/* Vision page (v-). Every section sits in plain flow on a light ground, sized to its words. The six robots stand in cobalt dots under the headline. No films. Nothing pins. */
+/* Vision page (v-). 2026-11-28 overhaul, round 2: the hero's humanoid stands on the section's own fog with no frame; two large dot robots on white with where the others work in one ruled row; the plan beside the gantry, tops in line. Plain flow, nothing pins. */
 .page[data-page="vision.html"] :is(h1,h2,h3){margin:0;text-wrap:balance}
-/* the first screen: the headline, then the six robots */
-.v-street{padding-block:clamp(48px,6vw,96px) var(--sec)}
-.v-street h1{max-width:18em}
-.v-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(40px,4vw,56px) 24px;margin-top:clamp(40px,4.4vw,64px)}
+.v-fog{background:var(--alt)}
+/* hero: words in columns 1 to 6, the loop in 7 to 12, cropped square so the robot fills its frame; the film's ground is the page's fog, so it has no box */
+.v-hero{padding-block:clamp(32px,4vw,64px)}
+.v-hg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:center}
+.v-htxt{grid-column:1 / span 6}
+.v-sub{margin:24px 0 32px;max-width:36ch;font:400 var(--t-body)/1.5 var(--sans);color:var(--ink2);text-wrap:pretty}
+.page .v-clip{grid-column:7 / span 6;aspect-ratio:4 / 5;max-height:calc(100vh - 140px);border-radius:0;background:transparent}
+.page .v-clip video{object-fit:cover;object-position:66% 50%}
+/* the robots: two large drawings with their lines, then the other four places in a ruled row */
+.v-street{padding-block:var(--sec)}
+.v-track{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gut);margin-top:40px;align-items:start}
 .v-slot{margin:0;display:flex;flex-direction:column;min-width:0}
-.v-slot .rs-bot{display:flex;align-items:flex-end;justify-content:flex-start;height:clamp(150px,15vw,220px);border-bottom:1px solid var(--line2)}
-.v-slot canvas.dotbot{display:block;height:100%;width:auto;max-width:100%}
-/* each robot's own pixels start on the slot's left edge, as before the sand repaint: --lm is the empty canvas left of the robot (pages/vision.py LM) */
-.v-slot canvas.dotbot{transform:translateX(calc(var(--lm,0) * -100%))}
-.v-slot[data-fly] canvas.dotbot{height:70%;align-self:flex-start}
-.v-slot figcaption{margin-top:16px;color:var(--ink);text-wrap:pretty}
-/* the plan: the point across the top, then the three steps in reading order, one to a column, tops in line */
-.v-path{padding-block:var(--sec)}
-.v-steps{list-style:none;margin:clamp(48px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
-.v-step{padding-top:20px;border-top:1px solid var(--ink)}
-.v-step p{margin:10px 0 0;color:var(--ink2);text-wrap:pretty}
+.v-slot .rs-bot{display:flex;align-items:flex-end;justify-content:center;height:clamp(170px,20vw,290px)}
+.v-slot canvas.dotbot{display:block;height:100%;width:auto;max-width:100%;filter:saturate(1.25) brightness(.82)}
+.v-slot[data-fly] canvas.dotbot{height:74%;align-self:center}
+.v-slot figcaption{margin-top:24px;font:500 var(--t-body)/1.4 var(--sans);letter-spacing:-.015em;color:var(--ink)}
+.v-others{list-style:none;margin:48px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gut)}
+.v-others li{padding-top:16px;border-top:1px solid var(--ink);color:var(--ink);text-wrap:pretty}
+/* the plan: the point and the three steps in columns 1 to 6, the gantry in 7 to 12, tops in line */
+.v-path{padding-block:var(--sec) 40px}
+.v-pg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:start}
+.v-ptxt{grid-column:1 / span 6}
+.v-steps{list-style:none;margin:48px 0 0;padding:0}
+.v-step{display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:30px 0;border-top:1px solid var(--line3)}
+.v-step:last-child{border-bottom:1px solid var(--line3)}
+.page .v-n{margin:0}
+.v-n{font:600 var(--t-h3)/1.2 var(--serif);letter-spacing:-.02em;color:var(--c)}
+.v-step p{margin:6px 0 0;color:var(--ink2);text-wrap:pretty}
+.v-pic{grid-column:7 / span 6;margin:0}
+.v-pic img{display:block;width:100%;height:auto}
+/* the closing picks at full control size */
+.page[data-page="vision.html"] .cb-pick .tb select{min-height:46px;font-size:17px}
 @media (max-width:900px){
- .v-track{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 16px}
- .v-slot .rs-bot{height:min(34vw,160px)}
+ .v-hg,.v-pg{grid-template-columns:minmax(0,1fr);row-gap:24px}
+ .v-htxt,.v-clip,.v-ptxt,.v-pic{grid-column:1}
+ .page .v-clip{grid-column:1;aspect-ratio:4 / 3}
+ .v-sub{margin:16px 0 24px}
+ .v-track{gap:16px;margin-top:24px}
+ .v-slot .rs-bot{height:min(40vw,180px)}
  .v-slot figcaption{margin-top:10px}
- .v-steps{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:32px}
+ .v-others{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 16px;margin-top:32px}
+ .v-steps{margin-top:24px}
 }
-.page .v-step p{text-wrap:balance}
+.v-path + .cb.cb2{padding-top:24px}
+/* the frameless loop melts into the fog at its edges, so a few levels of difference between the film's ground and the page's never show as a box */
+.page .v-clip{-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(transparent,#000 7%,#000 93%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent),linear-gradient(transparent,#000 7%,#000 93%,transparent);mask-composite:intersect}

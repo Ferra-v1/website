@@ -95,9 +95,9 @@
       else { asked = false; if (d > 0) set(false); else if (on || y > OWN) set(true); } }, { passive: true });
     addEventListener('mousemove', e => { mouseY = e.clientY; if (scrollY <= OWN || !inPin()) return; if (e.clientY < 56) { asked = true; set(true); } else if (asked && e.clientY > 160) { clearTimeout(drop); const go = () => { if (!asked || mouseY <= 160) return; if (fbar.classList.contains('np-on')) drop = setTimeout(go, 400); else { asked = false; set(false); } }; go(); } }, { passive: true }); }
   // the nav's panels: open on hover and on keyboard focus, close on Escape, on leaving, and after a 300ms grace. There is one layer, under whichever bar opened it.
-  // Each panel's picture lives in assets/np-scenes.js with its data in media/nav/np-data.js: neither loads until a panel first opens.
+  // Each panel's picture (its own Gemini loop) is played by assets/np-scenes.js, which loads the first time a panel opens.
   const np = document.getElementById('np'), npDim = document.querySelector('.np-dim'); let npCur = null, npBar = null, npItem = null, npTimer = 0, npIn = 0, npBack = false, npLoad = null, npHold = 0;
-  const npScenes = () => npLoad || (npLoad = new Promise(ok => { const v = np.dataset.v ? '?v=' + np.dataset.v : ''; const add = (src, then) => { const t = document.createElement('script'); t.src = src + v; t.onload = then; t.onerror = () => ok(false); document.head.appendChild(t); }; add('media/nav/np-data.js', () => add('assets/np-scenes.js', () => ok(true))); }));
+  const npScenes = () => npLoad || (npLoad = new Promise(ok => { const v = np.dataset.v ? '?v=' + np.dataset.v : ''; const add = (src, then) => { const t = document.createElement('script'); t.src = src + v; t.onload = then; t.onerror = () => ok(false); document.head.appendChild(t); }; add('assets/np-scenes.js', () => ok(true)); }));
   // the picture follows the link under the pointer or the keyboard. A pointer sweeping down the list waits a moment before the picture changes
   const npPick = (a, now) => { clearTimeout(npHold); if (!a) return; a.closest('.np-l').querySelectorAll('a').forEach(x => x.classList.toggle('sel', x === a)); const go = () => npScenes().then(ok => { if (ok && npCur && window.FerraNP) window.FerraNP.pick(a, JSON.parse(np.dataset.n || '{}')); }); if (now) go(); else npHold = setTimeout(go, 70); };
   const closePanel = () => { clearTimeout(npTimer); if (!np || !npCur) return; npCur = null; clearTimeout(npHold); np.classList.remove('on'); if (npDim) npDim.classList.remove('on'); if (npBar) npBar.classList.remove('np-on'); if (npItem) { npItem.classList.remove('open'); npItem.querySelector('a').setAttribute('aria-expanded', 'false'); } npBar = npItem = null;
@@ -190,4 +190,15 @@
     relay();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(relay);
     return relay; };
+})();
+// Gemini loops (.clip video[data-src], 2026-11-28 overhaul): the poster is the exact first frame and shows first; the film loads only once its frame is within a screen of view, the small file on a phone, plays while on screen and pauses off it. Reduced motion keeps the poster.
+(() => {
+  const vids = [...document.querySelectorAll('video[data-src]')]; if (!vids.length) return;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches, small = innerWidth < 760;
+  const io = new IntersectionObserver(es => es.forEach(e => { const v = e.target;
+    if (e.isIntersecting) { if (still) return; if (!v.src) { v.src = (small && v.dataset.srcSm) || v.dataset.src; v.load(); } const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    else if (v.src) v.pause(); }), { rootMargin: '100% 0px' });
+  // words first (SPEED-RULES 11): no film starts until the page has loaded and settled for a moment, so a hero film never competes with the first screen's words and poster
+  const go = () => setTimeout(() => vids.forEach(v => io.observe(v)), 600);
+  if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
 })();

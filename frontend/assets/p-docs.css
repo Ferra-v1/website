@@ -48,9 +48,9 @@ html{scroll-behavior:auto}
 .d-bars li.hi b{color:var(--c)}
 .d-bars span{font-size:var(--t-body);line-height:1.4;color:#3e4656}
 .d-tr{position:relative;grid-column:1 / -1;height:6px;margin-top:8px;background:#f1f4f9}
-.d-bar{position:absolute;left:0;top:0;bottom:0;width:calc(var(--w) * 100%);background:#9fb2ea}
+.d-bar{position:absolute;left:0;top:0;bottom:0;width:calc(var(--w) * 100%);background:#8E97A6}
 .d-bars li.hi .d-bar{background:var(--c)}
-.d-gap{position:absolute;top:0;bottom:0;left:calc(var(--l) * 100%);width:calc(var(--w) * 100%);background:#c6d0f3;opacity:.55}
+.d-gap{position:absolute;top:0;bottom:0;left:calc(var(--l) * 100%);width:calc(var(--w) * 100%);background:#D3D6DD;opacity:.55}
 .d-sec .d-gapl{margin:8px 0 clamp(32px,4vw,48px);color:var(--ink);font-weight:500}
 
 /* what we do not know: the document's one loud moment, three smaller admissions under it */
@@ -90,7 +90,7 @@ html{scroll-behavior:auto}
 .d-lr{margin-bottom:20px}
 .d-sec .d-ll{margin:0 0 6px;font-size:var(--t-small);line-height:1.4;color:#3e4656}
 .d-lt{position:relative;height:56px;border-bottom:1px solid var(--line)}
-.d-lo{position:absolute;display:block;width:9px;height:9px;margin:0 0 3px -4.5px;border-radius:50%;background:rgba(40,71,206,.5)}
+.d-lo{position:absolute;display:block;width:9px;height:9px;margin:0 0 3px -4.5px;border-radius:50%;background:#8E97A6}
 .d-lo.on{background:var(--c)}
 .d-lm{position:absolute;bottom:0;display:block;width:1.5px;height:24px;margin-left:-.75px;background:var(--ink)}
 .d-ln{position:absolute;bottom:4px;right:0;font-size:var(--t-small);line-height:1.25;color:var(--ink);font-weight:500}
@@ -291,3 +291,71 @@ html{scroll-behavior:auto}
   .d-sec .d-sb .d-nums{grid-template-columns:repeat(10,minmax(0,1fr))}
   .d-sec .d-sb .d-nums > div{grid-column:span 3}
 }
+
+/* 2026-11-28 accent roles: worth today is the answer (deep brass), the likely sale is a sale (navy) */
+.d-bars li.ans b{color:var(--brass-d)}
+.d-bars li.ans .d-bar{background:var(--brass)}
+.d-bars li.sale b{color:var(--sale)}
+.d-bars li.sale .d-bar{background:var(--sale)}
+/* the 404 page (pages/notfound.py): words and buttons left, a code-drawn arm right, both on the grid */
+.nf .nf-act{margin-top:32px}
+.nf p.nf-more{margin-top:20px;font-size:var(--t-body)}
+.nf-more a{color:var(--c);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.nf-g > .nf-pic{grid-column:7 / 13;min-width:0;align-self:center}
+.nf-art{display:block;width:100%;height:auto;aspect-ratio:560/420}
+.nf-art .nf-solid{fill:var(--c);stroke:none}
+.nf-art .nf-limb{stroke:var(--c);stroke-width:22}
+.nf-art .nf-limb2{stroke-width:16}
+.nf-art .nf-joint{fill:#fff;stroke:var(--c);stroke-width:4}
+.nf-art .nf-grip{stroke:var(--c);stroke-width:5}
+.nf-art .nf-line{stroke:var(--mark);stroke-width:4}
+.nf-art .nf-floor{stroke:var(--line2);stroke-width:1.5}
+.nf-art .nf-arm{stroke:var(--c);stroke-width:3}
+.nf-art .nf-thick{stroke-width:14;stroke:var(--c)}
+.nf-art .nf-page{stroke:var(--mark);stroke-width:2.5;stroke-dasharray:8 7}
+.nf-art .nf-q{stroke:var(--mark);stroke-width:3}
+.nf-art .nf-qd{fill:var(--mark);stroke:none}
+.nf-art .nf-reach{stroke:var(--c);stroke-width:2;stroke-dasharray:3 6}
+@media (max-width:760px){.nf-g > .nf-pic{grid-column:1 / -1}.nf-g > :first-child{grid-column:1 / -1}}
+.page .nf{min-height:0;padding-block:clamp(64px,8vw,120px)}
+
+/* ---------- Round 2 (2026-11-28, critic notes): read like a report. The article takes columns 1 to 9 with figures and tables at its full width, reading text at a comfortable measure in ink,
+   and a contents rail in columns 10 to 12 that is easy to read and marks where you are. Parts, sections and sub heads step down clearly. ---------- */
+.d-sec p,.d-sb li,.d-src dd,.d-gl dd,.d-pl,.d-sec .d-rl,.d-cold p{color:var(--ink2)}
+.d-sec .d-sb p,.d-sb li,.d-src dd,.d-sec .d-rl,.d-cold p{font-size:var(--t-body);line-height:1.65}
+.d-tr{height:12px;margin-top:10px;background:#E6E9EE;border-radius:2px}
+.d-bar{background:#6B7484;border-radius:2px}
+.d-gap{background:#AEB5C1;opacity:.6}
+.d-lt{height:64px}
+.d-lo{width:13px;height:13px;margin:0 0 3px -6.5px;background:#7D8695;box-shadow:0 0 0 2px #fff}
+.d-lo.on{background:var(--c)}
+.d-lm{width:2px;height:30px;margin-left:-1px}
+.d-sec .d-ll{font-size:var(--t-body);color:var(--ink)}
+.d-art table{width:100%}
+.d-pl{list-style:disc;padding-left:1.25em}
+.d-pl li{padding:4px 0}
+.d-pl li::marker{color:var(--c)}
+/* hierarchy: a part is the largest step, with a full-width rule dividing it from the part before; a section heading next; a sub head under it */
+.d-part{border-top:1px solid var(--line);margin-top:var(--sec);padding-top:clamp(40px,4vw,56px)}
+.page .d-sb h3{font-size:var(--t-body);line-height:1.35;font-weight:600;color:var(--ink);letter-spacing:0}
+@media (min-width:1061px){
+  .d-art{grid-column:1 / span 9}
+  .d-toc{grid-column:10 / -1;padding:6px 0 0 24px;border-left:1px solid var(--line)}
+  .d-toc b{font:600 16px/1.35 var(--sans);color:var(--ink);padding:18px 0 6px}
+  .d-toc a{font-size:16px;line-height:1.4;padding:7px 0;color:var(--ink2)}
+  .d-toc a.on{color:var(--c);font-weight:600;margin-left:-25px;padding-left:22px;box-shadow:inset 3px 0 0 var(--c)}
+  .d-sec .d-sb p,.d-sb li,.d-src dd,.d-sec .d-rl,.d-cold p,.d-sec .d-ld{max-width:68ch!important}
+  .d-bars,.d-lots,.d-tw,.d-sheet,.d-2t,.d-yr{max-width:none!important;width:100%}
+  .d-sec .d-sb .d-nums{grid-template-columns:repeat(9,minmax(0,1fr))}
+  .d-sec .d-gl div{grid-template-columns:repeat(9,minmax(0,1fr))}
+  .d-sec .d-gl dt{grid-column:span 3}.d-sec .d-gl dd{grid-column:span 6}
+}
+.d-src dd p{margin:0}
+/* 2026-11-28 type check: reading lines stay under 95 characters */
+.page .d-sec .d-sb p,.page .d-sb li,.page .d-src dd,.page .d-sec .d-rl,.page .d-cold p,.page .d-sec .d-ld,.page .d-gapl,.page .d-pr p{max-width:62ch!important}
+/* gate round: the empty part before "Words we use" is only its rule; parts keep a gap under 160px */
+.d-part{margin-top:40px;padding-top:40px}
+.d-part.d-part-e{padding-top:0}
+.d-part-e + .d-sec{padding-top:40px}
+html body .page :is(.d-sec .d-sb p,.d-sb li,.d-src dd,.d-sec .d-rl,.d-cold p,.d-sec .d-ld,.d-gapl,.d-pr p){max-width:44ch!important}
+html body .page .d-src dd p{max-width:44ch!important}

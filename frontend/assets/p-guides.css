@@ -1,0 +1,167 @@
+/* Guides (guides.html, guide-*.html) and model pages (robots-<model>.html), 2026-11-28, pages/guides.py. Plain flow on white with one fog band for questions; one left edge per section. */
+.gd-hero{padding-block:clamp(40px,5vw,80px) clamp(24px,3vw,40px)}
+.gd-hero h1{max-width:20ch;margin:0}
+.gd-ans{max-width:62ch;margin:20px 0 0;color:var(--ink2)}
+.gd-ans + .gd-ans{margin-top:10px}
+.gd-ans a,.gd-prose a,.gd-q a,.gd-fam a,.gd-fig figcaption a{color:var(--c);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.gd-ans a:hover,.gd-prose a:hover,.gd-q a:hover,.gd-fam a:hover{color:var(--deep)}
+.gd-a{color:var(--brass-d);font-weight:600}
+.gd-act{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.gd-sec{padding-block:clamp(24px,3vw,40px)}
+.gd-sec-fig{padding-top:8px}
+.gd-fig{margin:0;max-width:880px}
+.gd-chart{display:block;width:100%;height:auto;overflow:visible}
+.gd-ax line{stroke:var(--line);stroke-width:1}
+.gd-ax text{fill:var(--grey);font:400 13px var(--sans)}
+.gd-ax .gd-axt{fill:var(--ink2)}
+.gd-band{fill:var(--alt);stroke:none}
+.gd-dots circle{fill:var(--mark);stroke:#fff;stroke-width:1}
+.gd-ln,.gd-ln2,.gd-ln3{fill:none;stroke-linejoin:round;stroke-linecap:round}
+.gd-ln{stroke:var(--ink);stroke-width:2.5}
+.gd-ln2{stroke:var(--ink2);stroke-width:2;stroke-dasharray:6 5}
+.gd-ln3{stroke:var(--grey);stroke-width:2}
+.gd-end{fill:var(--ink2);font:500 13px var(--sans)}
+.gd-sales rect{fill:var(--sale);stroke:#fff;stroke-width:1}
+.gd-mark circle{fill:var(--brass);stroke:#fff;stroke-width:2}
+.gd-mark text{fill:var(--brass-d);font:600 15px var(--sans)}
+.gd-ladder{display:grid;gap:12px;max-width:720px}
+.gd-lr{display:grid;grid-template-columns:minmax(9em,auto) 1fr 6em;align-items:center;gap:12px;font-size:var(--t-small)}
+.gd-rl{color:var(--ink2)}
+.gd-rb{display:block;height:24px}
+.gd-rb i{display:block;height:100%;border-radius:2px}
+.gd-rv{color:var(--ink);font-weight:600;text-align:right}
+.gd-r-g{background:var(--mark)}.gd-r-i{background:var(--ink2)}.gd-r-a{background:var(--brass)}.gd-r-s{background:var(--sale)}
+.gd-key{display:flex;flex-wrap:wrap;gap:8px 20px;margin:14px 0 0;color:var(--ink2)}
+.gd-key span{display:inline-flex;align-items:center;gap:8px}
+.gd-k-dot{fill:var(--mark)}.gd-k-sale{fill:var(--sale)}.gd-k-mark{fill:var(--brass)}.gd-k-band{fill:var(--alt);stroke:var(--line2)}
+.gd-k-line3{stroke:var(--grey);stroke-width:2}.gd-k-line{stroke:var(--ink);stroke-width:2.5}.gd-k-line2{stroke:var(--ink2);stroke-width:2;stroke-dasharray:4 3}
+.gd-fig figcaption{margin-top:8px;color:var(--grey)}
+.gd-prose{max-width:var(--w)}
+.gd-prose > *{max-width:68ch}
+.gd-prose > .gd-tw{max-width:880px}
+.gd-prose h2{margin:48px 0 0}
+.gd-prose h2:first-child{margin-top:0}
+.gd-prose p,.gd-prose ul{margin:16px 0 0;color:var(--ink2);line-height:1.6}
+.gd-ul{padding-left:1.2em}
+.gd-ul li + li{margin-top:8px}
+.gd-tw{margin-top:24px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gd-tbl{width:100%;border-collapse:collapse;font-size:var(--t-small)}
+.gd-tbl th,.gd-tbl td{padding:12px 16px 12px 0;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.gd-tbl thead th{font-weight:500;color:var(--ink);border-bottom:1px solid var(--ink)}
+.gd-tbl tbody th{font-weight:500;color:var(--ink)}
+.gd-tbl .r{text-align:right}
+.gd-tbl td.r{white-space:nowrap}
+.gd-tbl-l tbody th a{color:var(--c)}
+.gd-tbl-l tbody th{min-width:14em}
+.gd-faq{background:var(--alt);margin-top:clamp(24px,3vw,40px);padding-block:clamp(48px,5vw,72px)}
+.gd-q{max-width:68ch;margin-top:28px}
+.gd-q h3{margin:0}
+.gd-q p{margin:8px 0 0;color:var(--ink2);line-height:1.6}
+.gd-next{padding-top:8px}
+.gd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px}
+.gd-card{display:block;padding:24px;border:1px solid var(--line);border-radius:var(--r-card);background:#fff;transition:border-color .15s ease,background .15s ease}
+.gd-card:hover{border-color:var(--line3);background:var(--alt)}
+.page .gd-cards .gd-card h2.gd-card-h{font-size:var(--t-h3)!important;line-height:1.25!important;margin:0;color:var(--c)}
+.gd-card p{margin:10px 0 0;color:var(--ink2);font-size:var(--t-small)}
+.gd-fam{margin:24px 0 0;max-width:68ch;color:var(--ink2)}
+@media (max-width:720px){
+ .gd-act .btn{width:100%;justify-content:center}
+ .gd-tbl th,.gd-tbl td{padding-right:12px}
+}
+.gd-tbl tbody th{white-space:nowrap}
+.gd-tbl-l tbody th{white-space:normal}
+@media (max-width:720px){
+ .gd-ax text,.gd-end{font-size:24px}
+ .gd-mark text{font-size:26px}
+ .gd-lr{grid-template-columns:8.5em 1fr 4.5em;gap:8px;font-size:14px}
+ .gd-mark circle{r:10px}
+ .gd-dots circle{r:6px}
+ .gd-tbl{font-size:14px}
+ .gd-tbl th,.gd-tbl td{padding:10px 10px 10px 0}
+}
+/* 2026-11-28 hero pattern: words and buttons in columns 1 to 5, the chart (or the guides page's curve) in columns 7 to 12, both starting on grid lines; stacked on a phone */
+.gd-hg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);row-gap:clamp(32px,4vw,48px);align-items:center}
+.gd-ht{grid-column:1 / 7;min-width:0}
+.gd-hero .gd-ht h1{max-width:none}
+.gd-hero .gd-ans{max-width:38ch}
+.gd-hpic{grid-column:7 / 13;min-width:0}
+.gd-hpic .gd-fig{max-width:none}
+.gd-art{display:block;width:100%;height:auto;aspect-ratio:640/420}
+.gd-art-base{stroke:var(--line2);stroke-width:1.5;fill:none}
+.gd-art-ln{fill:none;stroke:var(--c);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.gd-art-ring{fill:none;stroke:var(--brass);stroke-width:3}
+.gd-art-pt{fill:var(--brass)}
+.gd-hero{padding-block:clamp(40px,5vw,80px)}
+@media (max-width:960px){.gd-ht,.gd-hpic{grid-column:1 / -1}}
+/* the chart key: each mark above its words, so every row of the key starts its words on the figure's own edge */
+.gd-key span{flex-direction:column;align-items:flex-start;gap:6px}
+/* tables end on a column line: nine of the twelve */
+.gd-prose > .gd-tw{max-width:calc((100% - 11 * var(--gut)) / 12 * 9 + 8 * var(--gut))}
+@media (max-width:720px){.gd-prose > .gd-tw{max-width:none}.gd-tbl td.r{white-space:normal}}
+/* the one answer label on a chart keeps clear of the marks under it */
+.gd-mark text{paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round}
+/* guide cards: three to a row, each on four columns */
+.gd-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gut)}
+@media (max-width:1000px){.gd-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.gd-cards{grid-template-columns:minmax(0,1fr)}}
+/* questions in two columns on a wide screen, so the band reads as one block */
+@media (min-width:961px){.gd-faq .in{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--gut);align-items:start}.gd-faq h2{grid-column:1 / -1}.gd-faq .gd-q{max-width:none}}
+.page .gd-hero p.gd-ans{max-width:35ch!important}
+/* accent roles on every guide chart: the typical asking line in cobalt like the family charts, listings grey, sales navy, the one answer brass */
+.gd-ln{stroke:var(--c)}.gd-k-line{stroke:var(--c)}
+@media (min-width:721px){.gd-ax text{font-size:15px}}
+@media (max-width:720px){.gd-tbl-l tbody th{min-width:0}}
+@media (max-width:720px){.gd-tbl-l:has(thead th:nth-child(6)) :is(th,td):is(:nth-child(3),:nth-child(4)){display:none}}
+/* ---------- Round 2 (critic notes) ---------- */
+/* the guides picture reads at a glance: a firmer band, labelled axes at a readable size */
+.gd-art .gd-ax text{font:400 16px var(--sans);fill:var(--ink2)}
+.gd-art .gd-ax line{stroke:var(--line)}
+.gd-art-band{fill:#E3E7ED}
+.gd-art-ln{stroke-width:3.5}
+.gd-art-t{font:600 17px var(--sans);fill:var(--ans-d)}
+.gd-dots circle{fill:var(--mark)}
+/* guides index: the first guide leads across both columns, the other six pair up, so no card sits alone; card words at the body size */
+.gd-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.gd-card-lead{grid-column:1 / -1}
+.gd-card{padding:clamp(24px,2.4vw,32px)}
+.gd-card p{font-size:var(--t-body);line-height:1.5;color:var(--ink2)}
+.page .gd-cards .gd-card-lead h2.gd-card-h{font-size:var(--t-h2)!important;line-height:1.1!important}
+@media (max-width:640px){.gd-cards{grid-template-columns:minmax(0,1fr)!important}}
+/* reading text at the body size in ink; tables at the full content width */
+.gd-prose p,.gd-prose ul,.gd-q p,.gd-ans{color:var(--ink2)}
+.gd-prose p,.gd-prose ul,.gd-q p{font-size:var(--t-body)}
+.gd-prose > .gd-tw{max-width:none!important}
+.gd-tbl{font-size:var(--t-body)}
+.gd-prose h2{margin-top:64px}
+/* the chart key in two even columns, each mark hanging in the gutter so every row's words start on the figure's edge */
+@media (min-width:961px){
+ .gd-key{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--gut);row-gap:10px;font-size:16px}
+ .gd-key span{display:block;position:relative;flex-direction:row}
+ .gd-key span svg{position:absolute;left:-22px;top:.32em}
+}
+/* questions: two even columns under the heading; when the count is odd the last one takes the full row, so none sits alone */
+@media (min-width:961px){
+ .gd-faq .in{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:var(--gut);align-items:start}
+ .gd-faq h2{grid-column:1 / -1}
+ .gd-faq .gd-q{max-width:none}
+ .gd-faq .gd-q:last-child:nth-child(even){grid-column:1 / -1}
+}
+/* a model's listing table on a phone: names on one line, the marketplace column left to the wide screen */
+@media (max-width:720px){
+ .gd-tbl-li :is(th,td):nth-child(4){display:none}
+ .gd-tbl-li tbody th a{white-space:normal}
+ .gd-tbl{font-size:15px}
+}
+/* the report layout: reading column 1 to 9, contents rail 10 to 12 (sticky), one rule on its left */
+.gd-pg{display:block}
+.gd-toc{display:none}
+@media (min-width:1061px){
+ .gd-pg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:start}
+ .gd-pg > .gd-prose{grid-column:1 / span 9;min-width:0}
+ .gd-toc{display:block;grid-column:10 / -1;position:sticky;top:96px;padding:4px 0 0 24px;border-left:1px solid var(--line)}
+ .gd-toc b{display:block;font:600 16px/1.35 var(--sans);color:var(--ink);padding-bottom:8px}
+ .gd-toc a{display:block;padding:7px 0;font-size:16px;line-height:1.4;color:var(--ink2);text-decoration:none}
+ .gd-toc a:hover{color:var(--c)}
+ .gd-toc a.on{color:var(--c);font-weight:600;margin-left:-25px;padding-left:22px;box-shadow:inset 3px 0 0 var(--c)}
+}
+.gd-prose h2{scroll-margin-top:96px}

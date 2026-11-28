@@ -35,7 +35,7 @@
   const hex = h => { h = h.trim().replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); const n = parseInt(h, 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
   const tok = getComputedStyle(root), SIG = hex(tok.getPropertyValue('--sig')), SIGT = hex(tok.getPropertyValue('--sig-deep')), SIGD = hex(tok.getPropertyValue('--sig-deep'));
   // sand build: a light ground, so the brightest value is cobalt and the backing under each cell is the ground itself
-  const WHITE = hex('#2847ce'), SKY = hex('#3A63D0'), COB = hex('#8FA6E3'), INK = hex(tok.getPropertyValue('--ri-g') || '#EEF2FC');
+  const WHITE = hex('#2847ce'), SKY = hex('#3A63D0'), COB = hex('#A3A7AE'), INK = hex(tok.getPropertyValue('--ri-g') || '#F2F4F7');
   const mixc = (a, b, t, o) => { o[0] = a[0] + (b[0] - a[0]) * t; o[1] = a[1] + (b[1] - a[1]) * t; o[2] = a[2] + (b[2] - a[2]) * t; return o; };
   // a cell's shade: 0 full, 1 half, 2 light, 3 trim. [colour, pattern]: pattern 0 is a solid tile, 1 a tile with holes, 2 a tile of small squares
   const SHADE = [[SKY, 0], [SKY, 1], [COB, 1], [WHITE, 0]];
@@ -207,7 +207,7 @@
     for (let p = nd - 1, i = 0; p >= 0; p--, i++) { if (o.commas && i > 0 && (T - i) % 3 === 0) gl_.push({ ch: ',' }); const pw = Math.pow(10, p), dgt = Math.floor(fl / pw) % 10, low = fl % pw, f = low === pw - 1 ? roll : 0; gl_.push({ d: dgt, f, lead: p === nd - 1 && Math.floor(fl / pw) === 0 }); }
     for (let i = 0; i < post.length; i++) { if (o.commas && (T - nd - i) % 3 === 0) gl_.push({ ch: ',' }); gl_.push({ ch: post[i] }); }
     let w = -1; for (const g of gl_) { g.x = w + 1; g.w = g.ch ? GC[g.ch].w : 5; w = g.x + g.w; }
-    const k = o.k || 1, cc = c * k, x0 = (o.right ? x - w * c : x) + w * c * (1 - k) / 2, y0 = y + 7 * c * (1 - k) / 2, col = o.col, a = o.a == null ? 1 : o.a, sz = pass ? cc * .9 : cc * 1.9;
+    const k = o.k || 1, cc = c * k, x0 = (o.right ? x - w * c : x) + w * c * (1 - k) / 2, y0 = y + 7 * c * (1 - k) / 2, col = o.col, a = o.a == null ? 1 : o.a, sz = pass ? cc * .97 : cc * 1.9;
     const i0 = nS, put = (ch, gx, off) => { const g = GC[ch]; for (let i = 0; i < g.a.length; i += 2) { const ry = g.a[i + 1] + off; if (ry < -.6 || ry > 6.6) continue; const e = clamp01(Math.min(ry + 1, 7 - ry)); push(x0 + (gx + g.a[i] + .5) * cc, y0 + (ry + .5) * cc, sz * e, 0, 0, pass ? col : INK, pass ? a : a * e); } };
     for (const g of gl_) { if (g.ch) { put(g.ch, g.x, 0); continue; } if (!(g.lead && g.d === 0)) put(String(g.d), g.x, -g.f * 8); if (g.f > 0) put(String((g.d + 1) % 10), g.x, (1 - g.f) * 8); }
     if (pass && a > .3) texts.push({ t: name, x0: x0 - cc * .5, y0: y0 - cc * .5, x1: x0 + w * cc + cc * .5, y1: y0 + 7 * cc + cc * .5, i0, i1: nS });
@@ -268,7 +268,7 @@
     for (let pass = 0; pass < 2; pass++) {
       if (cells) for (let i = 0; i < FR.n; i++) { const tf = gone - pos[i]; let x = G.ox + (FR.x[i] + .5) * c, y = G.oy + (FR.y[i] + .5) * c; if (fake) x = mid + (x - mid) * sq;
         if (!pass) { push(x, y, c * 2.1, 0, 0, INK, 1); continue; }
-        if (tf > 0) { push(x, y, c * .92, 0, 0, SKY, .2); continue; }                      // gone: the robot's whole outline stays, faint
+        if (tf > 0) { push(x, y, c * .92, 0, 0, COB, .32); continue; }                      // gone: the robot's whole outline stays, faint
         const sh = SHADE[FR.s[i]], heat = clamp01(1 + tf / hot); let col = heat > .75 ? mixc(SIG, SIGT, (heat - .75) * 3, c1) : heat > 0 ? mixc(sh[0], SIG, heat / .75 * .9, c1) : sh[0], sz = c * .92;   // the next cells to go heat up
         if (hov) { const dd = Math.hypot(x - ptr.x, y - ptr.y); if (dd < hov) { const p = 1 - dd / hov; sz *= 1 + .3 * p; col = mixc(col, WHITE, p * .8, c3); } }
         if (fl) col = mixc(col, WHITE, fl * .8, c3);

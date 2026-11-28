@@ -2,7 +2,7 @@
 // Markup: <canvas class="dotbot" data-bot="arm" data-tone="light|ink" data-anim="assemble|static" data-scan="1"></canvas>
 // light = white dots with cyan trim, for blue backgrounds; ink = cobalt dots only, for light backgrounds (no cyan on white: its trim
 // dots stay cobalt and the pointer and scan highlight is the brighter cobalt #2847ce). Cyan stays for dark backgrounds.
-// Names: arm, arm2, cobot, amr, pallet, delivery, cleaning, cell, cartons; "-s" coarse (46 columns), plain (72), "-l" fine (112, assets/dots-l.js).
+// Names: arm, arm2, cobot, amr, pallet, delivery, cleaning, cell, cartons; "-s" coarse (46 columns), plain (72), "-l" fine (112, assets/dots-l.js?v=4cad7c7499).
 // A name ending in "-loop" is a moving robot (media/dots/seq.js, played at 12 frames a second); a missing name falls back to the nearest still.
 // The nine moving robots (hero-arm, cobot, amr, pallet, delivery, cleaning, humanoid, drone, legged, each -loop) each travel in their own file, one per tone: media/dots/loops/<name>.js is
 // shaded for data-tone="light" and <name>-ink.js for data-tone="ink". The file loads when a canvas naming it comes near the screen, so a page without one pays nothing.

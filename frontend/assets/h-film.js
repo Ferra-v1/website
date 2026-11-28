@@ -11,7 +11,8 @@
   const stage = $('.h-mfs'), box = $('.h-mfb'), hero = $('.h-hero'), rowCv = sec.querySelector('.h-bcv[data-loop="hero-arm-loop"]'), cv = $('.h-mcv'), ctx = cv.getContext('2d'), heads = $$('.h-mft'), hstack = $('.h-mfh'), axis = $('.h-max'), panel = $('.h-mp'), tip = $('.h-tip');
   const xls = $$('.h-xl'), yls = $$('.h-yl'), yt = $('.h-yt');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const COB = '#2847ce', DEEP = '#1e339b', RING_AGE = +sec.dataset.age, RING_ASK = +sec.dataset.ask, LO = 1000, HI = 125000;
+  const COB = '#2847ce', DEEP = '#1e339b', MARK = '#B9C0CB', SALE = '#0C2338', BRASS = '#1597DA',   /* 2026-11-28 palette: other listings grey, auctions navy, the visitor's robot ringed in brass */
+  RING_AGE = +sec.dataset.age, RING_ASK = +sec.dataset.ask, LO = 1000, HI = 125000;
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v, seg = (s, a, b) => clamp((s - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
   const io3 = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out3 = t => 1 - Math.pow(1 - t, 3), in2 = t => t * t;
   const barG = q => (1 - Math.cos(Math.PI * seg(q, .1, 1))) / 2;   // the four bars grow over the whole of beat 4, easing in and out
@@ -91,8 +92,8 @@
   // the chart's box for this much of the move, with its axis labels placed by transform, measured from the labels themselves
   function setComp(k) { if (!CB || k === comp) return; comp = k; C = lerpC(k);
     xls.forEach(s => { const a = +s.dataset.age, x = X(a), w = s.offsetWidth, l = a === 0 ? x - 2 : a === 30 ? x - w + 2 : x - w / 2; s.style.transform = `translate(${l.toFixed(1)}px,${(C.b + 10).toFixed(1)}px)`; });
-    yls.forEach(s => { s.style.transform = `translate(${(C.l - s.offsetWidth - (phone ? 8 : 12)).toFixed(1)}px,${(Y(+s.dataset.usd) - s.offsetHeight / 2).toFixed(1)}px)`; });
-    yt.style.transform = `translate(${(C.l - ylw - (phone ? 8 : 12)).toFixed(1)}px,${(C.t - (phone ? 34 : 40)).toFixed(1)}px)`; dirty = true; }
+    /* 2026-11-28 one left edge: the axis title and labels start on the section's left line, under the heading */ yls.forEach(s => { s.style.transform = `translate(${Math.min(gL, C.l - s.offsetWidth - (phone ? 8 : 12)).toFixed(1)}px,${(Y(+s.dataset.usd) - s.offsetHeight / 2).toFixed(1)}px)`; });
+    yt.style.transform = `translate(${Math.min(gL, C.l - ylw - (phone ? 8 : 12)).toFixed(1)}px,${(C.t - (phone ? 34 : 40)).toFixed(1)}px)`; dirty = true; }
   // the fixed places of every dot for this layout
   function place() {
     let seed = 7; const rnd = () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };   // the same loose field on every visit
@@ -130,7 +131,7 @@
   const setOp = (el, a, dy) => { const s = a.toFixed(3); if (el._a !== s) { el._a = s; el.style.opacity = s; const v = a > .002 || el === panel; if (el._v !== v) { el._v = v; el.style.visibility = v ? 'visible' : 'hidden'; } } if (dy !== undefined) { const t = dy ? `translateY(${dy.toFixed(1)}px)` : 'none'; if (el._t !== t) { el._t = t; el.style.transform = t; } } };
   function words(s, dt) { let moving = false;
     for (let k = 0; k < 5; k++) { const tg = target(k, s); let v = shown[k];
-      if (v < 0 || Math.abs(tg - v) < .004) v = tg; else { const fast = latch[k] === null && !idle; v += (tg - v) * (1 - Math.exp(-dt / (fast ? 40 : 90))); if (Math.abs(tg - v) < .004) v = tg; else moving = true; }
+      if (v < 0 || Math.abs(tg - v) < .004) v = tg; else { const fast = latch[k] === null && !idle; v += (tg - v) * (1 - Math.exp(-dt / (fast ? 40 : 50))); if (Math.abs(tg - v) < .004) v = tg; else moving = true; }
       shown[k] = v; }
     // in each swap the old heading leaves in the first half and the new one arrives in the second, so two headings never share the spot
     const [w1, w2, w3, ax, w0] = shown, ws = [w1, w2, w3];
@@ -141,7 +142,7 @@
     const pa = reduce ? 1 : seg(w3, .5, 1); setOp(axis, reduce ? 1 : ax); setOp(panel, pa, reduce ? 0 : (1 - out3(pa)) * 14);
     const live = reduce || w3 > .75; if (panel._live !== live) { panel._live = live; panel.style.pointerEvents = live ? '' : 'none'; }
     return moving; }
-  addEventListener('scroll', () => { const y = scrollY; if (y !== lastY) { const d = y > lastY ? 1 : -1; if (d !== dir) latch.fill(null); dir = d; } lastY = y; idle = false; clearTimeout(idleT); idleT = setTimeout(() => { idle = true; kick(); }, 150); if (tipOn) hideTip(); kick(); }, { passive: true });
+  addEventListener('scroll', () => { const y = scrollY; if (y !== lastY) { const d = y > lastY ? 1 : -1; if (d !== dir) latch.fill(null); dir = d; } lastY = y; idle = false; clearTimeout(idleT); idleT = setTimeout(() => { idle = true; kick(); }, 100); if (tipOn) hideTip(); kick(); }, { passive: true });
 
   // ---------------------------------------------------------------- the hand over of the Factory arm. Off the top of the page the film draws it and the row's own canvas hides; back at the top the row
   // draws it again, picking its loop up on the frame the film showed. SEAT is the pose the film's listing seats were cut from (assets/h-arm.js)
@@ -201,13 +202,13 @@
       else if (t < .62) { x = lerp(o.xa, o.xc, io3(seg(t, .45, .62))); y = yg; }
       else { const k = io3(seg(t, .62, 1)); x = lerp(o.xc, xt, k); y = lerp(yg, b.y, k); }
       const r = L.rc[j] * (1 - seg(t, .86, 1)); L.x[j] = x; L.y[j] = y; L.r[j] = r; if (r > .05) { dot(brP, x, y, r); nBr++; } }
-    if (nDim || nDimA) { ctx.globalAlpha = dim; if (nDim) { ctx.fillStyle = COB; ctx.fill(dimP); } if (nDimA) { ctx.fillStyle = DEEP; ctx.fill(dimA); } ctx.globalAlpha = 1; }
-    if (nAuc) { ctx.fillStyle = DEEP; ctx.fill(aucP); }
+    if (nDim || nDimA) { ctx.globalAlpha = dim; if (nDim) { ctx.fillStyle = MARK; ctx.fill(dimP); } if (nDimA) { ctx.fillStyle = SALE; ctx.fill(dimA); } ctx.globalAlpha = 1; }
+    if (nAuc) { ctx.fillStyle = SALE; ctx.fill(aucP); }
     if (nBr) { ctx.fillStyle = COB; ctx.fill(brP); }
     // 3. the ring lands on the KR 210 from 2020, then the ties grow to the arms most like it; they draw back as the pour starts
     if (q3 > 0) { const k = io3(seg(q3, 0, .3)), R = ring.R * lerp(2.2, 1, k);
-      ctx.globalAlpha = k; ctx.strokeStyle = COB; ctx.lineWidth = phone ? 2 : 2.5; ctx.beginPath(); ctx.arc(ring.x, ring.y, R, 0, 6.2832); ctx.stroke();
-      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ring.x, ring.y, Math.max(1, R - (phone ? 3.5 : 4.5)), 0, 6.2832); ctx.fill(); ctx.fillStyle = COB; ctx.beginPath(); ctx.arc(ring.x, ring.y, phone ? 2.6 : 3.4, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.globalAlpha = k; ctx.strokeStyle = BRASS; ctx.lineWidth = phone ? 2 : 2.5; ctx.beginPath(); ctx.arc(ring.x, ring.y, R, 0, 6.2832); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ring.x, ring.y, Math.max(1, R - (phone ? 3.5 : 4.5)), 0, 6.2832); ctx.fill(); ctx.fillStyle = BRASS; ctx.beginPath(); ctx.arc(ring.x, ring.y, phone ? 2.6 : 3.4, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1;
       const back = 1 - seg(q4, 0, .15); ctx.lineWidth = phone ? 1.25 : 1.5; ctx.beginPath(); let anyT = false;
       ties.forEach((j, i) => { const g = io3(seg(q3, .5 + i * .06, .8 + i * .04)) * back; if (g <= 0) return; const dx = L.cx[j] - ring.x, dy = L.cy[j] - ring.y, d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d, a = ring.R + 3, b = d - L.rc[j] - 3; if (b <= a) return;
         ctx.moveTo(ring.x + ux * a, ring.y + uy * a); ctx.lineTo(ring.x + ux * lerp(a, b, g), ring.y + uy * lerp(a, b, g)); anyT = true; });

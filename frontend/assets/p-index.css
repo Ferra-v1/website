@@ -1,4 +1,4 @@
-/* Robot Index page (pages/robot_index.py, assets/p-index.js). White grounds, cobalt accents, the site's 12 columns and three sizes.
+/* Robot Index page (pages/robot_index.py, assets/p-index.js?v=e83a1b062f). White grounds, cobalt accents, the site's 12 columns and three sizes.
    One block per section, so a section's pick can be swapped alone: opening, lookup, statement, note, board, thin data, accuracy, print. */
 
 /* two white sections in a row share one section gap */
@@ -12,7 +12,7 @@
    the stage the tool leaves empty is where the canvas already holds the robot: the controls arrive with the page's own scroll and the robot is never moved or hidden.
    With motion allowed, on a screen tall enough, the box pins for two screens of scrolling; the heights are set here, before the first paint, so nothing below moves when
    the script starts. The script reads which form it is in from the box's own position, so the two never disagree. */
-.ri-open,.ri-look{--sig:#FF6B1A;--sig-tint:#FFE6D6;--sig-deep:#B8470A;--sky:#3A63D0;--ri-g:#EEF2FC;--rih:100vh;color:var(--ink)}
+.ri-open,.ri-look{--sig:#FF6B1A;--sig-tint:#FFE6D6;--sig-deep:#B8470A;--sky:#3A63D0;--ri-g:#F2F4F7;--rih:100vh;color:var(--ink)}
 @supports (height:100lvh){.ri-open,.ri-look{--rih:100lvh}}
 .ri-open{position:relative;background:var(--ri-g)}
 .ri-opin{position:relative;height:max(var(--rih),600px);overflow:clip;background:var(--ri-g)}
@@ -238,3 +238,7 @@ canvas.mx{display:block}
  .ri-tbl .spw{width:auto;min-width:0}
  .ri-ttbl tbody td.r{text-align:left}
 }
+/* 2026-11-28 overhaul (agent C): the opening runs full width on the fog ground, so its drawing stage spans the page and the heading keeps the page's own left edge */
+.ri-open{margin-inline:0;border-radius:0;margin-top:0}
+/* the stage's labels stay on one line: the page's paragraph rule sets text-wrap, which would otherwise wrap them under the stage's edge */
+.page .ri-lab > p{text-wrap:nowrap}

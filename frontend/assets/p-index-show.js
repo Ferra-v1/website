@@ -49,7 +49,7 @@
 
   // ------------------------------------------------------------ the cell kit
   let CW = 8, LH = 12, HW = 4, HH = 6, PH = false;
-  const COL = { sky: '#2847ce', white: '#0B1630', cob: '#8FA2E0', deep: '#C5D1F1', ink: '#ffffff',   // sand build: the show is drawn light, so the old ground (ink) is white and the old brightest cells (white) are ink
+  const COL = { sky: '#2847ce', white: '#0B1630', cob: '#8E95A1', deep: '#C9CED6', ink: '#ffffff',   // sand build: the show is drawn light, so the old ground (ink) is white and the old brightest cells (white) are ink
     sig: getComputedStyle(first).getPropertyValue('--sig').trim() || '#0fa9e8' };
   const tiles = new Map();
   // a shade of a colour: 4 is the full cell, 3 three quarters of its 2px squares, 2 half (a checker), 1 a quarter
@@ -234,11 +234,11 @@
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const today = () => { try { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).map(x => [x.type, x.value])); return `${+p.day} ${MON[+p.month - 1]} ${p.year}`; } catch (x) { return ''; } };
   const askWhy = (e, year) => { const { m, f } = e;
-    if (m.any) return `Any ${f.label} built ${year}, from ${plural(f.n, 'listing')}`;
-    if (m.own && m.fit >= MIN_USED) return `A ${m.label} built ${year}, from ${plural(m.fit, 'listing')}`;
-    if (m.own) return `Thin data: ${plural(m.fit, 'listing')} of this model, leaning on ${f.n.toLocaleString('en-US')} ${f.label} listings`;
-    return `Thin data: ${plural(m.fit, 'listing')} of this model, so it takes the ${f.label} level from ${plural(f.n, 'listing')}`; };
-  const shareNote = f => `Median of ${L.nSales} factory arm auction sales from ${L.nLots} lots, matched to listings` + (L.saleCls.includes(f.cls) ? '' : '; cobots take the same share');
+    if (m.any) return `Any ${f.label} built ${year}, from its public listings`;
+    if (m.own && m.fit >= MIN_USED) return `A ${m.label} built ${year}, from its own listings`;
+    if (m.own) return `Thin data for this model, so it leans on ${f.label} listings`;
+    return `Thin data for this model, so it takes the ${f.label} level`; };
+  const shareNote = f => `Median of factory arm auction sales, matched to listings` + (L.saleCls.includes(f.cls) ? '' : '; cobots take the same share');
   // the six-year curve, drawn at the width it is shown at so its labels stay their real size on a phone
   function curveSVG(rows, W) {
     const H = Math.round(W * 230 / 520), l = 56, r = 96, t = 14, b = 34, top = Math.max(...rows.map(p => p.hi)) * 1.04;
@@ -246,7 +246,7 @@
     const X = k => l + (W - l - r) * k / 6, Y = v => t + (H - t - b) * (1 - v / top), ln = f => rows.map((p, i) => `${i ? 'L' : 'M'}${X(p.k).toFixed(1)} ${Y(f(p)).toFixed(1)}`).join('');
     let g = ''; for (let v = 0; v <= top; v += step) g += `<line x1="${l}" x2="${W - r}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="#e5e9f1"/><text x="${l - 8}" y="${(Y(v) + 5).toFixed(1)}" text-anchor="end" class="ax">${v ? '$' + (v / 1000) + 'k' : '$0'}</text>`;
     rows.forEach(p => { if (p.k % 2 === 0) g += `<text x="${X(p.k).toFixed(1)}" y="${H - 8}" text-anchor="middle" class="ax">${p.k === 0 ? 'Now' : p.year}</text>`; });
-    const band = `<path class="band" d="${ln(p => p.hi)}${rows.slice().reverse().map(p => `L${X(p.k).toFixed(1)} ${Y(p.lo).toFixed(1)}`).join('')}Z" fill="rgba(40,71,206,.1)"/>`;
+    const band = `<path class="band" d="${ln(p => p.hi)}${rows.slice().reverse().map(p => `L${X(p.k).toFixed(1)} ${Y(p.lo).toFixed(1)}`).join('')}Z" fill="rgba(11,22,48,.06)"/>`;
     const e = rows[6], s0 = rows[0];
     return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Likely auction price falls from ${usd(s0.likely)} now to ${usd(e.likely)} in ${e.year}">${g}${band}<path class="ln" pathLength="1" d="${ln(p => p.likely)}" fill="none" stroke="#2847ce" stroke-width="2.5"/>`
       + `<circle cx="${X(0)}" cy="${Y(s0.likely).toFixed(1)}" r="4.5" fill="#2847ce"/><g class="end"><circle cx="${X(6)}" cy="${Y(e.likely).toFixed(1)}" r="4.5" fill="#fff" stroke="#2847ce" stroke-width="2"/>`
@@ -263,7 +263,7 @@
     setS('cfound', `${m.any ? f.label : m.short} listings found`); setS('nfound', m.n.toLocaleString('en-US')); setS('npriced', m.priced.toLocaleString('en-US'));
     setS('cfit', thin ? 'in the estimate, thin data' : 'in the estimate'); setS('nfit', m.fit.toLocaleString('en-US'));
     const tr = document.querySelector('[data-s-row="thin"]'); if (tr) tr.classList.toggle('thin', thin);
-    setS('cfam', `${f.label} listings setting the level`); setS('nfam', f.n.toLocaleString('en-US')); setS('nsell', f.sellers.toLocaleString('en-US')); setS('srcs', f.src.map(([k, v]) => `${k} ${v}`).join(', '));
+    setS('cfam', `${f.label} listings setting the level`); setS('nfam', f.n.toLocaleString('en-US')); setS('nsell', f.sellers.toLocaleString('en-US')); setS('srcs', f.src.map(([k]) => k).join(', '));
     const cv = $('rs-curve'); if (cv) { const W = Math.max(280, Math.min(560, Math.round(cv.clientWidth || 520))); cv.innerHTML = curveSVG(rows, W); }
     const fin = $('rs-fin-cv'); if (fin) fin.setAttribute('aria-label', `Likely auction price ${usd(E.likely)}`);
     if (drawPortrait) drawPortrait(); if (noteView) noteView.key = '';
@@ -311,7 +311,7 @@
     return scene('rs-brd-cv', s => ({ clock: true,
       layout() {
         R = [...list.children].map((li, i) => { const dim = !!li.dataset.thin, slot = boxIn(li.querySelector('.rs-slot'), s.pin), row = boxIn(li, s.pin), cls = li.dataset.cls, f = rowFilm(cls);
-          const figs = ['.rs-dg', '.rs-lv', '.rs-ch'].map((c, k) => { const el = li.querySelector(c); if (!el || !el.offsetWidth) return null; const b = boxIn(el, s.pin), t = el.dataset.t, U = fitU(t, b.w, Math.min(b.h - LH, k ? 5 * LH : 9 * LH)); return { t, U, xr: qx(b.r), y: qy(b.y + (b.h - U.h) / 2), key: dim ? (k ? 'white2' : 'sky2') : k ? 'white4' : 'sky4', dim }; }).filter(Boolean);
+          const figs = ['.rs-dg', '.rs-lv', '.rs-ch'].map((c, k) => { const el = li.querySelector(c); if (!el || !el.offsetWidth) return null; const b = boxIn(el, s.pin), t = el.dataset.t, U = fitU(t, b.w, Math.min(b.h - LH, k ? 5 * LH : 9 * LH)); return { t, U, xr: qx(b.r), y: qy(b.y + (b.h - U.h) / 2), key: dim ? (k ? 'white3' : 'sky3') : k ? 'white4' : 'sky4', dim }; }).filter(Boolean);
           const bh = slot.h - LH, cols = colsFor(f, slot.w - 3 * HW, bh, HW, HH);
           return { li, cls, f, i, cols, sx: qx(slot.x), tx: qx(slot.x + 3 * HW), base: qy(row.b - HH), top: row.y, bot: row.b, figs }; });
       },
@@ -326,7 +326,7 @@
           if (mine && lit) P.r('sig4', r.sx, r.base - G.h * HH, 2 * HW, G.h * HH);
           for (const g of r.figs) { const U = g.U, left = g.xr - unitsOf(g.t) * U.uw; if (g.xr <= tail) continue; let cx = left; const xs = [], nd = g.t.replace(/[^0-9]/g, '').length; for (const ch of g.t) { xs.push(cx); cx += (GL[ch][0].length + 1) * U.uw; }
             P.r('ink4', Math.max(left, tail) - CW, g.y - LH / 2, g.xr - Math.max(left, tail) + 2 * CW, U.h + 2 * U.uh + LH); let k = 0;
-            figures(P, g.t, g.xr, g.y, U, mine && lit ? (g.dim ? 'white2' : 'white4') : g.key, (i, ch) => { if (xs[i] < tail) return null; if (!/[0-9]/.test(ch)) return ch; const at = land + .02 + .1 * (k++ / Math.max(1, nd)); return p >= at ? ch : String((Math.floor(p * 110) * 7 + i * 3 + r.i * 5) % 10); }); }
+            figures(P, g.t, g.xr, g.y, U, mine && lit ? (g.dim ? 'white3' : 'white4') : g.key, (i, ch) => { if (xs[i] < tail) return null; if (!/[0-9]/.test(ch)) return ch; const at = land + .02 + .1 * (k++ / Math.max(1, nd)); return p >= at ? ch : String((Math.floor(p * 110) * 7 + i * 3 + r.i * 5) % 10); }); }
         }
         P.flush();
         if (said !== ver) { said = ver; }
@@ -350,7 +350,7 @@
           s2.ctx.clearRect(0, 0, w, h); P.r('cob4', 0, base, w, 2);
           const edge = (r2, c) => { const k = G.k, W2 = G.w; return !c || !r2 || c === W2 - 1 || r2 === G.h - 1 || !k[r2 * W2 + c - 1] || !k[r2 * W2 + c + 1] || !k[(r2 - 1) * W2 + c] || !k[(r2 + 1) * W2 + c]; };
           for (let r2 = G.h - up; r2 < G.h; r2++) for (let c = 0; c < G.w; c++) { if (!G.k[r2 * G.w + c]) continue; const X = x + c * HW, Y = base - (G.h - r2) * HH, solid = r2 >= G.h - built;
-            P.r('ink4', X - HW, Y - HH / 2, 3 * HW, 2 * HH); P.r(solid ? 'sky' + G.k[r2 * G.w + c] : edge(r2, c) ? 'cob3' : 'deep1', X, Y, HW, HH); }
+            P.r('ink4', X - HW, Y - HH / 2, 3 * HW, 2 * HH); P.r(solid ? 'sky' + G.k[r2 * G.w + c] : edge(r2, c) ? 'cob4' : 'deep3', X, Y, HW, HH); }
           if (up > 0 && up < G.h) P.r('white4', x, base - up * HH - 2, cols * HW, 2);
           P.flush(); });
       } };

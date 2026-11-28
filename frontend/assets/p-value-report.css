@@ -60,8 +60,8 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-ax{font:400 var(--fs)/1 var(--sans);fill:var(--cap)}
 .vr-gl{stroke:var(--line);stroke-width:1}
 .vr-base{stroke:#9aa3b5;stroke-width:1}
-.vr-band{fill:rgba(40,71,206,.1)}
-.vr-pt{stroke:rgba(40,71,206,.55);stroke-linecap:round;fill:none}
+.vr-band{fill:rgba(11,22,48,.06)}
+.vr-pt{stroke:#8E97A6;stroke-linecap:round;fill:none}
 .vr-mid{stroke:var(--ink);stroke-width:2.5;fill:none;stroke-linejoin:round}
 .vr-hl{fill:var(--c);stroke:#fff;stroke-width:2}
 .vr-kd{fill:var(--c)}
@@ -103,11 +103,11 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 .vr-tr{position:relative;align-self:stretch;min-height:32px}
 .vr-tr::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
 .vr-lot .vr-tr::after{content:"";position:absolute;top:0;bottom:0;left:var(--m);border-left:1.5px solid rgba(14,22,38,.24)}
-.vr-ln2{position:absolute;top:50%;height:2px;margin-top:-1px;background:rgba(40,71,206,.32)}
+.vr-ln2{position:absolute;top:50%;height:2px;margin-top:-1px;background:#B9C0CB}
 .vr-rg,.vr-dt{position:absolute;top:50%;border-radius:50%;transform:translate(-50%,-50%)}
 .vr-rg{width:13px;height:13px;background:#fff;border:1.5px solid var(--ink)}
 .vr-dt{width:13px;height:13px;background:var(--c)}
-.vr-lot.on .vr-dt{box-shadow:0 0 0 3px rgba(40,71,206,.22)}
+.vr-lot.on .vr-dt{box-shadow:0 0 0 3px #B9C0CB}
 .vr-v{text-align:right;color:#3e4656;white-space:nowrap}
 .vr-v b{font-weight:600;color:var(--ink);margin-right:2px}
 .vr-lh{min-height:24px}
@@ -202,11 +202,11 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
  .page .vr-legend{display:block!important}.page .vr-lg{margin:0 0 4pt}
  .page .vr-tbl .vr-lk{color:#2847ce!important;-webkit-text-fill-color:#2847ce!important}
  .page .vr-sc .vr-ax{fill:#555}
- .page .vr-c1 .vr-gl{stroke:#e2e6ee}.page .vr-c1 .vr-base{stroke:#9aa3b5}.page .vr-c1 .vr-band{fill:rgba(40,71,206,.1)}.page .vr-c1 .vr-pt{stroke:rgba(40,71,206,.55)}
+ .page .vr-c1 .vr-gl{stroke:#e2e6ee}.page .vr-c1 .vr-base{stroke:#9aa3b5}.page .vr-c1 .vr-band{fill:rgba(11,22,48,.06)}.page .vr-c1 .vr-pt{stroke:#8E97A6}
  .page .vr-c1 .vr-mid{stroke:#0e1626}
  .page .vr-lots .vr-dt{background-color:#2847ce!important}
  .page .vr-lots .vr-rg{background-color:#fff!important;border:1.5px solid #0e1626!important}
- .page .vr-lots .vr-ln2{background-color:rgba(40,71,206,.32)!important}
+ .page .vr-lots .vr-ln2{background-color:#B9C0CB!important}
  .page .vr-lot,.page .vr-mr,.page .vr-mg,.page .vr-tbl tr,.page .vr-keys,.page .vr-cap{break-inside:avoid}
  .page .vr-mg,.page .vr-cap{break-after:avoid}
  .page .vr-lot{min-height:0}.page .vr-lot .vr-tr{min-height:20px}
@@ -218,3 +218,42 @@ circle.vr-c-ask{fill:var(--c)}circle.vr-c-sale{fill:var(--ink)}
 /* the focus ring appears and leaves at once: "transition: all" faded it in and out (gate a11y, 2026-11-15) */
 .vr-save{transition:none}
 html:has(.vr-save){scroll-behavior:auto}
+/* 2026-11-28 overhaul (agent C): a calm hero (headline, one sub line no wider than it, one button, the dot cover); the cover's key names each block without counts; auction dots navy, rent rings sky */
+.vr-ht{grid-column:1 / -1}
+.vr-ht .h1{margin:0}
+.vr-ed{margin:16px 0 0;max-width:44ch;color:var(--ink2)}
+.vr-hb{margin-top:28px}
+.vr-hero .vr-dl{margin-top:0}
+path.vr-c-sale{stroke:var(--sale)}
+circle.vr-c-sale{fill:var(--sale)}
+.vr-c-rent{stroke:var(--cat)}
+.vr-legend{margin-top:20px}
+.vr-lg{display:block;color:var(--ink2)}
+.vr-sw{display:block;width:10px;height:10px;margin-bottom:8px;border-radius:50%;background:var(--c)}
+.vr-k-sale .vr-sw{background:var(--sale)}
+.vr-k-rent .vr-sw{background:#fff;box-shadow:inset 0 0 0 1.5px var(--cat)}
+@media (max-width:720px){.vr-ed{max-width:16em}}
+.vr-ask .btn-row,.vr-cl .btn-row{margin-top:20px}
+.vr-clg{row-gap:56px;align-items:center}
+.vr-clg .vr-cl{grid-column:1 / 6;grid-row:auto}
+.vr-clg .vr-cm{grid-column:1 / 6;margin-top:0}
+.vr-pic{grid-column:7 / 13;grid-row:1 / span 2;margin:0;align-self:center}
+.vr-pic img{width:100%;height:auto;aspect-ratio:900 / 480}
+@media (max-width:720px){.vr-pic{grid-column:1 / -1;grid-row:auto}.vr-clg{row-gap:40px}}
+.vr-close{padding-bottom:var(--sec)}
+@media (max-width:720px){.vr-clg .vr-cl,.vr-clg .vr-cm{grid-column:1 / -1}.vr-pic{max-width:420px}}
+@media (max-width:720px){.vr-legend{grid-template-columns:repeat(3,minmax(0,1fr))}.vr-lg{grid-column:auto;font-size:15px;line-height:1.3}}
+/* round 2 (critics): the hero's four findings; Figure 3 opens on a short sorted set; sources and keys darker for reading */
+.vr-keyf{margin-top:clamp(40px,4.4vw,64px)}
+.vr-keyf .fl{max-width:24ch}
+.vr-lots:not(.vr-open) .vr-x{display:none}
+.vr-allr{margin-top:20px}
+.vr-src{color:var(--ink2)}
+.vr-key{color:var(--ink2)}
+.vr-ax{fill:var(--ink2)}
+.vr-fig:has(.vr-tv:not([hidden])) .vr-allr{display:none}
+.vr-dt,.vr-lots .vr-dt{background:var(--sale)}.vr-kd{fill:var(--sale)}
+/* gate round: the hero tiles sit closer to the first chapter (gaps check) */
+.vr-hero{padding-bottom:clamp(32px,3.4vw,48px)}
+/* gate round: the auction list tip is a fog card with no drawn edge, so no line crosses the names under it (overlap check) */
+.vr-c2 .vr-tip{border-color:transparent;background:var(--alt);border-radius:8px}

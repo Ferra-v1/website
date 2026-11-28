@@ -1,10 +1,17 @@
-/* How it works (hw-). The title, then the five steps in plain flow in columns 1 to 4, with the stage on a light periwinkle card beside them in columns 6 to 12 (sand build: nothing pins; the stage shows the finished loan). Then a plain edge to the page's short ending, and the same final ask as Home.
+/* How it works (hw-). The title, then the five steps in plain flow in columns 1 to 4, with the stage on a fog card beside them in columns 6 to 12 (sand build: nothing pins; the stage shows the finished loan). Then a plain edge to the page's short ending, and the same final ask as Home.
    One 12-column grid with a 24px gutter, shared with the header. Each step's row is as tall as the scrolling it lasts for (--s, in hundredths of a screen), so a step goes live as it arrives. With no script, reduced motion, or a very short window, the rows sit close and the stage shows the finished loan. */
 
 html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 .hw-pin{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px}
-.hw-hero{padding-top:clamp(40px,5.6vh,56px);padding-bottom:clamp(24px,4.4vh,44px)}
+/* hero (2026-11-28): words in columns 1 to 6, the welding cell in 8 to 12, both on one middle line */
+.hw-hero{padding-block:clamp(40px,5vw,88px) 0}
 .hw-hero .h1{margin:0}
+.hw-hg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center}
+.hw-htxt{grid-column:1 / span 6}
+.hw-sub{margin:24px 0 32px;max-width:36ch;font:400 var(--t-body)/1.5 var(--sans);color:var(--ink2);text-wrap:pretty}
+.hw-pic{grid-column:8 / span 5;margin:0}
+.hw-pic img{display:block;width:100%;height:auto;max-height:440px;object-fit:contain;object-position:left center}
+@media (max-width:900px){.hw-hg{grid-template-columns:minmax(0,1fr);row-gap:32px}.hw-htxt,.hw-pic{grid-column:1}.hw-sub{margin:16px 0 24px}.hw-pic img{max-height:280px}}
 
 .hw-ld{margin:16px 0 0;max-width:690px;color:#3e4656;text-wrap:pretty}
 
@@ -17,7 +24,7 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 .hw-chs{margin:0;padding:0;list-style:none}
 .hw-ch{padding-bottom:64px}
 .hw-ch:first-child{padding-top:var(--hw-top)}
-.hw-n{display:block;margin-bottom:16px;color:var(--c)}
+.hw-n{display:block;margin-bottom:16px;color:var(--c);font-size:var(--t-h3)!important}
 .hw-t{margin:0 0 8px}
 .hw-tx{margin:0;color:#3e4656;text-wrap:pretty}
 .hw-on .hw-ch{box-sizing:border-box;padding-bottom:0;height:calc(var(--s) * 1vh)}
@@ -28,21 +35,21 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 .hw-on .hw-live .hw-t{color:var(--ink)}
 
 /* the stage: everyone, every payment, what is owed. Its words start on column 6, and its flat ink starts on column 5 and runs off the right edge */
-.hw-stage{grid-column:5 / -1;position:relative;min-width:0;isolation:isolate;color:var(--ink);align-self:start;margin-top:var(--hw-top);padding:clamp(28px,3vw,44px);background:var(--peri3);border-radius:var(--r-card)}
+.hw-stage{grid-column:5 / -1;position:relative;min-width:0;isolation:isolate;color:var(--ink);align-self:start;margin-top:var(--hw-top);padding:clamp(28px,3vw,44px);background:var(--alt);border-radius:var(--r-card)}
 @media (min-width:1101px){.hw-stage{position:sticky;top:var(--hw-top)}}
 
 .hw-si{display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,7vh,72px);height:100%}
 
-.hw-dia{--hw-n:clamp(84px,7.8vw,112px);position:relative;display:grid;grid-template-columns:var(--hw-n) minmax(120px,1fr) var(--hw-n) 7% var(--hw-n) 5% var(--hw-n);grid-template-rows:clamp(48px,8.4vh,84px) clamp(64px,12.6vh,124px) clamp(52px,9.6vh,96px);padding-bottom:62px}
+.hw-dia{--hw-n:clamp(96px,8.6vw,124px);position:relative;display:grid;grid-template-columns:var(--hw-n) minmax(120px,1fr) var(--hw-n) 7% var(--hw-n) 5% var(--hw-n);grid-template-rows:clamp(48px,8.4vh,84px) clamp(64px,12.6vh,124px) clamp(52px,9.6vh,96px);padding-bottom:62px}
 .hw-lines{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.hw-p{fill:none;stroke:rgba(11,22,48,.34);stroke-width:1}
+.hw-p{fill:none;stroke:rgba(11,22,48,.42);stroke-width:1.5}
 .hw-h{fill:rgba(11,22,48,.5);stroke:none}
-.hw-p.on{stroke:var(--c);stroke-width:1.5}
+.hw-p.on{stroke:var(--c);stroke-width:2.5}
 .hw-h.on{fill:var(--c)}
 .hw-p.ghost{stroke:rgba(11,22,48,.14)}
 .hw-h.ghost{fill:rgba(11,22,48,.2)}
-.hw-nd{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;padding:4px 6px;background:#fff;border:1px solid rgba(11,22,48,.3);color:var(--ink);border-radius:6px;font:500 var(--t-small)/1.2 var(--sans);text-align:center}
-@media (min-width:1300px){.hw-nd{padding:4px 0;white-space:nowrap}}
+.hw-nd{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;padding:10px 8px;background:#fff;border:1px solid rgba(11,22,48,.22);color:var(--ink);border-radius:8px;font:600 var(--t-body)/1.2 var(--sans);text-align:center}
+@media (min-width:1300px){.hw-nd{padding:10px 4px;white-space:nowrap}}
 .hw-nd.to{border-color:var(--ink)}
 .hw-nd.on{background:var(--c);border-color:var(--c);color:#fff}
 .hw-nd.off{border-color:var(--line);color:var(--grey)}
@@ -50,7 +57,7 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 .hw-nd-l{grid-column:1;grid-row:3}.hw-nd-c{grid-column:3;grid-row:3}.hw-nd-r{grid-column:5;grid-row:3}.hw-nd-u{grid-column:7;grid-row:3}
 .hw-mv{position:absolute;z-index:1;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;background:var(--c);visibility:hidden}
 .hw-mv.info{background:#fff;border:2px solid var(--c)}
-.hw-lab{position:absolute;z-index:3;left:0;top:0;font:500 var(--t-small)/1.25 var(--sans);color:var(--ink2);white-space:nowrap;pointer-events:none;transition:opacity .25s ease}
+.hw-lab{position:absolute;z-index:3;left:0;top:0;font:500 var(--t-small)/1.25 var(--sans);color:var(--ink);white-space:nowrap;pointer-events:none;transition:opacity .25s ease}
 .hw-lab.on{color:var(--ink)}
 .hw-lab[data-k="repay"]{white-space:normal;text-align:center;text-wrap:pretty}
 .hw-lab[data-k="ask"],.hw-lab[data-k="price"],.hw-lab[data-k="numbers"]{opacity:0;color:var(--ink)}
@@ -63,9 +70,10 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 .hw-read dd{margin:0;white-space:nowrap;color:var(--ink)}
 .hw-mo{margin:20px 0 8px;min-height:1.5em;font:500 var(--t-body)/1.5 var(--sans);color:var(--c)}
 .hw-pay{display:grid;grid-template-columns:repeat(36,minmax(0,1fr));gap:3px}
-.hw-pay i{position:relative;display:block;height:clamp(20px,4vh,36px);box-shadow:inset 0 0 0 1px rgba(11,22,48,.2)}
+.hw-pay i{position:relative;display:block;height:12px;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(11,22,48,.16)}
+.hw-pay i::after{border-radius:2px}
 .hw-pay i::after{content:"";position:absolute;inset:0;background:var(--c);opacity:0;transition:opacity .2s ease}
-.hw-pay.made i{background:var(--peri2);box-shadow:none}
+.hw-pay.made i{background:var(--mark);box-shadow:none}
 .hw-pay.made i.paid::after{opacity:1}
 
 /* the page's two ways on, at the end of the last step: the price tool and the failure story on Lenders. They stay cobalt while the step's words dim */
@@ -80,7 +88,7 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
  /* the stage leaves as soon as the last payment is made, ahead of the last step, so that step never slides under it */
  .hw-on .hw-stage{margin-bottom:calc(100vh - var(--hw-sh,420px))}
  .hw-on .hw-l{margin-top:calc(var(--hw-sh,420px) - 100vh)}
- .hw-stage{order:1;align-self:stretch;padding:24px 16px;margin-top:0;background:var(--peri3);margin-inline:0}
+ .hw-stage{order:1;align-self:stretch;padding:24px 16px;margin-top:0;background:var(--alt);margin-inline:0}
  .hw-stage::before{display:none}
  .hw-on .hw-stage{position:sticky;top:0;z-index:2}
  .hw-si{height:auto;gap:8px;justify-content:flex-start}
@@ -125,3 +133,23 @@ html:has(.page[data-page="how-it-works.html"]){scroll-behavior:auto}
 /* a phone: the top heading and the band heading never end on one word */
 @media (max-width:720px){.page .hw-hero h1.h1,.page .hw-cb .cb-h{text-wrap:balance}}
 @media (prefers-reduced-motion:reduce){.hw-low{transition:none}}
+
+/* wide screens (2026-11-28, round 3): the steps and the stage pin together and share the screen, the steps compact on the left, the stage beside them; the run is one screen plus the story's spans long, so each step lands in turn as on the phone */
+@media (min-width:1101px){
+ .hw-on .hw-run{height:calc(100vh + var(--hw-sum) * 1vh)}
+ .hw-on .hw-pin{position:sticky;top:0;height:100vh;align-items:center;align-content:center;padding-top:56px}
+ .hw-pin{align-items:start;padding-block:24px var(--sec)}
+ .hw-ch,.hw-on .hw-ch,.hw-on .hw-ch:first-child,.hw-on .hw-ch:last-child{height:auto;padding:0 0 20px}
+ .hw-ch:last-child,.hw-on .hw-ch:last-child{padding-bottom:0}
+ .hw-on .hw-ch:last-child .hw-cw{position:static}
+ .hw-n{margin:0 0 4px;font-size:var(--t-h3)!important;line-height:1.1}
+ .hw-t{margin:0 0 4px}
+ .hw-tx{font-size:16px;line-height:1.45}
+ .hw-dia{--hw-n:clamp(104px,8.4vw,128px);grid-template-rows:72px clamp(96px,8vw,120px) 80px}
+ .hw-si{justify-content:center;gap:32px}
+ .hw-stage{position:relative;top:auto;margin-top:0;align-self:center}
+}
+@media (min-width:1101px) and (max-height:860px){.hw-on .hw-pin{padding-top:48px}.hw-tx{font-size:16px;line-height:1.4}.hw-ch,.hw-on .hw-ch,.hw-on .hw-ch:first-child{padding-bottom:12px}.hw-n{font-size:var(--t-h3)!important}}
+.hw-ex{margin-top:clamp(32px,4vw,56px)}
+@media (max-width:1100px){.hw-nd{font:500 16px/1.15 var(--sans);border-radius:6px}.hw-pay i{height:10px}}
+@media (max-width:900px){.page .hw-ex{grid-template-columns:minmax(0,1fr);gap:8px}.page .hw-ex > li{display:flex;align-items:baseline;gap:12px;padding:16px 20px}.page .hw-ex .fnum{font-size:var(--t-h2)}.page .hw-ex .fl{margin-top:0}}

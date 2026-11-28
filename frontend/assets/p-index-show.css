@@ -1,4 +1,4 @@
-/* Robot Index, the show under the lookup (pages/robot_index.py auction() to finale(), assets/p-index-show.js): scenes 5 to 10 of design/ANIMATED-JOURNEY.md.
+/* Robot Index, the show under the lookup (pages/robot_index.py auction() to finale(), assets/p-index-show.js?v=509127d183): scenes 5 to 10 of design/ANIMATED-JOURNEY.md.
    Terminal blocks on dark ink: every picture is drawn by the script in shade cells on one grid; this file lays the scenes out and holds every word.
    One block per scene, so a scene can be swapped alone: shared, auction, note, board, thin data, drop test, finale, print.
    Signal orange lives in three tokens on .rs only (value lost, the reader's robot, the one main button). The site already uses --sec for the section gap, so the tokens are --sig. */
@@ -202,3 +202,20 @@
 /* sand build: the finale is as tall as its heading plus the answer, which fills the column width, so no empty band sits under the figure (the script fits the figure to the box it is given) */
 .rs-fin .rs-pin{min-height:0}
 .rs-fin .rs-in::after{content:"";display:block;flex:none;height:calc(72px + (100vw - 2 * var(--gl)) * .37)}
+/* the note's sources run the full width once the counts table left it (2026-11-28) */
+.sn-g.sn-g1{grid-template-columns:minmax(0,1fr)}
+.rs-drop .rs-hd > .btn{margin-top:28px}
+/* round 2 (critics): the note reads at a comfortable size, and its sources fill the space under the price instead of a row of their own */
+.rs-note{font-size:16px}
+.sn-st .sub,.sn-facts dt{font-size:14px}
+.sn-yt,.sn-src p{font-size:15px}
+.sn-f{font-size:14px}
+.sn-g > .sn-src{grid-column:1;grid-row:2;margin-top:8px}
+.sn-g{row-gap:32px}
+@media (max-width:720px){.sn-g > .sn-src{grid-row:auto}}
+/* one rhythm between the show's sections */
+.rs.sec,.rs-thin{padding-block:var(--sec)}
+.sn-g{align-items:start}
+.sn-g > div:nth-child(2):not(.sn-src){grid-column:2;grid-row:1 / span 2}
+@media (max-width:720px){.sn-g > div:nth-child(2):not(.sn-src){grid-column:auto;grid-row:auto}}
+#rs-cp{height:48px}

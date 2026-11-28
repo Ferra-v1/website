@@ -23,7 +23,7 @@
   // the pixel robot: one dot on each grid square, sized by the machine's shading
   const ghostBitmap = (G, cell, alpha, rgb = '30,51,155') => { const r = Math.min(devicePixelRatio || 1, 2), b = document.createElement('canvas'), cols = G.x1 - G.x0 + 1, rows = G.y1 - G.y0 + 1; b.width = Math.ceil(cols * cell * r); b.height = Math.ceil(rows * cell * r); const c = b.getContext('2d'); c.scale(r, r); for (const [x, y, s] of G.pts) { c.fillStyle = `rgba(${rgb},${alpha * (.55 + .45 * s)})`; c.beginPath(); c.arc((x - G.x0 + .5) * cell, (y - G.y0 + .5) * cell, Math.max(.3, cell * .44 * s), 0, 6.2832); c.fill(); } return b; };
   // the robot's body stays quiet, so each bright dot reads as one listing at a glance
-  const BODY = .24, THIN_DOTS = 20;   // sand build: a faint cobalt body on light grounds
+  const BODY = .34, THIN_DOTS = 20;   // sand build: a faint cobalt body on light grounds
   // nice dollar ticks inside a range
   const TICKS = [300, 1000, 3000, 10000, 30000, 100000, 300000];
   // a tooltip: solid, small, beside what it describes and never on it. It looks for room above, below, right and left of the dot, inside box when there is one, and clear of the bar at the top of the screen.
@@ -37,7 +37,7 @@
     tip.style.left = l + 'px'; tip.style.top = t + 'px';
   };
   // a mouse reads the tip and clicks the dot; a finger taps the dot, then the link inside the tip
-  const tipLink = (tip, a, kind, words, url) => { const touch = kind === 'touch'; tip.classList.toggle('touch', touch); a.textContent = touch ? words + ' →' : 'Click the dot to ' + words.toLowerCase(); a.href = url; };
+  const tipLink = (tip, a, kind, words, url) => { const touch = kind === 'touch'; tip.classList.toggle('touch', touch); a.textContent = touch ? words : 'Click the dot to ' + words.toLowerCase(); a.href = url; };
   // a chart label in the clearest spot the chart offers, with a short line to what it names. cands: [{x, y, tx, ty}]: the label's centre and its target.
   const clearLabel = (txt, cands, pts, box, used, cls = 'lb') => {
     const w = txt.length * (cls.includes('lb') ? 8 : 7.2) + 8, h = 22; let best = null, bs = 1e9;
@@ -88,10 +88,10 @@
     const lo = Math.min(...P.map(q => q.usd).filter(v => v >= 1000), ...A.map(q => q.usd), D.curve[30][0]) * .82, hi = Math.max(...P.map(q => q.usd), D.curve[0][2]) * 1.16;
     const few = P.length < THIN_DOTS;
     function layout() {
-      const W = plot.clientWidth, H = plot.clientHeight, phone = W < 560, thin = D.tier === 'thin', gut = 74, side = phone ? 0 : clamp(W * .16, 140, 190);
+      const W = plot.clientWidth, H = plot.clientHeight, phone = W < 560, thin = D.tier === 'thin', gut = 74, side = 0, keyed = true;   // round 2: the key stands above the plot at every width, so no label hangs outside it
       const under = A.filter(q => q.usd < D.curve[clamp(Math.round(q.age), 0, 30)][0]).length, n = A.length, low0 = lowestOf(P, lo);
       // on a phone the key stands above the plot, and a note on the floor dot under the axis
-      const rows = phone ? 2 + (n ? 1 : 0) : 0, top = phone ? rows * 21 + 22 : 10, base = H - (phone && low0 ? 66 : 46), R = W - side - (phone ? 8 : 2);
+      const rows = keyed ? 2 + (n ? 1 : 0) : 0, top = keyed ? rows * 21 + 22 : 10, base = H - (keyed && low0 ? 66 : 46), R = W - side - 8;
       const X = a => gut + a / 30 * (R - gut), Y = v => base - 14 - (Math.log(Math.max(v, lo)) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (base - 14 - top);
       g = { W, H, phone, base, top, X, Y, R, gut, r: few ? (phone ? 4 : 4.6) : (phone ? 2.1 : 2.7) };
       P.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); }); A.forEach(q => { q.x = X(q.age); q.y = Y(q.usd); });
@@ -102,9 +102,9 @@
       [5, 10, 15, 20, 25, 30].forEach(a => { s += `<text x="${X(a)}" y="${base + 36}" text-anchor="${a === 30 ? 'end' : 'middle'}">${a === 30 && R - gut >= 560 ? '30 years old' : a}</text>`; });
       if (R - gut < 560) s += `<text x="0" y="${base + 36}">Age</text>`;
       // labels past the line ends. What the dark dots imply is counted from the data: a sale is under the band when it brought less than the band's floor for its age.
-      const say = !n ? '' : n === 1 ? `This sale landed ${under ? 'under' : 'inside'} the band` : under === n ? (phone ? 'Every sale fell under the band' : 'Every sale here landed under the band') : under ? (phone ? `${under} of ${n} sales under the band` : `${under} of these ${n} sales landed under the band`) : 'These sales landed inside the band';
+      const say = !n ? '' : n === 1 ? `This sale landed ${under ? 'under' : 'inside'} the band` : under === n ? (phone ? 'Every sale fell under the band' : 'Every sale here landed under the band') : under ? (under * 2 > n ? (phone ? 'Most sales fell under the band' : 'Most of these sales landed under the band') : (phone ? 'Some sales fell under the band' : 'Some of these sales landed under the band')) : 'These sales landed inside the band';
       const bandWord = thin ? 'Our rough range' : '8 in 10 ask inside this band', end = D.curve[30], low = n ? A.reduce((m, q) => q.usd < m.usd ? q : m, A[0]) : null;
-      if (phone) {
+      if (keyed) {
         s += keyRows([{ txt: 'Typical asking price', mark: 'line', row: 1 }, { txt: bandWord, mark: 'band', row: 2, cls: 'pl' }].concat(n ? [{ txt: say, mark: 'dot', row: 3 }] : []), 2);
         if (low0) s += `<text x="0" y="${base + 58}">Dot on the floor: ${usd(low0.usd)}, off the chart</text>`;
       } else {
@@ -117,12 +117,12 @@
       place();
     }
     function draw(now) {
-      const { c } = fit(cv), { X, Y, base } = g, ink = 'rgb(14,22,38)', C = '40,71,206';
+      const { c } = fit(cv), { X, Y, base } = g, ink = 'rgb(14,22,38)', C = '40,71,206', GR = '150,158,172', NAVY = '#0C2338', BRASS = '#1597DA';
       const rev = reduce ? 1 : seen ? ease(clamp((now - born) / 1800)) : 0; let moving = seen && rev < 1;
       c.save(); c.beginPath(); c.rect(0, 0, X(0) + rev * (X(30) - X(0)) + 8, g.H); c.clip();
       // the band and the typical price: solid where this robot has listings, quieter and dotted where they are worked out from other ages
       const a0 = clamp(D.range[0] - 1, 0, 30), a1 = clamp(D.range[1] + 1, 0, 30);
-      const fade = c.createLinearGradient(X(0), 0, X(30), 0), stop = (a, al) => fade.addColorStop(clamp(a / 30), `rgba(${C},${al})`);
+      const fade = c.createLinearGradient(X(0), 0, X(30), 0), stop = (a, al) => fade.addColorStop(clamp(a / 30), `rgba(${GR},${al * 1.6})`);
       stop(0, a0 > 1 ? .03 : .09); stop(a0 - 2, .03); stop(a0, .09); stop(a1, .09); stop(a1 + 2, .03); stop(30, a1 < 29 ? .03 : .09);
       c.fillStyle = fade; c.beginPath(); for (let a = 0; a <= 30; a++) c.lineTo(X(a), Y(D.curve[a][2])); for (let a = 30; a >= 0; a--) c.lineTo(X(a), Y(D.curve[a][0])); c.closePath(); c.fill();
       const line = (from, to, dash) => { if (to <= from) return; c.setLineDash(dash); c.strokeStyle = `rgb(${C})`; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath(); for (let a = from; a <= to; a++) c.lineTo(X(a), Y(D.curve[a][1])); c.stroke(); };
@@ -134,11 +134,13 @@
       for (const q of P) {
         const t = Math.abs(q.whole - sel) <= 1 ? 1 : 0; q.hi += (t - q.hi) * .2; if (Math.abs(t - q.hi) > .01) moving = true;
         const app = reduce ? 1 : clamp((X(0) + rev * (X(30) - X(0)) - q.x + 6) / 40); if (app <= 0) continue;
-        c.fillStyle = q === hover ? ink : `rgba(${C},${(few ? .8 + .2 * q.hi : .5 + .5 * q.hi) * app * (hover ? .32 : 1)})`;
+        // other listings in grey, the ones near the age being read in cobalt
+        c.fillStyle = q === hover ? ink : `rgba(201,206,214,${app * (hover ? .5 : 1)})`;
         c.beginPath(); c.arc(q.x, q.y, g.r + q.hi * .5 + (q === hover ? 1.6 : 0), 0, 6.2832); c.fill();
+        if (q !== hover && q.hi > .02) { c.fillStyle = `rgba(${C},${q.hi * app * (hover ? .32 : 1)})`; c.beginPath(); c.arc(q.x, q.y, g.r + q.hi * .5, 0, 6.2832); c.fill(); }
       }
-      if (rev > .6) A.forEach(q => { c.fillStyle = ink; c.globalAlpha = clamp((rev - .6) / .4); c.beginPath(); c.arc(q.x, q.y, Math.max(g.r, 3.4) + .6 + (q === hover ? 1.4 : 0), 0, 6.2832); c.fill(); c.globalAlpha = 1; });
-      c.fillStyle = '#fff'; c.beginPath(); c.arc(sx, sy, 6, 0, 6.2832); c.fill(); c.strokeStyle = `rgb(${C})`; c.lineWidth = 2.5; c.stroke();
+      if (rev > .6) A.forEach(q => { c.fillStyle = q === hover ? ink : NAVY; c.globalAlpha = clamp((rev - .6) / .4); c.beginPath(); c.arc(q.x, q.y, Math.max(g.r, 3.4) + .6 + (q === hover ? 1.4 : 0), 0, 6.2832); c.fill(); c.globalAlpha = 1; });
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(sx, sy, 6.5, 0, 6.2832); c.fill(); c.strokeStyle = BRASS; c.lineWidth = 3; c.stroke();
       ax.style.opacity = reduce ? 1 : clamp(rev * 2);
       return moving;
     }
@@ -149,11 +151,11 @@
       read.querySelector('.r-ry').textContent = y;
       read.querySelector('.r-rv').textContent = thin ? `${money(c[0])} to ${money(c[2])}` : money(c[1]);
       // the same count, by the same band, as this robot's card on the shelf. When few listings set the price, the sentence says how many first.
-      const NW = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'], cap = t => t[0].toUpperCase() + t.slice(1), F = D.fit, count = near ? `${near} for sale near this age.` : 'None for sale near this age. Worked out from other ages.';
-      read.querySelector('.r-rb').textContent = thin ? `${cap(NW[F])} listing${F === 1 ? ' sets' : 's set'} this. ${count}` : count;
+      const count = near ? 'Read from arms for sale near this age.' : 'Worked out from other ages.';
+      read.querySelector('.r-rb').textContent = thin ? `A rough figure. ${count}` : count;
       // the range under the figure: low and high asking prices at the bar's ends, the typical one marked on it (2026-11-25: a picture, not a sentence)
       read.querySelector('.r-rlo').textContent = money(c[0]); read.querySelector('.r-rhi').textContent = money(c[2]); read.querySelector('.r-rmid').style.left = (c[2] > c[0] ? (c[1] - c[0]) / (c[2] - c[0]) * 100 : 50).toFixed(1) + '%';
-      read.querySelector('.r-rl').href = `/price#r=${D.id}&y=${y}`;   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
+      { const rl = read.querySelector('.r-rl'); if (rl) rl.href = `/price#r=${D.id}&y=${y}`; }   // the robot and year only: the tool shows this asking price itself, and would read a price in the link as what the whole working robot cost
       range.value = sel; range.setAttribute('aria-valuetext', `${sel} years old, about ${money(c[1])}`);
       th.textContent = `\u2039 ${sel === 1 ? '1 year' : sel + ' years'} \u203a`;
       place();
@@ -197,7 +199,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); kick(); });
     // the long lists start short
     // one button opens the whole list: the rows held back, and the listings with no build year waiting beside the table ([data-more]), which show whole
-    document.querySelectorAll('[data-listings]').forEach(tbl => { if (tbl.closest('[data-more]')) return; const rows = [...tbl.tBodies[0].rows], keep = +(matchMedia('(max-width:760px)').matches ? tbl.dataset.keepM : tbl.dataset.keep), more = tbl.parentElement ? [...tbl.parentElement.querySelectorAll(':scope > [data-more]')] : [], cut = rows.length > keep + 2; if (!cut && !more.length) return; if (cut) { const step = (rows.length - 1) / (keep - 1), show = new Set(Array.from({ length: keep }, (_, i) => Math.round(i * step))); rows.forEach((r, i) => { if (!show.has(i)) r.hidden = true; }); } const extra = more.reduce((n, m) => n + m.querySelectorAll('tbody tr').length, 0); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = `See all ${rows.length + extra} listings \u2192`; tbl.after(b); b.addEventListener('click', () => { rows.forEach(r => { r.hidden = false; }); more.forEach(m => { m.hidden = false; }); b.remove(); }); });
+    document.querySelectorAll('[data-listings]').forEach(tbl => { if (tbl.closest('[data-more]')) return; const rows = [...tbl.tBodies[0].rows], keep = +(matchMedia('(max-width:760px)').matches ? tbl.dataset.keepM : tbl.dataset.keep), more = tbl.parentElement ? [...tbl.parentElement.querySelectorAll(':scope > [data-more]')] : [], cut = rows.length > keep + 2; if (!cut && !more.length) return; /* the rows held back are chosen in the build (robots.py kept()) and hidden by CSS, so nothing moves on load */ const extra = more.reduce((n, m) => n + m.querySelectorAll('tbody tr').length, 0); const b = document.createElement('button'); b.type = 'button'; b.className = 'r-more'; b.textContent = 'Show every listing'; tbl.after(b); b.addEventListener('click', () => { tbl.classList.add('all'); more.forEach(m => { m.hidden = false; }); b.remove(); }); });
   }
 
   // ---------------------------------------------------------------- find a model: type any part of its name. The list opens as a solid panel under the field, on focus, and closes when focus leaves it or on Escape.
@@ -206,7 +208,7 @@
     const ents = JSON.parse(fnd.querySelector('.r-find-d').textContent), norm = t => t.toLowerCase().replace(/[^a-z0-9 ]/g, '');
     ents.forEach(r => { r.k = norm(r[0]).replace(/ /g, ''); });
     const box = fnd.querySelector('.r-find-in'), inp = box.querySelector('input'), list = fnd.querySelector('.r-find-list'), say = fnd.querySelector('.r-find-n');
-    const row = r => { const a = document.createElement('a'), b = document.createElement('b'), s = document.createElement('span'), i = document.createElement('i'); a.href = r[1 + 1]; b.textContent = r[0]; s.className = 'num t-small'; s.textContent = `${r[1].toLocaleString('en-US')} listing${r[1] === 1 ? '' : 's'}`; i.setAttribute('aria-hidden', 'true'); i.textContent = '→'; a.append(b, s, i); return a; };
+    const row = r => { const a = document.createElement('a'), b = document.createElement('b'), s = document.createElement('span'), i = document.createElement('i'); a.href = r[1 + 1]; b.textContent = r[0]; a.append(b); return a; };
     const start = [...list.children], words = say.textContent, MAX = 8;
     box.hidden = false; fnd.classList.add('live');
     const open = v => fnd.classList.toggle('open', v);
@@ -219,9 +221,9 @@
       const toks = norm(inp.value).split(' ').filter(Boolean);
       if (!toks.length) { list.replaceChildren(...start); say.textContent = words; return; }
       const whole = toks.join(''), hit = ents.filter(r => toks.every(t => r.k.includes(t))).sort((a, b) => (b.k.includes(whole) - a.k.includes(whole)) || b[1] - a[1]);
-      if (!hit.length) { const a = document.createElement('a'); a.className = 'r-find-any'; a.href = '/price#r=any-arm'; a.textContent = 'Price it as an arm with no model named →'; list.replaceChildren(a); say.textContent = 'We have no listings by that name.'; return; }
+      if (!hit.length) { const a = document.createElement('a'); a.className = 'r-find-any'; a.href = '/price#r=any-arm'; a.textContent = 'Price it as an arm with no model named'; list.replaceChildren(a); say.textContent = 'We have no listings by that name.'; return; }
       list.replaceChildren(...hit.slice(0, MAX).map(row));
-      say.textContent = hit.length > MAX ? `${hit.length} match. Here are the ${MAX} with the most listings.` : hit.length === 1 ? 'One match.' : `${hit.length} match.`;
+      say.textContent = hit.length > MAX ? `${hit.length} match. Here are the first ${MAX}.` : hit.length === 1 ? 'One match.' : `${hit.length} match.`;
     });
   }
 
@@ -254,7 +256,7 @@
         c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832);
       }
       c.fill();
-      if (far.length) { const q = r * .72; c.fillStyle = 'rgba(40,71,206,.28)'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
+      if (far.length) { const q = r * .72; c.fillStyle = '#B9C0CB'; c.beginPath(); for (const k of far) { const [x, y] = dotXY(g, k); c.moveTo(x + q, y); c.arc(x, y, q, 0, 6.2832); } c.fill(); }
       if (hot) { const [x, y] = dotXY(g, hot); c.fillStyle = '#0B1630'; c.beginPath(); c.arc(x, y, r + 1.6, 0, 6.2832); c.fill(); }
     };
     const cvs = [...shelf.querySelectorAll('canvas[data-b]')];
@@ -304,9 +306,9 @@
         out.textContent = yrs(a); inp.setAttribute('aria-valuetext', `${yrs(a)} old`);
         for (const ce of cells) {
           const list = DOTS[ce.dataset.k] || [], n = list.length, nr = list.filter(d => Math.abs(d[7] - a) <= NEAR).length, ct = ce.querySelector('.r-c-ct'), f = CUR[ce.dataset.k];
-          const short = nr ? `${nr} for sale near this age` : 'None for sale near this age';
-          ct.firstChild.textContent = ct.dataset.n ? short + '.' + ct.dataset.n : short;
-          ct.lastChild.textContent = (nr ? `${nr} of ${n} for sale near this age.` : `None of its ${dots(n)} are near this age, so this price is rough.`) + ct.dataset.n;
+          // how far the figure can be leaned on, in words (robots.py sure(): no counts of listings, 2026-11-28)
+          const t = f ? f.t : null, w = t === null ? ['Priced as any arm', 'No price of its own, so the tool prices it as any arm.'] : t === 'thin' ? ['A rough figure', 'Few for sale, so this is a rough figure.'] : !nr ? ['Rough at this age', 'None for sale near this age, so this is rough.'] : t === 'mid' ? ['A fair guide', 'It leans partly on what other arms ask.'] : nr >= 5 ? ['A close guide', 'Plenty for sale near this age.'] : ['A fair guide', 'Few for sale near this age.'];
+          ct.firstChild.textContent = w[0]; ct.lastChild.textContent = w[1];
           if (!f) continue;
           const c = f.c[a], thin = f.t === 'thin', big = f.t === 'big', pr = ce.querySelector('.r-c-pr'), at = ce.querySelector('.r-c-at');
           const sz = thin || !nr ? 't' : big && nr >= 5 ? 'b' : 'm';
