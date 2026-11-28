@@ -14,6 +14,7 @@ Judge everything on a cheap phone, never on this Mac: 390 wide, processor slowed
 3. **Words in a pinned scene still hold at least 60vh**, so they can be read (`hold`). Make the change faster, never the words.
 4. **Nothing is left half finished when the reader stops.** A word swap tied to the scroll finishes on its own when scrolling stops (`hSettle` in `p-home.js`, word swaps only). Longer changes follow the scroll exactly and are never auto-finished, because an auto-finished picture makes the next bit of scrolling do nothing.
 4b. **Build-ups follow the scroll (Praj, 2026-11-12).** When something assembles or builds as the reader arrives (the Home robot row is the model), it moves forward as they scroll down and back as they scroll up, never on its own clock after a trigger. Only a finished robot's own loop runs on time. A short fade on a label that has fully arrived is fine.
+   **One exception (Praj's order, 2026-11-28): the robot row in Home's first screen.** Its robots are whole without any scrolling: each gathers in once on its own as its file arrives (left to right, 90ms apart, 0.7s, easing to rest, never left half built), then plays its loop. Everything else that builds still follows the scroll.
 5. **Shortening a scene never changes what it shows.** Same pictures, words and order; only the scroll length changes.
 
 ### Drawing and animation

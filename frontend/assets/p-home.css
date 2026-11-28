@@ -23,7 +23,6 @@ h2.h-c{max-width:none}
 .h-bot figcaption{margin-top:10px;padding-top:8px;border-top:1px solid var(--peri2);display:flex;flex-direction:column;align-items:center;font-size:14px;line-height:1.3;white-space:nowrap;color:var(--grey)}
 .h-bot figcaption b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 @media (max-width:900px){.h-row{--s:.3;flex-wrap:wrap;gap:12px 10px;margin-top:20px}.h-bot{flex:0 0 calc((100% - 20px) / 3)}.h-bot figcaption{font-size:12.5px;align-self:stretch;margin-top:6px;padding-top:6px}.h-bot figcaption{white-space:normal;text-align:center}}
-.h-hero{background:linear-gradient(180deg,#fff 0,#fff 30%,var(--peri) 78%,var(--alt) 100%);padding:64px 0 0;text-align:center}
 
 .page .h-sub{max-width:640px;margin:20px auto 0;color:var(--ink2);text-wrap:balance}
 .h-h1{max-width:none;white-space:nowrap}
@@ -142,7 +141,6 @@ h2.h-c{max-width:none}
 
 /* phone and narrow screens: the same sections, packed so the page stays near five screens */
 @media (max-width:900px){
- .h-hero{padding-top:28px}
  .h-sub{margin-top:14px}
  .h-ctas{margin-top:20px}
  .h-ctas .btn-o{display:none}
@@ -189,12 +187,10 @@ h2.h-c{max-width:none}
 .h-bento .h-h2{max-width:none}
 .page .h-bc>p,.page .h-bot figcaption{text-wrap:balance}
 
-/* the line under the heading runs as wide as the heading (2026-11-25) */
-@media (min-width:901px){.h-ht{display:grid;grid-template-columns:max-content;justify-content:center}.page .h-ht .h-sub{max-width:none;width:0;min-width:100%}}
 
 /* 5. the market film (design-loop/home-motion-2026-11-25/SPEC.md, assets/h-film.js). Without scripts it is the last beat in plain flow: its heading, the four bars, the tabs as links.
    .h-on: one pinned stage on the fog ground, the canvas over the words but never on them (the script keeps every dot clear). .h-still (reduced motion): the last beat's finished frame, unpinned. */
-.h-mf{background:var(--alt);margin-top:var(--sec);padding:var(--sec) 0}
+.h-mf{background:var(--alt);padding:0 0 var(--sec)}
 .h-mfs{position:relative}
 .h-mft{margin:0;max-width:none}
 .h-mft:not(:last-child),.h-mcv,.h-max,.h-tip{display:none}
@@ -216,12 +212,12 @@ h2.h-c{max-width:none}
 .h-myou .h-ar{margin-left:8px}
 .h-mf.h-on,.h-mf.h-still{padding:0}
 .h-on .h-mfs{position:sticky;top:0;height:100vh;height:100svh;overflow:clip}
-.h-still .h-mfs{height:100vh;height:100svh;min-height:640px;overflow:clip}
+.h-on .h-mfb{position:absolute;inset:0}
+.h-still .h-mfb{position:relative;height:100vh;height:100svh;min-height:640px;overflow:clip}
 .h-on .h-mcv,.h-still .h-mcv{display:block;position:absolute;left:0;top:0;width:100%;height:100%;z-index:3;pointer-events:none}
 .h-on .h-mfw,.h-still .h-mfw{position:absolute;left:0;right:0;top:0;padding-top:96px;z-index:2}
 .h-on .h-mfh,.h-still .h-mfh{display:grid}
 .h-on .h-mft{grid-area:1/1;display:block;opacity:0;visibility:hidden}
-.h-on .h-mft:first-child{opacity:1;visibility:visible}
 .h-still .h-mft:last-child{grid-area:1/1}
 .h-on .h-max,.h-still .h-max{display:block;position:absolute;left:0;top:0;right:0;bottom:0;z-index:2;pointer-events:none}
 .h-on .h-max{opacity:0;visibility:hidden}
@@ -251,3 +247,36 @@ h2.h-c{max-width:none}
  .h-yw{display:none}.h-yn{display:inline}
 }
 @media (max-width:360px){.h-mtabs a{padding:0 7px}.h-mtabs.tb{gap:4px}}
+
+/* 1. the first screen (2026-11-28, design-loop/home-hero-film-2026-11-28/SPEC.md): the h1, its line, one button and the row of moving robots, laid over the film's pinned stage (.h-on).
+   It scrolls away as normal on the first scroll while the film keeps the Factory arm. Without scripts, and with reduced motion, it stands in plain flow above the last beat. */
+.h-hero{text-align:center;padding:clamp(56px,9vh,104px) 0 var(--sec)}
+.h-pbtn{margin-top:32px}
+.h-hero .h-row{--s:.78;gap:clamp(20px,3vw,48px);margin-top:clamp(48px,8vh,80px)}
+.h-on{position:relative}
+.h-on .h-hero{position:absolute;left:0;right:0;top:0;z-index:1}
+.h-on .h-mfs{z-index:2;pointer-events:none}
+.h-on .h-mp,.h-on .h-tip{pointer-events:auto}
+/* the Factory arm's label steps aside once the film has taken the arm (a 200ms fade of a label that has fully arrived, SPEED-RULES 4b) */
+.h-bot figcaption{transition:opacity .2s ease}.h-bot.h-took figcaption{opacity:0}
+@media (prefers-reduced-motion:reduce){.h-bot figcaption{transition:none}}
+@media (min-width:1200px) and (min-height:1000px){.h-hero{padding-top:clamp(104px,13vh,180px)}.h-hero .h-row{--s:.98;margin-top:96px}}
+@media (max-width:900px){.h-hero{padding-top:36px}.h-pbtn{margin-top:24px}}
+@media (max-width:900px) and (min-width:600px){.h-hero{padding-top:72px}.h-hero .h-row{--s:.52;flex-wrap:nowrap;gap:24px;margin-top:64px}.h-hero .h-bot{flex:none}}
+@media (max-width:599px){.h-hero .h-row{--s:.34;gap:16px 10px;margin-top:40px}}
+
+/* 2. price yours: the price window under its heading */
+.h-pr .h-stage{margin-top:40px}
+/* 4. the data behind it: two cards side by side, stacked on a phone */
+.h-b2{grid-template-columns:repeat(2,minmax(0,1fr));max-width:1080px;margin-left:auto;margin-right:auto}
+/* 5. what you get: four plain figures */
+.h-g4{list-style:none;margin:48px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.h-g4 li{border-top:1px solid var(--line2);padding-top:18px;display:flex;flex-direction:column;gap:6px}
+.h-g4 b{font:600 18px/1.3 'Inter','Inter Fallback',sans-serif;letter-spacing:-.02em;color:var(--ink)}
+.h-g4 span{font-size:16px;line-height:1.45;color:var(--grey)}
+@media (max-width:900px){
+ .h-pr .h-stage{margin-top:24px}
+ .page .h-b2{display:grid;grid-template-columns:1fr;gap:32px;margin:28px 0 0;padding:0;overflow:visible}
+ .h-g4{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;margin-top:28px}
+ .h-g4 b{font-size:17px}
+}
