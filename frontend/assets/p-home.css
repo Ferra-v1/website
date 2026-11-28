@@ -245,8 +245,8 @@ h2.h-c{max-width:none}
 .h-on .h-hero{position:absolute;left:0;right:0;top:0;z-index:1}
 .h-on .h-mfs{z-index:2;pointer-events:none}
 .h-on .h-mp,.h-on .h-tip{pointer-events:auto}
-/* the Factory arm's label steps aside once the film has taken the arm (a 200ms fade of a label that has fully arrived, SPEED-RULES 4b) */
-.h-bot figcaption{transition:opacity .2s ease}.h-bot.h-took figcaption{opacity:0}
+/* the robots' labels step aside once the film has taken the Factory arm, so the growing arm never crosses a word (a 200ms fade of labels that have fully arrived, SPEED-RULES 4b) */
+.h-bot figcaption{transition:opacity .2s ease}.h-row.h-took figcaption{opacity:0}
 @media (prefers-reduced-motion:reduce){.h-bot figcaption{transition:none}}
 @media (min-width:1200px) and (min-height:1000px){.h-hero{padding-top:clamp(120px,15vh,190px)}.h-hero .h-row{--s:.98;margin-top:72px}}
 @media (max-width:900px){.h-hero{padding-top:clamp(48px,9vh,88px)}.h-pbtn{margin-top:28px}.page .h-ht .h-sub{margin-top:16px}}

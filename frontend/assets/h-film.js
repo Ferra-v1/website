@@ -147,8 +147,8 @@
   // draws it again, picking its loop up on the frame the film showed. SEAT is the pose the film's listing seats were cut from (assets/h-arm.js)
   let took = -1; const SEAT = 84;
   const take = s => { const rb = rowCv && rowCv._row; if (!rb || !rb.frames || reduce || flat) return false;
-    if (s > S0 + .004) { if (took < 0) { took = rb.f; rb.hold = true; rowCv.style.visibility = 'hidden'; rowCv.closest('.h-bot').classList.add('h-took'); } return true; }
-    if (took >= 0) { rb.resumeAt(took); rb.hold = false; rowCv.style.visibility = ''; rowCv.closest('.h-bot').classList.remove('h-took'); took = -1; } return false; };
+    if (s > S0 + .004) { if (took < 0) { took = rb.f; rb.hold = true; rowCv.style.visibility = 'hidden'; rowCv.closest('.h-row').classList.add('h-took'); } return true; }
+    if (took >= 0) { rb.resumeAt(took); rb.hold = false; rowCv.style.visibility = ''; rowCv.closest('.h-row').classList.remove('h-took'); took = -1; } return false; };
   const drawF = (p, ox, oy) => { for (let part = 0; part < 2; part++) { const path = new Path2D(); for (let i = 0; i < F.n; i++) { if (F.acc[i] !== part) continue; dot(path, ox + F.x[i] * p, oy + F.y[i] * p, Math.max(.45, p * .44 * F.s[i])); } ctx.fillStyle = part ? DEEP : COB; ctx.fill(path); } };
   // ---------------------------------------------------------------- painting
   const P = { a: new Path2D(), b: new Path2D() };
